@@ -216,25 +216,58 @@ function Index() {
 }
 
 function HeroBanner() {
+  const [idx, setIdx] = useState(0);
+  const total = heroSlides.length;
+  useEffect(() => {
+    const t = setInterval(() => setIdx((i) => (i + 1) % total), 5000);
+    return () => clearInterval(t);
+  }, [total]);
+  const slide = heroSlides[idx];
   return (
     <section id="home" className="mx-auto max-w-7xl px-2 pt-2 sm:px-3 lg:px-4">
       <div className="relative overflow-hidden rounded-none border border-black/20 sm:rounded-md">
         <img src={heroBg} alt="Asik Game promotional banner" width={1920} height={900} className="h-[240px] w-full object-cover sm:h-[320px] lg:h-[420px]" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/35" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+        <div key={idx} className="absolute inset-0 flex animate-fade-in flex-col items-center justify-center px-4 text-center">
           <div className="font-display text-4xl font-black sm:text-6xl lg:text-7xl">
             <span className="text-white">ASIK</span>
             <span className="text-gradient-gold"> OK</span>
           </div>
           <h1 className="mt-2 max-w-4xl text-2xl font-black text-white drop-shadow sm:text-4xl lg:text-5xl">
-            নতুনভাবে চালু হয়েছে <span className="text-gradient-gold">ASIKGAME.COM</span>
+            {slide.headline} <span className="text-gradient-gold">{slide.accent}</span>
           </h1>
           <p className="mt-3 max-w-3xl rounded-full bg-[color-mix(in_oklab,var(--neon-pink)_35%,transparent)] px-4 py-2 text-sm font-bold text-white sm:text-lg">
-            অফিসিয়ালভাবে প্রত্যাবর্তিত • দারুণ অফার • নিরাপদ প্ল্যাটফর্ম
+            {slide.eyebrow}
           </p>
           <p className="mt-4 text-lg font-black text-white sm:text-3xl lg:text-4xl">
-            জয়ের হার <span className="text-gradient-gold">৯৯%</span> • <span className="text-gradient-gold">১০০%</span> নিরাপত্তা নিশ্চিত
+            {slide.sub}
           </p>
+        </div>
+        {/* Prev / Next */}
+        <button
+          aria-label="Previous slide"
+          onClick={() => setIdx((i) => (i - 1 + total) % total)}
+          className="absolute left-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-[var(--neon-green)]/60 sm:left-4 sm:h-11 sm:w-11"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <button
+          aria-label="Next slide"
+          onClick={() => setIdx((i) => (i + 1) % total)}
+          className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-[var(--neon-green)]/60 sm:right-4 sm:h-11 sm:w-11"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </button>
+        {/* Dots */}
+        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
+          {heroSlides.map((_, i) => (
+            <button
+              key={i}
+              aria-label={`Go to slide ${i + 1}`}
+              onClick={() => setIdx(i)}
+              className={`h-2 rounded-full transition-all ${i === idx ? "w-6 bg-[var(--neon-gold)]" : "w-2 bg-white/50"}`}
+            />
+          ))}
         </div>
       </div>
     </section>
@@ -269,7 +302,15 @@ function HotGamesSection() {
           <button className="grid h-8 w-8 place-items-center rounded-full bg-black/30 text-white"><ChevronLeft className="h-4 w-4" /></button>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
             {hotGames.map((game) => (
-              <div key={game.title} className="game-frame overflow-hidden rounded-xl p-1.5">
+              <div key={game.title} className="game-frame relative overflow-hidden rounded-xl p-1.5">
+                {game.tag && (
+                  <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[9px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
+                    {game.tag}
+                  </span>
+                )}
+                <span className="absolute right-2 top-2 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[9px] font-bold text-[var(--neon-gold)]">
+                  {game.provider}
+                </span>
                 <img src={game.image} alt={game.title} width={512} height={512} loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" />
                 <div className="pt-1.5 text-center text-[11px] font-semibold text-foreground/90 sm:text-xs">{game.title}</div>
               </div>
@@ -281,6 +322,7 @@ function HotGamesSection() {
     </section>
   );
 }
+
 
 function JackpotSection() {
   return (
