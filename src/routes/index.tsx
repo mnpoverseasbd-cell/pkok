@@ -371,6 +371,43 @@ function LatestWinners() {
   );
 }
 
+function JackpotCounter() {
+  const [value, setValue] = useState(438097079);
+  useEffect(() => {
+    const t = setInterval(() => setValue((v) => v + Math.floor(Math.random() * 90) + 10), 1500);
+    return () => clearInterval(t);
+  }, []);
+  const str = value.toLocaleString("en-US").replace(/,/g, ".");
+  return (
+    <div className="mt-2 inline-flex items-center gap-0.5 rounded-xl bg-black/70 px-3 py-2 sm:px-4">
+      {str.split("").map((ch, i) =>
+        ch === "." ? (
+          <span key={i} className="px-0.5 text-3xl font-black text-[var(--neon-gold)] sm:text-5xl">.</span>
+        ) : (
+          <DigitReel key={i} digit={Number(ch)} />
+        ),
+      )}
+    </div>
+  );
+}
+
+function DigitReel({ digit }: { digit: number }) {
+  return (
+    <span className="relative inline-block h-9 w-6 overflow-hidden rounded-sm bg-gradient-to-b from-[#3a2a08] to-[#0d0904] text-center sm:h-12 sm:w-8">
+      <span
+        className="absolute left-0 right-0 top-0 flex flex-col text-3xl font-black text-[var(--neon-gold)] transition-transform duration-700 ease-out sm:text-5xl"
+        style={{ transform: `translateY(-${digit * 10}%)` }}
+      >
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+          <span key={n} className="block h-9 leading-9 sm:h-12 sm:leading-[3rem]">{n}</span>
+        ))}
+      </span>
+    </span>
+  );
+}
+
+
+
 
 function MainCategoryCards() {
   return (
