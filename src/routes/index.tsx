@@ -170,7 +170,7 @@ const listSections = [
   },
 ];
 
-const sideActions = ["24CS", "Telegram", "Facebook", "TG Channel", "Whatsapp"];
+
 
 function Index() {
   return (
@@ -420,54 +420,3 @@ function CategoryListSection({ section }: { section: { id: string; title: string
   );
 }
 
-function FooterBlock() {
-  return (
-    <footer className="bg-[#2a2a27] text-foreground/90">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr] lg:px-6">
-        <div>
-          <p className="max-w-2xl text-sm leading-7 text-foreground/85">
-            স্লট গেম সবসময়ই Asik Game-এর সবচেয়ে জনপ্রিয় গেম ধরনের একটি। আমরা সেরা স্লট গেম প্রদানকারী হতে চাই। স্লট গেমসমূহ কোম্পানির সৃজনশীলতা ও উদ্ভাবনের সীমানা অতিক্রম করার প্রতিচ্ছবি। বৈচিত্র্যময় থিম, মনোমুগ্ধকর গ্রাফিক্স এবং উত্তেজনাপূর্ণ বৈশিষ্ট্যগুলো Asik Game খেলোয়াড়দের একটি অনন্য রোমাঞ্চকর অভিজ্ঞতা প্রদান করে।
-          </p>
-        </div>
-        <div className="space-y-3 text-center lg:text-left">
-          <div className="text-3xl font-black text-white/80">mga</div>
-          <div className="text-lg font-semibold text-white/90">Maltese license (MGA) certification</div>
-        </div>
-        <div className="space-y-3 text-center lg:text-left">
-          <div className="text-3xl font-black text-white/80">BVI</div>
-          <div className="text-lg font-semibold text-white/90">British Virgin Islands (BVI) certification</div>
-        </div>
-      </div>
-      <div className="mx-auto max-w-7xl border-t border-white/10 px-4 py-6 text-center text-sm text-foreground/65 sm:px-6 lg:px-6">
-        কপিরাইট © 2026 Asik Game. সমস্ত অধিকার সংরক্ষিত। • শুধুমাত্র ডেমো UI • কোনো real-money gaming নয়।
-      </div>
-    </footer>
-  );
-}
-
-function SocialRail() {
-  return (
-    <div className="fixed right-2 top-1/2 z-30 hidden -translate-y-1/2 flex-col gap-2 xl:flex">
-      {sideActions.map((item, index) => (
-        <a key={item} href="#" className="flex w-16 flex-col items-center rounded-[28px] border border-[var(--neon-green)]/55 bg-[color-mix(in_oklab,var(--surface)_90%,black)] px-2 py-2 text-center text-[10px] font-bold text-white shadow-lg shadow-black/30">
-          <span className={`mb-1 grid h-10 w-10 place-items-center rounded-full ${index === 0 ? "bg-green-button text-[var(--background)]" : "bg-[var(--neon-green)]/25"}`}>
-            {index === 0 ? <Headphones className="h-5 w-5" /> : <MessageCircle className="h-5 w-5" />}
-          </span>
-          {item}
-        </a>
-      ))}
-    </div>
-  );
-}
-
-function LeftFloatingBadges() {
-  return (
-    <div className="fixed bottom-6 left-2 z-20 hidden flex-col gap-3 lg:flex">
-      {["🏆", "🎁", "🏆"].map((icon, index) => (
-        <button key={`${icon}-${index}`} className="grid h-14 w-14 place-items-center rounded-full border border-[var(--neon-gold)]/40 bg-[color-mix(in_oklab,var(--surface)_90%,black)] text-3xl shadow-lg shadow-black/30">
-          {icon}
-        </button>
-      ))}
-    </div>
-  );
-}
