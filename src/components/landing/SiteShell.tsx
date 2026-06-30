@@ -22,14 +22,14 @@ const topMenu: { label: string; to: string; icon: ComponentType<{ className?: st
 
 const sideActions = ["24CS", "Telegram", "Facebook", "TG Channel", "Whatsapp"];
 
-export function SiteShell({ children }: { children: ReactNode }) {
+export function SiteShell({ children, footer = true }: { children: ReactNode; footer?: boolean }) {
   return (
     <ModalsProvider>
       <div className="portal-shell min-h-screen text-foreground">
         <TopBar />
         <MainNav />
         <main className="pb-8">{children}</main>
-        <FooterBlock />
+        {footer ? <FooterBlock /> : null}
         <SocialRail />
         <LeftFloatingBadges />
         <WelcomePopup />
