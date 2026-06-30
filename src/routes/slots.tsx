@@ -129,6 +129,11 @@ function ProviderCard({ p }: { p: Provider }) {
           t.parentElement?.appendChild(span);
         }}
       />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-2 pb-1.5 pt-6">
+        <p className="truncate text-center text-[11px] font-bold uppercase tracking-wider text-white drop-shadow sm:text-xs">
+          {p.name}
+        </p>
+      </div>
     </button>
   );
 }
