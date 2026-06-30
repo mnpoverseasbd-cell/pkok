@@ -40,6 +40,8 @@ import mascotPoker from "@/assets/mascot-poker.png";
 import promoWelcome from "@/assets/promo-welcome.jpg";
 import promoDaily from "@/assets/promo-daily.jpg";
 import promoVip from "@/assets/promo-vip.jpg";
+import jackpotHero from "@/assets/jackpot-hero.png";
+
 
 
 export const Route = createFileRoute("/")({
