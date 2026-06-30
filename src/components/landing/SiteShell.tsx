@@ -89,10 +89,10 @@ function MainNav() {
   return (
     <header className="bg-navbar sticky top-0 z-40 border-b border-black/20 shadow-lg shadow-black/25">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-2 sm:px-4 lg:px-6">
-        <Link to="/" className="shrink-0 font-display text-3xl font-black leading-none">
-          <span className="text-white">AS</span>
-          <span className="text-black">IK</span>
-          <span className="text-gradient-gold">OK</span>
+        <Link to="/" aria-label="PKOK home" className="flex shrink-0 items-center gap-1 font-display text-3xl font-black leading-none">
+          <span className="text-white drop-shadow">PK</span>
+          <span className="rounded-[4px] bg-[#ff9700] px-1 text-black shadow-[0_2px_0_rgba(0,0,0,0.35)]">OK</span>
+          <span className="-ml-1 text-[#ff9700] drop-shadow">👌</span>
         </Link>
         <nav className="hidden min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden whitespace-nowrap text-[11px] font-bold text-white/95 lg:flex">
           {topMenu.map((item) => (
