@@ -16,6 +16,9 @@ import {
   Wallet,
 } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
+import heroSlide1 from "@/assets/hero-slide-1.jpg";
+import heroSlide2 from "@/assets/hero-slide-2.jpg";
+import heroSlide3 from "@/assets/hero-slide-3.jpg";
 import { SiteShell } from "@/components/landing/SiteShell";
 import phoneMockup from "@/assets/phone-mockup.png";
 import g1 from "@/assets/game-slot1.jpg";
@@ -75,25 +78,11 @@ const hotGames = [
 
 
 const heroSlides = [
-  {
-    eyebrow: "অফিসিয়ালভাবে প্রত্যাবর্তিত • দারুণ অফার • নিরাপদ প্ল্যাটফর্ম",
-    headline: "নতুনভাবে চালু হয়েছে",
-    accent: "ASIKGAME.COM",
-    sub: "জয়ের হার ৯৯% • ১০০% নিরাপত্তা নিশ্চিত",
-  },
-  {
-    eyebrow: "৯৫০% স্বাগতম বোনাস • দৈনিক ফ্রি স্পিন",
-    headline: "প্রথম ডিপোজিটেই পান",
-    accent: "মেগা বোনাস ৯৫০%",
-    sub: "নতুন প্লেয়ারদের জন্য এক্সক্লুসিভ অফার",
-  },
-  {
-    eyebrow: "লাইভ ক্যাসিনো • ফিশিং • স্পোর্টস বেটিং",
-    headline: "এক প্ল্যাটফর্মে",
-    accent: "১০০০+ গেমস",
-    sub: "PG • JILI • Pragmatic • Evolution • Spribe",
-  },
+  { image: heroSlide1, alt: "১০% দ্বিতীয় ডিপোজিট বোনাস" },
+  { image: heroSlide2, alt: "৯৫০% স্বাগতম বোনাস" },
+  { image: heroSlide3, alt: "লাইভ ক্যাসিনো ১০০০+ গেমস" },
 ];
+
 
 
 const mainCategories = [
@@ -201,23 +190,15 @@ function HeroBanner() {
   return (
     <section id="home" className="mx-auto max-w-7xl px-2 pt-2 sm:px-3 lg:px-4">
       <div className="relative overflow-hidden rounded-none border border-black/20 sm:rounded-md">
-        <img src={heroBg} alt="Asik Game promotional banner" width={1920} height={900} className="h-[240px] w-full object-cover sm:h-[320px] lg:h-[420px]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/35" />
-        <div key={idx} className="absolute inset-0 flex animate-fade-in flex-col items-center justify-center px-4 text-center">
-          <div className="font-display text-4xl font-black sm:text-6xl lg:text-7xl">
-            <span className="text-white">ASIK</span>
-            <span className="text-gradient-gold"> OK</span>
-          </div>
-          <h1 className="mt-2 max-w-4xl text-2xl font-black text-white drop-shadow sm:text-4xl lg:text-5xl">
-            {slide.headline} <span className="text-gradient-gold">{slide.accent}</span>
-          </h1>
-          <p className="mt-3 max-w-3xl rounded-full bg-[color-mix(in_oklab,var(--neon-pink)_35%,transparent)] px-4 py-2 text-sm font-bold text-white sm:text-lg">
-            {slide.eyebrow}
-          </p>
-          <p className="mt-4 text-lg font-black text-white sm:text-3xl lg:text-4xl">
-            {slide.sub}
-          </p>
-        </div>
+        <img
+          key={idx}
+          src={slide.image}
+          alt={slide.alt}
+          width={1920}
+          height={768}
+          className="h-[180px] w-full animate-fade-in object-cover sm:h-[300px] lg:h-[420px]"
+        />
+
         {/* Prev / Next */}
         <button
           aria-label="Previous slide"
