@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Filter, Flame, Search } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 import g1 from "@/assets/game-slot1.jpg";
@@ -15,7 +15,12 @@ import g10 from "@/assets/game-dice.jpg";
 import g11 from "@/assets/game-candy.jpg";
 import g12 from "@/assets/game-pharaoh.jpg";
 
+type GamesSearch = { cat?: string };
+
 export const Route = createFileRoute("/games")({
+  validateSearch: (s: Record<string, unknown>): GamesSearch => ({
+    cat: typeof s.cat === "string" ? s.cat : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "গেমস — Asik Game" },
@@ -90,9 +95,15 @@ const lib: Record<string, { title: string; image: string; provider: string; tag?
 };
 
 function GamesPage() {
-  const [active, setActive] = useState("hot");
+  const { cat } = Route.useSearch();
+  const [active, setActive] = useState(cat && lib[cat] ? cat : "hot");
   const [provider, setProvider] = useState("সব");
   const [q, setQ] = useState("");
+
+  useEffect(() => {
+    if (cat && lib[cat]) setActive(cat);
+  }, [cat]);
+
 
   let games = lib[active] ?? [];
   if (provider !== "সব") games = games.filter((g) => g.provider === provider);

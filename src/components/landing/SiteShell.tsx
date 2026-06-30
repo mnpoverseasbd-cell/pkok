@@ -3,16 +3,16 @@ import { CircleDollarSign, Globe, Headphones, Mail, MessageCircle } from "lucide
 import type { ReactNode } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 
-const topMenu: { label: string; to: string }[] = [
+const topMenu: { label: string; to: string; search?: Record<string, string> }[] = [
   { label: "হোম", to: "/" },
-  { label: "গরম", to: "/games" },
-  { label: "স্লট", to: "/games" },
-  { label: "ফিশিং", to: "/games" },
-  { label: "লাইভ", to: "/games" },
-  { label: "স্পোর্টস", to: "/games" },
-  { label: "ই-স্পোর্টস", to: "/games" },
-  { label: "পোকার", to: "/games" },
-  { label: "লটারি", to: "/games" },
+  { label: "গরম", to: "/games", search: { cat: "hot" } },
+  { label: "স্লট", to: "/games", search: { cat: "slots" } },
+  { label: "ফিশিং", to: "/games", search: { cat: "fishing" } },
+  { label: "লাইভ", to: "/games", search: { cat: "live" } },
+  { label: "স্পোর্টস", to: "/games", search: { cat: "sports" } },
+  { label: "ই-স্পোর্টস", to: "/games", search: { cat: "sports" } },
+  { label: "পোকার", to: "/games", search: { cat: "poker" } },
+  { label: "লটারি", to: "/games", search: { cat: "lottery" } },
   { label: "VIP", to: "/vip" },
   { label: "প্রমোশন", to: "/promotion" },
 ];
@@ -68,7 +68,7 @@ function MainNav() {
         </Link>
         <nav className="hidden min-w-0 flex-1 items-center gap-4 overflow-hidden whitespace-nowrap text-sm font-bold text-white/95 lg:flex">
           {topMenu.map((item) => (
-            <Link key={item.label} to={item.to} className="shrink-0 transition-colors hover:text-[var(--neon-gold)]" activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}>
+            <Link key={item.label} to={item.to} search={item.search as never} className="shrink-0 transition-colors hover:text-[var(--neon-gold)]" activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}>
               {item.label}
             </Link>
           ))}
@@ -81,7 +81,7 @@ function MainNav() {
       <div className="overflow-x-auto border-t border-white/10 px-3 py-2 text-xs font-semibold text-white/90 lg:hidden">
         <div className="flex w-max gap-4">
           {topMenu.map((item) => (
-            <Link key={item.label} to={item.to}>{item.label}</Link>
+            <Link key={item.label} to={item.to} search={item.search as never}>{item.label}</Link>
           ))}
         </div>
       </div>
