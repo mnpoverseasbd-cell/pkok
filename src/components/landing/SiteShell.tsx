@@ -81,7 +81,7 @@ function MainNav() {
       <div className="overflow-x-auto border-t border-white/10 px-3 py-2 text-xs font-semibold text-white/90 lg:hidden">
         <div className="flex w-max gap-4">
           {topMenu.map((item) => (
-            <Link key={item.label} to={item.to}>{item.label}</Link>
+            <Link key={item.label} to={item.to} search={item.search as never}>{item.label}</Link>
           ))}
         </div>
       </div>
