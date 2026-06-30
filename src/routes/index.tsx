@@ -457,17 +457,69 @@ function FeatureList() {
   );
 }
 
+const providerStyles: Record<string, { bg: string; fg: string; accent?: string }> = {
+  CQ9: { bg: "from-red-600 to-orange-500", fg: "text-white" },
+  "RG Rich": { bg: "from-amber-500 to-yellow-300", fg: "text-black" },
+  Sexy: { bg: "from-pink-500 to-rose-600", fg: "text-white" },
+  "Live Casino": { bg: "from-emerald-500 to-teal-600", fg: "text-white" },
+  Lucky: { bg: "from-yellow-400 to-orange-500", fg: "text-black" },
+  "AP Gaming": { bg: "from-sky-500 to-blue-700", fg: "text-white" },
+  SABA: { bg: "from-blue-600 to-indigo-700", fg: "text-white" },
+  "TC Gaming": { bg: "from-fuchsia-600 to-purple-700", fg: "text-white" },
+  PG: { bg: "from-amber-400 to-yellow-500", fg: "text-black" },
+  Pragmatic: { bg: "from-red-700 to-red-900", fg: "text-white" },
+  Kingmidas: { bg: "from-yellow-500 to-amber-700", fg: "text-black" },
+  "2J": { bg: "from-cyan-500 to-blue-600", fg: "text-white" },
+  Ezugi: { bg: "from-orange-600 to-red-600", fg: "text-white" },
+  SA: { bg: "from-rose-600 to-pink-700", fg: "text-white" },
+  BTI: { bg: "from-lime-500 to-emerald-600", fg: "text-black" },
+  Poly: { bg: "from-violet-600 to-indigo-700", fg: "text-white" },
+  TF: { bg: "from-emerald-600 to-green-700", fg: "text-white" },
+  JILI: { bg: "from-amber-500 to-orange-600", fg: "text-white" },
+  JDB: { bg: "from-yellow-400 to-amber-600", fg: "text-black" },
+  Microgaming: { bg: "from-slate-700 to-slate-900", fg: "text-yellow-300" },
+  R88: { bg: "from-red-500 to-rose-700", fg: "text-white" },
+  SV: { bg: "from-teal-500 to-cyan-700", fg: "text-white" },
+  VIA: { bg: "from-purple-600 to-pink-600", fg: "text-white" },
+  "Dream Gaming": { bg: "from-indigo-500 to-purple-700", fg: "text-white" },
+  "FB Sports": { bg: "from-blue-500 to-blue-800", fg: "text-white" },
+  NextSpin: { bg: "from-cyan-400 to-blue-600", fg: "text-white" },
+  FC: { bg: "from-green-500 to-emerald-700", fg: "text-white" },
+  BT: { bg: "from-orange-500 to-red-700", fg: "text-white" },
+  MegaWin: { bg: "from-yellow-500 to-amber-600", fg: "text-black" },
+  Evolution: { bg: "from-zinc-800 to-black", fg: "text-red-500" },
+  "9Wickets": { bg: "from-green-600 to-lime-700", fg: "text-white" },
+  "United Gaming": { bg: "from-blue-700 to-indigo-900", fg: "text-yellow-300" },
+  Spribe: { bg: "from-pink-600 to-red-700", fg: "text-white" },
+  BNG: { bg: "from-amber-600 to-orange-800", fg: "text-white" },
+};
+
 function ProviderStrip() {
   return (
     <section className="bg-black/75 py-6">
       <div className="mx-auto max-w-7xl px-4 lg:px-6">
-        <div className="grid grid-cols-3 gap-x-6 gap-y-5 sm:grid-cols-4 lg:grid-cols-10 xl:grid-cols-10">
-          {providers.map((provider) => (
-            <div key={provider} className="provider-logo text-center">{provider}</div>
-          ))}
+        <div className="mb-4 text-center text-xs font-bold uppercase tracking-widest text-foreground/60">
+          আমাদের গেম প্রোভাইডার
+        </div>
+        <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-10">
+          {providers.map((provider) => {
+            const s = providerStyles[provider] ?? { bg: "from-slate-700 to-slate-900", fg: "text-white" };
+            return (
+              <div
+                key={provider}
+                className={`group relative grid h-14 place-items-center overflow-hidden rounded-xl bg-gradient-to-br ${s.bg} px-2 shadow-md shadow-black/40 ring-1 ring-white/10 transition hover:-translate-y-0.5 hover:shadow-lg hover:ring-white/30`}
+              >
+                <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.25),transparent_60%)]" />
+                <span className={`relative truncate text-[11px] font-black uppercase tracking-wide drop-shadow sm:text-xs ${s.fg}`}>
+                  {provider}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
+
   );
 }
 
