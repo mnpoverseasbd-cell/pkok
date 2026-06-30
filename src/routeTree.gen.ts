@@ -18,6 +18,7 @@ import { Route as PokerRouteImport } from './routes/poker'
 import { Route as LotteryRouteImport } from './routes/lottery'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LiveRouteImport } from './routes/live'
+import { Route as HotRouteImport } from './routes/hot'
 import { Route as GamesRouteImport } from './routes/games'
 import { Route as FishingRouteImport } from './routes/fishing'
 import { Route as CrashRouteImport } from './routes/crash'
@@ -68,6 +69,11 @@ const LiveRoute = LiveRouteImport.update({
   path: '/live',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HotRoute = HotRouteImport.update({
+  id: '/hot',
+  path: '/hot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesRoute = GamesRouteImport.update({
   id: '/games',
   path: '/games',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/crash': typeof CrashRoute
   '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
+  '/hot': typeof HotRoute
   '/live': typeof LiveRoute
   '/login': typeof LoginRoute
   '/lottery': typeof LotteryRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/crash': typeof CrashRoute
   '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
+  '/hot': typeof HotRoute
   '/live': typeof LiveRoute
   '/login': typeof LoginRoute
   '/lottery': typeof LotteryRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/crash': typeof CrashRoute
   '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
+  '/hot': typeof HotRoute
   '/live': typeof LiveRoute
   '/login': typeof LoginRoute
   '/lottery': typeof LotteryRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/crash'
     | '/fishing'
     | '/games'
+    | '/hot'
     | '/live'
     | '/login'
     | '/lottery'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/crash'
     | '/fishing'
     | '/games'
+    | '/hot'
     | '/live'
     | '/login'
     | '/lottery'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/crash'
     | '/fishing'
     | '/games'
+    | '/hot'
     | '/live'
     | '/login'
     | '/lottery'
@@ -188,6 +200,7 @@ export interface RootRouteChildren {
   CrashRoute: typeof CrashRoute
   FishingRoute: typeof FishingRoute
   GamesRoute: typeof GamesRoute
+  HotRoute: typeof HotRoute
   LiveRoute: typeof LiveRoute
   LoginRoute: typeof LoginRoute
   LotteryRoute: typeof LotteryRoute
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hot': {
+      id: '/hot'
+      path: '/hot'
+      fullPath: '/hot'
+      preLoaderRoute: typeof HotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games': {
       id: '/games'
       path: '/games'
@@ -300,6 +320,7 @@ const rootRouteChildren: RootRouteChildren = {
   CrashRoute: CrashRoute,
   FishingRoute: FishingRoute,
   GamesRoute: GamesRoute,
+  HotRoute: HotRoute,
   LiveRoute: LiveRoute,
   LoginRoute: LoginRoute,
   LotteryRoute: LotteryRoute,
