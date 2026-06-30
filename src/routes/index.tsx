@@ -37,6 +37,9 @@ import mascotSlots from "@/assets/mascot-slots.png";
 import mascotFish from "@/assets/mascot-fish.png";
 import mascotLive from "@/assets/mascot-live.png";
 import mascotPoker from "@/assets/mascot-poker.png";
+import promoWelcome from "@/assets/promo-welcome.jpg";
+import promoDaily from "@/assets/promo-daily.jpg";
+import promoVip from "@/assets/promo-vip.jpg";
 
 
 export const Route = createFileRoute("/")({
