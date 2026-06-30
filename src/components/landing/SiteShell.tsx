@@ -32,6 +32,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
         <FooterBlock />
         <SocialRail />
         <LeftFloatingBadges />
+        <WelcomePopup />
       </div>
     </ModalsProvider>
   );
