@@ -20,6 +20,7 @@ import {
   Wallet,
 } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
+import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 import phoneMockup from "@/assets/phone-mockup.png";
 import g1 from "@/assets/game-slot1.jpg";
 import g2 from "@/assets/game-roulette.jpg";
