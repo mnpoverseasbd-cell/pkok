@@ -91,13 +91,35 @@ const providers = [
 ];
 
 const hotGames = [
-  { title: "সুপার উইন", image: g1 },
-  { title: "জ্যাকপট ব্লাস্ট", image: g7 },
-  { title: "অলিম্পাস", image: g12 },
-  { title: "মেগা রিচ", image: g11 },
-  { title: "ক্র্যাশ এক্স", image: g3 },
-  { title: "মনি কইন", image: g9 },
+  { title: "সুপার উইন", image: g1, provider: "PG", tag: "HOT" },
+  { title: "জ্যাকপট ব্লাস্ট", image: g7, provider: "JILI", tag: "NEW" },
+  { title: "অলিম্পাস", image: g12, provider: "Pragmatic" },
+  { title: "মেগা রিচ", image: g11, provider: "JILI", tag: "HOT" },
+  { title: "ক্র্যাশ এক্স", image: g3, provider: "SPRIBE" },
+  { title: "মনি কইন", image: g9, provider: "JILI" },
 ];
+
+const heroSlides = [
+  {
+    eyebrow: "অফিসিয়ালভাবে প্রত্যাবর্তিত • দারুণ অফার • নিরাপদ প্ল্যাটফর্ম",
+    headline: "নতুনভাবে চালু হয়েছে",
+    accent: "ASIKGAME.COM",
+    sub: "জয়ের হার ৯৯% • ১০০% নিরাপত্তা নিশ্চিত",
+  },
+  {
+    eyebrow: "৯৫০% স্বাগতম বোনাস • দৈনিক ফ্রি স্পিন",
+    headline: "প্রথম ডিপোজিটেই পান",
+    accent: "মেগা বোনাস ৯৫০%",
+    sub: "নতুন প্লেয়ারদের জন্য এক্সক্লুসিভ অফার",
+  },
+  {
+    eyebrow: "লাইভ ক্যাসিনো • ফিশিং • স্পোর্টস বেটিং",
+    headline: "এক প্ল্যাটফর্মে",
+    accent: "১০০০+ গেমস",
+    sub: "PG • JILI • Pragmatic • Evolution • Spribe",
+  },
+];
+
 
 const mainCategories = [
   { title: "স্লট", image: g7 },
