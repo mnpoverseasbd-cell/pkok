@@ -21,6 +21,7 @@ import { Route as LiveRouteImport } from './routes/live'
 import { Route as HotRouteImport } from './routes/hot'
 import { Route as GamesRouteImport } from './routes/games'
 import { Route as FishingRouteImport } from './routes/fishing'
+import { Route as FishRouteImport } from './routes/fish'
 import { Route as CrashRouteImport } from './routes/crash'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -84,6 +85,11 @@ const FishingRoute = FishingRouteImport.update({
   path: '/fishing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FishRoute = FishRouteImport.update({
+  id: '/fish',
+  path: '/fish',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CrashRoute = CrashRouteImport.update({
   id: '/crash',
   path: '/crash',
@@ -98,6 +104,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/crash': typeof CrashRoute
+  '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
   '/hot': typeof HotRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/crash': typeof CrashRoute
+  '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
   '/hot': typeof HotRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/crash': typeof CrashRoute
+  '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
   '/hot': typeof HotRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/crash'
+    | '/fish'
     | '/fishing'
     | '/games'
     | '/hot'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/crash'
+    | '/fish'
     | '/fishing'
     | '/games'
     | '/hot'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/crash'
+    | '/fish'
     | '/fishing'
     | '/games'
     | '/hot'
@@ -198,6 +210,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CrashRoute: typeof CrashRoute
+  FishRoute: typeof FishRoute
   FishingRoute: typeof FishingRoute
   GamesRoute: typeof GamesRoute
   HotRoute: typeof HotRoute
@@ -298,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FishingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fish': {
+      id: '/fish'
+      path: '/fish'
+      fullPath: '/fish'
+      preLoaderRoute: typeof FishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/crash': {
       id: '/crash'
       path: '/crash'
@@ -318,6 +338,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CrashRoute: CrashRoute,
+  FishRoute: FishRoute,
   FishingRoute: FishingRoute,
   GamesRoute: GamesRoute,
   HotRoute: HotRoute,
