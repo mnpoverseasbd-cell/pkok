@@ -181,11 +181,17 @@ const listSections = [
   },
 ];
 
-
+const popupImages = [
+  "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/3013088_1749471837701.png",
+  "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/3013088_1747144146761.png",
+  "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/3026578_1781775033023.gif",
+  "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1782533197055_PKOK.jpg",
+];
 
 function Index() {
   return (
     <SiteShell>
+      <PromoPopup />
       <HeroBanner />
       <TickerBar />
       <HotGamesSection />
@@ -196,6 +202,55 @@ function Index() {
       <FeatureList />
       <ProviderStrip />
     </SiteShell>
+  );
+}
+
+function PromoPopup() {
+  const [open, setOpen] = useState(false);
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setOpen(true), 600);
+    return () => clearTimeout(t);
+  }, []);
+  if (!open) return null;
+  const total = popupImages.length;
+  const next = () => {
+    if (idx < total - 1) setIdx(idx + 1);
+    else setOpen(false);
+  };
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full max-w-md">
+        <button
+          aria-label="Close"
+          onClick={() => setOpen(false)}
+          className="absolute -right-2 -top-10 grid h-9 w-9 place-items-center rounded-full border border-white/30 bg-black/60 text-white hover:bg-[var(--neon-green)]/70"
+        >
+          ✕
+        </button>
+        <img
+          src={popupImages[idx]}
+          alt={`Promo ${idx + 1}`}
+          className="w-full rounded-lg shadow-2xl"
+        />
+        <div className="mt-4 flex items-center justify-between text-white">
+          <div className="flex gap-1.5">
+            {popupImages.map((_, i) => (
+              <span
+                key={i}
+                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-[var(--neon-gold)]" : "w-1.5 bg-white/40"}`}
+              />
+            ))}
+          </div>
+          <button
+            onClick={next}
+            className="rounded-full bg-[var(--neon-green)] px-5 py-2 text-sm font-semibold text-black hover:brightness-110"
+          >
+            {idx < total - 1 ? "পরবর্তী →" : "বন্ধ করুন"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
