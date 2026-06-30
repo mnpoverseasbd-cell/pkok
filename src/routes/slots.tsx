@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Dice5 } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 
 export const Route = createFileRoute("/slots")({
@@ -84,24 +83,17 @@ const rngProviders: Provider[] = [
   { code: "SWG", name: "SWG", count: 30, icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-SWG_1774541732305.webp" },
 ];
 
+const vendorLogoBase = "https://images.23924894.com/TCG_PROD_IMAGES/RNG_LIST_VENDOR";
+
 function SlotsPage() {
   return (
-    <SiteShell>
-      <section className="mx-auto max-w-7xl px-2 pt-3 sm:px-4">
-        <div className="rounded-t-lg bg-[linear-gradient(180deg,rgba(7,40,28,0.85),rgba(4,18,12,0.95))] px-4 py-3 ring-1 ring-[var(--neon-green)]/30">
-          <div className="flex items-center gap-2">
-            <Dice5 className="h-5 w-5 text-[var(--neon-gold)]" />
-            <h1 className="text-base font-bold text-[var(--neon-gold)] sm:text-lg">স্লট গেমস</h1>
-            <span className="ml-auto text-xs text-white/70">{rngProviders.length} প্রোভাইডার</span>
-          </div>
-        </div>
-
-        <div className="rounded-b-lg bg-[radial-gradient(ellipse_at_center,rgba(10,60,35,0.95),rgba(2,12,8,0.98))] p-3 sm:p-4">
-          <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 md:grid-cols-5 lg:grid-cols-6">
-            {rngProviders.map((p) => (
-              <ProviderCard key={p.code} p={p} />
-            ))}
-          </div>
+    <SiteShell footer={false}>
+      <h1 className="sr-only">স্লট গেমস</h1>
+      <section className="game-lobby RNG" aria-label="Slot providers">
+        <div className="game-list">
+          {rngProviders.map((p) => (
+            <ProviderCard key={p.code} p={p} />
+          ))}
         </div>
       </section>
     </SiteShell>
@@ -110,30 +102,9 @@ function SlotsPage() {
 
 function ProviderCard({ p }: { p: Provider }) {
   return (
-    <button className="group relative block aspect-[3/4] overflow-hidden rounded-xl bg-black shadow-lg ring-1 ring-black/40 transition hover:scale-[1.03] hover:ring-2 hover:ring-[var(--neon-gold)]">
-      <span className="absolute right-1.5 top-1.5 z-10 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--neon-gold)] ring-1 ring-[var(--neon-gold)]/50">
-        {p.count}
-      </span>
-      <img
-        src={p.icon}
-        alt={p.name}
-        loading="lazy"
-        className="h-full w-full object-cover"
-        onError={(e) => {
-          const t = e.currentTarget as HTMLImageElement;
-          t.style.display = "none";
-          (t.parentElement as HTMLElement).classList.add("grid", "place-items-center");
-          const span = document.createElement("span");
-          span.textContent = p.name;
-          span.className = "text-white font-bold text-sm";
-          t.parentElement?.appendChild(span);
-        }}
-      />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-2 pb-1.5 pt-6">
-        <p className="truncate text-center text-[11px] font-bold uppercase tracking-wider text-white drop-shadow sm:text-xs">
-          {p.name}
-        </p>
-      </div>
+    <button className="lobby-item" aria-label={`${p.name} slot games`}>
+      <img src={p.icon} alt="" loading="lazy" className="game-img" />
+      <img src={`${vendorLogoBase}/${p.code}-WHITE.png`} alt={p.name} loading="lazy" className="vendor-img" />
     </button>
   );
 }
