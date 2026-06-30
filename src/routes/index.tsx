@@ -423,81 +423,95 @@ function FeatureList() {
   );
 }
 
-type Wordmark = {
-  name: string;
-  color: string;
-  sub?: string;
-  subColor?: string;
-  glyph?: "circle" | "diamond" | "triangle" | "bolt" | "ring" | "square" | "star";
-  font?: "sans" | "serif" | "display" | "mono";
-  italic?: boolean;
-};
-
-const providerWordmarks: Wordmark[] = [
-  { name: "CQ9", color: "#f5a524", sub: "GAMING", subColor: "#cbd5e1", glyph: "ring", font: "display" },
-  { name: "RG", color: "#22d3ee", sub: "RICH GAME", subColor: "#67e8f9", glyph: "bolt", font: "sans" },
-  { name: "Sexy", color: "#f472b6", glyph: "diamond", font: "display", italic: true },
-  { name: "Live Casino", color: "#3b82f6", sub: "AI", subColor: "#60a5fa", glyph: "circle", font: "sans" },
-  { name: "LUCKY", color: "#ef4444", glyph: "star", font: "display" },
-  { name: "AP Gaming", color: "#0ea5e9", glyph: "triangle", font: "sans" },
-  { name: "SABA", color: "#fde047", sub: "SPORTS", subColor: "#fef9c3", glyph: "square", font: "sans" },
-  { name: "TC", color: "#a855f7", sub: "GAMING", subColor: "#e9d5ff", glyph: "ring", font: "sans" },
-  { name: "PG", color: "#facc15", sub: "POCKET GAMES SOFT", subColor: "#fde68a", glyph: "diamond", font: "serif" },
-  { name: "Pragmatic", color: "#dc2626", sub: "PLAY", subColor: "#fbbf24", glyph: "bolt", font: "display" },
-  { name: "KINGMIDAS", color: "#fbbf24", glyph: "star", font: "serif" },
-  { name: "2J.COM", color: "#fb923c", glyph: "square", font: "sans" },
-  { name: "Ezugi", color: "#fde047", sub: "SMART MOVE", subColor: "#fef9c3", glyph: "triangle", font: "display", italic: true },
-  { name: "SA", color: "#fbbf24", sub: "GAMING", subColor: "#fde68a", glyph: "ring", font: "serif" },
-  { name: "BTi", color: "#ef4444", glyph: "circle", font: "sans" },
-  { name: "POLY", color: "#a855f7", sub: "SPORTS", subColor: "#e9d5ff", glyph: "triangle", font: "sans" },
-  { name: "TF GAMING", color: "#22d3ee", glyph: "bolt", font: "sans" },
-  { name: "JILI", color: "#fbbf24", glyph: "diamond", font: "display" },
-  { name: "JDB", color: "#facc15", glyph: "square", font: "display" },
-  { name: "Microgaming", color: "#10b981", glyph: "ring", font: "sans" },
-  { name: "R88", color: "#ec4899", sub: "RICH 88", subColor: "#f9a8d4", glyph: "star", font: "display" },
-  { name: "SV", color: "#fbbf24", sub: "SW GAMING", subColor: "#fde68a", glyph: "bolt", font: "sans" },
-  { name: "VIA", color: "#ec4899", glyph: "diamond", font: "display", italic: true },
-  { name: "Dream Gaming", color: "#cbd5e1", glyph: "ring", font: "serif" },
-  { name: "FB", color: "#facc15", sub: "SPORTS", subColor: "#fde68a", glyph: "bolt", font: "sans" },
-  { name: "SV", color: "#fbbf24", sub: "388", subColor: "#fef3c7", glyph: "square", font: "display" },
-  { name: "IA", color: "#ef4444", sub: "E-SPORTS", subColor: "#fca5a5", glyph: "triangle", font: "sans" },
-  { name: "NEXTSPIN", color: "#cbd5e1", glyph: "circle", font: "sans" },
-  { name: "FC", color: "#ef4444", sub: "FA CHAI", subColor: "#fca5a5", glyph: "square", font: "display" },
-  { name: "BT", color: "#facc15", sub: "GAMING", subColor: "#fde68a", glyph: "bolt", font: "sans" },
-  { name: "MEGAWIN", color: "#fbbf24", glyph: "star", font: "serif" },
-  { name: "Evolution", color: "#ef4444", glyph: "ring", font: "sans", italic: true },
-  { name: "9 Wickets", color: "#22c55e", glyph: "circle", font: "display" },
-  { name: "UNITED", color: "#06b6d4", sub: "GAMING", subColor: "#67e8f9", glyph: "ring", font: "sans" },
-  { name: "SPRIBE", color: "#f1f5f9", glyph: "triangle", font: "sans" },
-  { name: "BNG", color: "#10b981", glyph: "circle", font: "sans" },
+const providerLogos = [
+  { code: "UG2", src: "/__l5e/assets-v1/754e19ab-6468-4ad2-8925-41862d9e33df/UG2-COLOR.png" },
+  { code: "PIN", src: "/__l5e/assets-v1/acb37937-359c-47bd-9856-8e28993ae8fe/PIN-COLOR.png" },
+  { code: "POLY", src: "/__l5e/assets-v1/0dabc83a-63bc-4cd2-8d71-902c3f6e7f47/POLY-COLOR.png" },
+  { code: "SV3", src: "/__l5e/assets-v1/d9698b36-7459-40ff-a0b3-d40a9887ba47/SV3-COLOR.png" },
+  { code: "RCB", src: "/__l5e/assets-v1/5b3c11e8-5fb5-4ef5-bb4f-a48a7bfa2e48/RCB-COLOR.png" },
+  { code: "SB", src: "/__l5e/assets-v1/255abfe1-501c-45cd-944a-b2beb4557907/SB-COLOR.png" },
+  { code: "TF", src: "/__l5e/assets-v1/87565e51-dd11-4899-b276-a0c9e8e20543/TF-COLOR.png" },
+  { code: "IA", src: "/__l5e/assets-v1/7153b519-e3de-4baf-b4be-f4ffa2fd339e/IA-COLOR.png" },
+  { code: "KP", src: "/__l5e/assets-v1/987d86ae-c70f-43eb-9761-df73ee0e6450/KP-COLOR.png" },
+  { code: "TCG_SEA", src: "/__l5e/assets-v1/4018affa-6235-4e7e-a94c-19bad1c61fa5/TCG_SEA-COLOR.png" },
+  { code: "JL", src: "/__l5e/assets-v1/1de00f05-8fa9-4614-9ccc-abf0ec678c4f/JL-COLOR.png" },
+  { code: "NS", src: "/__l5e/assets-v1/78017c6e-2d8d-4e36-b2a7-1b9adc0b5f6b/NS-COLOR.png" },
+  { code: "SPB", src: "/__l5e/assets-v1/0baaca92-6ce1-4bc4-81a8-9f9fa9057f1c/SPB-COLOR.png" },
+  { code: "PG", src: "/__l5e/assets-v1/d9142294-83a1-4e6d-b997-1f88f4d12abd/PG-COLOR.png" },
+  { code: "JDB", src: "/__l5e/assets-v1/25b9399f-3f0a-456e-9849-0708f785e503/JDB-COLOR.png" },
+  { code: "FC", src: "/__l5e/assets-v1/def47ca7-d84b-4d9e-9471-12ca31d3402c/FC-COLOR.png" },
+  { code: "BNG", src: "/__l5e/assets-v1/7e17a32e-40bf-45f5-9a1d-818be4dc3593/BNG-COLOR.png" },
+  { code: "PP", src: "/__l5e/assets-v1/5301ca3f-b9f8-4850-80db-c31b63c04d68/PP-COLOR.png" },
+  { code: "MG", src: "/__l5e/assets-v1/b1c6ae02-61d7-436d-a67e-f3a682eec3ce/MG-COLOR.png" },
+  { code: "BT", src: "/__l5e/assets-v1/44c7f762-2b7e-410a-ba0f-b7dddf7e85e6/BT-COLOR.png" },
+  { code: "SG", src: "/__l5e/assets-v1/2ebb0bb4-3c5e-448e-85d4-4a8adb76f12f/SG-COLOR.png" },
+  { code: "SS", src: "/__l5e/assets-v1/f7ac7f9a-e7fb-4dc3-a689-75ba2bc3c04c/SS-COLOR.png" },
+  { code: "YB", src: "/__l5e/assets-v1/cc9e4e7e-10fc-44b9-938e-efe1e6ed779b/YB-COLOR.png" },
+  { code: "PS", src: "/__l5e/assets-v1/bd6df9fa-73f1-45ab-9c4b-574d86e4d4e7/PS-COLOR.png" },
+  { code: "AMG", src: "/__l5e/assets-v1/8b5cbe49-3e67-4ed5-b390-f414ce2b7669/AMG-COLOR.png" },
+  { code: "FS", src: "/__l5e/assets-v1/145e696f-ae9d-45d3-b711-e89659c1c3fc/FS-COLOR.png" },
+  { code: "WD", src: "/__l5e/assets-v1/c55cac9b-0ac4-40ad-ab1e-601c4adc086a/WD-COLOR.png" },
+  { code: "GM", src: "/__l5e/assets-v1/78fb5550-d181-4dc1-9ee1-7cbba16121b4/GM-COLOR.png" },
+  { code: "5G", src: "/__l5e/assets-v1/c23c586e-c82c-4a5c-ba59-17dcc29f6795/5G-COLOR.png" },
+  { code: "BOM", src: "/__l5e/assets-v1/85cafbef-f321-43a5-953e-e260b22fb041/BOM-COLOR.png" },
+  { code: "KA", src: "/__l5e/assets-v1/d59eb370-3676-48c2-b005-4ecf6321ab70/KA-COLOR.png" },
+  { code: "BGA", src: "/__l5e/assets-v1/153111b7-b6e3-40b6-96d9-64a2f13d87e4/BGA-COLOR.png" },
+  { code: "L22", src: "/__l5e/assets-v1/01879081-e976-4f1e-b7d2-3fe6327b31ac/L22-COLOR.png" },
+  { code: "VA", src: "/__l5e/assets-v1/72b03c3a-f52f-4497-b3e7-351886271b6a/VA-COLOR.png" },
+  { code: "HS", src: "/__l5e/assets-v1/9f06f089-5043-4108-983d-bc8b4931d9af/HS-COLOR.png" },
+  { code: "JK", src: "/__l5e/assets-v1/563fb4e3-4bbe-4bb5-937a-76a3392b9c35/JK-COLOR.png" },
+  { code: "NG", src: "/__l5e/assets-v1/fd6d2154-02aa-43ca-a9eb-26dc115f52c2/NG-COLOR.png" },
+  { code: "AMBS", src: "/__l5e/assets-v1/23de1d2f-ba39-4228-8913-8bf497436d08/AMBS-COLOR.png" },
+  { code: "MAS", src: "/__l5e/assets-v1/18056f08-98bf-47dd-ac65-c06666d99d0a/MAS-COLOR.png" },
+  { code: "MAHA", src: "/__l5e/assets-v1/382d3c10-ead5-48fe-a6c7-3ad11cb2f248/MAHA-COLOR.png" },
+  { code: "AE", src: "/__l5e/assets-v1/afe2343e-4b89-4cdf-89c2-84f1d2846587/AE-COLOR.png" },
+  { code: "FTG", src: "/__l5e/assets-v1/4a650605-f1c0-4288-821b-548e0534843a/FTG-COLOR.png" },
+  { code: "EZG", src: "/__l5e/assets-v1/14ffcb4b-6e13-4b99-b1a9-ecca38da83c5/EZG-COLOR.png" },
+  { code: "MA", src: "/__l5e/assets-v1/573024b3-552f-44e2-9579-46eff0492e02/MA-COLOR.png" },
+  { code: "EP", src: "/__l5e/assets-v1/8d0d97f1-f866-41dc-afd5-46e6a699c281/EP-COLOR.png" },
+  { code: "RLX", src: "/__l5e/assets-v1/2dc1e649-a98f-4ba4-9121-6d86567833f0/RLX-COLOR.png" },
+  { code: "TPG", src: "/__l5e/assets-v1/380bc17f-a270-409c-b591-2b2189fdd9ee/TPG-COLOR.png" },
+  { code: "AUX", src: "/__l5e/assets-v1/36e94dd9-2f15-4bfc-9fa0-462aedcb29a9/AUX-COLOR.png" },
+  { code: "PAS", src: "/__l5e/assets-v1/052d703f-a217-40aa-bc80-07e2b3b0eb3d/PAS-COLOR.png" },
+  { code: "OCT", src: "/__l5e/assets-v1/a3d2816e-b9d5-402a-b097-2b38b3d7091c/OCT-COLOR.png" },
+  { code: "GPI", src: "/__l5e/assets-v1/77926c45-c85a-4bf6-b440-71dcef3f08fc/GPI-COLOR.png" },
+  { code: "RT", src: "/__l5e/assets-v1/d328886b-9cd5-4ffa-b212-46a13af87556/RT-COLOR.png" },
+  { code: "CG", src: "/__l5e/assets-v1/3069aeae-58a1-4971-bc37-69a610f20ba2/CG-COLOR.png" },
+  { code: "NE", src: "/__l5e/assets-v1/ea996c34-d1bb-434b-8c7a-d0a934420942/NE-COLOR.png" },
+  { code: "BTG", src: "/__l5e/assets-v1/e44a406c-bd77-424c-a3f8-9015a8e442b8/BTG-COLOR.png" },
+  { code: "NLC", src: "/__l5e/assets-v1/11d6f71c-2b06-49a9-b1f1-6bb4a8784374/NLC-COLOR.png" },
+  { code: "YGD", src: "/__l5e/assets-v1/a899e0b1-3f0b-43f4-9b7c-c2a3339dbc8e/YGD-COLOR.png" },
+  { code: "BSP", src: "/__l5e/assets-v1/5096bca5-eac9-4f6a-8d2d-c576e631a845/BSP-COLOR.png" },
+  { code: "FP", src: "/__l5e/assets-v1/67074cc8-430e-46d2-9207-606bcf1b08d1/FP-COLOR.png" },
+  { code: "PT", src: "/__l5e/assets-v1/d0f43f75-55b2-4a4b-a59f-f61b6ecbf408/PT-COLOR.png" },
+  { code: "AVT", src: "/__l5e/assets-v1/a621de54-a31e-4bc6-8448-766111deef83/AVT-COLOR.png" },
+  { code: "IO", src: "/__l5e/assets-v1/a67f5af6-7005-4fcb-93d0-341390f3cca5/IO-COLOR.png" },
+  { code: "RP", src: "/__l5e/assets-v1/0f261c24-9eac-4ff9-a953-a9d07e8e155c/RP-COLOR.png" },
+  { code: "EGT", src: "/__l5e/assets-v1/3eafa598-d59f-4926-b5cb-4088918687a5/EGT-COLOR.png" },
+  { code: "BBR", src: "/__l5e/assets-v1/6c40352e-7f3b-45ac-8b8c-7f510b255dcf/BBR-COLOR.png" },
+  { code: "TB", src: "/__l5e/assets-v1/b72ddaaf-ab03-41b4-a5f3-74327c8dbf80/TB-COLOR.png" },
+  { code: "ID", src: "/__l5e/assets-v1/ea4e7980-30ca-48a2-af22-8a38ca8df86e/ID-COLOR.png" },
+  { code: "WS", src: "/__l5e/assets-v1/5a890463-65cb-4a1d-bc01-6a9a4a2af880/WS-COLOR.png" },
+  { code: "CQ9", src: "/__l5e/assets-v1/27728efc-5951-4541-a441-6925cc1455c3/CQ9-COLOR.png" },
+  { code: "KM", src: "/__l5e/assets-v1/7cdd4506-db5b-4991-9093-7a8ed420d8b2/KM-COLOR.png" },
+  { code: "R88", src: "/__l5e/assets-v1/0884b560-b474-403e-b27e-cd1eb633a63d/R88-COLOR.png" },
+  { code: "MW", src: "/__l5e/assets-v1/ea120ba3-174f-4dc5-bd7f-d39345fe9059/MW-COLOR.png" },
+  { code: "RG", src: "/__l5e/assets-v1/a84398fd-9890-40fd-aaea-7c38807534e4/RG-COLOR.png" },
+  { code: "2J", src: "/__l5e/assets-v1/d03badb9-f7b5-4b4a-8bcc-3659930a4472/2J-COLOR.png" },
+  { code: "SWG", src: "/__l5e/assets-v1/1c5752c0-8026-4837-8233-e13b4abff15e/SWG-COLOR.png" },
+  { code: "EG4", src: "/__l5e/assets-v1/3dc85557-01ad-4cf5-bff4-a69f773c3944/EG4-COLOR.png" },
+  { code: "SEX", src: "/__l5e/assets-v1/59baaff0-42ba-4776-a5ad-94f7958bfece/SEX-COLOR.png" },
+  { code: "EZ", src: "/__l5e/assets-v1/89bbab34-0e4a-408b-a40d-ee930cbd3533/EZ-COLOR.png" },
+  { code: "VIA", src: "/__l5e/assets-v1/6b3484d6-e842-4a36-8d17-87011e6c380a/VIA-COLOR.png" },
+  { code: "WJ", src: "/__l5e/assets-v1/e947c3a6-a465-4d95-a202-18bc762b3787/WJ-COLOR.png" },
+  { code: "AIL", src: "/__l5e/assets-v1/b9a0daf8-5955-49cb-a58e-a4d71416d2fa/AIL-COLOR.png" },
+  { code: "SA", src: "/__l5e/assets-v1/c8ee33d4-ebf7-4c6f-87c4-5a14a7f9ce5f/SA-COLOR.png" },
+  { code: "DG", src: "/__l5e/assets-v1/208193ce-c47c-462c-9e7c-621535c2ca15/DG-COLOR.png" },
+  { code: "U9W", src: "/__l5e/assets-v1/7bb2e50b-0078-42db-9370-9cd9da5ceb31/U9W-COLOR.png" },
+  { code: "LUC", src: "/__l5e/assets-v1/42ee4b4f-1b10-4ee8-a704-781fac3fcb8f/LUC-COLOR.png" },
+  { code: "BTI", src: "/__l5e/assets-v1/4162229a-2055-491c-beff-54efaea79a0c/BTI-COLOR.png" },
+  { code: "FB", src: "/__l5e/assets-v1/690e1eff-93d5-483c-980f-f2b64207d576/FB-COLOR.png" },
 ];
-
-const fontClass: Record<NonNullable<Wordmark["font"]>, string> = {
-  sans: "font-sans",
-  serif: "font-serif",
-  display: "font-display",
-  mono: "font-mono",
-};
-
-function Glyph({ shape, color }: { shape: NonNullable<Wordmark["glyph"]>; color: string }) {
-  const common = "h-4 w-4 shrink-0";
-  switch (shape) {
-    case "circle":
-      return <svg viewBox="0 0 16 16" className={common}><circle cx="8" cy="8" r="6" fill={color} /></svg>;
-    case "ring":
-      return <svg viewBox="0 0 16 16" className={common}><circle cx="8" cy="8" r="6" stroke={color} strokeWidth="2" fill="none" /></svg>;
-    case "diamond":
-      return <svg viewBox="0 0 16 16" className={common}><rect x="3.5" y="3.5" width="9" height="9" transform="rotate(45 8 8)" fill={color} /></svg>;
-    case "triangle":
-      return <svg viewBox="0 0 16 16" className={common}><polygon points="8,2 14,14 2,14" fill={color} /></svg>;
-    case "bolt":
-      return <svg viewBox="0 0 16 16" className={common}><polygon points="9,1 3,9 7,9 5,15 13,7 9,7" fill={color} /></svg>;
-    case "square":
-      return <svg viewBox="0 0 16 16" className={common}><rect x="2.5" y="2.5" width="11" height="11" fill={color} /></svg>;
-    case "star":
-      return <svg viewBox="0 0 16 16" className={common}><polygon points="8,1 10,6 15,6 11,10 12,15 8,12 4,15 5,10 1,6 6,6" fill={color} /></svg>;
-  }
-}
 
 function ProviderStrip() {
   return (
@@ -506,30 +520,17 @@ function ProviderStrip() {
         <div className="mb-6 text-center text-[11px] font-bold uppercase tracking-[0.25em] text-foreground/55">
           আমাদের গেম প্রোভাইডার
         </div>
-        <div className="grid grid-cols-3 gap-x-4 gap-y-7 sm:grid-cols-5 lg:grid-cols-10">
-          {providerWordmarks.map((w, i) => (
-            <div
-              key={`${w.name}-${i}`}
-              className="group flex h-14 items-center justify-center gap-2 transition hover:scale-105"
-              title={w.name}
-            >
-              {w.glyph && <Glyph shape={w.glyph} color={w.color} />}
-              <div className="flex min-w-0 flex-col leading-none">
-                <span
-                  className={`truncate text-[13px] font-black uppercase tracking-tight sm:text-sm ${fontClass[w.font ?? "sans"]} ${w.italic ? "italic" : ""}`}
-                  style={{ color: w.color, textShadow: "0 1px 2px rgba(0,0,0,0.6)" }}
-                >
-                  {w.name}
-                </span>
-                {w.sub && (
-                  <span
-                    className="mt-0.5 truncate text-[8px] font-bold uppercase tracking-[0.2em]"
-                    style={{ color: w.subColor ?? "#94a3b8" }}
-                  >
-                    {w.sub}
-                  </span>
-                )}
-              </div>
+        <div className="grid grid-cols-3 gap-x-5 gap-y-6 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-10">
+          {providerLogos.map((logo) => (
+            <div key={logo.code} className="flex h-12 items-center justify-center" title={logo.code}>
+              <img
+                src={logo.src}
+                alt={`${logo.code} provider logo`}
+                width={132}
+                height={44}
+                loading="lazy"
+                className="max-h-10 w-full object-contain transition duration-200 hover:scale-105"
+              />
             </div>
           ))}
         </div>
