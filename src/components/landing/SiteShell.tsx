@@ -68,7 +68,7 @@ function MainNav() {
         </Link>
         <nav className="hidden min-w-0 flex-1 items-center gap-4 overflow-hidden whitespace-nowrap text-sm font-bold text-white/95 lg:flex">
           {topMenu.map((item) => (
-            <Link key={item.label} to={item.to} className="shrink-0 transition-colors hover:text-[var(--neon-gold)]" activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}>
+            <Link key={item.label} to={item.to} search={item.search as never} className="shrink-0 transition-colors hover:text-[var(--neon-gold)]" activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}>
               {item.label}
             </Link>
           ))}
