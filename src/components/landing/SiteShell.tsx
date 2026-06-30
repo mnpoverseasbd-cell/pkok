@@ -9,7 +9,7 @@ const topMenu: { label: string; to: string; icon: ComponentType<{ className?: st
   { label: "হোম", to: "/", icon: Home },
   { label: "গরম", to: "/hot", icon: Flame },
   { label: "স্লট", to: "/slots", icon: Dice5 },
-  { label: "ফিশিং", to: "/fishing", icon: Fish },
+  { label: "ফিশিং", to: "/fish", icon: Fish },
   { label: "লাইভ", to: "/live", icon: Radio },
   { label: "স্পোর্টস", to: "/sports", icon: Trophy },
   { label: "ই-স্পোর্টস", to: "/sports", icon: Gamepad2 },
