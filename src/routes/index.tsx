@@ -329,22 +329,43 @@ function JackpotSection() {
           </div>
         </div>
 
-        <div>
-          <div className="mb-3 flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]"><Trophy className="h-4 w-4" /> সর্বশেষ বিজয়ী</div>
-          <div className="space-y-2">
-            {leaderboard.map((entry) => (
-              <div key={entry.name} className="rounded-xl border border-[var(--neon-green)]/40 bg-black/35 p-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="truncate text-xs text-foreground/80">{entry.name}</div>
-                    <div className="truncate text-[11px] text-foreground/60">{entry.game}</div>
-                  </div>
-                  <div className="shrink-0 font-black text-[var(--neon-gold)]">{entry.amount}</div>
-                </div>
+        <LatestWinners />
+      </div>
+    </section>
+  );
+}
+
+function LatestWinners() {
+  const winners = [
+    { name: "*******526", game: "Wild Bounty Showdown", amount: "৳46,080", image: g12 },
+    { name: "*******968", game: "Aviator", amount: "৳45,450", image: g8 },
+    { name: "*******478", game: "Anubis Wrath", amount: "৳45,000", image: g6 },
+    { name: "*******471", game: "Lightning Roulette", amount: "৳43,500", image: g2 },
+    { name: "*******589", game: "সুপার উইন", amount: "৳42,150", image: g1 },
+    { name: "*******409", game: "লাকি স্পিন", amount: "৳40,200", image: g7 },
+    { name: "*******324", game: "ক্র্যাশ টাইম", amount: "৳38,900", image: g3 },
+    { name: "*******279", game: "মেগা রিচ", amount: "৳36,350", image: g11 },
+  ];
+  const loop = [...winners, ...winners];
+  return (
+    <div>
+      <div className="mb-3 flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]"><Trophy className="h-4 w-4" /> Latest Winners</div>
+      <div className="relative h-[360px] overflow-hidden rounded-xl border border-[var(--neon-green)]/40 bg-black/35 p-2">
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-black/70 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-black/70 to-transparent" />
+        <div className="flex flex-col gap-2 animate-marquee-y">
+          {loop.map((entry, i) => (
+            <div key={`${entry.name}-${i}`} className="flex shrink-0 items-center gap-3 rounded-lg border border-[var(--neon-green)]/30 bg-black/55 p-2">
+              <img src={entry.image} alt="" className="h-10 w-10 shrink-0 rounded-md object-cover" />
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-xs font-semibold text-white">{entry.name}</div>
+                <div className="truncate text-[10px] text-foreground/65">Just won in <span className="text-[var(--neon-gold)]">{entry.game}</span></div>
               </div>
-            ))}
-          </div>
+              <div className="shrink-0 text-sm font-black text-[var(--neon-gold)]">{entry.amount}</div>
+            </div>
+          ))}
         </div>
+      </div>
       </div>
     </section>
   );
