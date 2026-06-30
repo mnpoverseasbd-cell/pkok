@@ -324,10 +324,11 @@ function JackpotSection() {
           <div className="mx-auto mb-3 flex h-40 max-w-[440px] items-center justify-center rounded-[28px] bg-[radial-gradient(circle_at_center,rgba(255,214,54,0.3),transparent_52%),linear-gradient(180deg,rgba(22,80,54,0.45),rgba(7,22,16,0.8))]">
             <div>
               <div className="text-gradient-gold text-4xl font-black sm:text-5xl">JACKPOTS</div>
-              <div className="mt-2 rounded-xl bg-black/60 px-6 py-2 text-3xl font-black text-[var(--neon-gold)] sm:text-5xl">438.097.079</div>
+              <JackpotCounter />
             </div>
           </div>
         </div>
+
 
         <LatestWinners />
       </div>
