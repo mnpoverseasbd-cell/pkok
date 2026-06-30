@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, Mail, MessageCircle, Radio, Spade, Ticket, Trophy } from "lucide-react";
+import { CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, Mail, MessageCircle, Radio, Smartphone, Spade, Ticket, Trophy } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 import { useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
