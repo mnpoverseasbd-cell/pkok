@@ -87,9 +87,23 @@ const hotGames = [
 
 
 const heroSlides = [
-  { image: heroSlide1, alt: "১০% দ্বিতীয় ডিপোজিট বোনাস" },
-  { image: heroSlide2, alt: "৯৫০% স্বাগতম বোনাস" },
-  { image: heroSlide3, alt: "লাইভ ক্যাসিনো ১০০০+ গেমস" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1782010244895_default_web.gif", alt: "PKOK ওয়েলকাম অফার" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1749471959813_%E6%9C%80%E6%96%B0%E9%82%80%E8%AF%B7-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "রেফার বোনাস" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747143550330_%E7%A0%B8%E9%87%91%E8%9B%8B-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "গোল্ডেন এগ" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747312234220_%E6%96%B0%E6%AF%8F%E6%97%A5%E9%94%A6%E6%A0%87%E8%B5%9B%E6%8C%91%E6%88%98-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "দৈনিক টুর্নামেন্ট" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747144765012_vip-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "VIP প্রোগ্রাম" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747300681369_%E6%96%B0%E9%A6%96%E6%AC%A1%E5%AD%98%E6%AC%BE-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "প্রথম ডিপোজিট" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747377336517_%E6%96%B0%E7%AC%AC%E4%BA%8C%E6%AC%A1%E5%AD%98%E6%AC%BE-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "দ্বিতীয় ডিপোজিট" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747278434187_%E6%96%B0%E5%B9%B8%E8%BF%90%E7%BA%A2%E5%8C%85%E9%9B%A8-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "রেড প্যাকেট রেইন" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747364377090_%E6%96%B0%E8%80%81%E8%99%8E%E6%9C%BA%E6%B8%B8%E6%88%8F-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "স্লট গেমস" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747312902970_%E6%9C%80%E6%96%B0%E4%BC%9A%E5%91%98%E6%88%90%E9%95%BF%E8%AE%A1%E5%88%92-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "মেম্বার গ্রোথ" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747279191605_%E7%A5%9E%E7%A7%98%E5%A5%96%E9%87%91%E5%92%8C%E5%B9%B8%E8%BF%90%E5%A5%96%E9%87%91-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "মিস্টারি বোনাস" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747314159267_%E6%96%B0%E4%BC%9A%E5%91%98%E6%97%A5%E5%A5%96%E9%87%91-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "দৈনিক বোনাস" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747364056237_%E6%9C%80%E6%96%B0%E5%AE%9E%E6%97%B6%E6%8A%95%E6%B3%A8-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "লাইভ বেটিং" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747224876449_%E4%B8%8B%E8%BD%BDAPP-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "অ্যাপ ডাউনলোড" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747224231880_%E6%B3%A8%E5%86%8C%E9%80%81-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "রেজিস্টার বোনাস" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747025275760_%E7%94%9F%E6%97%A5-%E8%BD%AE%E5%8D%9A.jpeg", alt: "জন্মদিন বোনাস" },
+  { image: "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1747198737427_%E5%85%B3%E6%B3%A8TG%E5%AE%98%E6%96%B9%E9%A2%91%E9%81%93-%E8%BD%AE%E5%8D%9A%20%E7%BD%91%E9%A1%B5.jpeg", alt: "Telegram চ্যানেল" },
 ];
 
 
