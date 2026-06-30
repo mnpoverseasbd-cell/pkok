@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   Apple,
   ChevronLeft,
@@ -29,6 +30,7 @@ import g9 from "@/assets/game-poker.jpg";
 import g10 from "@/assets/game-dice.jpg";
 import g11 from "@/assets/game-candy.jpg";
 import g12 from "@/assets/game-pharaoh.jpg";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
