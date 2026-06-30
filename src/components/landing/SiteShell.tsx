@@ -1,21 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { CircleDollarSign, Globe, Headphones, Mail, MessageCircle } from "lucide-react";
-import type { ReactNode } from "react";
+import { CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, Mail, MessageCircle, Radio, Spade, Ticket, Trophy } from "lucide-react";
+import type { ComponentType, ReactNode } from "react";
+import { useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 
-const topMenu: { label: string; to: string }[] = [
-  { label: "হোম", to: "/" },
-  { label: "গরম", to: "/games" },
-  { label: "স্লট", to: "/slots" },
-  { label: "ফিশিং", to: "/fishing" },
-  { label: "লাইভ", to: "/live" },
-  { label: "স্পোর্টস", to: "/sports" },
-  { label: "ই-স্পোর্টস", to: "/sports" },
-  { label: "পোকার", to: "/poker" },
-  { label: "লটারি", to: "/lottery" },
-  { label: "VIP", to: "/vip" },
-  { label: "প্রমোশন", to: "/promotion" },
+const topMenu: { label: string; to: string; icon: ComponentType<{ className?: string }> }[] = [
+  { label: "হোম", to: "/", icon: Home },
+  { label: "গরম", to: "/games", icon: Flame },
+  { label: "স্লট", to: "/slots", icon: Dice5 },
+  { label: "ফিশিং", to: "/fishing", icon: Fish },
+  { label: "লাইভ", to: "/live", icon: Radio },
+  { label: "স্পোর্টস", to: "/sports", icon: Trophy },
+  { label: "ই-স্পোর্টস", to: "/sports", icon: Gamepad2 },
+  { label: "পোকার", to: "/poker", icon: Spade },
+  { label: "লটারি", to: "/lottery", icon: Ticket },
+  { label: "VIP", to: "/vip", icon: Crown },
+  { label: "প্রমোশন", to: "/promotion", icon: Gift },
 ];
+
 
 const sideActions = ["24CS", "Telegram", "Facebook", "TG Channel", "Whatsapp"];
 
@@ -36,21 +38,47 @@ export function SiteShell({ children }: { children: ReactNode }) {
 
 function TopBar() {
   const { setOpen } = useModals();
+  const [showPw, setShowPw] = useState(false);
   return (
     <div className="bg-topbar border-b border-border/60">
-      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2 text-xs sm:px-4 lg:px-6">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-3 py-2 text-xs sm:px-4 lg:px-6">
         <div className="flex min-w-0 items-center gap-2 text-foreground/90">
           <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--neon-pink)]" />
           <span className="truncate">বাংলা</span>
           <Globe className="h-3.5 w-3.5 shrink-0" />
         </div>
-        <div className="flex shrink-0 items-center gap-2 rounded-full border border-border/70 bg-black/25 px-2 py-1 sm:px-3">
-          <CircleDollarSign className="h-3.5 w-3.5 text-foreground/80" />
-          <span className="text-[var(--neon-green)]">৳ 0.00</span>
-          <button onClick={() => setOpen("deposit")} className="rounded-full bg-green-button px-3 py-1 font-bold text-[var(--background)]">ডিপোজিট</button>
-          <button onClick={() => setOpen("withdraw")} className="rounded-full bg-gold-button px-3 py-1 font-bold text-[var(--background)]">উত্তোলন</button>
-          <Link to="/login" className="hidden sm:inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 font-bold text-white">লগইন</Link>
-          <Link to="/register" className="hidden sm:inline-flex items-center gap-1 rounded-full bg-[var(--neon-pink)] px-3 py-1 font-bold text-white">রেজিস্টার</Link>
+        <div className="flex shrink-0 items-center gap-2">
+          {/* Wallet chip — visible md+ */}
+          <div className="hidden md:flex items-center gap-2 rounded-full border border-border/70 bg-black/25 px-2 py-1 sm:px-3">
+            <CircleDollarSign className="h-3.5 w-3.5 text-foreground/80" />
+            <span className="text-[var(--neon-green)]">৳ 0.00</span>
+            <button onClick={() => setOpen("deposit")} className="rounded-full bg-green-button px-3 py-1 font-bold text-[var(--background)]">ডিপোজিট</button>
+            <button onClick={() => setOpen("withdraw")} className="rounded-full bg-gold-button px-3 py-1 font-bold text-[var(--background)]">উত্তোলন</button>
+          </div>
+          {/* PKOK-style phone + password quick login */}
+          <div className="hidden items-center gap-1.5 lg:flex">
+            <div className="flex items-center gap-1 rounded-md border border-border/70 bg-black/30 px-2 py-1.5">
+              <span className="h-3 w-4 rounded-sm bg-[var(--neon-pink)]" />
+              <span className="font-bold text-white/90">+880</span>
+            </div>
+            <input
+              type="tel"
+              placeholder="মোবাইল নাম্বার"
+              className="h-7 w-36 rounded-md border border-border/70 bg-black/30 px-2 text-[11px] text-white placeholder:text-foreground/55 outline-none focus:border-[var(--neon-green)]"
+            />
+            <div className="relative">
+              <input
+                type={showPw ? "text" : "password"}
+                placeholder="পাসওয়ার্ড"
+                className="h-7 w-32 rounded-md border border-border/70 bg-black/30 px-2 pr-6 text-[11px] text-white placeholder:text-foreground/55 outline-none focus:border-[var(--neon-green)]"
+              />
+              <button type="button" onClick={() => setShowPw((v) => !v)} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-foreground/60">
+                {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+          </div>
+          <Link to="/login" className="inline-flex items-center gap-1 rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">লগইন</Link>
+          <Link to="/register" className="inline-flex items-center gap-1 rounded-md bg-[var(--neon-pink)] px-3 py-1.5 font-bold text-white">রেজিস্টার</Link>
         </div>
       </div>
     </div>
@@ -60,34 +88,44 @@ function TopBar() {
 function MainNav() {
   return (
     <header className="bg-navbar sticky top-0 z-40 border-b border-black/20 shadow-lg shadow-black/25">
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-3 py-3 sm:px-4 lg:px-6">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-2 sm:px-4 lg:px-6">
         <Link to="/" className="shrink-0 font-display text-3xl font-black leading-none">
           <span className="text-white">AS</span>
           <span className="text-black">IK</span>
           <span className="text-gradient-gold">OK</span>
         </Link>
-        <nav className="hidden min-w-0 flex-1 items-center gap-4 overflow-hidden whitespace-nowrap text-sm font-bold text-white/95 lg:flex">
+        <nav className="hidden min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden whitespace-nowrap text-[11px] font-bold text-white/95 lg:flex">
           {topMenu.map((item) => (
-            <Link key={item.label} to={item.to} className="shrink-0 transition-colors hover:text-[var(--neon-gold)]" activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}>
-              {item.label}
+            <Link
+              key={item.label}
+              to={item.to}
+              className="group flex shrink-0 flex-col items-center gap-0.5 rounded-md px-2 py-1 transition-colors hover:text-[var(--neon-gold)]"
+              activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}
+            >
+              <item.icon className="h-4 w-4 transition-transform group-hover:scale-110" />
+              <span>{item.label}</span>
             </Link>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2 text-white">
+        <div className="ml-auto flex items-center gap-2 text-white lg:ml-2">
           <Mail className="h-5 w-5" />
           <Link to="/login" className="grid h-7 w-7 place-items-center rounded-full bg-white/20 text-xs font-bold">A</Link>
         </div>
       </div>
       <div className="overflow-x-auto border-t border-white/10 px-3 py-2 text-xs font-semibold text-white/90 lg:hidden">
-        <div className="flex w-max gap-4">
+        <div className="flex w-max gap-3">
           {topMenu.map((item) => (
-            <Link key={item.label} to={item.to}>{item.label}</Link>
+            <Link key={item.label} to={item.to} className="flex flex-col items-center gap-0.5">
+              <item.icon className="h-4 w-4" />
+              <span>{item.label}</span>
+            </Link>
           ))}
         </div>
       </div>
     </header>
   );
 }
+
 
 function FooterBlock() {
   return (
