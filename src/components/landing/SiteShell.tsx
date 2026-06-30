@@ -7,7 +7,7 @@ import { WelcomePopup } from "@/components/landing/WelcomePopup";
 
 const topMenu: { label: string; to: string; icon: ComponentType<{ className?: string }> }[] = [
   { label: "হোম", to: "/", icon: Home },
-  { label: "গরম", to: "/games", icon: Flame },
+  { label: "গরম", to: "/hot", icon: Flame },
   { label: "স্লট", to: "/slots", icon: Dice5 },
   { label: "ফিশিং", to: "/fishing", icon: Fish },
   { label: "লাইভ", to: "/live", icon: Radio },
