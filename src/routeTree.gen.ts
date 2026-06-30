@@ -10,15 +10,32 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VipRouteImport } from './routes/vip'
+import { Route as SportsRouteImport } from './routes/sports'
+import { Route as SlotsRouteImport } from './routes/slots'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as PromotionRouteImport } from './routes/promotion'
+import { Route as PokerRouteImport } from './routes/poker'
+import { Route as LotteryRouteImport } from './routes/lottery'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LiveRouteImport } from './routes/live'
 import { Route as GamesRouteImport } from './routes/games'
+import { Route as FishingRouteImport } from './routes/fishing'
+import { Route as CrashRouteImport } from './routes/crash'
 import { Route as IndexRouteImport } from './routes/index'
 
 const VipRoute = VipRouteImport.update({
   id: '/vip',
   path: '/vip',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SportsRoute = SportsRouteImport.update({
+  id: '/sports',
+  path: '/sports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SlotsRoute = SlotsRouteImport.update({
+  id: '/slots',
+  path: '/slots',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -31,14 +48,39 @@ const PromotionRoute = PromotionRouteImport.update({
   path: '/promotion',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PokerRoute = PokerRouteImport.update({
+  id: '/poker',
+  path: '/poker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LotteryRoute = LotteryRouteImport.update({
+  id: '/lottery',
+  path: '/lottery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LiveRoute = LiveRouteImport.update({
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesRoute = GamesRouteImport.update({
   id: '/games',
   path: '/games',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FishingRoute = FishingRouteImport.update({
+  id: '/fishing',
+  path: '/fishing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrashRoute = CrashRouteImport.update({
+  id: '/crash',
+  path: '/crash',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,50 +91,111 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/crash': typeof CrashRoute
+  '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
+  '/live': typeof LiveRoute
   '/login': typeof LoginRoute
+  '/lottery': typeof LotteryRoute
+  '/poker': typeof PokerRoute
   '/promotion': typeof PromotionRoute
   '/register': typeof RegisterRoute
+  '/slots': typeof SlotsRoute
+  '/sports': typeof SportsRoute
   '/vip': typeof VipRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/crash': typeof CrashRoute
+  '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
+  '/live': typeof LiveRoute
   '/login': typeof LoginRoute
+  '/lottery': typeof LotteryRoute
+  '/poker': typeof PokerRoute
   '/promotion': typeof PromotionRoute
   '/register': typeof RegisterRoute
+  '/slots': typeof SlotsRoute
+  '/sports': typeof SportsRoute
   '/vip': typeof VipRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/crash': typeof CrashRoute
+  '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
+  '/live': typeof LiveRoute
   '/login': typeof LoginRoute
+  '/lottery': typeof LotteryRoute
+  '/poker': typeof PokerRoute
   '/promotion': typeof PromotionRoute
   '/register': typeof RegisterRoute
+  '/slots': typeof SlotsRoute
+  '/sports': typeof SportsRoute
   '/vip': typeof VipRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/games' | '/login' | '/promotion' | '/register' | '/vip'
+  fullPaths:
+    | '/'
+    | '/crash'
+    | '/fishing'
+    | '/games'
+    | '/live'
+    | '/login'
+    | '/lottery'
+    | '/poker'
+    | '/promotion'
+    | '/register'
+    | '/slots'
+    | '/sports'
+    | '/vip'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/games' | '/login' | '/promotion' | '/register' | '/vip'
+  to:
+    | '/'
+    | '/crash'
+    | '/fishing'
+    | '/games'
+    | '/live'
+    | '/login'
+    | '/lottery'
+    | '/poker'
+    | '/promotion'
+    | '/register'
+    | '/slots'
+    | '/sports'
+    | '/vip'
   id:
     | '__root__'
     | '/'
+    | '/crash'
+    | '/fishing'
     | '/games'
+    | '/live'
     | '/login'
+    | '/lottery'
+    | '/poker'
     | '/promotion'
     | '/register'
+    | '/slots'
+    | '/sports'
     | '/vip'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CrashRoute: typeof CrashRoute
+  FishingRoute: typeof FishingRoute
   GamesRoute: typeof GamesRoute
+  LiveRoute: typeof LiveRoute
   LoginRoute: typeof LoginRoute
+  LotteryRoute: typeof LotteryRoute
+  PokerRoute: typeof PokerRoute
   PromotionRoute: typeof PromotionRoute
   RegisterRoute: typeof RegisterRoute
+  SlotsRoute: typeof SlotsRoute
+  SportsRoute: typeof SportsRoute
   VipRoute: typeof VipRoute
 }
 
@@ -103,6 +206,20 @@ declare module '@tanstack/react-router' {
       path: '/vip'
       fullPath: '/vip'
       preLoaderRoute: typeof VipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sports': {
+      id: '/sports'
+      path: '/sports'
+      fullPath: '/sports'
+      preLoaderRoute: typeof SportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/slots': {
+      id: '/slots'
+      path: '/slots'
+      fullPath: '/slots'
+      preLoaderRoute: typeof SlotsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -119,6 +236,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PromotionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/poker': {
+      id: '/poker'
+      path: '/poker'
+      fullPath: '/poker'
+      preLoaderRoute: typeof PokerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lottery': {
+      id: '/lottery'
+      path: '/lottery'
+      fullPath: '/lottery'
+      preLoaderRoute: typeof LotteryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -126,11 +257,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/live': {
+      id: '/live'
+      path: '/live'
+      fullPath: '/live'
+      preLoaderRoute: typeof LiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games': {
       id: '/games'
       path: '/games'
       fullPath: '/games'
       preLoaderRoute: typeof GamesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fishing': {
+      id: '/fishing'
+      path: '/fishing'
+      fullPath: '/fishing'
+      preLoaderRoute: typeof FishingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crash': {
+      id: '/crash'
+      path: '/crash'
+      fullPath: '/crash'
+      preLoaderRoute: typeof CrashRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -145,10 +297,17 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CrashRoute: CrashRoute,
+  FishingRoute: FishingRoute,
   GamesRoute: GamesRoute,
+  LiveRoute: LiveRoute,
   LoginRoute: LoginRoute,
+  LotteryRoute: LotteryRoute,
+  PokerRoute: PokerRoute,
   PromotionRoute: PromotionRoute,
   RegisterRoute: RegisterRoute,
+  SlotsRoute: SlotsRoute,
+  SportsRoute: SportsRoute,
   VipRoute: VipRoute,
 }
 export const routeTree = rootRouteImport
