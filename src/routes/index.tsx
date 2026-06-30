@@ -57,13 +57,22 @@ const topMenu = ["হোম", "গরম", "স্লট", "ফিশিং", "�
 
 
 const hotGames = [
-  { title: "সুপার উইন", image: g1, provider: "PG", tag: "HOT" },
-  { title: "জ্যাকপট ব্লাস্ট", image: g7, provider: "JILI", tag: "NEW" },
-  { title: "অলিম্পাস", image: g12, provider: "Pragmatic" },
-  { title: "মেগা রিচ", image: g11, provider: "JILI", tag: "HOT" },
-  { title: "ক্র্যাশ এক্স", image: g3, provider: "SPRIBE" },
-  { title: "মনি কইন", image: g9, provider: "JILI" },
+  { title: "Money Coming", image: g1, provider: "JILI" },
+  { title: "Fortune Coins", image: g7, provider: "JL", tag: "HOT" },
+  { title: "Wild Bounty Showdown", image: g12, provider: "PG" },
+  { title: "Super Elements", image: g11, provider: "FC", tag: "NEW" },
+  { title: "Magic Ace WILD LOCK", image: g3, provider: "JDB" },
+  { title: "Crazy Time", image: g2, provider: "Evolution", tag: "HOT" },
+  { title: "Fortune Gems 3", image: g9, provider: "JILI" },
+  { title: "Mega Ace", image: g6, provider: "JILI" },
+  { title: "Super Win", image: g1, provider: "PG", tag: "HOT" },
+  { title: "Lightning Roulette", image: g2, provider: "Evolution" },
+  { title: "Aviator", image: g8, provider: "SPRIBE", tag: "HOT" },
+  { title: "Dragon Tiger", image: g6, provider: "PP" },
+  { title: "Candy Bonanza", image: g11, provider: "PG" },
+  { title: "Pharaoh's Gold", image: g12, provider: "JILI" },
 ];
+
 
 const heroSlides = [
   {
