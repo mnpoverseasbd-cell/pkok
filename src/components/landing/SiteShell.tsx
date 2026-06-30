@@ -3,6 +3,7 @@ import { CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gif
 import type { ComponentType, ReactNode } from "react";
 import { useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
+import { WelcomePopup } from "@/components/landing/WelcomePopup";
 
 const topMenu: { label: string; to: string; icon: ComponentType<{ className?: string }> }[] = [
   { label: "Home", to: "/", icon: Home },
@@ -31,6 +32,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
         <FooterBlock />
         <SocialRail />
         <LeftFloatingBadges />
+        <WelcomePopup />
       </div>
     </ModalsProvider>
   );
