@@ -95,9 +95,15 @@ const lib: Record<string, { title: string; image: string; provider: string; tag?
 };
 
 function GamesPage() {
-  const [active, setActive] = useState("hot");
+  const { cat } = Route.useSearch();
+  const [active, setActive] = useState(cat && lib[cat] ? cat : "hot");
   const [provider, setProvider] = useState("সব");
   const [q, setQ] = useState("");
+
+  useEffect(() => {
+    if (cat && lib[cat]) setActive(cat);
+  }, [cat]);
+
 
   let games = lib[active] ?? [];
   if (provider !== "সব") games = games.filter((g) => g.provider === provider);
