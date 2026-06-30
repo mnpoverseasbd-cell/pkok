@@ -33,6 +33,10 @@ import g9 from "@/assets/game-poker.jpg";
 import g10 from "@/assets/game-dice.jpg";
 import g11 from "@/assets/game-candy.jpg";
 import g12 from "@/assets/game-pharaoh.jpg";
+import mascotSlots from "@/assets/mascot-slots.png";
+import mascotFish from "@/assets/mascot-fish.png";
+import mascotLive from "@/assets/mascot-live.png";
+import mascotPoker from "@/assets/mascot-poker.png";
 
 
 export const Route = createFileRoute("/")({
@@ -86,10 +90,10 @@ const heroSlides = [
 
 
 const mainCategories = [
-  { title: "স্লট", image: g7 },
-  { title: "ফিশিং", image: g4 },
-  { title: "লাইভ", image: g5 },
-  { title: "পোকার", image: g9 },
+  { title: "Slots", mascot: mascotSlots },
+  { title: "Fish", mascot: mascotFish },
+  { title: "Live", mascot: mascotLive },
+  { title: "Poker", mascot: mascotPoker },
 ];
 
 const statCards = [
@@ -411,15 +415,28 @@ function MainCategoryCards() {
     <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {mainCategories.map((item) => (
-          <div key={item.title} className="game-frame group overflow-hidden rounded-2xl p-2">
-            <img src={item.image} alt={item.title} width={512} height={512} loading="lazy" className="aspect-[1.05/1] w-full rounded-xl object-cover transition-transform duration-300 group-hover:scale-105" />
-            <div className="py-2 text-center text-2xl font-black text-gradient-gold">{item.title}</div>
+          <div
+            key={item.title}
+            className="group relative flex h-[260px] flex-col items-center justify-end overflow-hidden rounded-2xl border border-[var(--neon-green)]/45 bg-[linear-gradient(180deg,rgba(7,40,28,0.85),rgba(4,18,12,0.95))] p-3 transition-transform hover:-translate-y-1"
+          >
+            <img
+              src={item.mascot}
+              alt={item.title}
+              width={768}
+              height={768}
+              loading="lazy"
+              className="absolute inset-x-0 top-2 mx-auto h-[78%] w-auto object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.55)] transition-transform duration-300 group-hover:scale-110"
+            />
+            <div className="relative z-10 mt-auto w-full rounded-md bg-black/55 py-1.5 text-center font-display text-2xl italic font-black tracking-wide text-gradient-gold">
+              {item.title}
+            </div>
           </div>
         ))}
       </div>
     </section>
   );
 }
+
 
 function AppSection() {
   return (
