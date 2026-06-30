@@ -171,9 +171,6 @@ function Index() {
       <AppSection />
       <ServiceStats />
       <FeatureList />
-      {listSections.map((section) => (
-        <CategoryListSection key={section.id} section={section} />
-      ))}
       <ProviderStrip />
     </SiteShell>
   );
