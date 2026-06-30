@@ -216,3 +216,14 @@
 @utility animate-float {
   animation: float-y 4s ease-in-out infinite;
 }
+
+@keyframes marquee-y {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+.animate-marquee-y {
+  animation: marquee-y 25s linear infinite;
+}
+.animate-marquee-y:hover {
+  animation-play-state: paused;
+}
