@@ -231,27 +231,6 @@ function TopBar() {
   );
 }
 
-function TopBar() {
-  return (
-    <div className="bg-topbar border-b border-border/60">
-      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2 text-xs sm:px-4 lg:px-6">
-        <div className="flex min-w-0 items-center gap-2 text-foreground/90">
-          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--neon-pink)]" />
-          <span className="truncate">বাংলা</span>
-          <Globe className="h-3.5 w-3.5 shrink-0" />
-        </div>
-        <div className="flex shrink-0 items-center gap-2 rounded-full border border-border/70 bg-black/25 px-2 py-1 sm:px-3">
-          <CircleDollarSign className="h-3.5 w-3.5 text-foreground/80" />
-          <span className="text-[var(--neon-green)]">৳ 0.00</span>
-          <button className="rounded-full bg-green-button px-3 py-1 font-bold text-[var(--background)]">ডিপোজিট</button>
-          <button className="rounded-full bg-gold-button px-3 py-1 font-bold text-[var(--background)]">উত্তোলন</button>
-          <span className="hidden sm:inline-flex rounded-full bg-[var(--neon-pink)] px-1.5 py-0.5 text-[10px] font-bold text-white">8</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function MainNav() {
   return (
     <header className="bg-navbar sticky top-0 z-40 border-b border-black/20 shadow-lg shadow-black/25">
