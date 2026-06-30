@@ -5,17 +5,17 @@ import { useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 
 const topMenu: { label: string; to: string; icon: ComponentType<{ className?: string }> }[] = [
-  { label: "হোম", to: "/", icon: Home },
-  { label: "গরম", to: "/games", icon: Flame },
-  { label: "স্লট", to: "/slots", icon: Dice5 },
-  { label: "ফিশিং", to: "/fishing", icon: Fish },
-  { label: "লাইভ", to: "/live", icon: Radio },
-  { label: "স্পোর্টস", to: "/sports", icon: Trophy },
-  { label: "ই-স্পোর্টস", to: "/sports", icon: Gamepad2 },
-  { label: "পোকার", to: "/poker", icon: Spade },
-  { label: "লটারি", to: "/lottery", icon: Ticket },
-  { label: "VIP", to: "/vip", icon: Crown },
-  { label: "প্রমোশন", to: "/promotion", icon: Gift },
+  { label: "Home", to: "/", icon: Home },
+  { label: "HOT", to: "/games", icon: Flame },
+  { label: "Slots", to: "/slots", icon: Dice5 },
+  { label: "Fish", to: "/fishing", icon: Fish },
+  { label: "Live", to: "/live", icon: Radio },
+  { label: "Sports", to: "/sports", icon: Trophy },
+  { label: "E-Sports", to: "/sports", icon: Gamepad2 },
+  { label: "Poker", to: "/poker", icon: Spade },
+  { label: "Lottery", to: "/lottery", icon: Ticket },
+  { label: "APP", to: "/vip", icon: Crown },
+  { label: "Promotion", to: "/promotion", icon: Gift },
 ];
 
 
