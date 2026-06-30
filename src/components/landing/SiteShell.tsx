@@ -3,16 +3,16 @@ import { CircleDollarSign, Globe, Headphones, Mail, MessageCircle } from "lucide
 import type { ReactNode } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 
-const topMenu: { label: string; to: string }[] = [
+const topMenu: { label: string; to: string; search?: Record<string, string> }[] = [
   { label: "হোম", to: "/" },
-  { label: "গরম", to: "/games" },
-  { label: "স্লট", to: "/games" },
-  { label: "ফিশিং", to: "/games" },
-  { label: "লাইভ", to: "/games" },
-  { label: "স্পোর্টস", to: "/games" },
-  { label: "ই-স্পোর্টস", to: "/games" },
-  { label: "পোকার", to: "/games" },
-  { label: "লটারি", to: "/games" },
+  { label: "গরম", to: "/games", search: { cat: "hot" } },
+  { label: "স্লট", to: "/games", search: { cat: "slots" } },
+  { label: "ফিশিং", to: "/games", search: { cat: "fishing" } },
+  { label: "লাইভ", to: "/games", search: { cat: "live" } },
+  { label: "স্পোর্টস", to: "/games", search: { cat: "sports" } },
+  { label: "ই-স্পোর্টস", to: "/games", search: { cat: "sports" } },
+  { label: "পোকার", to: "/games", search: { cat: "poker" } },
+  { label: "লটারি", to: "/games", search: { cat: "lottery" } },
   { label: "VIP", to: "/vip" },
   { label: "প্রমোশন", to: "/promotion" },
 ];
