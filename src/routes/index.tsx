@@ -130,9 +130,9 @@ const featureCards = [
 ];
 
 const promoCards = [
-  { title: "৯৫০% স্বাগতম অফার", tone: "text-gradient-gold" },
-  { title: "দৈনিক ফ্রি রিওয়ার্ড", tone: "text-gradient-green" },
-  { title: "বিশেষ VIP ক্যাশব্যাক", tone: "text-gradient-gold" },
+  { title: "৯৫০% স্বাগতম অফার", image: promoWelcome },
+  { title: "দৈনিক ফ্রি রিওয়ার্ড", image: promoDaily },
+  { title: "বিশেষ VIP ক্যাশব্যাক", image: promoVip },
 ];
 
 const leaderboard = [
