@@ -1,22 +1,22 @@
 import { Link } from "@tanstack/react-router";
-import { CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, Mail, MessageCircle, Radio, Spade, Ticket, Trophy } from "lucide-react";
+import { CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, Mail, MessageCircle, Radio, Smartphone, Spade, Ticket, Trophy } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 import { useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 import { WelcomePopup } from "@/components/landing/WelcomePopup";
 
 const topMenu: { label: string; to: string; icon: ComponentType<{ className?: string }> }[] = [
-  { label: "Home", to: "/", icon: Home },
-  { label: "HOT", to: "/games", icon: Flame },
-  { label: "Slots", to: "/slots", icon: Dice5 },
-  { label: "Fish", to: "/fishing", icon: Fish },
-  { label: "Live", to: "/live", icon: Radio },
-  { label: "Sports", to: "/sports", icon: Trophy },
-  { label: "E-Sports", to: "/sports", icon: Gamepad2 },
-  { label: "Poker", to: "/poker", icon: Spade },
-  { label: "Lottery", to: "/lottery", icon: Ticket },
-  { label: "APP", to: "/vip", icon: Crown },
-  { label: "Promotion", to: "/promotion", icon: Gift },
+  { label: "হোম", to: "/", icon: Home },
+  { label: "গরম", to: "/games", icon: Flame },
+  { label: "স্লট", to: "/slots", icon: Dice5 },
+  { label: "ফিশিং", to: "/fishing", icon: Fish },
+  { label: "লাইভ", to: "/live", icon: Radio },
+  { label: "স্পোর্টস", to: "/sports", icon: Trophy },
+  { label: "ই-স্পোর্টস", to: "/sports", icon: Gamepad2 },
+  { label: "পোকার", to: "/poker", icon: Spade },
+  { label: "লটারি", to: "/lottery", icon: Ticket },
+  { label: "APP", to: "/vip", icon: Smartphone },
+  { label: "প্রমোশন", to: "/promotion", icon: Gift },
 ];
 
 
@@ -91,20 +91,20 @@ function MainNav() {
   return (
     <header className="bg-navbar sticky top-0 z-40 border-b border-black/20 shadow-lg shadow-black/25">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-2 sm:px-4 lg:px-6">
-        <Link to="/" aria-label="PKOK home" className="flex shrink-0 items-center gap-1 font-display text-3xl font-black leading-none">
+        <Link to="/" aria-label="PKOK home" className="flex shrink-0 items-center gap-1 font-display text-4xl font-black leading-none">
           <span className="text-white drop-shadow">PK</span>
-          <span className="rounded-[4px] bg-[#ff9700] px-1 text-black shadow-[0_2px_0_rgba(0,0,0,0.35)]">OK</span>
+          <span className="rounded-[6px] bg-[#ff9700] px-1.5 text-black shadow-[0_2px_0_rgba(0,0,0,0.35)]">OK</span>
           <span className="-ml-1 text-[#ff9700] drop-shadow">👌</span>
         </Link>
-        <nav className="hidden min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden whitespace-nowrap text-[11px] font-bold text-white/95 lg:flex">
+        <nav className="hidden min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden whitespace-nowrap text-[13px] font-bold text-white lg:flex">
           {topMenu.map((item) => (
             <Link
               key={item.label}
               to={item.to}
-              className="group flex shrink-0 flex-col items-center gap-0.5 rounded-md px-2 py-1 transition-colors hover:text-[var(--neon-gold)]"
+              className="group flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 transition-colors hover:text-[var(--neon-gold)]"
               activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}
             >
-              <item.icon className="h-4 w-4 transition-transform group-hover:scale-110" />
+              <item.icon className="h-5 w-5 transition-transform group-hover:scale-110" />
               <span>{item.label}</span>
             </Link>
           ))}
