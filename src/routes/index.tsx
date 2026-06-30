@@ -33,6 +33,10 @@ import g9 from "@/assets/game-poker.jpg";
 import g10 from "@/assets/game-dice.jpg";
 import g11 from "@/assets/game-candy.jpg";
 import g12 from "@/assets/game-pharaoh.jpg";
+import mascotSlots from "@/assets/mascot-slots.png";
+import mascotFish from "@/assets/mascot-fish.png";
+import mascotLive from "@/assets/mascot-live.png";
+import mascotPoker from "@/assets/mascot-poker.png";
 
 
 export const Route = createFileRoute("/")({
