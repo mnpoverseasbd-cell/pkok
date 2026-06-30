@@ -53,42 +53,8 @@ export const Route = createFileRoute("/")({
 
 const topMenu = ["হোম", "গরম", "স্লট", "ফিশিং", "লাইভ", "স্পোর্টস", "ই-স্পোর্টস", "পোকার", "লটারি", "APP", "প্রমোশন"];
 
-const providers = [
-  "CQ9",
-  "RG Rich",
-  "Sexy",
-  "Live Casino",
-  "Lucky",
-  "AP Gaming",
-  "SABA",
-  "TC Gaming",
-  "PG",
-  "Pragmatic",
-  "Kingmidas",
-  "2J",
-  "Ezugi",
-  "SA",
-  "BTI",
-  "Poly",
-  "TF",
-  "JILI",
-  "JDB",
-  "Microgaming",
-  "R88",
-  "SV",
-  "VIA",
-  "Dream Gaming",
-  "FB Sports",
-  "NextSpin",
-  "FC",
-  "BT",
-  "MegaWin",
-  "Evolution",
-  "9Wickets",
-  "United Gaming",
-  "Spribe",
-  "BNG",
-];
+
+
 
 const hotGames = [
   { title: "সুপার উইন", image: g1, provider: "PG", tag: "HOT" },
@@ -457,71 +423,142 @@ function FeatureList() {
   );
 }
 
-const providerStyles: Record<string, { bg: string; fg: string; accent?: string }> = {
-  CQ9: { bg: "from-red-600 to-orange-500", fg: "text-white" },
-  "RG Rich": { bg: "from-amber-500 to-yellow-300", fg: "text-black" },
-  Sexy: { bg: "from-pink-500 to-rose-600", fg: "text-white" },
-  "Live Casino": { bg: "from-emerald-500 to-teal-600", fg: "text-white" },
-  Lucky: { bg: "from-yellow-400 to-orange-500", fg: "text-black" },
-  "AP Gaming": { bg: "from-sky-500 to-blue-700", fg: "text-white" },
-  SABA: { bg: "from-blue-600 to-indigo-700", fg: "text-white" },
-  "TC Gaming": { bg: "from-fuchsia-600 to-purple-700", fg: "text-white" },
-  PG: { bg: "from-amber-400 to-yellow-500", fg: "text-black" },
-  Pragmatic: { bg: "from-red-700 to-red-900", fg: "text-white" },
-  Kingmidas: { bg: "from-yellow-500 to-amber-700", fg: "text-black" },
-  "2J": { bg: "from-cyan-500 to-blue-600", fg: "text-white" },
-  Ezugi: { bg: "from-orange-600 to-red-600", fg: "text-white" },
-  SA: { bg: "from-rose-600 to-pink-700", fg: "text-white" },
-  BTI: { bg: "from-lime-500 to-emerald-600", fg: "text-black" },
-  Poly: { bg: "from-violet-600 to-indigo-700", fg: "text-white" },
-  TF: { bg: "from-emerald-600 to-green-700", fg: "text-white" },
-  JILI: { bg: "from-amber-500 to-orange-600", fg: "text-white" },
-  JDB: { bg: "from-yellow-400 to-amber-600", fg: "text-black" },
-  Microgaming: { bg: "from-slate-700 to-slate-900", fg: "text-yellow-300" },
-  R88: { bg: "from-red-500 to-rose-700", fg: "text-white" },
-  SV: { bg: "from-teal-500 to-cyan-700", fg: "text-white" },
-  VIA: { bg: "from-purple-600 to-pink-600", fg: "text-white" },
-  "Dream Gaming": { bg: "from-indigo-500 to-purple-700", fg: "text-white" },
-  "FB Sports": { bg: "from-blue-500 to-blue-800", fg: "text-white" },
-  NextSpin: { bg: "from-cyan-400 to-blue-600", fg: "text-white" },
-  FC: { bg: "from-green-500 to-emerald-700", fg: "text-white" },
-  BT: { bg: "from-orange-500 to-red-700", fg: "text-white" },
-  MegaWin: { bg: "from-yellow-500 to-amber-600", fg: "text-black" },
-  Evolution: { bg: "from-zinc-800 to-black", fg: "text-red-500" },
-  "9Wickets": { bg: "from-green-600 to-lime-700", fg: "text-white" },
-  "United Gaming": { bg: "from-blue-700 to-indigo-900", fg: "text-yellow-300" },
-  Spribe: { bg: "from-pink-600 to-red-700", fg: "text-white" },
-  BNG: { bg: "from-amber-600 to-orange-800", fg: "text-white" },
+type Wordmark = {
+  name: string;
+  color: string;
+  sub?: string;
+  subColor?: string;
+  glyph?: "circle" | "diamond" | "triangle" | "bolt" | "ring" | "square" | "star";
+  font?: "sans" | "serif" | "display" | "mono";
+  italic?: boolean;
 };
+
+const providerWordmarks: Wordmark[] = [
+  { name: "CQ9", color: "#f5a524", sub: "GAMING", subColor: "#cbd5e1", glyph: "ring", font: "display" },
+  { name: "RG", color: "#22d3ee", sub: "RICH GAME", subColor: "#67e8f9", glyph: "bolt", font: "sans" },
+  { name: "Sexy", color: "#f472b6", glyph: "diamond", font: "display", italic: true },
+  { name: "Live Casino", color: "#3b82f6", sub: "AI", subColor: "#60a5fa", glyph: "circle", font: "sans" },
+  { name: "LUCKY", color: "#ef4444", glyph: "star", font: "display" },
+  { name: "AP Gaming", color: "#0ea5e9", glyph: "triangle", font: "sans" },
+  { name: "SABA", color: "#fde047", sub: "SPORTS", subColor: "#fef9c3", glyph: "square", font: "sans" },
+  { name: "TC", color: "#a855f7", sub: "GAMING", subColor: "#e9d5ff", glyph: "ring", font: "sans" },
+  { name: "PG", color: "#facc15", sub: "POCKET GAMES SOFT", subColor: "#fde68a", glyph: "diamond", font: "serif" },
+  { name: "Pragmatic", color: "#dc2626", sub: "PLAY", subColor: "#fbbf24", glyph: "bolt", font: "display" },
+  { name: "KINGMIDAS", color: "#fbbf24", glyph: "star", font: "serif" },
+  { name: "2J.COM", color: "#fb923c", glyph: "square", font: "sans" },
+  { name: "Ezugi", color: "#fde047", sub: "SMART MOVE", subColor: "#fef9c3", glyph: "triangle", font: "display", italic: true },
+  { name: "SA", color: "#fbbf24", sub: "GAMING", subColor: "#fde68a", glyph: "ring", font: "serif" },
+  { name: "BTi", color: "#ef4444", glyph: "circle", font: "sans" },
+  { name: "POLY", color: "#a855f7", sub: "SPORTS", subColor: "#e9d5ff", glyph: "triangle", font: "sans" },
+  { name: "TF GAMING", color: "#22d3ee", glyph: "bolt", font: "sans" },
+  { name: "JILI", color: "#fbbf24", glyph: "diamond", font: "display" },
+  { name: "JDB", color: "#facc15", glyph: "square", font: "display" },
+  { name: "Microgaming", color: "#10b981", glyph: "ring", font: "sans" },
+  { name: "R88", color: "#ec4899", sub: "RICH 88", subColor: "#f9a8d4", glyph: "star", font: "display" },
+  { name: "SV", color: "#fbbf24", sub: "SW GAMING", subColor: "#fde68a", glyph: "bolt", font: "sans" },
+  { name: "VIA", color: "#ec4899", glyph: "diamond", font: "display", italic: true },
+  { name: "Dream Gaming", color: "#cbd5e1", glyph: "ring", font: "serif" },
+  { name: "FB", color: "#facc15", sub: "SPORTS", subColor: "#fde68a", glyph: "bolt", font: "sans" },
+  { name: "SV", color: "#fbbf24", sub: "388", subColor: "#fef3c7", glyph: "square", font: "display" },
+  { name: "IA", color: "#ef4444", sub: "E-SPORTS", subColor: "#fca5a5", glyph: "triangle", font: "sans" },
+  { name: "NEXTSPIN", color: "#cbd5e1", glyph: "circle", font: "sans" },
+  { name: "FC", color: "#ef4444", sub: "FA CHAI", subColor: "#fca5a5", glyph: "square", font: "display" },
+  { name: "BT", color: "#facc15", sub: "GAMING", subColor: "#fde68a", glyph: "bolt", font: "sans" },
+  { name: "MEGAWIN", color: "#fbbf24", glyph: "star", font: "serif" },
+  { name: "Evolution", color: "#ef4444", glyph: "ring", font: "sans", italic: true },
+  { name: "9 Wickets", color: "#22c55e", glyph: "circle", font: "display" },
+  { name: "UNITED", color: "#06b6d4", sub: "GAMING", subColor: "#67e8f9", glyph: "ring", font: "sans" },
+  { name: "SPRIBE", color: "#f1f5f9", glyph: "triangle", font: "sans" },
+  { name: "BNG", color: "#10b981", glyph: "circle", font: "sans" },
+];
+
+const fontClass: Record<NonNullable<Wordmark["font"]>, string> = {
+  sans: "font-sans",
+  serif: "font-serif",
+  display: "font-display",
+  mono: "font-mono",
+};
+
+function Glyph({ shape, color }: { shape: NonNullable<Wordmark["glyph"]>; color: string }) {
+  const common = "h-4 w-4 shrink-0";
+  switch (shape) {
+    case "circle":
+      return <svg viewBox="0 0 16 16" className={common}><circle cx="8" cy="8" r="6" fill={color} /></svg>;
+    case "ring":
+      return <svg viewBox="0 0 16 16" className={common}><circle cx="8" cy="8" r="6" stroke={color} strokeWidth="2" fill="none" /></svg>;
+    case "diamond":
+      return <svg viewBox="0 0 16 16" className={common}><rect x="3.5" y="3.5" width="9" height="9" transform="rotate(45 8 8)" fill={color} /></svg>;
+    case "triangle":
+      return <svg viewBox="0 0 16 16" className={common}><polygon points="8,2 14,14 2,14" fill={color} /></svg>;
+    case "bolt":
+      return <svg viewBox="0 0 16 16" className={common}><polygon points="9,1 3,9 7,9 5,15 13,7 9,7" fill={color} /></svg>;
+    case "square":
+      return <svg viewBox="0 0 16 16" className={common}><rect x="2.5" y="2.5" width="11" height="11" fill={color} /></svg>;
+    case "star":
+      return <svg viewBox="0 0 16 16" className={common}><polygon points="8,1 10,6 15,6 11,10 12,15 8,12 4,15 5,10 1,6 6,6" fill={color} /></svg>;
+  }
+}
 
 function ProviderStrip() {
   return (
-    <section className="bg-black/75 py-6">
+    <section className="bg-black py-10">
       <div className="mx-auto max-w-7xl px-4 lg:px-6">
-        <div className="mb-4 text-center text-xs font-bold uppercase tracking-widest text-foreground/60">
+        <div className="mb-6 text-center text-[11px] font-bold uppercase tracking-[0.25em] text-foreground/55">
           আমাদের গেম প্রোভাইডার
         </div>
-        <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-10">
-          {providers.map((provider) => {
-            const s = providerStyles[provider] ?? { bg: "from-slate-700 to-slate-900", fg: "text-white" };
-            return (
-              <div
-                key={provider}
-                className={`group relative grid h-14 place-items-center overflow-hidden rounded-xl bg-gradient-to-br ${s.bg} px-2 shadow-md shadow-black/40 ring-1 ring-white/10 transition hover:-translate-y-0.5 hover:shadow-lg hover:ring-white/30`}
-              >
-                <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.25),transparent_60%)]" />
-                <span className={`relative truncate text-[11px] font-black uppercase tracking-wide drop-shadow sm:text-xs ${s.fg}`}>
-                  {provider}
+        <div className="grid grid-cols-3 gap-x-4 gap-y-7 sm:grid-cols-5 lg:grid-cols-10">
+          {providerWordmarks.map((w, i) => (
+            <div
+              key={`${w.name}-${i}`}
+              className="group flex h-14 items-center justify-center gap-2 transition hover:scale-105"
+              title={w.name}
+            >
+              {w.glyph && <Glyph shape={w.glyph} color={w.color} />}
+              <div className="flex min-w-0 flex-col leading-none">
+                <span
+                  className={`truncate text-[13px] font-black uppercase tracking-tight sm:text-sm ${fontClass[w.font ?? "sans"]} ${w.italic ? "italic" : ""}`}
+                  style={{ color: w.color, textShadow: "0 1px 2px rgba(0,0,0,0.6)" }}
+                >
+                  {w.name}
                 </span>
+                {w.sub && (
+                  <span
+                    className="mt-0.5 truncate text-[8px] font-bold uppercase tracking-[0.2em]"
+                    style={{ color: w.subColor ?? "#94a3b8" }}
+                  >
+                    {w.sub}
+                  </span>
+                )}
               </div>
-            );
-          })}
+            </div>
+          ))}
+        </div>
+
+        {/* Promo paragraph + license badges */}
+        <div className="mt-10 grid gap-6 border-t border-white/10 pt-8 lg:grid-cols-[1.6fr_1fr_1fr]">
+          <p className="max-w-2xl text-sm leading-7 text-foreground/75">
+            স্লট গেমস সবসময়ই Asik Game-এর সবচেয়ে জনপ্রিয় ক্যাটাগরির একটি। সেরা প্রোভাইডার নির্বাচন করে আমরা প্লেয়ারদের জন্য নিয়ে এসেছি বৈচিত্র্যময় থিম, চমৎকার গ্রাফিক্স এবং উদ্ভাবনী ফিচার সম্পন্ন গেম। প্রাচীন সভ্যতা থেকে শুরু করে ভবিষ্যৎ জগৎ, ক্লাসিক ফলের স্লট থেকে গল্পনির্ভর অ্যাডভেঞ্চার — সব ধরনের পছন্দের জন্য কিছু না কিছু রয়েছে।
+          </p>
+          <div className="flex items-start gap-3">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-md bg-[var(--neon-pink)]/20 text-2xl font-black text-[var(--neon-pink)]">⚑</div>
+            <div>
+              <div className="text-base font-black uppercase text-white">Malta Gaming Authority</div>
+              <div className="text-xs text-foreground/70">Maltese license (MGA) certification</div>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-blue-500/20 text-xl font-black text-blue-300">★</div>
+            <div>
+              <div className="text-base font-black uppercase text-white">British Virgin Islands</div>
+              <div className="text-xs text-foreground/70">BVI Financial Services Commission</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
-
   );
 }
+
 
 function CategoryListSection({ section }: { section: { id: string; title: string; items: string[] } }) {
   return (
