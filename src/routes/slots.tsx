@@ -96,8 +96,8 @@ function SlotsPage() {
           </div>
         </div>
 
-        <div className="rounded-b-lg bg-neutral-200/95 p-3 sm:p-4">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-5">
+        <div className="rounded-b-lg bg-[radial-gradient(ellipse_at_center,rgba(10,60,35,0.95),rgba(2,12,8,0.98))] p-3 sm:p-4">
+          <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 md:grid-cols-5 lg:grid-cols-6">
             {rngProviders.map((p) => (
               <ProviderCard key={p.code} p={p} />
             ))}
@@ -110,20 +110,26 @@ function SlotsPage() {
 
 function ProviderCard({ p }: { p: Provider }) {
   return (
-    <button className="group relative flex aspect-[16/10] flex-col items-center justify-center overflow-hidden rounded-lg bg-[linear-gradient(160deg,#0b3b22,#04190f)] p-2 ring-1 ring-[var(--neon-green)]/40 transition hover:scale-[1.03] hover:ring-[var(--neon-gold)]">
-      <span className="absolute right-1.5 top-1.5 z-10 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--neon-gold)] ring-1 ring-[var(--neon-gold)]/40">
+    <button className="group relative block aspect-[3/4] overflow-hidden rounded-xl bg-black shadow-lg ring-1 ring-black/40 transition hover:scale-[1.03] hover:ring-2 hover:ring-[var(--neon-gold)]">
+      <span className="absolute right-1.5 top-1.5 z-10 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--neon-gold)] ring-1 ring-[var(--neon-gold)]/50">
         {p.count}
       </span>
       <img
         src={p.icon}
         alt={p.name}
         loading="lazy"
-        className="h-12 w-auto max-w-[80%] object-contain sm:h-14"
+        className="h-full w-full object-cover"
         onError={(e) => {
-          (e.currentTarget as HTMLImageElement).style.display = "none";
+          const t = e.currentTarget as HTMLImageElement;
+          t.style.display = "none";
+          (t.parentElement as HTMLElement).classList.add("grid", "place-items-center");
+          const span = document.createElement("span");
+          span.textContent = p.name;
+          span.className = "text-white font-bold text-sm";
+          t.parentElement?.appendChild(span);
         }}
       />
-      <span className="mt-1 text-xs font-semibold text-white/90 sm:text-sm">{p.name}</span>
     </button>
   );
 }
+
