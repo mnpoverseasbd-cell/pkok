@@ -325,13 +325,16 @@ function JackpotSection() {
           ))}
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-[var(--neon-green)]/45 panel-dark p-4 text-center">
-          <div className="mx-auto mb-3 flex h-40 max-w-[440px] items-center justify-center rounded-[28px] bg-[radial-gradient(circle_at_center,rgba(255,214,54,0.3),transparent_52%),linear-gradient(180deg,rgba(22,80,54,0.45),rgba(7,22,16,0.8))]">
-            <div>
-              <div className="text-gradient-gold text-4xl font-black sm:text-5xl">JACKPOTS</div>
-              <JackpotCounter />
-            </div>
-          </div>
+        <div className="overflow-hidden rounded-2xl border border-[var(--neon-green)]/45 bg-[radial-gradient(ellipse_at_top,rgba(22,80,54,0.6),rgba(4,18,12,0.95))] p-3 text-center">
+          <img
+            src={jackpotHero}
+            alt="Jackpots"
+            width={1024}
+            height={768}
+            loading="lazy"
+            className="mx-auto -mb-2 w-full max-w-[440px] object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.55)]"
+          />
+          <JackpotCounter />
         </div>
 
 
