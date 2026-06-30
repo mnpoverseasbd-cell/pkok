@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Apple,
   ChevronLeft,
@@ -57,13 +57,22 @@ const topMenu = ["হোম", "গরম", "স্লট", "ফিশিং", "�
 
 
 const hotGames = [
-  { title: "সুপার উইন", image: g1, provider: "PG", tag: "HOT" },
-  { title: "জ্যাকপট ব্লাস্ট", image: g7, provider: "JILI", tag: "NEW" },
-  { title: "অলিম্পাস", image: g12, provider: "Pragmatic" },
-  { title: "মেগা রিচ", image: g11, provider: "JILI", tag: "HOT" },
-  { title: "ক্র্যাশ এক্স", image: g3, provider: "SPRIBE" },
-  { title: "মনি কইন", image: g9, provider: "JILI" },
+  { title: "Money Coming", image: g1, provider: "JILI" },
+  { title: "Fortune Coins", image: g7, provider: "JL", tag: "HOT" },
+  { title: "Wild Bounty Showdown", image: g12, provider: "PG" },
+  { title: "Super Elements", image: g11, provider: "FC", tag: "NEW" },
+  { title: "Magic Ace WILD LOCK", image: g3, provider: "JDB" },
+  { title: "Crazy Time", image: g2, provider: "Evolution", tag: "HOT" },
+  { title: "Fortune Gems 3", image: g9, provider: "JILI" },
+  { title: "Mega Ace", image: g6, provider: "JILI" },
+  { title: "Super Win", image: g1, provider: "PG", tag: "HOT" },
+  { title: "Lightning Roulette", image: g2, provider: "Evolution" },
+  { title: "Aviator", image: g8, provider: "SPRIBE", tag: "HOT" },
+  { title: "Dragon Tiger", image: g6, provider: "PP" },
+  { title: "Candy Bonanza", image: g11, provider: "PG" },
+  { title: "Pharaoh's Gold", image: g12, provider: "JILI" },
 ];
+
 
 const heroSlides = [
   {
@@ -255,20 +264,39 @@ function TickerBar() {
 }
 
 function HotGamesSection() {
+  const scrollerRef = (typeof window !== "undefined" ? (window as any) : {}) && null;
+  const ref = useRef<HTMLDivElement>(null);
+  const scrollBy = (dir: number) => {
+    const el = ref.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * (el.clientWidth * 0.85), behavior: "smooth" });
+  };
   return (
     <section className="mx-auto max-w-7xl px-3 py-5 sm:px-4 lg:px-6">
       <div className="rounded-2xl inset-panel p-3 sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]">
-            <Flame className="h-4 w-4" /> গরম খেলা
+            <Flame className="h-4 w-4" /> Hot Games
           </div>
-          <button className="rounded-full bg-green-button px-4 py-1 text-xs font-black text-[var(--background)]">আরও</button>
+          <button className="rounded-full bg-green-button px-4 py-1 text-xs font-black text-[var(--background)]">More</button>
         </div>
-        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:gap-3">
-          <button className="grid h-8 w-8 place-items-center rounded-full bg-black/30 text-white"><ChevronLeft className="h-4 w-4" /></button>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="relative">
+          <button
+            aria-label="Previous"
+            onClick={() => scrollBy(-1)}
+            className="absolute -left-2 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/60 text-white shadow-md backdrop-blur transition hover:bg-[var(--neon-green)]/70 sm:-left-3 sm:h-10 sm:w-10"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <div
+            ref={ref}
+            className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {hotGames.map((game) => (
-              <div key={game.title} className="game-frame relative overflow-hidden rounded-xl p-1.5">
+              <div
+                key={game.title}
+                className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-1.5 sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
+              >
                 {game.tag && (
                   <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[9px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
                     {game.tag}
@@ -282,12 +310,19 @@ function HotGamesSection() {
               </div>
             ))}
           </div>
-          <button className="grid h-8 w-8 place-items-center rounded-full bg-[var(--neon-green)]/25 text-white"><ChevronRight className="h-4 w-4" /></button>
+          <button
+            aria-label="Next"
+            onClick={() => scrollBy(1)}
+            className="absolute -right-2 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-[var(--neon-green)]/40 text-white shadow-md backdrop-blur transition hover:bg-[var(--neon-green)]/70 sm:-right-3 sm:h-10 sm:w-10"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
         </div>
       </div>
     </section>
   );
 }
+
 
 
 function JackpotSection() {
