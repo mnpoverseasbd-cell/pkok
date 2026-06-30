@@ -53,42 +53,8 @@ export const Route = createFileRoute("/")({
 
 const topMenu = ["হোম", "গরম", "স্লট", "ফিশিং", "লাইভ", "স্পোর্টস", "ই-স্পোর্টস", "পোকার", "লটারি", "APP", "প্রমোশন"];
 
-const providers = [
-  "CQ9",
-  "RG Rich",
-  "Sexy",
-  "Live Casino",
-  "Lucky",
-  "AP Gaming",
-  "SABA",
-  "TC Gaming",
-  "PG",
-  "Pragmatic",
-  "Kingmidas",
-  "2J",
-  "Ezugi",
-  "SA",
-  "BTI",
-  "Poly",
-  "TF",
-  "JILI",
-  "JDB",
-  "Microgaming",
-  "R88",
-  "SV",
-  "VIA",
-  "Dream Gaming",
-  "FB Sports",
-  "NextSpin",
-  "FC",
-  "BT",
-  "MegaWin",
-  "Evolution",
-  "9Wickets",
-  "United Gaming",
-  "Spribe",
-  "BNG",
-];
+
+
 
 const hotGames = [
   { title: "সুপার উইন", image: g1, provider: "PG", tag: "HOT" },
