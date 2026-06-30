@@ -366,10 +366,10 @@ function LatestWinners() {
           ))}
         </div>
       </div>
-      </div>
-    </section>
+    </div>
   );
 }
+
 
 function MainCategoryCards() {
   return (
