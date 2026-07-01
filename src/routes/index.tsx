@@ -191,7 +191,6 @@ const popupImages = [
 function Index() {
   return (
     <SiteShell>
-      <PromoPopup />
       <HeroBanner />
       <TickerBar />
       <HotGamesSection />
