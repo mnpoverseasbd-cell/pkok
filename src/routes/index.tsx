@@ -575,13 +575,23 @@ function AppSection() {
 function ServiceStats() {
   return (
     <section className="mx-auto max-w-7xl px-3 pb-6 sm:px-4 lg:px-6">
-      <div className="rounded-[28px] border border-[var(--neon-green)]/45 panel-dark p-4">
-        <div className="mx-auto mb-4 w-fit rounded-full bg-green-button px-10 py-2 text-lg font-black text-[var(--background)]">উত্তম মানের পরিষেবা</div>
+      <div className="relative rounded-[28px] border border-[var(--neon-green)]/45 panel-dark px-4 pb-5 pt-10 sm:px-6 sm:pb-6">
+        {/* Curved green header tab */}
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
+          <div className="rounded-b-none rounded-t-[22px] bg-green-button px-14 py-2 text-lg font-black text-[var(--background)] shadow-lg">
+            উচ্চমানের পরিষেবা
+          </div>
+        </div>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {statCards.map((item) => (
-            <div key={item.label} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/30 p-5 text-center">
-              <div className="text-5xl font-black text-[var(--neon-gold)]">{item.value}</div>
-              <div className="mt-2 text-sm text-foreground/80">{item.label}</div>
+            <div key={item.label} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-5 pb-3 text-center">
+              <div className="flex items-baseline justify-center">
+                <span className="text-5xl font-black text-[var(--neon-gold)] leading-none">{item.value}</span>
+                {item.unit && <span className="ml-1 text-lg font-bold text-[var(--neon-gold)]">{item.unit}</span>}
+              </div>
+              <div className="mx-auto mt-4 w-full rounded-full bg-green-button px-3 py-1.5 text-xs font-black text-[var(--background)] sm:text-sm">
+                {item.label}
+              </div>
             </div>
           ))}
         </div>
@@ -593,14 +603,16 @@ function ServiceStats() {
 function FeatureList() {
   return (
     <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
-      <div className="space-y-4 rounded-[28px] border border-[var(--neon-green)]/45 panel-dark p-4 sm:p-5">
+      <div className="space-y-3 rounded-[28px] border border-[var(--neon-green)]/45 panel-dark p-3 sm:p-4">
         {featureCards.map((card) => (
-          <div key={card.title} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/28 p-4">
+          <div key={card.title} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-4">
             <div className="flex items-start gap-4">
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-green-button text-[var(--background)]"><card.icon className="h-6 w-6" /></div>
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-black/40 text-3xl">
+                {card.emoji}
+              </div>
               <div className="min-w-0">
-                <h3 className="text-lg font-black text-[var(--neon-gold)]">{card.title}</h3>
-                <p className="mt-1 text-sm leading-6 text-foreground/80">{card.body}</p>
+                <h3 className="text-base font-black text-[var(--neon-gold)] sm:text-lg">{card.title}</h3>
+                <p className="mt-1 text-xs leading-6 text-foreground/80 sm:text-sm">{card.body}</p>
               </div>
             </div>
           </div>
