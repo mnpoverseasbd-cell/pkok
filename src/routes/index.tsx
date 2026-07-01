@@ -404,8 +404,8 @@ function JackpotSection() {
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]"><Gift className="h-4 w-4" /> {t("promo")}</div>
           {promoCards.map((card) => (
-            <div key={card.title} className="overflow-hidden rounded-xl border border-[var(--neon-green)]/45 bg-black/35">
-              <img src={card.image} alt={card.title} width={1024} height={512} loading="lazy" className="block w-full" />
+            <div key={card.titleKey} className="overflow-hidden rounded-xl border border-[var(--neon-green)]/45 bg-black/35">
+              <img src={card.image} alt={t(card.titleKey)} width={1024} height={512} loading="lazy" className="block w-full" />
             </div>
           ))}
         </div>
