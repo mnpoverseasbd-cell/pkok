@@ -129,28 +129,52 @@ function MainNav() {
 }
 
 
+const providerLogos = [
+  "CQ9", "RICH GAME", "Sexy", "AI LIVE CASINO", "LUCKY", "AP GAMING", "SABA SPORTS", "TC GAMING", "PG", "PRAGMATIC PLAY",
+  "KING MIDAS", "2J.COM", "Ezugi", "SA GAMING", "BTi", "POLY", "TF GAMING", "JILI", "JDB", "Microgaming",
+  "R88", "SW GAMING", "V.A", "DREAM GAMING", "FB SPORTS", "SV388", "IA E-SPORTS", "NEXTSPIN", "FA CHAI", "BT GAMING",
+  "MEGAWIN", "Evolution", "W", "WICKETS", "UNITED GAMING", "SBO", "KING'S POKER", "SPRIBE", "BNG",
+];
+
+function ProvidersStrip() {
+  return (
+    <section className="bg-black py-6">
+      <div className="mx-auto grid max-w-7xl grid-cols-4 gap-x-4 gap-y-5 px-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
+        {providerLogos.map((name) => (
+          <div key={name} className="flex h-10 items-center justify-center text-center text-[11px] font-black uppercase tracking-wider text-white/80 transition hover:text-[var(--neon-gold)]">
+            {name}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function FooterBlock() {
   return (
-    <footer className="bg-[#2a2a27] text-foreground/90">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr] lg:px-6">
-        <div>
-          <p className="max-w-2xl text-sm leading-7 text-foreground/85">
-            স্লট গেম সম্পর্কিত PKOK ক্যাসিনো সবচেয়ে জনপ্রিয় গেম ধরনের একটি এবং PKOK এ আছে সেরা স্লট গেম প্রোভাইডার সহ নিজি — PKOK-এর রয়েছে পাগলামুস্ত কোম্পানি সুরুক্ষীলতা ও উত্তেজনার গ্যারান্টি অধিকরণ করার প্রতিদ্বন্দিতা প্রধান। বৈচিত্র্যময় থিম, মনোমুগ্ধকর গ্রাফিক্স এবং উদ্ভাবনী বৈশিষ্ট্যের PKOK এর স্লটগুলোতে একটি অতুলনীয় রোমাঞ্চকর অভিজ্ঞতা প্রদান করা। স্বাগতম সাথে অন্য কোনো ক্যাসিনোতে না পাওয়া ক্লাসিক ফল মেশিন থেকে বর্ণনীয় অ্যাডভেঞ্চার পর্যন্ত, PKOK গেমসের স্লট গেম বিভিন্ন পছন্দ পূরণ করে।
-          </p>
+    <>
+      <ProvidersStrip />
+      <footer className="bg-[#2a2a27] text-foreground/90">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr] lg:px-6">
+          <div>
+            <p className="max-w-2xl text-sm leading-7 text-foreground/85">
+              স্লট গেম সম্পর্কিত PKOK ক্যাসিনো সবচেয়ে জনপ্রিয় গেম ধরনের একটি এবং PKOK এ আছে সেরা স্লট গেম প্রোভাইডার সহ নিজি — PKOK-এর রয়েছে পাগলামুস্ত কোম্পানি সুরুক্ষীলতা ও উত্তেজনার গ্যারান্টি অধিকরণ করার প্রতিদ্বন্দিতা প্রধান। বৈচিত্র্যময় থিম, মনোমুগ্ধকর গ্রাফিক্স এবং উদ্ভাবনী বৈশিষ্ট্যের PKOK এর স্লটগুলোতে একটি অতুলনীয় রোমাঞ্চকর অভিজ্ঞতা প্রদান করা।
+            </p>
+          </div>
+          <div className="space-y-3 text-center lg:text-left">
+            <div className="text-3xl font-black text-white/80">mga</div>
+            <div className="text-lg font-semibold text-white/90">Maltese license (MGA) certification</div>
+          </div>
+          <div className="space-y-3 text-center lg:text-left">
+            <div className="text-3xl font-black text-white/80">BVI</div>
+            <div className="text-lg font-semibold text-white/90">British Virgin Islands (BVI) certification</div>
+          </div>
         </div>
-        <div className="space-y-3 text-center lg:text-left">
-          <div className="text-3xl font-black text-white/80">mga</div>
-          <div className="text-lg font-semibold text-white/90">Maltese license (MGA) certification</div>
+        <div className="mx-auto max-w-7xl border-t border-white/10 px-4 py-6 text-center text-sm text-foreground/65 sm:px-6 lg:px-6">
+          কপিরাইট © 2026 PKOK gaming. সমস্ত অধিকার সংরক্ষিত।
         </div>
-        <div className="space-y-3 text-center lg:text-left">
-          <div className="text-3xl font-black text-white/80">BVI</div>
-          <div className="text-lg font-semibold text-white/90">British Virgin Islands (BVI) certification</div>
-        </div>
-      </div>
-      <div className="mx-auto max-w-7xl border-t border-white/10 px-4 py-6 text-center text-sm text-foreground/65 sm:px-6 lg:px-6">
-        কপিরাইট © 2026 PKOK gaming. সমস্ত অধিকার সংরক্ষিত।
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }
 
