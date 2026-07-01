@@ -117,32 +117,32 @@ const mainCategories = [
 ];
 
 const statCards = [
-  { value: "30s", label: "গড় জমা হওয়ার সময়" },
-  { value: "33", label: "পেমেন্ট চ্যানেল পার্টনার" },
-  { value: "90s", label: "গড় উত্তোলনের সময়" },
-  { value: "27", label: "গেম প্রোভাইডার পার্টনার" },
+  { value: "30", unit: "s", label: "গড় জমা দেওয়ার সময়" },
+  { value: "33", unit: "", label: "পেমেন্ট প্ল্যাটফর্ম পার্টনার" },
+  { value: "90", unit: "s", label: "গড় উত্তোলনের সময়" },
+  { value: "27", unit: "", label: "গেমিং প্রদানকারী পার্টনার" },
 ];
 
 const featureCards = [
   {
-    icon: Gift,
-    title: "ফ্রি বোনাস ও প্রমোশন",
-    body: "নতুন ব্যবহারকারীদের জন্য ওয়েলকাম অফার, ফ্রি স্পিন, দৈনিক রিওয়ার্ড এবং উৎসবের বিশেষ বোনাস।",
+    emoji: "⏱️",
+    title: "দ্রুত জমা ও উত্তোলন",
+    body: "আমাদের সর্বশেষ পেমেন্ট গেটওয়ে প্রযুক্তি এক্সক্লুসিভ নেটওয়ার্ক অপ্টিমাইজেশনের মাধ্যমে অত্যন্ত দ্রুত জমা, উত্তোলন এবং স্থানান্তর অর্জন করে, যা আপনাকে একটি প্রথম শ্রেণির গেমিং অভিজ্ঞতা প্রদান করে।",
   },
   {
-    icon: ShieldCheck,
-    title: "নিরাপদ লেনদেন ও সম্পূর্ণ সুরক্ষা",
-    body: "আধুনিক এনক্রিপশন ও নির্ভরযোগ্য পেমেন্ট চ্যানেল দিয়ে দ্রুত ও নিরাপদ জমা-উত্তোলন সুবিধা।",
+    emoji: "💵",
+    title: "নিরাপদ লেনদেন ও সম্পূর্ণ সুরক্ষা নিশ্চিত",
+    body: "আমরা ব্যবহার করছি ১২৮-বিট এনক্রিপশন প্রযুক্তি—বিশ্বস্ত ও আন্তর্জাতিকভাবে স্বীকৃত সুরক্ষা মান। আমাদের নিরাপত্তা ব্যবস্থাপনা প্রতিটি লেনদেনকে সম্পূর্ণ সুরক্ষিত রাখে।",
   },
   {
-    icon: Gamepad2,
+    emoji: "🎮",
     title: "রোমাঞ্চকর গেম সমাহার",
-    body: "স্লট, লাইভ, স্পোর্টস, ফিশিং, RNG ও আরও অনেক ক্যাটাগরির জনপ্রিয় গেম এক জায়গায়।",
+    body: "আমরা সম্পূর্ণ সেটআপসহ অ্যাপ্লিকেশন সরবরাহ করি, যাতে সদস্যরা যেকোনো সময়, যেকোনো স্থান থেকে ওয়েব, H5 ও ডেডিকেটেড অ্যাপ্লিকেশন মাধ্যমে গেম উপভোগ করতে পারেন। আমাদের ২৪x৭ অনলাইন কাস্টমার সার্ভিস সর্বোচ্চ মানের ও আন্তরিক সেবা প্রদান করে।",
   },
   {
-    icon: Wallet,
-    title: "একাধিক ব্যাংকিং চ্যানেল",
-    body: "bKash, Nagad, Rocket, Visa ও অন্যান্য জনপ্রিয় চ্যানেলে দ্রুত ট্রানজেকশন সাপোর্ট।",
+    emoji: "🖥️",
+    title: "একাধিক অ্যাপ্লিকেশন বিকল্প",
+    body: "আমরা সম্পূর্ণ সেট অ্যাপ্লিকেশন সরবরাহ করি, যা সদস্যদের ওয়েব, H5 এবং নেটিভ অ্যাপের মাধ্যমে যেকোনো সময়, যেকোনো স্থানে গেম উপভোগ করতে সক্ষম করে। আমাদের ২৪x৭ অনলাইন কাস্টমার সার্ভিস সবচেয়ে আন্তরিক ও উচ্চমানের সেবা প্রদান করে।",
   },
 ];
 
@@ -575,13 +575,23 @@ function AppSection() {
 function ServiceStats() {
   return (
     <section className="mx-auto max-w-7xl px-3 pb-6 sm:px-4 lg:px-6">
-      <div className="rounded-[28px] border border-[var(--neon-green)]/45 panel-dark p-4">
-        <div className="mx-auto mb-4 w-fit rounded-full bg-green-button px-10 py-2 text-lg font-black text-[var(--background)]">উত্তম মানের পরিষেবা</div>
+      <div className="relative rounded-[28px] border border-[var(--neon-green)]/45 panel-dark px-4 pb-5 pt-10 sm:px-6 sm:pb-6">
+        {/* Curved green header tab */}
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
+          <div className="rounded-b-none rounded-t-[22px] bg-green-button px-14 py-2 text-lg font-black text-[var(--background)] shadow-lg">
+            উচ্চমানের পরিষেবা
+          </div>
+        </div>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {statCards.map((item) => (
-            <div key={item.label} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/30 p-5 text-center">
-              <div className="text-5xl font-black text-[var(--neon-gold)]">{item.value}</div>
-              <div className="mt-2 text-sm text-foreground/80">{item.label}</div>
+            <div key={item.label} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-5 pb-3 text-center">
+              <div className="flex items-baseline justify-center">
+                <span className="text-5xl font-black text-[var(--neon-gold)] leading-none">{item.value}</span>
+                {item.unit && <span className="ml-1 text-lg font-bold text-[var(--neon-gold)]">{item.unit}</span>}
+              </div>
+              <div className="mx-auto mt-4 w-full rounded-full bg-green-button px-3 py-1.5 text-xs font-black text-[var(--background)] sm:text-sm">
+                {item.label}
+              </div>
             </div>
           ))}
         </div>
@@ -593,14 +603,16 @@ function ServiceStats() {
 function FeatureList() {
   return (
     <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
-      <div className="space-y-4 rounded-[28px] border border-[var(--neon-green)]/45 panel-dark p-4 sm:p-5">
+      <div className="space-y-3 rounded-[28px] border border-[var(--neon-green)]/45 panel-dark p-3 sm:p-4">
         {featureCards.map((card) => (
-          <div key={card.title} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/28 p-4">
+          <div key={card.title} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-4">
             <div className="flex items-start gap-4">
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-green-button text-[var(--background)]"><card.icon className="h-6 w-6" /></div>
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-black/40 text-3xl">
+                {card.emoji}
+              </div>
               <div className="min-w-0">
-                <h3 className="text-lg font-black text-[var(--neon-gold)]">{card.title}</h3>
-                <p className="mt-1 text-sm leading-6 text-foreground/80">{card.body}</p>
+                <h3 className="text-base font-black text-[var(--neon-gold)] sm:text-lg">{card.title}</h3>
+                <p className="mt-1 text-xs leading-6 text-foreground/80 sm:text-sm">{card.body}</p>
               </div>
             </div>
           </div>
