@@ -74,6 +74,7 @@ function AdminTxns() {
   const [rows, setRows] = useState<any[]>([]);
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
   const [loading, setLoading] = useState(true);
+  const [detailId, setDetailId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
