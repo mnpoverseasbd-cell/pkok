@@ -301,7 +301,7 @@ function AdminMethods() {
       <Card className="border-white/10 bg-black/40">
         <CardHeader><CardTitle className="text-white">নতুন পেমেন্ট মেথড</CardTitle></CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
-          <select value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })} className="h-9 rounded-md border border-input bg-transparent px-3 text-sm text-white">
+          <select value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value as typeof form.kind })} className="h-9 rounded-md border border-input bg-transparent px-3 text-sm text-white">
             {["bkash", "nagad", "rocket", "bank", "usdt", "other"].map((k) => <option key={k} value={k} className="bg-black">{k}</option>)}
           </select>
           <Input placeholder="Label (e.g. bKash Personal)" value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} />
