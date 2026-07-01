@@ -150,13 +150,13 @@ function TopBar() {
               <div className="hidden md:flex items-center gap-2 rounded-full border border-border/70 bg-black/25 px-2 py-1 sm:px-3">
                 <CircleDollarSign className="h-3.5 w-3.5 text-foreground/80" />
                 <span className="text-[var(--neon-green)] font-bold">৳ {balance.toFixed(2)}</span>
-                <button onClick={() => setOpen("deposit")} className="rounded-full bg-green-button px-3 py-1 font-bold text-[var(--background)]">{t("deposit")}</button>
-                <button onClick={() => setOpen("withdraw")} className="rounded-full bg-gold-button px-3 py-1 font-bold text-[var(--background)]">{t("withdraw")}</button>
+                <Link to="/wallet" search={{ tab: "deposit" }} className="rounded-full bg-green-button px-3 py-1 font-bold text-[var(--background)]">{t("deposit")}</Link>
+                <Link to="/wallet" search={{ tab: "withdraw" }} className="rounded-full bg-gold-button px-3 py-1 font-bold text-[var(--background)]">{t("withdraw")}</Link>
               </div>
-              <div className="flex items-center gap-1.5 rounded-full border border-border/70 bg-black/25 px-2.5 py-1">
+              <Link to="/profile" className="flex items-center gap-1.5 rounded-full border border-border/70 bg-black/25 px-2.5 py-1 hover:border-[var(--neon-gold)]">
                 <UserIcon className="h-3.5 w-3.5 text-[var(--neon-gold)]" />
                 <span className="max-w-[100px] truncate font-bold text-white">{displayName}</span>
-              </div>
+              </Link>
               <button
                 onClick={handleSignOut}
                 title="লগআউট"
@@ -165,6 +165,7 @@ function TopBar() {
                 <LogOut className="h-3.5 w-3.5" />
               </button>
             </>
+
           ) : (
             <>
               {/* PKOK-style quick login (visual only when signed out) */}
