@@ -15,29 +15,28 @@ export const Route = createFileRoute("/fish")({
 
 type Provider = { code: string; name: string; icon: string };
 
-// Fish-list providers verified to exist on the CDN
-const fishProviders: Provider[] = [
-  { code: "JL",   name: "JILI",     icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-JL_1751638719376.webp" },
-  { code: "FC",   name: "FC",       icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-FC_1751638718129.webp" },
-  { code: "JDB",  name: "JDB",      icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-JDB_1751638718373.webp" },
-  { code: "KA",   name: "KA",       icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-KA_1746086809247.webp" },
-  { code: "CQ9",  name: "CQ9",      icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-CQ9_1774541724286.webp" },
-  { code: "FS",   name: "FASTSPIN", icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-FS_1746086807531.webp" },
-  { code: "SG",   name: "SG",       icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-SG_1746086813938.png" },
-  { code: "MG",   name: "Microgaming", icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-MG_1751638719641.webp" },
-  { code: "VA",   name: "Victory Ark", icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-VA_1746086814915.webp" },
-  { code: "BSP",  name: "BSP",      icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-BSP_1746086805091.webp" },
-  { code: "RSG",  name: "RSG",      icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-SG_1746086813938.png" },
-  { code: "JK",   name: "Jokers",   icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-JK_1746086809008.webp" },
-  { code: "BBIN", name: "BBIN",     icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-BBR_1774541721083.webp" },
-  { code: "BB",   name: "BaiSheng", icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-BBR_1774541721083.webp" },
-  { code: "TPG",  name: "TPG",      icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-TPG_1746086814664.webp" },
-  { code: "NS",   name: "NS",       icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-NS_1751638719886.webp" },
-  { code: "SWG",  name: "SWG",      icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-SWG_1774541732305.webp" },
-  { code: "AMBS", name: "AMBS",     icon: "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/gcs__RNG-AMBS_1746086803593.webp" },
-];
+const B = "https://images.23924894.com/prod-images/game_icon/pkokbdtf6/bigImage/";
 
-const vendorLogoBase = "https://images.23924894.com/TCG_PROD_IMAGES/FISH_LIST_VENDOR";
+const fishProviders: Provider[] = [
+  { code: "JL",   name: "JILI",         icon: B + "gcs__FISH-JL_1751638723406.webp" },
+  { code: "FC",   name: "FA CHAI",      icon: B + "gcs__FISH-FC_1751638722918.webp" },
+  { code: "JDB",  name: "JDB",          icon: B + "gcs__FISH-JDB_1751638723161.webp" },
+  { code: "BT",   name: "BT GAMING",    icon: B + "gcs__FISH-BT_1751638722674.webp" },
+  { code: "SG",   name: "Spadegaming",  icon: B + "gcs__FISH-SG_1751638723912.webp" },
+  { code: "KA",   name: "KA Gaming",    icon: B + "gcs__FISH-KA_1751638723651.webp" },
+  { code: "BSP",  name: "Baison",       icon: B + "gcs__FISH-BSP_1751638722430.webp" },
+  { code: "TPG",  name: "TPG",          icon: B + "gcs__FISH-TPG_1751638720627.webp" },
+  { code: "JK",   name: "Joker",        icon: B + "gcs__FISH-JK_1746086798334.webp" },
+  { code: "AMBS", name: "askmeslot",    icon: B + "gcs__FISH-AMBS_1746086796615.webp" },
+  { code: "FTG",  name: "FTG",          icon: B + "gcs__FISH-FTG_1746086797843.webp" },
+  { code: "FS",   name: "FASTSPIN",     icon: B + "gcs__FISH-FS_1746086797595.webp" },
+  { code: "VA",   name: "Victory Ark",  icon: B + "gcs__FISH-VA_1746086799589.webp" },
+  { code: "MG",   name: "Microgaming",  icon: B + "gcs__FISH-MG_1746086798852.webp" },
+  { code: "CQ9",  name: "CQ9 Gaming",   icon: B + "gcs__FISH-CQ9_1774541703593.webp" },
+  { code: "MW",   name: "Megawin",      icon: B + "gcs__FISH-MW_1774541705942.webp" },
+  { code: "SWG",  name: "SM Gaming",    icon: B + "gcs__FISH-SWG_1774541708093.webp" },
+  { code: "2J",   name: "2J.COM",       icon: B + "gcs__FISH-2J_1774541699278.webp" },
+];
 
 function FishPage() {
   return (
@@ -53,19 +52,12 @@ function FishPage() {
       >
         <div className="game-list" style={{ gridTemplateColumns: "repeat(6, 1fr)" }}>
           {fishProviders.map((p) => (
-            <ProviderCard key={p.code} p={p} />
+            <button key={p.code} className="lobby-item" aria-label={`${p.name} fish games`}>
+              <img src={p.icon} alt={p.name} loading="lazy" className="game-img" />
+            </button>
           ))}
         </div>
       </section>
     </SiteShell>
-  );
-}
-
-function ProviderCard({ p }: { p: Provider }) {
-  return (
-    <button className="lobby-item" aria-label={`${p.name} fish games`}>
-      <img src={p.icon} alt="" loading="lazy" className="game-img" />
-      <img src={`${vendorLogoBase}/${p.code}-WHITE.png`} alt={p.name} loading="lazy" className="vendor-img" />
-    </button>
   );
 }
