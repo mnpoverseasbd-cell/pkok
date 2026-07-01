@@ -42,6 +42,10 @@ import promoWelcome from "@/assets/promo-welcome.jpg";
 import promoDaily from "@/assets/promo-daily.jpg";
 import promoVip from "@/assets/promo-vip.jpg";
 import jackpotHero from "@/assets/jackpot-hero.png";
+import iconStopwatch from "@/assets/icon-stopwatch.png";
+import iconSecure from "@/assets/icon-secure.png";
+import iconGamepad from "@/assets/icon-gamepad.png";
+import iconDevices from "@/assets/icon-devices.png";
 
 
 
