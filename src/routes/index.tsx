@@ -116,46 +116,30 @@ const heroSlides = [
 
 
 const mainCategories = [
-  { title: "স্লট", mascot: mascotSlots },
-  { title: "ফিশিং", mascot: mascotFish },
-  { title: "লাইভ", mascot: mascotLive },
-  { title: "পোকার", mascot: mascotPoker },
+  { key: "catSlots" as const, mascot: mascotSlots },
+  { key: "catFish" as const, mascot: mascotFish },
+  { key: "catLive" as const, mascot: mascotLive },
+  { key: "catPoker" as const, mascot: mascotPoker },
 ];
 
 const statCards = [
-  { value: "30", unit: "s", label: "গড় জমা দেওয়ার সময়" },
-  { value: "33", unit: "", label: "পেমেন্ট প্ল্যাটফর্ম পার্টনার" },
-  { value: "90", unit: "s", label: "গড় উত্তোলনের সময়" },
-  { value: "27", unit: "", label: "গেমিং প্রদানকারী পার্টনার" },
+  { value: "30", unit: "s", labelKey: "statAvgDeposit" as const },
+  { value: "33", unit: "", labelKey: "statPaymentPartners" as const },
+  { value: "90", unit: "s", labelKey: "statAvgWithdraw" as const },
+  { value: "27", unit: "", labelKey: "statGameProviders" as const },
 ];
 
 const featureCards = [
-  {
-    icon: iconStopwatch,
-    title: "দ্রুত জমা ও উত্তোলন",
-    body: "আমাদের সর্বশেষ পেমেন্ট গেটওয়ে প্রযুক্তি এক্সক্লুসিভ নেটওয়ার্ক অপ্টিমাইজেশনের মাধ্যমে অত্যন্ত দ্রুত জমা, উত্তোলন এবং স্থানান্তর অর্জন করে, যা আপনাকে একটি প্রথম শ্রেণির গেমিং অভিজ্ঞতা প্রদান করে।",
-  },
-  {
-    icon: iconSecure,
-    title: "নিরাপদ লেনদেন ও সম্পূর্ণ সুরক্ষা নিশ্চিত",
-    body: "আমরা ব্যবহার করছি ১২৮-বিট এনক্রিপশন প্রযুক্তি—বিশ্বস্ত ও আন্তর্জাতিকভাবে স্বীকৃত সুরক্ষা মান। আমাদের নিরাপত্তা ব্যবস্থাপনা প্রতিটি লেনদেনকে সম্পূর্ণ সুরক্ষিত রাখে।",
-  },
-  {
-    icon: iconGamepad,
-    title: "রোমাঞ্চকর গেম সমাহার",
-    body: "আমরা সম্পূর্ণ সেটআপসহ অ্যাপ্লিকেশন সরবরাহ করি, যাতে সদস্যরা যেকোনো সময়, যেকোনো স্থান থেকে ওয়েব, H5 ও ডেডিকেটেড অ্যাপ্লিকেশন মাধ্যমে গেম উপভোগ করতে পারেন। আমাদের ২৪x৭ অনলাইন কাস্টমার সার্ভিস সর্বোচ্চ মানের ও আন্তরিক সেবা প্রদান করে।",
-  },
-  {
-    icon: iconDevices,
-    title: "একাধিক অ্যাপ্লিকেশন বিকল্প",
-    body: "আমরা সম্পূর্ণ সেট অ্যাপ্লিকেশন সরবরাহ করি, যা সদস্যদের ওয়েব, H5 এবং নেটিভ অ্যাপের মাধ্যমে যেকোনো সময়, যেকোনো স্থানে গেম উপভোগ করতে সক্ষম করে। আমাদের ২৪x৭ অনলাইন কাস্টমার সার্ভিস সবচেয়ে আন্তরিক ও উচ্চমানের সেবা প্রদান করে।",
-  },
+  { icon: iconStopwatch, titleKey: "featFastTitle" as const, bodyKey: "featFastBody" as const },
+  { icon: iconSecure, titleKey: "featSecureTitle" as const, bodyKey: "featSecureBody" as const },
+  { icon: iconGamepad, titleKey: "featGamesTitle" as const, bodyKey: "featGamesBody" as const },
+  { icon: iconDevices, titleKey: "featDevicesTitle" as const, bodyKey: "featDevicesBody" as const },
 ];
 
 const promoCards = [
-  { title: "৯৫০% স্বাগতম অফার", image: promoWelcome },
-  { title: "দৈনিক ফ্রি রিওয়ার্ড", image: promoDaily },
-  { title: "বিশেষ VIP ক্যাশব্যাক", image: promoVip },
+  { titleKey: "promoWelcome" as const, image: promoWelcome },
+  { titleKey: "promoDaily" as const, image: promoDaily },
+  { titleKey: "promoVipCashback" as const, image: promoVip },
 ];
 
 const leaderboard = [
