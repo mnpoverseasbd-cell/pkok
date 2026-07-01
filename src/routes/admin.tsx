@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus } from "lucide-react";
+import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye } from "lucide-react";
+import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 
 const searchSchema = z.object({ tab: z.enum(["txns", "users", "methods"]).optional() });
 
@@ -73,6 +74,7 @@ function AdminTxns() {
   const [rows, setRows] = useState<any[]>([]);
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
   const [loading, setLoading] = useState(true);
+  const [detailId, setDetailId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -139,12 +141,15 @@ function AdminTxns() {
                     <TableCell className="text-xs capitalize text-white/70">{r.status}</TableCell>
                     <TableCell className="text-xs text-white/60">{new Date(r.created_at).toLocaleString()}</TableCell>
                     <TableCell>
-                      {r.status === "pending" && (
-                        <div className="flex gap-1">
-                          <Button size="sm" onClick={() => act(r.id, "approved")} className="h-7 bg-green-button text-[var(--background)]"><CheckCircle2 className="h-3 w-3" /></Button>
-                          <Button size="sm" variant="destructive" onClick={() => act(r.id, "rejected")} className="h-7"><XCircle className="h-3 w-3" /></Button>
-                        </div>
-                      )}
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="outline" onClick={() => setDetailId(r.id)} className="h-7"><Eye className="h-3 w-3" /></Button>
+                        {r.status === "pending" && (
+                          <>
+                            <Button size="sm" onClick={() => act(r.id, "approved")} className="h-7 bg-green-button text-[var(--background)]"><CheckCircle2 className="h-3 w-3" /></Button>
+                            <Button size="sm" variant="destructive" onClick={() => act(r.id, "rejected")} className="h-7"><XCircle className="h-3 w-3" /></Button>
+                          </>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -153,6 +158,7 @@ function AdminTxns() {
           </div>
         )}
       </CardContent>
+      <TxnDetailsDialog txnId={detailId} open={!!detailId} onOpenChange={(v) => !v && setDetailId(null)} showUser />
     </Card>
   );
 }

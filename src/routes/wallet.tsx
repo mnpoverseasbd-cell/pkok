@@ -8,6 +8,7 @@ import { SiteShell } from "@/components/landing/SiteShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 import { CircleDollarSign, Wallet, Banknote, History, CheckCircle2, XCircle, Clock } from "lucide-react";
 
 type TabKey = "deposit" | "withdraw" | "history";
@@ -346,23 +347,30 @@ function HistoryList({ userId }: { userId: string }) {
 }
 
 export function TxnRow({ r }: { r: Txn }) {
+  const [open, setOpen] = useState(false);
   const statusIcon = r.status === "approved" ? <CheckCircle2 className="h-4 w-4 text-[var(--neon-green)]" />
     : r.status === "rejected" || r.status === "cancelled" ? <XCircle className="h-4 w-4 text-red-400" />
     : <Clock className="h-4 w-4 text-[var(--neon-gold)]" />;
   const sign = r.type === "withdraw" ? "-" : "+";
   const color = r.type === "withdraw" ? "text-red-300" : "text-[var(--neon-green)]";
   return (
-    <div className="flex items-center justify-between rounded-md border border-white/10 bg-black/40 p-3">
-      <div>
-        <div className="flex items-center gap-2 text-sm font-bold text-white">
-          {statusIcon} <span className="capitalize">{r.type}</span>
-          <span className="text-[10px] uppercase text-white/50">{r.status}</span>
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="flex w-full items-center justify-between rounded-md border border-white/10 bg-black/40 p-3 text-left transition-colors hover:border-[var(--neon-green)]/50 hover:bg-black/60"
+      >
+        <div>
+          <div className="flex items-center gap-2 text-sm font-bold text-white">
+            {statusIcon} <span className="capitalize">{r.type}</span>
+            <span className="text-[10px] uppercase text-white/50">{r.status}</span>
+          </div>
+          <div className="text-xs text-white/60">{new Date(r.created_at).toLocaleString()}</div>
+          {r.txn_reference && <div className="text-[11px] text-white/50">Ref: {r.txn_reference}</div>}
+          {r.admin_note && <div className="text-[11px] text-white/70">Admin: {r.admin_note}</div>}
         </div>
-        <div className="text-xs text-white/60">{new Date(r.created_at).toLocaleString()}</div>
-        {r.txn_reference && <div className="text-[11px] text-white/50">Ref: {r.txn_reference}</div>}
-        {r.admin_note && <div className="text-[11px] text-white/70">Admin: {r.admin_note}</div>}
-      </div>
-      <div className={`text-lg font-black ${color}`}>{sign}৳{Number(r.amount).toFixed(2)}</div>
-    </div>
+        <div className={`text-lg font-black ${color}`}>{sign}৳{Number(r.amount).toFixed(2)}</div>
+      </button>
+      <TxnDetailsDialog txnId={r.id} open={open} onOpenChange={setOpen} />
+    </>
   );
 }
