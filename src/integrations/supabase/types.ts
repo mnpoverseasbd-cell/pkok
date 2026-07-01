@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      payment_methods: {
+        Row: {
+          account_number: string
+          created_at: string
+          id: string
+          instructions: string | null
+          is_active: boolean
+          kind: Database["public"]["Enums"]["pm_kind"]
+          label: string
+          min_deposit: number
+          min_withdraw: number
+          supports_deposit: boolean
+          supports_withdraw: boolean
+          updated_at: string
+        }
+        Insert: {
+          account_number: string
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          is_active?: boolean
+          kind: Database["public"]["Enums"]["pm_kind"]
+          label: string
+          min_deposit?: number
+          min_withdraw?: number
+          supports_deposit?: boolean
+          supports_withdraw?: boolean
+          updated_at?: string
+        }
+        Update: {
+          account_number?: string
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["pm_kind"]
+          label?: string
+          min_deposit?: number
+          min_withdraw?: number
+          supports_deposit?: boolean
+          supports_withdraw?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -67,6 +112,68 @@ export type Database = {
           },
         ]
       }
+      transactions: {
+        Row: {
+          admin_note: string | null
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          payment_method_id: string | null
+          receiver_account: string | null
+          sender_account: string | null
+          status: Database["public"]["Enums"]["txn_status"]
+          txn_reference: string | null
+          type: Database["public"]["Enums"]["txn_type"]
+          updated_at: string
+          user_id: string
+          user_note: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          payment_method_id?: string | null
+          receiver_account?: string | null
+          sender_account?: string | null
+          status?: Database["public"]["Enums"]["txn_status"]
+          txn_reference?: string | null
+          type: Database["public"]["Enums"]["txn_type"]
+          updated_at?: string
+          user_id: string
+          user_note?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          payment_method_id?: string | null
+          receiver_account?: string | null
+          sender_account?: string | null
+          status?: Database["public"]["Enums"]["txn_status"]
+          txn_reference?: string | null
+          type?: Database["public"]["Enums"]["txn_type"]
+          updated_at?: string
+          user_id?: string
+          user_note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -104,6 +211,9 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "vip" | "player"
+      pm_kind: "bkash" | "nagad" | "rocket" | "bank" | "usdt" | "other"
+      txn_status: "pending" | "approved" | "rejected" | "cancelled"
+      txn_type: "deposit" | "withdraw" | "adjustment" | "bonus"
       vip_tier: "bronze" | "silver" | "gold" | "platinum" | "diamond"
     }
     CompositeTypes: {
@@ -233,6 +343,9 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "vip", "player"],
+      pm_kind: ["bkash", "nagad", "rocket", "bank", "usdt", "other"],
+      txn_status: ["pending", "approved", "rejected", "cancelled"],
+      txn_type: ["deposit", "withdraw", "adjustment", "bonus"],
       vip_tier: ["bronze", "silver", "gold", "platinum", "diamond"],
     },
   },
