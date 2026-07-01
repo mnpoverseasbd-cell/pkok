@@ -38,6 +38,7 @@ export function useAuth() {
 export function useProfile(userId: string | undefined) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!userId) {
@@ -60,9 +61,40 @@ export function useProfile(userId: string | undefined) {
     return () => {
       cancelled = true;
     };
+  }, [userId, reloadKey]);
+
+  return { profile, loading, refetch: () => setReloadKey((k) => k + 1) };
+}
+
+export function useIsAdmin(userId: string | undefined) {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!userId) {
+      setIsAdmin(false);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled) {
+          setIsAdmin(!!data);
+          setLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [userId]);
 
-  return { profile, loading };
+  return { isAdmin, loading };
 }
 
 export async function signOut() {
