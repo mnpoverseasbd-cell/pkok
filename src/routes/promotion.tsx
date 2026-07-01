@@ -1,30 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteShell } from "@/components/landing/SiteShell";
-import b01 from "@/assets/promo/b01.jpg";
-import b02 from "@/assets/promo/b02.jpg";
-import b03 from "@/assets/promo/b03.jpg";
-import b04 from "@/assets/promo/b04.jpg";
-import b05 from "@/assets/promo/b05.jpg";
-import b06 from "@/assets/promo/b06.jpg";
-import b07 from "@/assets/promo/b07.jpg";
-import b08 from "@/assets/promo/b08.jpg";
-import b09 from "@/assets/promo/b09.jpg";
-import b10 from "@/assets/promo/b10.jpg";
-import b11 from "@/assets/promo/b11.jpg";
-import b12 from "@/assets/promo/b12.jpg";
-import b13 from "@/assets/promo/b13.jpg";
-import b14 from "@/assets/promo/b14.jpg";
-import b15 from "@/assets/promo/b15.jpg";
-import b16 from "@/assets/promo/b16.jpg";
-import b17 from "@/assets/promo/b17.jpg";
-import b18 from "@/assets/promo/b18.jpg";
-import b19 from "@/assets/promo/b19.jpg";
-import b20 from "@/assets/promo/b20.jpg";
-import b21 from "@/assets/promo/b21.jpg";
-import b22 from "@/assets/promo/b22.jpg";
-import b23 from "@/assets/promo/b23.jpg";
-import b24 from "@/assets/promo/b24.jpg";
 
 export const Route = createFileRoute("/promotion")({
   head: () => ({
@@ -51,31 +27,33 @@ const tabs: { key: Cat; label: string }[] = [
   { key: "sports", label: "স্পোর্টস" },
 ];
 
+const B = "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/";
+
 const promos: { img: string; title: string; cats: Cat[] }[] = [
-  { img: b01, title: "95OK.COM এ আপনাকে করছি ঠিক স্বাগত", cats: ["new"] },
-  { img: b02, title: "১ জন বন্ধুকে আমন্ত্রণ জানিয়ে ১৭৭৭ টাকা রিবেট নিন", cats: ["new"] },
-  { img: b03, title: "প্রতিদিন লগইন করুন গেম খেলে এবং জিতুন ৭,৭৭৭ টাকা", cats: ["new"] },
-  { img: b04, title: "দৈনিক চ্যাম্পিয়নশিপ, পুরস্কার তহবিল ১০,০০,০০০ টাকা", cats: ["slot"] },
-  { img: b05, title: "প্রথম ডিপোজিটে উপভোগ করুন ৫০% বোনাস", cats: ["deposit", "new"] },
-  { img: b06, title: "নতুন সদস্যদের জন্য দ্বিতীয় উপহার — ১০% বোনাস", cats: ["deposit"] },
-  { img: b07, title: "সাইন আপ করলেই পাচ্ছেন ১৭ টাকা, উত্তোলন ৩০০ টাকা", cats: ["new"] },
-  { img: b08, title: "VIP আপগ্রেড বোনাস — সাপ্তাহিক ও মাসিক পুরস্কার", cats: ["new"] },
-  { img: b09, title: "নতুন সদস্য বৃদ্ধির পরিকল্পনা (৩০ দিন)", cats: ["new"] },
-  { img: b10, title: "দৈনিক লগইন লাকি পুরস্কার — সর্বমোট ১০,০০,০০০ টাকা", cats: ["slot"] },
-  { img: b11, title: "স্লট গেমে লস রিলিফ বোনাস ৩০% পর্যন্ত", cats: ["slot"] },
-  { img: b12, title: "প্রতিদিনের রিয়েল-টাইম বেটিং রিবেট সর্বোচ্চ ৫% পর্যন্ত", cats: ["live"] },
-  { img: b13, title: "রহস্যময় বোনাস ও লাকি বোনাস — সর্বোচ্চ ১১১,১১১ টাকা", cats: ["new"] },
-  { img: b14, title: "সদস্য দিবস কার্নিভাল ৭, ১৭, ২৭ — ১০০ কোটি পুরস্কার", cats: ["new"] },
-  { img: b15, title: "অ্যাপ ডাউনলোড করলে বোনাস ২৭ টাকা", cats: ["new"] },
-  { img: b16, title: "TG অফিসিয়াল চ্যানেল ফলো করুন, জিতুন ১১,৭৭৭ টাকা", cats: ["new"] },
-  { img: b17, title: "PKOK সদস্যদের জন্মদিন বোনাস", cats: ["new"] },
-  { img: b18, title: "ডিপোজিট এর নির্দেশাবলী", cats: ["deposit"] },
-  { img: b19, title: "অফার নিয়ম এবং শর্তাবলী", cats: ["new"] },
-  { img: b20, title: "১.১.১.১ অ্যাপ ডাউনলোড করুন", cats: ["new"] },
-  { img: b21, title: "লেটেস্ট সহযোগিতা PJOK", cats: ["slot"] },
-  { img: b22, title: "লেটেস্ট সহযোগিতা BDOK", cats: ["slot"] },
-  { img: b23, title: "লেটেস্ট সহযোগিতা NNOK", cats: ["slot"] },
-  { img: b24, title: "লেটেস্ট সহযোগিতা 333OK", cats: ["slot"] },
+  { img: B + "3013088_1747311939545.png", title: "95OK.COM এ আপনাকে করছি ঠিক স্বাগত", cats: ["new"] },
+  { img: B + "3013088_1747298518814.png", title: "১ জন বন্ধুকে আমন্ত্রণ জানিয়ে ১৭৭৭ টাকা রিবেট নিন", cats: ["new"] },
+  { img: B + "3013088_1747144665094.png", title: "প্রতিদিন লগইন করুন গেম খেলে এবং জিতুন ৭,৭৭৭ টাকা", cats: ["new"] },
+  { img: B + "3013088_1747144146761.png", title: "দৈনিক চ্যাম্পিয়নশিপ, পুরস্কার তহবিল ১০,০০,০০০ টাকা", cats: ["slot"] },
+  { img: B + "3013088_1749471837701.png", title: "প্রথম ডিপোজিটে উপভোগ করুন ৫০% বোনাস", cats: ["deposit", "new"] },
+  { img: B + "3013088_1747311702409.png", title: "নতুন সদস্যদের জন্য দ্বিতীয় উপহার — ১০% বোনাস", cats: ["deposit"] },
+  { img: B + "3026578_1781775033023.gif", title: "সাইন আপ করলেই পাচ্ছেন ১৭ টাকা, উত্তোলন ৩০০ টাকা", cats: ["new"] },
+  { img: B + "3013088_1747224285019.png", title: "VIP আপগ্রেড বোনাস — সাপ্তাহিক ও মাসিক পুরস্কার", cats: ["new"] },
+  { img: B + "3013088_1747363901849.png", title: "নতুন সদস্য বৃদ্ধির পরিকল্পনা (৩০ দিন)", cats: ["new"] },
+  { img: B + "3013088_1747279238523.png", title: "দৈনিক লগইন লাকি পুরস্কার — সর্বমোট ১০,০০,০০০ টাকা", cats: ["slot"] },
+  { img: B + "3013088_1747224576361.png", title: "স্লট গেমে লস রিলিফ বোনাস ৩০% পর্যন্ত", cats: ["slot"] },
+  { img: B + "3013088_1747314206375.png", title: "প্রতিদিনের রিয়েল-টাইম বেটিং রিবেট সর্বোচ্চ ৫% পর্যন্ত", cats: ["live"] },
+  { img: B + "3013088_1747278645988.png", title: "রহস্যময় বোনাস ও লাকি বোনাস — সর্বোচ্চ ১১১,১১১ টাকা", cats: ["new"] },
+  { img: B + "3013088_1747223721487.png", title: "সদস্য দিবস কার্নিভাল ৭, ১৭, ২৭ — ১০০ কোটি পুরস্কার", cats: ["new"] },
+  { img: B + "3013088_1747312982654.png", title: "অ্যাপ ডাউনলোড করলে বোনাস ২৭ টাকা", cats: ["new"] },
+  { img: B + "3003251_1776240520734.gif", title: "TG অফিসিয়াল চ্যানেল ফলো করুন, জিতুন ১১,৭৭৭ টাকা", cats: ["new"] },
+  { img: B + "3013088_1747197386612.png", title: "PKOK সদস্যদের জন্মদিন বোনাস", cats: ["new"] },
+  { img: B + "3013088_1747198794639.png", title: "ডিপোজিট এর নির্দেশাবলী", cats: ["deposit"] },
+  { img: B + "3003251_1747025134589.png", title: "অফার নিয়ম এবং শর্তাবলী", cats: ["new"] },
+  { img: B + "3013088_1747364441025.png", title: "১.১.১.১ অ্যাপ ডাউনলোড করুন", cats: ["new"] },
+  { img: B + "3013088_1747198975346.png", title: "লেটেস্ট সহযোগিতা PJOK", cats: ["slot"] },
+  { img: B + "3003251_1776241545201.gif", title: "লেটেস্ট সহযোগিতা BDOK", cats: ["slot"] },
+  { img: B + "3003251_1776162225132.gif", title: "লেটেস্ট সহযোগিতা NNOK", cats: ["slot"] },
+  { img: B + "3003251_1776241336331.gif", title: "লেটেস্ট সহযোগিতা 333OK", cats: ["slot"] },
 ];
 
 function PromotionPage() {
@@ -106,24 +84,28 @@ function PromotionPage() {
       </section>
 
       <section className="mx-auto max-w-5xl px-3 py-6 sm:px-4">
-        <div key={active} className="grid gap-4 sm:grid-cols-2 animate-fade-in">
+        <div key={active} className="grid gap-4 sm:grid-cols-2">
           {visible.map((p, i) => (
             <article
               key={p.title + i}
-              style={{ animationDelay: `${i * 40}ms`, animationFillMode: "backwards" }}
-              className="group overflow-hidden rounded-xl border border-[var(--neon-green)]/50 bg-black/30 animate-fade-in transition-shadow hover:shadow-[0_0_25px_rgba(57,255,20,0.35)]"
+              style={{
+                animationDelay: `${i * 60}ms`,
+                animationFillMode: "backwards",
+              }}
+              className="promo-card group relative overflow-hidden rounded-xl border border-[var(--neon-green)]/50 bg-black/30 animate-fade-in transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(57,255,20,0.45)] hover:border-[var(--neon-gold)]"
             >
-              <div className="overflow-hidden">
+              <div className="relative overflow-hidden">
                 <img
                   src={p.img}
                   alt={p.title}
                   loading="lazy"
-                  className="block w-full h-auto transition-transform duration-500 group-hover:scale-105"
+                  className="block w-full h-auto transition-transform duration-700 group-hover:scale-110"
                 />
+                <div className="pointer-events-none absolute inset-0 promo-shimmer" aria-hidden />
               </div>
-              <div className="flex items-center justify-between gap-3 px-3 py-2 bg-black/40">
+              <div className="flex items-center justify-between gap-3 px-3 py-2 bg-black/50 backdrop-blur">
                 <h3 className="text-xs font-semibold text-foreground/90 truncate">{p.title}</h3>
-                <button className="shrink-0 rounded-md bg-green-button px-4 py-1 text-[11px] font-black text-[var(--background)] transition hover:brightness-110">
+                <button className="shrink-0 rounded-md bg-green-button px-4 py-1 text-[11px] font-black text-[var(--background)] transition hover:brightness-110 hover:scale-105 active:scale-95">
                   আরও
                 </button>
               </div>
