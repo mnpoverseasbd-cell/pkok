@@ -176,7 +176,7 @@ function MainNav() {
           <span className="rounded-[6px] bg-[#ff9700] px-1.5 text-black shadow-[0_2px_0_rgba(0,0,0,0.35)]">OK</span>
           <span className="-ml-1 text-[#ff9700] drop-shadow">👌</span>
         </Link>
-        <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 whitespace-nowrap text-[15px] font-bold text-white lg:flex">
+        <nav className="hidden min-w-0 flex-1 items-center justify-start gap-1 whitespace-nowrap pl-4 text-[15px] font-bold text-white lg:flex">
           {topMenu.map((item) => (
             <Link
               key={item.key}
