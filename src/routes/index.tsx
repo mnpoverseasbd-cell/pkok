@@ -416,6 +416,7 @@ function JackpotSection() {
 }
 
 function LatestWinners() {
+  const { t } = useLang();
   const winners = [
     { name: "*******526", game: "Wild Bounty Showdown", amount: "৳46,080", image: g12 },
     { name: "*******968", game: "Aviator", amount: "৳45,450", image: g8 },
@@ -429,7 +430,7 @@ function LatestWinners() {
   const loop = [...winners, ...winners];
   return (
     <div>
-      <div className="mb-3 flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]"><Trophy className="h-4 w-4" /> Latest Winners</div>
+      <div className="mb-3 flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]"><Trophy className="h-4 w-4" /> {t("latestWinners")}</div>
       <div className="relative h-[360px] overflow-hidden rounded-xl border border-[var(--neon-green)]/40 bg-black/35 p-2">
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-black/70 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-black/70 to-transparent" />
