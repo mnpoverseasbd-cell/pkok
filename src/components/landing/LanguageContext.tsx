@@ -23,6 +23,10 @@ export const translations: Dict = {
   navLottery: { BN: "লটারি", EN: "Lottery" },
   navApp: { BN: "APP", EN: "APP" },
   navPromo: { BN: "প্রমোশন", EN: "Promotions" },
+  hotGames: { BN: "গরম গেম", EN: "Hot Games" },
+  latestWinners: { BN: "সাম্প্রতিক বিজয়ী", EN: "Latest Winners" },
+  more: { BN: "আরও", EN: "More" },
+  promo: { BN: "প্রমোশন", EN: "Promotions" },
   footerCopy: {
     BN: "কপিরাইট © 2026 PKOK gaming. সমস্ত অধিকার সংরক্ষিত।",
     EN: "Copyright © 2026 PKOK gaming. All rights reserved.",
