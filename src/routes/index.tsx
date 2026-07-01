@@ -521,13 +521,13 @@ function AppSection() {
           <div className="absolute left-0 top-1/2 hidden -translate-y-1/2 sm:block">
             <div className="text-6xl">🐟</div>
           </div>
-          <img src={phoneMockup} alt="Asik Game app preview" width={800} height={1024} className="relative z-10 w-44 animate-float sm:w-56 lg:w-64" />
+          <img src={phoneMockup} alt="PKOK app preview" width={800} height={1024} className="relative z-10 w-44 animate-float sm:w-56 lg:w-64" />
         </div>
         <div>
           <div className="text-sm font-bold text-[var(--neon-green)]">সেরা অভিজ্ঞতা</div>
-          <h2 className="mt-1 text-4xl font-black text-white sm:text-5xl">ASIK APP</h2>
+          <h2 className="mt-1 text-4xl font-black text-white sm:text-5xl">PKOK APP</h2>
           <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/80 sm:text-base">
-            মোবাইল অ্যাপে পান ফাস্ট গেম লোডিং, বাংলা সাপোর্ট, বোনাস আপডেট, লাইভ নোটিফিকেশন এবং দ্রুত QR স্ক্যান ডাউনলোড সুবিধা।
+            বিশ্বের সেরা সমৃদ্ধ বিনোদনমূলক মোবাইল অ্যাপ, যা মূলত এবং নিখুঁত ব্যবহারকারীর অভিজ্ঞতা প্রদান করে। সুপার স্লট গেম, শীর্ষ ই-স্পোর্টস ইভেন্ট, লাইভ ডিলার, ম্যাচ, লটারি এবং মেঘা-কার্নিভাল সেবা এবং আপনার বাংলা মুহূর্তে সবচেয়ে পূর্ণাঙ্গ বিনোদন উপভোগে কনভাল এবং QR কোড স্ক্যান করে ডাউনলোড করুন।
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <button className="inline-flex items-center gap-2 rounded-xl bg-green-button px-4 py-3 font-black text-[var(--background)]"><Download className="h-5 w-5" /> Android APP</button>
