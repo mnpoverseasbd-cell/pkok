@@ -61,18 +61,17 @@ const hotGames: Game[] = [
 function HotPage() {
   return (
     <SiteShell>
-      <section className="mx-auto max-w-7xl px-2 pt-3 sm:px-4">
-        {/* Header card */}
-        <div className="rounded-t-lg bg-[linear-gradient(180deg,rgba(7,40,28,0.85),rgba(4,18,12,0.95))] px-4 py-3 ring-1 ring-[var(--neon-green)]/30">
-          <div className="flex items-center gap-2">
-            <Flame className="h-5 w-5 text-orange-400" />
-            <h1 className="text-base font-bold text-[var(--neon-gold)] sm:text-lg">গরম খেলা</h1>
+      <section className="mx-auto max-w-3xl px-2 pt-3 sm:px-3">
+        {/* Rounded green container matching pkok11 */}
+        <div className="rounded-xl bg-[linear-gradient(180deg,#0b3a24,#062616)] p-2 ring-1 ring-[var(--neon-green)]/40 shadow-[0_0_30px_rgba(0,255,120,0.08)_inset]">
+          {/* Header pill */}
+          <div className="mb-2 flex items-center gap-2 rounded-lg bg-[linear-gradient(180deg,#0f5a34,#083f22)] px-3 py-2 ring-1 ring-[var(--neon-green)]/40">
+            <Flame className="h-4 w-4 text-orange-400" />
+            <h1 className="text-sm font-bold tracking-wide text-[var(--neon-gold)]">গরম গেম</h1>
           </div>
-        </div>
 
-        {/* Game grid */}
-        <div className="rounded-b-lg bg-neutral-200/95 p-3 sm:p-4">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-6">
+          {/* 5-column game grid (mirrors pkok11) */}
+          <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 md:grid-cols-5">
             {hotGames.map((g, i) => (
               <GameCard key={i} game={g} />
             ))}
@@ -86,17 +85,15 @@ function HotPage() {
 function GameCard({ game }: { game: Game }) {
   return (
     <div className="group flex flex-col">
-      <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-black ring-1 ring-black/10 transition hover:scale-[1.02] hover:ring-[var(--neon-gold)]">
-        {/* Provider tag */}
-        <span className="absolute left-1.5 top-1.5 z-10 rounded bg-[linear-gradient(180deg,#1a8a4a,#0a4a23)] px-2 py-0.5 text-[10px] font-bold text-white ring-1 ring-[var(--neon-green)]/60">
+      <div className="relative aspect-square overflow-hidden rounded-md bg-black ring-1 ring-black/30 transition hover:scale-[1.03] hover:ring-[var(--neon-gold)]">
+        <span className="absolute left-1 top-1 z-10 rounded bg-[linear-gradient(180deg,#1a8a4a,#0a4a23)] px-1.5 py-0.5 text-[9px] font-bold text-white ring-1 ring-[var(--neon-green)]/60">
           {game.provider}
         </span>
-        {/* Heart */}
         <button
           aria-label="favorite"
-          className="absolute right-1.5 top-1.5 z-10 grid h-6 w-6 place-items-center rounded-full bg-black/40 text-white/70 backdrop-blur hover:bg-black/60 hover:text-[var(--neon-gold)]"
+          className="absolute right-1 top-1 z-10 grid h-5 w-5 place-items-center rounded-full bg-black/40 text-white/70 backdrop-blur hover:bg-black/60 hover:text-[var(--neon-gold)]"
         >
-          <Heart className="h-3.5 w-3.5" />
+          <Heart className="h-3 w-3" />
         </button>
         <img
           src={game.img}
@@ -108,7 +105,7 @@ function GameCard({ game }: { game: Game }) {
           }}
         />
       </div>
-      <p className="mt-1.5 truncate px-1 text-center text-xs font-medium text-black sm:text-sm">
+      <p className="mt-1 truncate px-0.5 text-center text-[11px] font-medium text-white/90">
         {game.name}
       </p>
     </div>
