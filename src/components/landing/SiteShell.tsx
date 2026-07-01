@@ -123,6 +123,19 @@ function TopBar() {
   const { setOpen } = useModals();
   const [showPw, setShowPw] = useState(false);
   const { t } = useLang();
+  const { user } = useAuth();
+  const { profile } = useProfile(user?.id);
+  const navigate = useNavigate();
+
+  async function handleSignOut() {
+    await signOut();
+    toast.success("লগআউট হয়েছে");
+    navigate({ to: "/" });
+  }
+
+  const balance = profile?.wallet_balance ?? 0;
+  const displayName = profile?.display_name || profile?.username || user?.email?.split("@")[0] || "User";
+
   return (
     <div className="bg-topbar border-b border-border/60">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-3 py-2 text-xs sm:px-4 lg:px-6">
@@ -131,37 +144,55 @@ function TopBar() {
           <LangSwitcher />
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {/* Wallet chip — visible md+ */}
-          <div className="hidden md:flex items-center gap-2 rounded-full border border-border/70 bg-black/25 px-2 py-1 sm:px-3">
-            <CircleDollarSign className="h-3.5 w-3.5 text-foreground/80" />
-            <span className="text-[var(--neon-green)]">৳ 0.00</span>
-            <button onClick={() => setOpen("deposit")} className="rounded-full bg-green-button px-3 py-1 font-bold text-[var(--background)]">{t("deposit")}</button>
-            <button onClick={() => setOpen("withdraw")} className="rounded-full bg-gold-button px-3 py-1 font-bold text-[var(--background)]">{t("withdraw")}</button>
-          </div>
-          {/* PKOK-style phone + password quick login */}
-          <div className="hidden items-center gap-1.5 lg:flex">
-            <div className="flex items-center gap-1 rounded-md border border-border/70 bg-black/30 px-2 py-1.5">
-              <span className="h-3 w-4 rounded-sm bg-[var(--neon-pink)]" />
-              <span className="font-bold text-white/90">+880</span>
-            </div>
-            <input
-              type="tel"
-              placeholder={t("mobilePlaceholder")}
-              className="h-7 w-36 rounded-md border border-border/70 bg-black/30 px-2 text-[11px] text-white placeholder:text-foreground/55 outline-none focus:border-[var(--neon-green)]"
-            />
-            <div className="relative">
-              <input
-                type={showPw ? "text" : "password"}
-                placeholder={t("passwordPlaceholder")}
-                className="h-7 w-32 rounded-md border border-border/70 bg-black/30 px-2 pr-6 text-[11px] text-white placeholder:text-foreground/55 outline-none focus:border-[var(--neon-green)]"
-              />
-              <button type="button" onClick={() => setShowPw((v) => !v)} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-foreground/60">
-                {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+          {user ? (
+            <>
+              {/* Signed-in wallet chip */}
+              <div className="hidden md:flex items-center gap-2 rounded-full border border-border/70 bg-black/25 px-2 py-1 sm:px-3">
+                <CircleDollarSign className="h-3.5 w-3.5 text-foreground/80" />
+                <span className="text-[var(--neon-green)] font-bold">৳ {balance.toFixed(2)}</span>
+                <button onClick={() => setOpen("deposit")} className="rounded-full bg-green-button px-3 py-1 font-bold text-[var(--background)]">{t("deposit")}</button>
+                <button onClick={() => setOpen("withdraw")} className="rounded-full bg-gold-button px-3 py-1 font-bold text-[var(--background)]">{t("withdraw")}</button>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-full border border-border/70 bg-black/25 px-2.5 py-1">
+                <UserIcon className="h-3.5 w-3.5 text-[var(--neon-gold)]" />
+                <span className="max-w-[100px] truncate font-bold text-white">{displayName}</span>
+              </div>
+              <button
+                onClick={handleSignOut}
+                title="লগআউট"
+                className="inline-flex items-center gap-1 rounded-md bg-[var(--neon-pink)]/80 px-2.5 py-1.5 font-bold text-white hover:brightness-110"
+              >
+                <LogOut className="h-3.5 w-3.5" />
               </button>
-            </div>
-          </div>
-          <Link to="/login" className="inline-flex items-center gap-1 rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">{t("login")}</Link>
-          <Link to="/register" className="inline-flex items-center gap-1 rounded-md bg-[var(--neon-pink)] px-3 py-1.5 font-bold text-white">{t("register")}</Link>
+            </>
+          ) : (
+            <>
+              {/* PKOK-style quick login (visual only when signed out) */}
+              <div className="hidden items-center gap-1.5 lg:flex">
+                <div className="flex items-center gap-1 rounded-md border border-border/70 bg-black/30 px-2 py-1.5">
+                  <span className="h-3 w-4 rounded-sm bg-[var(--neon-pink)]" />
+                  <span className="font-bold text-white/90">+880</span>
+                </div>
+                <input
+                  type="tel"
+                  placeholder={t("mobilePlaceholder")}
+                  className="h-7 w-36 rounded-md border border-border/70 bg-black/30 px-2 text-[11px] text-white placeholder:text-foreground/55 outline-none focus:border-[var(--neon-green)]"
+                />
+                <div className="relative">
+                  <input
+                    type={showPw ? "text" : "password"}
+                    placeholder={t("passwordPlaceholder")}
+                    className="h-7 w-32 rounded-md border border-border/70 bg-black/30 px-2 pr-6 text-[11px] text-white placeholder:text-foreground/55 outline-none focus:border-[var(--neon-green)]"
+                  />
+                  <button type="button" onClick={() => setShowPw((v) => !v)} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-foreground/60">
+                    {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              </div>
+              <Link to="/login" className="inline-flex items-center gap-1 rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">{t("login")}</Link>
+              <Link to="/register" className="inline-flex items-center gap-1 rounded-md bg-[var(--neon-pink)] px-3 py-1.5 font-bold text-white">{t("register")}</Link>
+            </>
+          )}
         </div>
       </div>
     </div>
