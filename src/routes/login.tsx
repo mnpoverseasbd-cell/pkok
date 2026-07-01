@@ -1,7 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, EyeOff, Lock, Phone, ShieldCheck, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Loader2, Lock, Mail, ShieldCheck, Sparkles } from "lucide-react";
+import { toast } from "sonner";
+import { z } from "zod";
 import { SiteShell } from "@/components/landing/SiteShell";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -15,8 +18,36 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+const loginSchema = z.object({
+  email: z.string().trim().email({ message: "সঠিক ইমেইল দিন" }).max(255),
+  password: z.string().min(6, { message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষর" }).max(72),
+});
+
 function LoginPage() {
   const [show, setShow] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const parsed = loginSchema.safeParse({ email, password });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "ভুল ইনপুট");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword(parsed.data);
+    setLoading(false);
+    if (error) {
+      toast.error(error.message === "Invalid login credentials" ? "ইমেইল বা পাসওয়ার্ড ভুল" : error.message);
+      return;
+    }
+    toast.success("সফলভাবে লগইন হয়েছে");
+    navigate({ to: "/" });
+  }
+
   return (
     <SiteShell>
       <section className="mx-auto grid max-w-6xl gap-6 px-3 py-8 sm:px-4 lg:grid-cols-[1.05fr_1fr] lg:px-6">
@@ -41,38 +72,47 @@ function LoginPage() {
             <p className="mt-1 text-xs text-foreground/70">আপনার অ্যাকাউন্টে প্রবেশ করুন</p>
           </div>
 
-          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-            <Field icon={Phone} label="ফোন নম্বর / ইউজারনেম" placeholder="01XXXXXXXXX" />
+          <form className="space-y-4" onSubmit={onSubmit}>
+            <div>
+              <label className="mb-1 block text-xs font-bold text-foreground/85">ইমেইল</label>
+              <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-green)]/45 bg-black/35 px-3 py-2.5">
+                <Mail className="h-4 w-4 text-foreground/70" />
+                <input
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/40"
+                />
+              </div>
+            </div>
             <div>
               <label className="mb-1 block text-xs font-bold text-foreground/85">পাসওয়ার্ড</label>
               <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-green)]/45 bg-black/35 px-3 py-2.5">
                 <Lock className="h-4 w-4 text-foreground/70" />
-                <input type={show ? "text" : "password"} placeholder="••••••••" className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/40" />
+                <input
+                  type={show ? "text" : "password"}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/40"
+                />
                 <button type="button" onClick={() => setShow(!show)} className="text-foreground/70">
                   {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center gap-2 text-foreground/80">
-                <input type="checkbox" className="h-3.5 w-3.5 accent-[var(--neon-green)]" /> মনে রাখুন
-              </label>
-              <a href="#" className="font-bold text-[var(--neon-cyan)] hover:underline">পাসওয়ার্ড ভুলে গেছেন?</a>
-            </div>
-
-            <button className="w-full rounded-xl bg-gold-button py-3 text-base font-black text-[var(--background)] transition hover:brightness-110">লগইন করুন</button>
-
-            <div className="relative my-2 text-center text-xs text-foreground/55">
-              <span className="bg-[var(--surface)] px-2 relative z-10">অথবা</span>
-              <div className="absolute left-0 right-0 top-1/2 -z-0 h-px bg-[var(--neon-green)]/30" />
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              {["Google", "Telegram", "WhatsApp"].map((s) => (
-                <button key={s} type="button" className="rounded-xl border border-[var(--neon-green)]/40 bg-black/30 py-2 text-xs font-bold text-white hover:bg-[var(--neon-green)]/25">{s}</button>
-              ))}
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gold-button py-3 text-base font-black text-[var(--background)] transition hover:brightness-110 disabled:opacity-60"
+            >
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+              লগইন করুন
+            </button>
 
             <p className="text-center text-sm text-foreground/75">
               অ্যাকাউন্ট নেই? <Link to="/register" className="font-bold text-[var(--neon-gold)] hover:underline">রেজিস্টার করুন</Link>
@@ -81,17 +121,5 @@ function LoginPage() {
         </div>
       </section>
     </SiteShell>
-  );
-}
-
-function Field({ icon: Icon, label, placeholder, type = "text" }: { icon: typeof Phone; label: string; placeholder: string; type?: string }) {
-  return (
-    <div>
-      <label className="mb-1 block text-xs font-bold text-foreground/85">{label}</label>
-      <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-green)]/45 bg-black/35 px-3 py-2.5">
-        <Icon className="h-4 w-4 text-foreground/70" />
-        <input type={type} placeholder={placeholder} className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/40" />
-      </div>
-    </div>
   );
 }
