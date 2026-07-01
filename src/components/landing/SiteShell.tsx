@@ -15,7 +15,7 @@ const topMenu: { label: string; to: string; icon: ComponentType<{ className?: st
   { label: "ই-স্পোর্টস", to: "/esports", icon: Gamepad2 },
   { label: "পোকার", to: "/poker", icon: Spade },
   { label: "লটারি", to: "/lottery", icon: Ticket },
-  { label: "APP", to: "/vip", icon: Smartphone },
+  { label: "APP", to: "/download", icon: Smartphone },
   { label: "প্রমোশন", to: "/promotion", icon: Gift },
 ];
 
