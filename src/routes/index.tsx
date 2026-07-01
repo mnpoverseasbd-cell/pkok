@@ -237,7 +237,7 @@ function PromoPopup() {
             onClick={next}
             className="rounded-full bg-[var(--neon-green)] px-5 py-2 text-sm font-semibold text-black hover:brightness-110"
           >
-            {idx < total - 1 ? "পরবর্তী →" : "বন্ধ করুন"}
+            {idx < total - 1 ? t("popupNext") : t("popupClose")}
           </button>
         </div>
       </div>
