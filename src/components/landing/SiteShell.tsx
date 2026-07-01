@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, Mail, MessageCircle, Radio, Smartphone, Spade, Ticket, Trophy } from "lucide-react";
+import { ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, Mail, MessageCircle, Radio, Smartphone, Spade, Ticket, Trophy } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 import { useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 import { WelcomePopup } from "@/components/landing/WelcomePopup";
+import { LanguageProvider, useLang, type Lang } from "@/components/landing/LanguageContext";
 import twoJLogo from "@/assets/providers/2J.png.asset.json";
 import ailLogo from "@/assets/providers/AIL.png.asset.json";
 import bngLogo from "@/assets/providers/BNG.png.asset.json";
@@ -42,18 +43,18 @@ import vaLogo from "@/assets/providers/VA.png.asset.json";
 import wdLogo from "@/assets/providers/WD.png.asset.json";
 import wsLogo from "@/assets/providers/WS.png.asset.json";
 
-const topMenu: { label: string; to: string; icon: ComponentType<{ className?: string }> }[] = [
-  { label: "হোম", to: "/", icon: Home },
-  { label: "গরম", to: "/hot", icon: Flame },
-  { label: "স্লট", to: "/slots", icon: Dice5 },
-  { label: "ফিশিং", to: "/fish", icon: Fish },
-  { label: "লাইভ", to: "/live", icon: Radio },
-  { label: "স্পোর্টস", to: "/sports", icon: Trophy },
-  { label: "ই-স্পোর্টস", to: "/esports", icon: Gamepad2 },
-  { label: "পোকার", to: "/poker", icon: Spade },
-  { label: "লটারি", to: "/lottery", icon: Ticket },
-  { label: "APP", to: "/download", icon: Smartphone },
-  { label: "প্রমোশন", to: "/promotion", icon: Gift },
+const topMenu: { key: "navHome"|"navHot"|"navSlots"|"navFish"|"navLive"|"navSports"|"navEsports"|"navPoker"|"navLottery"|"navApp"|"navPromo"; to: string; icon: ComponentType<{ className?: string }> }[] = [
+  { key: "navHome", to: "/", icon: Home },
+  { key: "navHot", to: "/hot", icon: Flame },
+  { key: "navSlots", to: "/slots", icon: Dice5 },
+  { key: "navFish", to: "/fish", icon: Fish },
+  { key: "navLive", to: "/live", icon: Radio },
+  { key: "navSports", to: "/sports", icon: Trophy },
+  { key: "navEsports", to: "/esports", icon: Gamepad2 },
+  { key: "navPoker", to: "/poker", icon: Spade },
+  { key: "navLottery", to: "/lottery", icon: Ticket },
+  { key: "navApp", to: "/download", icon: Smartphone },
+  { key: "navPromo", to: "/promotion", icon: Gift },
 ];
 
 
@@ -61,38 +62,79 @@ const sideActions = ["24CS", "Telegram", "Facebook", "TG Channel", "Whatsapp"];
 
 export function SiteShell({ children, footer = true }: { children: ReactNode; footer?: boolean }) {
   return (
-    <ModalsProvider>
-      <div className="portal-shell min-h-screen text-foreground">
-        <TopBar />
-        <MainNav />
-        <main className="pb-8">{children}</main>
-        {footer ? <FooterBlock /> : null}
-        <SocialRail />
-        <LeftFloatingBadges />
-        <WelcomePopup />
-      </div>
-    </ModalsProvider>
+    <LanguageProvider>
+      <ModalsProvider>
+        <div className="portal-shell min-h-screen text-foreground">
+          <TopBar />
+          <MainNav />
+          <main className="pb-8">{children}</main>
+          {footer ? <FooterBlock /> : null}
+          <SocialRail />
+          <LeftFloatingBadges />
+          <WelcomePopup />
+        </div>
+      </ModalsProvider>
+    </LanguageProvider>
+  );
+}
+
+function LangSwitcher() {
+  const { lang, setLang } = useLang();
+  const [open, setOpen] = useState(false);
+  const options: { code: Lang; label: string; flag: string }[] = [
+    { code: "BN", label: "বাংলা", flag: "🇧🇩" },
+    { code: "EN", label: "English", flag: "🇬🇧" },
+  ];
+  const current = options.find((o) => o.code === lang)!;
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        className="flex items-center gap-1.5 rounded-full border border-border/60 bg-black/25 px-2.5 py-1 text-foreground/90 hover:text-white"
+      >
+        <span className="text-sm leading-none">{current.flag}</span>
+        <span className="truncate">{current.label}</span>
+        <ChevronDown className="h-3 w-3" />
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full z-50 mt-1 min-w-[140px] overflow-hidden rounded-md border border-border/70 bg-[var(--surface)] shadow-lg">
+          {options.map((o) => (
+            <button
+              key={o.code}
+              type="button"
+              onMouseDown={(e) => { e.preventDefault(); setLang(o.code); setOpen(false); }}
+              className={`flex w-full items-center gap-2 px-3 py-2 text-left text-xs hover:bg-black/40 ${o.code === lang ? "text-[var(--neon-green)]" : "text-white/90"}`}
+            >
+              <span>{o.flag}</span>
+              <span>{o.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
 function TopBar() {
   const { setOpen } = useModals();
   const [showPw, setShowPw] = useState(false);
+  const { t } = useLang();
   return (
     <div className="bg-topbar border-b border-border/60">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-3 py-2 text-xs sm:px-4 lg:px-6">
         <div className="flex min-w-0 items-center gap-2 text-foreground/90">
-          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--neon-pink)]" />
-          <span className="truncate">বাংলা</span>
           <Globe className="h-3.5 w-3.5 shrink-0" />
+          <LangSwitcher />
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {/* Wallet chip — visible md+ */}
           <div className="hidden md:flex items-center gap-2 rounded-full border border-border/70 bg-black/25 px-2 py-1 sm:px-3">
             <CircleDollarSign className="h-3.5 w-3.5 text-foreground/80" />
             <span className="text-[var(--neon-green)]">৳ 0.00</span>
-            <button onClick={() => setOpen("deposit")} className="rounded-full bg-green-button px-3 py-1 font-bold text-[var(--background)]">ডিপোজিট</button>
-            <button onClick={() => setOpen("withdraw")} className="rounded-full bg-gold-button px-3 py-1 font-bold text-[var(--background)]">উত্তোলন</button>
+            <button onClick={() => setOpen("deposit")} className="rounded-full bg-green-button px-3 py-1 font-bold text-[var(--background)]">{t("deposit")}</button>
+            <button onClick={() => setOpen("withdraw")} className="rounded-full bg-gold-button px-3 py-1 font-bold text-[var(--background)]">{t("withdraw")}</button>
           </div>
           {/* PKOK-style phone + password quick login */}
           <div className="hidden items-center gap-1.5 lg:flex">
@@ -102,13 +144,13 @@ function TopBar() {
             </div>
             <input
               type="tel"
-              placeholder="মোবাইল নাম্বার"
+              placeholder={t("mobilePlaceholder")}
               className="h-7 w-36 rounded-md border border-border/70 bg-black/30 px-2 text-[11px] text-white placeholder:text-foreground/55 outline-none focus:border-[var(--neon-green)]"
             />
             <div className="relative">
               <input
                 type={showPw ? "text" : "password"}
-                placeholder="পাসওয়ার্ড"
+                placeholder={t("passwordPlaceholder")}
                 className="h-7 w-32 rounded-md border border-border/70 bg-black/30 px-2 pr-6 text-[11px] text-white placeholder:text-foreground/55 outline-none focus:border-[var(--neon-green)]"
               />
               <button type="button" onClick={() => setShowPw((v) => !v)} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-foreground/60">
@@ -116,8 +158,8 @@ function TopBar() {
               </button>
             </div>
           </div>
-          <Link to="/login" className="inline-flex items-center gap-1 rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">লগইন</Link>
-          <Link to="/register" className="inline-flex items-center gap-1 rounded-md bg-[var(--neon-pink)] px-3 py-1.5 font-bold text-white">রেজিস্টার</Link>
+          <Link to="/login" className="inline-flex items-center gap-1 rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">{t("login")}</Link>
+          <Link to="/register" className="inline-flex items-center gap-1 rounded-md bg-[var(--neon-pink)] px-3 py-1.5 font-bold text-white">{t("register")}</Link>
         </div>
       </div>
     </div>
@@ -125,6 +167,7 @@ function TopBar() {
 }
 
 function MainNav() {
+  const { t } = useLang();
   return (
     <header className="bg-navbar sticky top-0 z-40 border-b border-black/20 shadow-lg shadow-black/25">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-2 sm:px-4 lg:px-6">
@@ -136,13 +179,13 @@ function MainNav() {
         <nav className="hidden min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden whitespace-nowrap text-[13px] font-bold text-white lg:flex">
           {topMenu.map((item) => (
             <Link
-              key={item.label}
+              key={item.key}
               to={item.to}
               className="group flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 transition-colors hover:text-[var(--neon-gold)]"
               activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}
             >
               <item.icon className="h-5 w-5 transition-transform group-hover:scale-110" />
-              <span>{item.label}</span>
+              <span>{t(item.key)}</span>
             </Link>
           ))}
         </nav>
@@ -154,9 +197,9 @@ function MainNav() {
       <div className="overflow-x-auto border-t border-white/10 px-3 py-2 text-xs font-semibold text-white/90 lg:hidden">
         <div className="flex w-max gap-3">
           {topMenu.map((item) => (
-            <Link key={item.label} to={item.to} className="flex flex-col items-center gap-0.5">
+            <Link key={item.key} to={item.to} className="flex flex-col items-center gap-0.5">
               <item.icon className="h-4 w-4" />
-              <span>{item.label}</span>
+              <span>{t(item.key)}</span>
             </Link>
           ))}
         </div>
@@ -227,27 +270,26 @@ function ProvidersStrip() {
 }
 
 function FooterBlock() {
+  const { t } = useLang();
   return (
     <>
       <ProvidersStrip />
       <footer className="bg-[#2a2a27] text-foreground/90">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr] lg:px-6">
           <div>
-            <p className="max-w-2xl text-sm leading-7 text-foreground/85">
-              স্লট গেম সম্পর্কিত PKOK ক্যাসিনো সবচেয়ে জনপ্রিয় গেম ধরনের একটি এবং PKOK এ আছে সেরা স্লট গেম প্রোভাইডার সহ নিজি — PKOK-এর রয়েছে পাগলামুস্ত কোম্পানি সুরুক্ষীলতা ও উত্তেজনার গ্যারান্টি অধিকরণ করার প্রতিদ্বন্দিতা প্রধান। বৈচিত্র্যময় থিম, মনোমুগ্ধকর গ্রাফিক্স এবং উদ্ভাবনী বৈশিষ্ট্যের PKOK এর স্লটগুলোতে একটি অতুলনীয় রোমাঞ্চকর অভিজ্ঞতা প্রদান করা।
-            </p>
+            <p className="max-w-2xl text-sm leading-7 text-foreground/85">{t("footerAbout")}</p>
           </div>
           <div className="space-y-3 text-center lg:text-left">
             <div className="text-3xl font-black text-white/80">mga</div>
-            <div className="text-lg font-semibold text-white/90">Maltese license (MGA) certification</div>
+            <div className="text-lg font-semibold text-white/90">{t("mgaCert")}</div>
           </div>
           <div className="space-y-3 text-center lg:text-left">
             <div className="text-3xl font-black text-white/80">BVI</div>
-            <div className="text-lg font-semibold text-white/90">British Virgin Islands (BVI) certification</div>
+            <div className="text-lg font-semibold text-white/90">{t("bviCert")}</div>
           </div>
         </div>
         <div className="mx-auto max-w-7xl border-t border-white/10 px-4 py-6 text-center text-sm text-foreground/65 sm:px-6 lg:px-6">
-          কপিরাইট © 2026 PKOK gaming. সমস্ত অধিকার সংরক্ষিত।
+          {t("footerCopy")}
         </div>
       </footer>
     </>
