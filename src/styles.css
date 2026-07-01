@@ -327,6 +327,15 @@
   animation-play-state: paused;
 }
 
+@keyframes marquee-x {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@utility animate-marquee {
+  animation: marquee-x 40s linear infinite;
+}
+.animate-marquee:hover { animation-play-state: paused; }
+
 @keyframes promo-shimmer {
   0% { transform: translateX(-120%) skewX(-20deg); opacity: 0; }
   40% { opacity: 0.6; }
