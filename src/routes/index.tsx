@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Apple,
+  Bell,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -9,6 +10,7 @@ import {
   Gamepad2,
   Gift,
   Medal,
+  Megaphone,
   QrCode,
   ShieldCheck,
   Smartphone,
