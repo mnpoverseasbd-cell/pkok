@@ -148,7 +148,7 @@ function FooterBlock() {
         </div>
       </div>
       <div className="mx-auto max-w-7xl border-t border-white/10 px-4 py-6 text-center text-sm text-foreground/65 sm:px-6 lg:px-6">
-        কপিরাইট © 2026 Asik Game. সমস্ত অধিকার সংরক্ষিত। • শুধুমাত্র ডেমো UI • কোনো real-money gaming নয়।
+        কপিরাইট © 2026 PKOK gaming. সমস্ত অধিকার সংরক্ষিত।
       </div>
     </footer>
   );
