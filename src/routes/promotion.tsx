@@ -106,25 +106,24 @@ function PromotionPage() {
       </section>
 
       <section className="mx-auto max-w-5xl px-3 py-6 sm:px-4">
-        <div key={active} className="grid gap-4 sm:grid-cols-2">
+        <div key={active} className="grid gap-4 sm:grid-cols-2 animate-fade-in">
           {visible.map((p, i) => (
             <article
               key={p.title + i}
-              style={{ animationDelay: `${Math.min(i, 8) * 70}ms`, animationFillMode: "both" }}
-              className="group relative overflow-hidden rounded-xl border border-[var(--neon-green)]/50 bg-black/30 opacity-0 animate-[fade-in_0.5s_ease-out_forwards] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--neon-gold)] hover:shadow-[0_0_28px_rgba(255,200,60,0.45)]"
+              style={{ animationDelay: `${i * 40}ms`, animationFillMode: "backwards" }}
+              className="group overflow-hidden rounded-xl border border-[var(--neon-green)]/50 bg-black/30 animate-fade-in transition-shadow hover:shadow-[0_0_25px_rgba(57,255,20,0.35)]"
             >
-              <div className="relative overflow-hidden">
+              <div className="overflow-hidden">
                 <img
                   src={p.img}
                   alt={p.title}
                   loading="lazy"
-                  className="block w-full h-auto transition-transform duration-700 ease-out group-hover:scale-110"
+                  className="block w-full h-auto transition-transform duration-500 group-hover:scale-105"
                 />
-                <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-[900ms] ease-out" />
               </div>
               <div className="flex items-center justify-between gap-3 px-3 py-2 bg-black/40">
                 <h3 className="text-xs font-semibold text-foreground/90 truncate">{p.title}</h3>
-                <button className="shrink-0 rounded-md bg-green-button px-4 py-1 text-[11px] font-black text-[var(--background)] transition-transform hover:brightness-110 hover:scale-105 active:scale-95">
+                <button className="shrink-0 rounded-md bg-green-button px-4 py-1 text-[11px] font-black text-[var(--background)] transition hover:brightness-110">
                   আরও
                 </button>
               </div>
