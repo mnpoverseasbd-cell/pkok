@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, EyeOff, Loader2, Lock, Mail, ShieldCheck, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Loader2, Lock, ShieldCheck, Sparkles, User } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
+import { usernameToEmail } from "./register";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -19,29 +20,32 @@ export const Route = createFileRoute("/login")({
 });
 
 const loginSchema = z.object({
-  email: z.string().trim().email({ message: "সঠিক ইমেইল দিন" }).max(255),
+  username: z.string().trim().min(3, { message: "ইউজারনেম দিন" }).max(30),
   password: z.string().min(6, { message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষর" }).max(72),
 });
 
 function LoginPage() {
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = loginSchema.safeParse({ email, password });
+    const parsed = loginSchema.safeParse({ username, password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "ভুল ইনপুট");
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword(parsed.data);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: usernameToEmail(parsed.data.username),
+      password: parsed.data.password,
+    });
     setLoading(false);
     if (error) {
-      toast.error(error.message === "Invalid login credentials" ? "ইমেইল বা পাসওয়ার্ড ভুল" : error.message);
+      toast.error(error.message === "Invalid login credentials" ? "ইউজারনেম বা পাসওয়ার্ড ভুল" : error.message);
       return;
     }
     toast.success("সফলভাবে লগইন হয়েছে");
@@ -74,15 +78,15 @@ function LoginPage() {
 
           <form className="space-y-4" onSubmit={onSubmit}>
             <div>
-              <label className="mb-1 block text-xs font-bold text-foreground/85">ইমেইল</label>
+              <label className="mb-1 block text-xs font-bold text-foreground/85">ইউজারনেম</label>
               <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-green)]/45 bg-black/35 px-3 py-2.5">
-                <Mail className="h-4 w-4 text-foreground/70" />
+                <User className="h-4 w-4 text-foreground/70" />
                 <input
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  type="text"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="আপনার ইউজারনেম"
                   className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/40"
                 />
               </div>
