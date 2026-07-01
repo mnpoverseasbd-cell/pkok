@@ -176,15 +176,15 @@ function MainNav() {
           <span className="rounded-[6px] bg-[#ff9700] px-1.5 text-black shadow-[0_2px_0_rgba(0,0,0,0.35)]">OK</span>
           <span className="-ml-1 text-[#ff9700] drop-shadow">👌</span>
         </Link>
-        <nav className="hidden min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden whitespace-nowrap text-[13px] font-bold text-white lg:flex">
+        <nav className="hidden min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden whitespace-nowrap text-[16px] font-bold text-white lg:flex">
           {topMenu.map((item) => (
             <Link
               key={item.key}
               to={item.to}
-              className="group flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 transition-colors hover:text-[var(--neon-gold)]"
+              className="group flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors hover:text-[var(--neon-gold)]"
               activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}
             >
-              <item.icon className="h-5 w-5 transition-transform group-hover:scale-110" />
+              <item.icon className="h-6 w-6 transition-transform group-hover:scale-110" />
               <span>{t(item.key)}</span>
             </Link>
           ))}
