@@ -171,20 +171,20 @@ function MainNav() {
   return (
     <header className="bg-navbar sticky top-0 z-40 border-b border-black/20 shadow-lg shadow-black/25">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-2 sm:px-4 lg:px-6">
-        <Link to="/" aria-label="PKOK home" className="flex shrink-0 items-center gap-1 font-display text-4xl font-black leading-none">
+        <Link to="/" aria-label="PKOK home" className="flex shrink-0 items-center gap-1 font-display text-3xl font-black leading-none">
           <span className="text-white drop-shadow">PK</span>
           <span className="rounded-[6px] bg-[#ff9700] px-1.5 text-black shadow-[0_2px_0_rgba(0,0,0,0.35)]">OK</span>
           <span className="-ml-1 text-[#ff9700] drop-shadow">👌</span>
         </Link>
-        <nav className="hidden min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden whitespace-nowrap text-[16px] font-bold text-white lg:flex">
+        <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 whitespace-nowrap text-[15px] font-bold text-white lg:flex">
           {topMenu.map((item) => (
             <Link
               key={item.key}
               to={item.to}
-              className="group flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors hover:text-[var(--neon-gold)]"
+              className="group flex shrink-0 items-center gap-1 rounded-md px-2 py-1.5 transition-colors hover:text-[var(--neon-gold)]"
               activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}
             >
-              <item.icon className="h-6 w-6 transition-transform group-hover:scale-110" />
+              <item.icon className="h-5 w-5 transition-transform group-hover:scale-110" />
               <span>{t(item.key)}</span>
             </Link>
           ))}
