@@ -307,19 +307,36 @@ function HeroBanner() {
 }
 
 function TickerBar() {
+  const items = [
+    "✅ PKOK.COM",
+    "✅ PKOK.WIN",
+    "✅ PKOK.BET",
+    "🧧 লাকি রেড খাম পেতে প্রতিদিন লগ ইন করুন",
+    "🏆 ডেইলি টুর্নামেন্ট পুরোদমে চলছে",
+    "👑 VIP এক্সক্লুসিভ",
+    "🎁 নতুন সদস্যদের জন্য ১৭৭৭ টাকা বোনাস",
+    "💰 তাৎক্ষণিক ডিপোজিট ও উত্তোলন",
+  ];
+  const loop = [...items, ...items];
   return (
-    <section className="w-full bg-black/45">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-2 text-[11px] text-foreground/85 sm:px-4 lg:px-6">
-
-        <span className="rounded-full bg-white/10 px-2 py-1">🔊</span>
-        <div className="min-w-0 flex-1 overflow-hidden whitespace-nowrap">
-          <div className="animate-pulse-soft truncate">৯৫OK-এর একেবারে নতুন প্ল্যাটফর্মটি এখন অনলাইনে উপলব্ধ • আনুষ্ঠানিক ঘোষণা—নতুন অফারে যোগদান • নিরাপদ সতর্কতা</div>
+    <section className="w-full bg-black/55 border-y border-white/10">
+      <div className="flex items-center gap-3 px-3 py-2 text-[12px] text-foreground/90 sm:px-4 lg:px-6">
+        <span className="shrink-0 rounded-full bg-white/10 px-2 py-1">🔊</span>
+        <div className="min-w-0 flex-1 overflow-hidden">
+          <div className="flex w-max animate-marquee gap-8 whitespace-nowrap">
+            {loop.map((it, i) => (
+              <span key={i} className="inline-flex items-center gap-2">
+                {it}
+              </span>
+            ))}
+          </div>
         </div>
-        <span>🔔</span>
+        <span className="shrink-0">🔔</span>
       </div>
     </section>
   );
 }
+
 
 function HotGamesSection() {
   const scrollerRef = (typeof window !== "undefined" ? (window as any) : {}) && null;
