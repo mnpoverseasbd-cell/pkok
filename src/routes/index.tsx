@@ -199,7 +199,7 @@ function Index() {
       <AppSection />
       <ServiceStats />
       <FeatureList />
-      <ProviderStrip />
+      
     </SiteShell>
   );
 }
