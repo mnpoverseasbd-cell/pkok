@@ -87,7 +87,7 @@ const vendorLogoBase = "https://images.23924894.com/TCG_PROD_IMAGES/RNG_LIST_VEN
 
 function SlotsPage() {
   return (
-    <SiteShell footer={false}>
+    <SiteShell>
       <h1 className="sr-only">স্লট গেমস</h1>
       <section className="game-lobby RNG" aria-label="Slot providers">
         <div className="game-list">

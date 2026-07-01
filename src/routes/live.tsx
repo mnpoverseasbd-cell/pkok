@@ -34,7 +34,7 @@ const vendorLogoBase = "https://images.23924894.com/TCG_PROD_IMAGES/LIVE_LIST_VE
 
 function LivePage() {
   return (
-    <SiteShell footer={false}>
+    <SiteShell>
       <h1 className="sr-only">লাইভ ক্যাসিনো</h1>
       <section className="game-lobby LIVE" aria-label="Live casino providers">
         <div className="game-list">

@@ -32,7 +32,7 @@ const vendorLogoBase = "https://images.23924894.com/TCG_PROD_IMAGES/ELOTT_LIST_V
 
 function LotteryPage() {
   return (
-    <SiteShell footer={false}>
+    <SiteShell>
       <h1 className="sr-only">লটারি ও বিঙ্গো</h1>
       <section className="game-lobby ELOTT" aria-label="Lottery providers">
         <div className="game-list">

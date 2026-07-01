@@ -41,7 +41,7 @@ const vendorLogoBase = "https://images.23924894.com/TCG_PROD_IMAGES/FISH_LIST_VE
 
 function FishPage() {
   return (
-    <SiteShell footer={false}>
+    <SiteShell>
       <h1 className="sr-only">ফিশিং গেমস</h1>
       <section className="game-lobby RNG" aria-label="Fish providers">
         <div className="game-list">
