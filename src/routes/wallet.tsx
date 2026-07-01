@@ -8,6 +8,7 @@ import { SiteShell } from "@/components/landing/SiteShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 import { CircleDollarSign, Wallet, Banknote, History, CheckCircle2, XCircle, Clock } from "lucide-react";
 
 type TabKey = "deposit" | "withdraw" | "history";
