@@ -319,3 +319,27 @@
 .animate-marquee-y:hover {
   animation-play-state: paused;
 }
+
+@keyframes promo-shimmer {
+  0% { transform: translateX(-120%) skewX(-20deg); opacity: 0; }
+  40% { opacity: 0.6; }
+  100% { transform: translateX(220%) skewX(-20deg); opacity: 0; }
+}
+.promo-shimmer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.promo-shimmer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.28) 45%, rgba(255,220,120,0.35) 55%, transparent 100%);
+  transform: translateX(-120%) skewX(-20deg);
+}
+.promo-card:hover .promo-shimmer::before {
+  animation: promo-shimmer 1.1s ease-out;
+}
