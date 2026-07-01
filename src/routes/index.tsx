@@ -20,6 +20,7 @@ import heroSlide1 from "@/assets/hero-slide-1.jpg";
 import heroSlide2 from "@/assets/hero-slide-2.jpg";
 import heroSlide3 from "@/assets/hero-slide-3.jpg";
 import { SiteShell } from "@/components/landing/SiteShell";
+import { useLang } from "@/components/landing/LanguageContext";
 import phoneMockup from "@/assets/phone-mockup.png";
 import g1 from "@/assets/game-slot1.jpg";
 import g2 from "@/assets/game-roulette.jpg";
