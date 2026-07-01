@@ -322,6 +322,7 @@ function TickerBar() {
 function HotGamesSection() {
   const scrollerRef = (typeof window !== "undefined" ? (window as any) : {}) && null;
   const ref = useRef<HTMLDivElement>(null);
+  const { t } = useLang();
   const scrollBy = (dir: number) => {
     const el = ref.current;
     if (!el) return;
@@ -332,9 +333,9 @@ function HotGamesSection() {
       <div className="rounded-2xl inset-panel p-3 sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]">
-            <Flame className="h-4 w-4" /> Hot Games
+            <Flame className="h-4 w-4" /> {t("hotGames")}
           </div>
-          <button className="rounded-full bg-green-button px-4 py-1 text-xs font-black text-[var(--background)]">More</button>
+          <button className="rounded-full bg-green-button px-4 py-1 text-xs font-black text-[var(--background)]">{t("more")}</button>
         </div>
         <div className="relative">
           <button
@@ -382,11 +383,12 @@ function HotGamesSection() {
 
 
 function JackpotSection() {
+  const { t } = useLang();
   return (
     <section className="mx-auto max-w-7xl px-3 pb-5 sm:px-4 lg:px-6">
       <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)_320px]">
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]"><Gift className="h-4 w-4" /> প্রমোশন</div>
+          <div className="flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]"><Gift className="h-4 w-4" /> {t("promo")}</div>
           {promoCards.map((card) => (
             <div key={card.title} className="overflow-hidden rounded-xl border border-[var(--neon-green)]/45 bg-black/35">
               <img src={card.image} alt={card.title} width={1024} height={512} loading="lazy" className="block w-full" />
