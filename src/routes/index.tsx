@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Apple,
+  Bell,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -9,6 +10,7 @@ import {
   Gamepad2,
   Gift,
   Medal,
+  Megaphone,
   QrCode,
   ShieldCheck,
   Smartphone,
@@ -317,25 +319,30 @@ function TickerBar() {
     "✅ PKOK.BET",
     "🧧 লাকি রেড খাম পেতে প্রতিদিন লগ ইন করুন",
     "🏆 ডেইলি টুর্নামেন্ট পুরোদমে চলছে",
-    "👑 VIP এক্সক্লুসিভ",
+    "👑 VIP এক্সক্লুসিভ সুবিধা",
     "🎁 নতুন সদস্যদের জন্য ১৭৭৭ টাকা বোনাস",
     "💰 তাৎক্ষণিক ডিপোজিট ও উত্তোলন",
   ];
   const loop = [...items, ...items];
   return (
-    <section className="w-full bg-black/55 border-y border-white/10">
-      <div className="flex items-center gap-3 px-3 py-2 text-[12px] text-foreground/90 sm:px-4 lg:px-6">
-        <span className="shrink-0 rounded-full bg-white/10 px-2 py-1">🔊</span>
-        <div className="min-w-0 flex-1 overflow-hidden">
-          <div className="flex w-max animate-marquee gap-8 whitespace-nowrap">
+    <section className="w-full border-y border-white/10 bg-black/60">
+      <div className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-medium leading-none text-white/95 sm:px-4 sm:text-[14px] lg:px-6">
+        <span className="shrink-0 grid h-7 w-7 place-items-center rounded-full bg-[var(--neon-green)]/25 text-[var(--neon-green)] ring-1 ring-[var(--neon-green)]/40 sm:h-8 sm:w-8">
+          <Megaphone className="h-4 w-4" />
+        </span>
+        <div className="min-w-0 flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_4%,black_96%,transparent)]">
+          <div className="flex w-max animate-marquee items-center gap-10 whitespace-nowrap">
             {loop.map((it, i) => (
-              <span key={i} className="inline-flex items-center gap-2">
-                {it}
+              <span key={i} className="inline-flex items-center gap-2 tracking-wide">
+                <span>{it}</span>
+                <span className="text-[var(--neon-gold)]/70">•</span>
               </span>
             ))}
           </div>
         </div>
-        <span className="shrink-0">🔔</span>
+        <span className="shrink-0 grid h-7 w-7 place-items-center rounded-full bg-[var(--neon-gold)]/20 text-[var(--neon-gold)] ring-1 ring-[var(--neon-gold)]/40 sm:h-8 sm:w-8">
+          <Bell className="h-4 w-4" />
+        </span>
       </div>
     </section>
   );

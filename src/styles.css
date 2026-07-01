@@ -332,7 +332,7 @@
   100% { transform: translateX(-50%); }
 }
 @utility animate-marquee {
-  animation: marquee-x 40s linear infinite;
+  animation: marquee-x 55s linear infinite;
 }
 .animate-marquee:hover { animation-play-state: paused; }
 
