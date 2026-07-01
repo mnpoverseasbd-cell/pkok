@@ -263,8 +263,9 @@ function HeroBanner() {
   }, [total]);
   const slide = heroSlides[idx];
   return (
-    <section id="home" className="mx-auto max-w-7xl px-2 pt-2 sm:px-3 lg:px-4">
-      <div className="relative overflow-hidden rounded-none border border-black/20 sm:rounded-md">
+    <section id="home" className="w-full">
+      <div className="relative overflow-hidden border-b border-black/20">
+
         <img
           key={idx}
           src={slide.image}
