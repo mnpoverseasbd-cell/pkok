@@ -109,10 +109,10 @@ const heroSlides = [
 
 
 const mainCategories = [
-  { title: "Slots", mascot: mascotSlots },
-  { title: "Fish", mascot: mascotFish },
-  { title: "Live", mascot: mascotLive },
-  { title: "Poker", mascot: mascotPoker },
+  { title: "স্লট", mascot: mascotSlots },
+  { title: "ফিশিং", mascot: mascotFish },
+  { title: "লাইভ", mascot: mascotLive },
+  { title: "পোকার", mascot: mascotPoker },
 ];
 
 const statCards = [
