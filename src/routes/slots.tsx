@@ -89,7 +89,14 @@ function SlotsPage() {
   return (
     <SiteShell>
       <h1 className="sr-only">স্লট গেমস</h1>
-      <section className="game-lobby RNG" aria-label="Slot providers">
+      <section
+        className="game-lobby RNG"
+        aria-label="Slot providers"
+        style={{
+          background:
+            "radial-gradient(ellipse at 20% 10%, rgba(255,220,120,0.18), transparent 55%), radial-gradient(ellipse at 80% 90%, rgba(255,220,120,0.14), transparent 55%), linear-gradient(180deg, #0f5a34 0%, #0a4527 55%, #062e19 100%)",
+        }}
+      >
         <div className="game-list">
           {rngProviders.map((p) => (
             <ProviderCard key={p.code} p={p} />

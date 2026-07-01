@@ -182,8 +182,8 @@
 
 .game-lobby .game-list {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 36px;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 20px;
   width: 1200px;
   max-width: calc(100vw - 96px);
   margin: 0 auto;
@@ -234,7 +234,7 @@
     width: min(100%, 996px);
     max-width: calc(100vw - 48px);
     grid-template-columns: repeat(6, 1fr);
-    gap: 24px;
+    gap: 16px;
   }
 }
 
