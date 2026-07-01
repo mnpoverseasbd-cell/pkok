@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteShell } from "@/components/landing/SiteShell";
+import sportsTile from "@/assets/sports-tile.jpg";
 
 export const Route = createFileRoute("/sports")({
   head: () => ({
@@ -49,8 +50,8 @@ function SportsPage() {
 
 function ProviderCard({ p }: { p: Provider }) {
   return (
-    <button className="lobby-item sport-item" aria-label={`${p.name} sports betting`}>
-      <div className="game-img sport-bg" aria-hidden="true" />
+    <button className="lobby-item" aria-label={`${p.name} sports betting`}>
+      <img src={sportsTile} alt="" loading="lazy" className="game-img" />
       <img src={`${vendorLogoBase}/${p.code}-WHITE.png`} alt={p.name} loading="lazy" className="vendor-img" />
     </button>
   );
