@@ -308,8 +308,9 @@ function HeroBanner() {
 
 function TickerBar() {
   return (
-    <section className="mx-auto max-w-7xl px-2 pt-2 sm:px-3 lg:px-4">
-      <div className="flex items-center gap-3 rounded-md bg-black/45 px-3 py-2 text-[11px] text-foreground/85">
+    <section className="w-full bg-black/45">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-2 text-[11px] text-foreground/85 sm:px-4 lg:px-6">
+
         <span className="rounded-full bg-white/10 px-2 py-1">🔊</span>
         <div className="min-w-0 flex-1 overflow-hidden whitespace-nowrap">
           <div className="animate-pulse-soft truncate">৯৫OK-এর একেবারে নতুন প্ল্যাটফর্মটি এখন অনলাইনে উপলব্ধ • আনুষ্ঠানিক ঘোষণা—নতুন অফারে যোগদান • নিরাপদ সতর্কতা</div>
