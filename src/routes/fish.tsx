@@ -53,7 +53,13 @@ function FishPage() {
         <div className="game-list" style={{ gridTemplateColumns: "repeat(6, 1fr)" }}>
           {fishProviders.map((p) => (
             <button key={p.code} className="lobby-item" aria-label={`${p.name} fish games`}>
-              <img src={p.icon} alt={p.name} loading="lazy" className="game-img" />
+              <img src={p.icon} alt="" loading="lazy" className="game-img" />
+              <img
+                src={`https://images.23924894.com/TCG_PROD_IMAGES/RNG_LIST_VENDOR/${p.code}-WHITE.png`}
+                alt={p.name}
+                loading="lazy"
+                className="vendor-img"
+              />
             </button>
           ))}
         </div>
