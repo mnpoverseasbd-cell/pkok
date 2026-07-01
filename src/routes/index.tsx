@@ -42,6 +42,10 @@ import promoWelcome from "@/assets/promo-welcome.jpg";
 import promoDaily from "@/assets/promo-daily.jpg";
 import promoVip from "@/assets/promo-vip.jpg";
 import jackpotHero from "@/assets/jackpot-hero.png";
+import iconStopwatch from "@/assets/icon-stopwatch.png";
+import iconSecure from "@/assets/icon-secure.png";
+import iconGamepad from "@/assets/icon-gamepad.png";
+import iconDevices from "@/assets/icon-devices.png";
 
 
 
@@ -125,22 +129,22 @@ const statCards = [
 
 const featureCards = [
   {
-    emoji: "⏱️",
+    icon: iconStopwatch,
     title: "দ্রুত জমা ও উত্তোলন",
     body: "আমাদের সর্বশেষ পেমেন্ট গেটওয়ে প্রযুক্তি এক্সক্লুসিভ নেটওয়ার্ক অপ্টিমাইজেশনের মাধ্যমে অত্যন্ত দ্রুত জমা, উত্তোলন এবং স্থানান্তর অর্জন করে, যা আপনাকে একটি প্রথম শ্রেণির গেমিং অভিজ্ঞতা প্রদান করে।",
   },
   {
-    emoji: "💵",
+    icon: iconSecure,
     title: "নিরাপদ লেনদেন ও সম্পূর্ণ সুরক্ষা নিশ্চিত",
     body: "আমরা ব্যবহার করছি ১২৮-বিট এনক্রিপশন প্রযুক্তি—বিশ্বস্ত ও আন্তর্জাতিকভাবে স্বীকৃত সুরক্ষা মান। আমাদের নিরাপত্তা ব্যবস্থাপনা প্রতিটি লেনদেনকে সম্পূর্ণ সুরক্ষিত রাখে।",
   },
   {
-    emoji: "🎮",
+    icon: iconGamepad,
     title: "রোমাঞ্চকর গেম সমাহার",
     body: "আমরা সম্পূর্ণ সেটআপসহ অ্যাপ্লিকেশন সরবরাহ করি, যাতে সদস্যরা যেকোনো সময়, যেকোনো স্থান থেকে ওয়েব, H5 ও ডেডিকেটেড অ্যাপ্লিকেশন মাধ্যমে গেম উপভোগ করতে পারেন। আমাদের ২৪x৭ অনলাইন কাস্টমার সার্ভিস সর্বোচ্চ মানের ও আন্তরিক সেবা প্রদান করে।",
   },
   {
-    emoji: "🖥️",
+    icon: iconDevices,
     title: "একাধিক অ্যাপ্লিকেশন বিকল্প",
     body: "আমরা সম্পূর্ণ সেট অ্যাপ্লিকেশন সরবরাহ করি, যা সদস্যদের ওয়েব, H5 এবং নেটিভ অ্যাপের মাধ্যমে যেকোনো সময়, যেকোনো স্থানে গেম উপভোগ করতে সক্ষম করে। আমাদের ২৪x৭ অনলাইন কাস্টমার সার্ভিস সবচেয়ে আন্তরিক ও উচ্চমানের সেবা প্রদান করে।",
   },
@@ -607,9 +611,8 @@ function FeatureList() {
         {featureCards.map((card) => (
           <div key={card.title} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-4">
             <div className="flex items-start gap-4">
-              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-black/40 text-3xl">
-                {card.emoji}
-              </div>
+              <img src={card.icon} alt="" loading="lazy" width={80} height={80} className="h-16 w-16 shrink-0 object-contain sm:h-20 sm:w-20" />
+
               <div className="min-w-0">
                 <h3 className="text-base font-black text-[var(--neon-gold)] sm:text-lg">{card.title}</h3>
                 <p className="mt-1 text-xs leading-6 text-foreground/80 sm:text-sm">{card.body}</p>
