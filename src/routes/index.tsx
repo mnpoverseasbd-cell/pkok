@@ -297,15 +297,16 @@ function HeroBanner() {
 }
 
 function TickerBar() {
+  const { t } = useLang();
   const items = [
     "✅ PKOK.COM",
     "✅ PKOK.WIN",
     "✅ PKOK.BET",
-    "🧧 লাকি রেড খাম পেতে প্রতিদিন লগ ইন করুন",
-    "🏆 ডেইলি টুর্নামেন্ট পুরোদমে চলছে",
-    "👑 VIP এক্সক্লুসিভ সুবিধা",
-    "🎁 নতুন সদস্যদের জন্য ১৭৭৭ টাকা বোনাস",
-    "💰 তাৎক্ষণিক ডিপোজিট ও উত্তোলন",
+    t("tickerLuckyRed"),
+    t("tickerDailyTourney"),
+    t("tickerVip"),
+    t("tickerBonus"),
+    t("tickerFastDW"),
   ];
   const loop = [...items, ...items];
   return (
