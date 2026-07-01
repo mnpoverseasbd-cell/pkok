@@ -198,9 +198,10 @@ function Index() {
 function PromoPopup() {
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
+  const { t } = useLang();
   useEffect(() => {
-    const t = setTimeout(() => setOpen(true), 600);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setOpen(true), 600);
+    return () => clearTimeout(timer);
   }, []);
   if (!open) return null;
   const total = popupImages.length;
