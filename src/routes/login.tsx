@@ -78,15 +78,15 @@ function LoginPage() {
 
           <form className="space-y-4" onSubmit={onSubmit}>
             <div>
-              <label className="mb-1 block text-xs font-bold text-foreground/85">ইমেইল</label>
+              <label className="mb-1 block text-xs font-bold text-foreground/85">ইউজারনেম</label>
               <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-green)]/45 bg-black/35 px-3 py-2.5">
-                <Mail className="h-4 w-4 text-foreground/70" />
+                <User className="h-4 w-4 text-foreground/70" />
                 <input
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  type="text"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="আপনার ইউজারনেম"
                   className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/40"
                 />
               </div>
