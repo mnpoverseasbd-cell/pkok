@@ -310,7 +310,7 @@ function TickerBar() {
       <div className="flex items-center gap-3 rounded-md bg-black/45 px-3 py-2 text-[11px] text-foreground/85">
         <span className="rounded-full bg-white/10 px-2 py-1">🔊</span>
         <div className="min-w-0 flex-1 overflow-hidden whitespace-nowrap">
-          <div className="animate-pulse-soft truncate">ASIK Game-এর নতুন অফিসিয়াল ভার্সনে স্বাগতম • বাংলা সাপোর্ট • প্রমোশন চলছে • নিরাপদ লেনদেন</div>
+          <div className="animate-pulse-soft truncate">৯৫OK-এর একেবারে নতুন প্ল্যাটফর্মটি এখন অনলাইনে উপলব্ধ • আনুষ্ঠানিক ঘোষণা—নতুন অফারে যোগদান • নিরাপদ সতর্কতা</div>
         </div>
         <span>🔔</span>
       </div>
