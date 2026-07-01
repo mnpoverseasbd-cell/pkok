@@ -38,7 +38,7 @@ const pvpProviders: Provider[] = [
 
 function PokerPage() {
   return (
-    <SiteShell footer={false}>
+    <SiteShell>
       <h1 className="sr-only">পোকার ও PVP গেমস</h1>
       <section className="game-lobby PVP" aria-label="PVP poker providers">
         <div className="game-list">

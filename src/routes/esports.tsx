@@ -30,7 +30,7 @@ const vendorLogoBase = "https://images.23924894.com/TCG_PROD_IMAGES/SPORTS_LIST_
 
 function EsportsPage() {
   return (
-    <SiteShell footer={false}>
+    <SiteShell>
       <h1 className="sr-only">ই-স্পোর্টস</h1>
       <section className="game-lobby ESPORT" aria-label="Esports providers">
         <div className="game-list">
