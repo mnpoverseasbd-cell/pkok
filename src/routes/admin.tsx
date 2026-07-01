@@ -141,12 +141,15 @@ function AdminTxns() {
                     <TableCell className="text-xs capitalize text-white/70">{r.status}</TableCell>
                     <TableCell className="text-xs text-white/60">{new Date(r.created_at).toLocaleString()}</TableCell>
                     <TableCell>
-                      {r.status === "pending" && (
-                        <div className="flex gap-1">
-                          <Button size="sm" onClick={() => act(r.id, "approved")} className="h-7 bg-green-button text-[var(--background)]"><CheckCircle2 className="h-3 w-3" /></Button>
-                          <Button size="sm" variant="destructive" onClick={() => act(r.id, "rejected")} className="h-7"><XCircle className="h-3 w-3" /></Button>
-                        </div>
-                      )}
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="outline" onClick={() => setDetailId(r.id)} className="h-7"><Eye className="h-3 w-3" /></Button>
+                        {r.status === "pending" && (
+                          <>
+                            <Button size="sm" onClick={() => act(r.id, "approved")} className="h-7 bg-green-button text-[var(--background)]"><CheckCircle2 className="h-3 w-3" /></Button>
+                            <Button size="sm" variant="destructive" onClick={() => act(r.id, "rejected")} className="h-7"><XCircle className="h-3 w-3" /></Button>
+                          </>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
