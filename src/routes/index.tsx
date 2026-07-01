@@ -611,9 +611,8 @@ function FeatureList() {
         {featureCards.map((card) => (
           <div key={card.title} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-4">
             <div className="flex items-start gap-4">
-              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-black/40 text-3xl">
-                {card.emoji}
-              </div>
+              <img src={card.icon} alt="" loading="lazy" width={80} height={80} className="h-16 w-16 shrink-0 object-contain sm:h-20 sm:w-20" />
+
               <div className="min-w-0">
                 <h3 className="text-base font-black text-[var(--neon-gold)] sm:text-lg">{card.title}</h3>
                 <p className="mt-1 text-xs leading-6 text-foreground/80 sm:text-sm">{card.body}</p>
