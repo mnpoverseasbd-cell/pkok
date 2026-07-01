@@ -4,6 +4,43 @@ import type { ComponentType, ReactNode } from "react";
 import { useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 import { WelcomePopup } from "@/components/landing/WelcomePopup";
+import twoJLogo from "@/assets/providers/2J.png.asset.json";
+import ailLogo from "@/assets/providers/AIL.png.asset.json";
+import bngLogo from "@/assets/providers/BNG.png.asset.json";
+import btgLogo from "@/assets/providers/BTG.png.asset.json";
+import btiLogo from "@/assets/providers/BTI.png.asset.json";
+import cq9Logo from "@/assets/providers/CQ9.png.asset.json";
+import dgLogo from "@/assets/providers/DG.png.asset.json";
+import eg4Logo from "@/assets/providers/EG4.png.asset.json";
+import ezgLogo from "@/assets/providers/EZG.png.asset.json";
+import fbLogo from "@/assets/providers/FB.png.asset.json";
+import fcLogo from "@/assets/providers/FC.png.asset.json";
+import iaLogo from "@/assets/providers/IA.png.asset.json";
+import jdbLogo from "@/assets/providers/JDB.png.asset.json";
+import jlLogo from "@/assets/providers/JL.png.asset.json";
+import kmLogo from "@/assets/providers/KM.png.asset.json";
+import kpLogo from "@/assets/providers/KP.png.asset.json";
+import lucLogo from "@/assets/providers/LUC.png.asset.json";
+import mgLogo from "@/assets/providers/MG.png.asset.json";
+import mwLogo from "@/assets/providers/MW.png.asset.json";
+import nsLogo from "@/assets/providers/NS.png.asset.json";
+import pgLogo from "@/assets/providers/PG.png.asset.json";
+import polyLogo from "@/assets/providers/POLY.png.asset.json";
+import ppLogo from "@/assets/providers/PP.png.asset.json";
+import r88Logo from "@/assets/providers/R88.png.asset.json";
+import rgLogo from "@/assets/providers/RG.png.asset.json";
+import saLogo from "@/assets/providers/SA.png.asset.json";
+import sbLogo from "@/assets/providers/SB.png.asset.json";
+import sexLogo from "@/assets/providers/SEX.png.asset.json";
+import spbLogo from "@/assets/providers/SPB.png.asset.json";
+import sv3Logo from "@/assets/providers/SV3.png.asset.json";
+import swgLogo from "@/assets/providers/SWG.png.asset.json";
+import tcgLogo from "@/assets/providers/TCG_SEA.png.asset.json";
+import tfLogo from "@/assets/providers/TF.png.asset.json";
+import ug2Logo from "@/assets/providers/UG2.png.asset.json";
+import vaLogo from "@/assets/providers/VA.png.asset.json";
+import wdLogo from "@/assets/providers/WD.png.asset.json";
+import wsLogo from "@/assets/providers/WS.png.asset.json";
 
 const topMenu: { label: string; to: string; icon: ComponentType<{ className?: string }> }[] = [
   { label: "হোম", to: "/", icon: Home },
@@ -130,19 +167,58 @@ function MainNav() {
 
 
 const providerLogos = [
-  "CQ9", "RICH GAME", "Sexy", "AI LIVE CASINO", "LUCKY", "AP GAMING", "SABA SPORTS", "TC GAMING", "PG", "PRAGMATIC PLAY",
-  "KING MIDAS", "2J.COM", "Ezugi", "SA GAMING", "BTi", "POLY", "TF GAMING", "JILI", "JDB", "Microgaming",
-  "R88", "SW GAMING", "V.A", "DREAM GAMING", "FB SPORTS", "SV388", "IA E-SPORTS", "NEXTSPIN", "FA CHAI", "BT GAMING",
-  "MEGAWIN", "Evolution", "W", "WICKETS", "UNITED GAMING", "SBO", "KING'S POKER", "SPRIBE", "BNG",
+  { name: "CQ9", logo: cq9Logo.url },
+  { name: "RICH GAME", logo: rgLogo.url },
+  { name: "Sexy", logo: sexLogo.url },
+  { name: "AI LIVE CASINO", logo: ailLogo.url },
+  { name: "LUCKY", logo: lucLogo.url },
+  { name: "SABA SPORTS", logo: sbLogo.url },
+  { name: "TC GAMING", logo: tcgLogo.url },
+  { name: "PG", logo: pgLogo.url },
+  { name: "PRAGMATIC PLAY", logo: ppLogo.url },
+  { name: "KING MIDAS", logo: kmLogo.url },
+  { name: "2J.COM", logo: twoJLogo.url },
+  { name: "Ezugi", logo: ezgLogo.url },
+  { name: "SA GAMING", logo: saLogo.url },
+  { name: "BTi", logo: btiLogo.url },
+  { name: "POLY", logo: polyLogo.url },
+  { name: "TF GAMING", logo: tfLogo.url },
+  { name: "JILI", logo: jlLogo.url },
+  { name: "JDB", logo: jdbLogo.url },
+  { name: "Microgaming", logo: mgLogo.url },
+  { name: "R88", logo: r88Logo.url },
+  { name: "SW GAMING", logo: swgLogo.url },
+  { name: "V.A", logo: vaLogo.url },
+  { name: "DREAM GAMING", logo: dgLogo.url },
+  { name: "FB SPORTS", logo: fbLogo.url },
+  { name: "SV388", logo: sv3Logo.url },
+  { name: "IA E-SPORTS", logo: iaLogo.url },
+  { name: "NEXTSPIN", logo: nsLogo.url },
+  { name: "FA CHAI", logo: fcLogo.url },
+  { name: "BT GAMING", logo: btgLogo.url },
+  { name: "MEGAWIN", logo: mwLogo.url },
+  { name: "Evolution", logo: eg4Logo.url },
+  { name: "W", logo: wdLogo.url },
+  { name: "WICKETS", logo: wsLogo.url },
+  { name: "UNITED GAMING", logo: ug2Logo.url },
+  { name: "SBO", logo: sbLogo.url },
+  { name: "KING'S POKER", logo: kpLogo.url },
+  { name: "SPRIBE", logo: spbLogo.url },
+  { name: "BNG", logo: bngLogo.url },
 ];
 
 function ProvidersStrip() {
   return (
-    <section className="bg-black py-6">
-      <div className="mx-auto grid max-w-7xl grid-cols-4 gap-x-4 gap-y-5 px-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
-        {providerLogos.map((name) => (
-          <div key={name} className="flex h-10 items-center justify-center text-center text-[11px] font-black uppercase tracking-wider text-white/80 transition hover:text-[var(--neon-gold)]">
-            {name}
+    <section className="bg-black py-5">
+      <div className="mx-auto grid max-w-7xl grid-cols-4 gap-x-4 gap-y-4 px-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
+        {providerLogos.map((item) => (
+          <div key={item.name} className="flex h-10 items-center justify-center px-1">
+            <img
+              src={item.logo}
+              alt={item.name}
+              loading="lazy"
+              className="max-h-8 max-w-full object-contain opacity-90 transition duration-200 hover:scale-105 hover:opacity-100"
+            />
           </div>
         ))}
       </div>
