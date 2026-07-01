@@ -268,7 +268,7 @@ function AdminUsers() {
 function AdminMethods() {
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ kind: "bkash", label: "", account_number: "", instructions: "", min_deposit: 300, min_withdraw: 500 });
+  const [form, setForm] = useState<{ kind: "bkash"|"nagad"|"rocket"|"bank"|"usdt"|"other"; label: string; account_number: string; instructions: string; min_deposit: number; min_withdraw: number }>({ kind: "bkash", label: "", account_number: "", instructions: "", min_deposit: 300, min_withdraw: 500 });
 
   const load = useCallback(async () => {
     setLoading(true);
