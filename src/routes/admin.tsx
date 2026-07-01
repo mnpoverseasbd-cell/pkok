@@ -158,6 +158,7 @@ function AdminTxns() {
           </div>
         )}
       </CardContent>
+      <TxnDetailsDialog txnId={detailId} open={!!detailId} onOpenChange={(v) => !v && setDetailId(null)} showUser />
     </Card>
   );
 }
