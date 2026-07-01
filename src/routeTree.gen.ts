@@ -23,6 +23,7 @@ import { Route as GamesRouteImport } from './routes/games'
 import { Route as FishingRouteImport } from './routes/fishing'
 import { Route as FishRouteImport } from './routes/fish'
 import { Route as EsportsRouteImport } from './routes/esports'
+import { Route as DownloadRouteImport } from './routes/download'
 import { Route as CrashRouteImport } from './routes/crash'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -96,6 +97,11 @@ const EsportsRoute = EsportsRouteImport.update({
   path: '/esports',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DownloadRoute = DownloadRouteImport.update({
+  id: '/download',
+  path: '/download',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CrashRoute = CrashRouteImport.update({
   id: '/crash',
   path: '/crash',
@@ -110,6 +116,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/crash': typeof CrashRoute
+  '/download': typeof DownloadRoute
   '/esports': typeof EsportsRoute
   '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/crash': typeof CrashRoute
+  '/download': typeof DownloadRoute
   '/esports': typeof EsportsRoute
   '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/crash': typeof CrashRoute
+  '/download': typeof DownloadRoute
   '/esports': typeof EsportsRoute
   '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/crash'
+    | '/download'
     | '/esports'
     | '/fish'
     | '/fishing'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/crash'
+    | '/download'
     | '/esports'
     | '/fish'
     | '/fishing'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/crash'
+    | '/download'
     | '/esports'
     | '/fish'
     | '/fishing'
@@ -222,6 +234,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CrashRoute: typeof CrashRoute
+  DownloadRoute: typeof DownloadRoute
   EsportsRoute: typeof EsportsRoute
   FishRoute: typeof FishRoute
   FishingRoute: typeof FishingRoute
@@ -338,6 +351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EsportsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/download': {
+      id: '/download'
+      path: '/download'
+      fullPath: '/download'
+      preLoaderRoute: typeof DownloadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/crash': {
       id: '/crash'
       path: '/crash'
@@ -358,6 +378,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CrashRoute: CrashRoute,
+  DownloadRoute: DownloadRoute,
   EsportsRoute: EsportsRoute,
   FishRoute: FishRoute,
   FishingRoute: FishingRoute,
