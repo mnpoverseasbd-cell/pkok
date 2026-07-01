@@ -456,7 +456,7 @@ function LatestWinners() {
               <img src={entry.image} alt="" className="h-10 w-10 shrink-0 rounded-md object-cover" />
               <div className="min-w-0 flex-1">
                 <div className="truncate text-xs font-semibold text-white">{entry.name}</div>
-                <div className="truncate text-[10px] text-foreground/65">Just won in <span className="text-[var(--neon-gold)]">{entry.game}</span></div>
+                <div className="truncate text-[10px] text-foreground/65">{t("justWonIn")} <span className="text-[var(--neon-gold)]">{entry.game}</span></div>
               </div>
               <div className="shrink-0 text-sm font-black text-[var(--neon-gold)]">{entry.amount}</div>
             </div>
