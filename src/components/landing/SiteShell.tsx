@@ -1,5 +1,7 @@
-import { Link } from "@tanstack/react-router";
-import { ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, Mail, MessageCircle, Radio, Smartphone, Spade, Ticket, Trophy } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, LogOut, Mail, MessageCircle, Radio, Smartphone, Spade, Ticket, Trophy, User as UserIcon } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth, useProfile, signOut } from "@/hooks/useAuth";
 import type { ComponentType, ReactNode } from "react";
 import { useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
