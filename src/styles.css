@@ -184,13 +184,15 @@
 
 .category-strip {
   position: relative;
-  overflow: hidden;
   background: #0c4b2d;
+  padding: 24px 16px 8px;
 }
 
 .category-reference-wrap {
   position: relative;
-  width: min(100%, 1487px);
+  width: 100%;
+  max-width: 1487px;
+  margin-inline: auto;
 }
 
 .category-reference-img {
@@ -205,6 +207,7 @@
   height: 82%;
   border: 0;
   background: transparent;
+  cursor: pointer;
 }
 
 .category-hit-catSlots { left: 10%; width: 19%; }
@@ -216,6 +219,7 @@
   outline: 2px solid var(--neon-gold);
   outline-offset: -2px;
 }
+
 
 .game-lobby {
   min-height: auto;
