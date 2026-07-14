@@ -185,184 +185,36 @@
 .category-strip {
   position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(90deg, rgba(232, 196, 58, 0.13), rgba(6, 61, 38, 0.68) 14%, rgba(6, 61, 38, 0.58) 50%, rgba(6, 61, 38, 0.68) 86%, rgba(232, 196, 58, 0.13)),
-    linear-gradient(180deg, rgba(7, 75, 46, 0.96), rgba(3, 52, 31, 0.98)),
-    url("https://pkok-clone-vibes.lovable.app/__l5e/assets-v1/036072ec-d1e1-45fd-b0ce-5ff9572ab9e7/casino-bg.jpg");
-  background-size: auto, auto, 1600px auto;
-  background-position: center, center, center;
+  background: #0c4b2d;
 }
 
-.category-row {
-  width: min(100%, 1168px);
-  display: flex;
-  align-items: end;
-  justify-content: center;
-  gap: clamp(42px, 6.6vw, 92px);
-}
-
-.category-card {
-  --card-w: 206px;
-  --panel-top: 104px;
-  --panel-h: 120px;
-  --mascot-h: 224px;
-  --mascot-x: 50%;
-  --mascot-y: -8px;
-  --title-x: 77%;
+.category-reference-wrap {
   position: relative;
-  width: var(--card-w);
-  height: calc(var(--panel-top) + var(--panel-h));
-  flex: 0 0 var(--card-w);
+  width: min(100%, 1487px);
+}
+
+.category-reference-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.category-hit {
+  position: absolute;
+  top: 10%;
+  height: 82%;
   border: 0;
   background: transparent;
-  padding: 0;
-  isolation: isolate;
 }
 
-.category-panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: var(--panel-h);
-  border-radius: 12px;
-  background:
-    radial-gradient(circle at 60% 24%, rgba(46, 249, 145, 0.14), transparent 35%),
-    linear-gradient(180deg, rgba(9, 58, 39, 0.42), rgba(2, 20, 12, 0.92)),
-    url("https://pkok-clone-vibes.lovable.app/__l5e/assets-v1/036072ec-d1e1-45fd-b0ce-5ff9572ab9e7/casino-bg.jpg");
-  background-size: cover;
-  background-position: center;
-  box-shadow:
-    0 0 0 2px color-mix(in oklab, var(--neon-green) 92%, transparent),
-    0 0 16px color-mix(in oklab, var(--neon-green) 66%, transparent),
-    inset 0 0 18px color-mix(in oklab, var(--neon-green) 22%, transparent);
-}
+.category-hit-catSlots { left: 10%; width: 19%; }
+.category-hit-catFish { left: 31%; width: 17%; }
+.category-hit-catLive { left: 51%; width: 18%; }
+.category-hit-catPoker { left: 72%; width: 18%; }
 
-.category-panel::after {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  border-radius: 10px;
-  box-shadow: inset 0 0 0 1px rgba(16, 255, 123, 0.5);
-  pointer-events: none;
-}
-
-.category-mascot {
-  pointer-events: none;
-  position: absolute;
-  left: var(--mascot-x);
-  top: var(--mascot-y);
-  z-index: 2;
-  height: var(--mascot-h);
-  width: auto;
-  max-width: none;
-  transform: translateX(-50%);
-  object-fit: contain;
-  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 8px rgba(30, 255, 137, 0.32));
-  transition: transform 260ms ease, filter 260ms ease;
-}
-
-.category-card:hover .category-mascot {
-  transform: translateX(-50%) translateY(-6px) scale(1.035);
-  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 14px rgba(30, 255, 137, 0.45));
-}
-
-.category-title {
-  position: absolute;
-  left: var(--title-x);
-  bottom: 0;
-  z-index: 3;
-  display: grid;
-  min-width: 98px;
-  height: 56px;
-  place-items: center;
-  transform: translateX(-50%);
-  font-family: var(--font-display);
-  font-size: 33px;
-  font-style: italic;
-  font-weight: 900;
-  line-height: 1;
-  white-space: nowrap;
-  text-shadow:
-    0 0 4px #ffffff,
-    0 0 10px rgba(255, 238, 87, 0.92),
-    0 0 18px rgba(255, 220, 44, 0.72);
-}
-
-.category-title::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: 19px 0 10px 0;
-  background: linear-gradient(180deg, rgba(16, 86, 55, 0.94), rgba(5, 54, 33, 0.98));
-  box-shadow:
-    -2px -2px 0 color-mix(in oklab, var(--neon-green) 86%, transparent),
-    0 0 18px color-mix(in oklab, var(--neon-green) 46%, transparent);
-}
-
-.category-card-catSlots {
-  --mascot-h: 234px;
-  --mascot-x: 41%;
-  --mascot-y: -26px;
-  --title-x: 79%;
-}
-
-.category-card-catFish {
-  --mascot-h: 236px;
-  --mascot-x: 52%;
-  --mascot-y: -20px;
-  --title-x: 77%;
-}
-
-.category-card-catLive {
-  --mascot-h: 224px;
-  --mascot-x: 48%;
-  --mascot-y: -14px;
-  --title-x: 78%;
-}
-
-.category-card-catPoker {
-  --mascot-h: 222px;
-  --mascot-x: 54%;
-  --mascot-y: -17px;
-  --title-x: 80%;
-}
-
-@media (max-width: 1023px) {
-  .category-row {
-    width: min(100%, 620px);
-    flex-wrap: wrap;
-    gap: 18px 32px;
-  }
-}
-
-@media (max-width: 560px) {
-  .category-strip {
-    padding-top: 10px;
-  }
-
-  .category-row {
-    width: min(100%, 340px);
-    gap: 8px 12px;
-  }
-
-  .category-card {
-    --card-w: 158px;
-    --card-h: 130px;
-    --panel-top: 55px;
-    --panel-h: 104px;
-    --mascot-h: 164px;
-  }
-
-  .category-title {
-    bottom: 1px;
-    font-size: 25px;
-  }
-
-  .category-card-catFish { --mascot-h: 174px; }
-  .category-card-catLive { --mascot-h: 178px; }
-  .category-card-catPoker { --mascot-h: 180px; }
+.category-hit:focus-visible {
+  outline: 2px solid var(--neon-gold);
+  outline-offset: -2px;
 }
 
 .game-lobby {
