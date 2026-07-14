@@ -14,207 +14,16 @@ export type Database = {
   }
   public: {
     Tables: {
-      payment_methods: {
-        Row: {
-          account_number: string
-          created_at: string
-          id: string
-          instructions: string | null
-          is_active: boolean
-          kind: Database["public"]["Enums"]["pm_kind"]
-          label: string
-          min_deposit: number
-          min_withdraw: number
-          supports_deposit: boolean
-          supports_withdraw: boolean
-          updated_at: string
-        }
-        Insert: {
-          account_number: string
-          created_at?: string
-          id?: string
-          instructions?: string | null
-          is_active?: boolean
-          kind: Database["public"]["Enums"]["pm_kind"]
-          label: string
-          min_deposit?: number
-          min_withdraw?: number
-          supports_deposit?: boolean
-          supports_withdraw?: boolean
-          updated_at?: string
-        }
-        Update: {
-          account_number?: string
-          created_at?: string
-          id?: string
-          instructions?: string | null
-          is_active?: boolean
-          kind?: Database["public"]["Enums"]["pm_kind"]
-          label?: string
-          min_deposit?: number
-          min_withdraw?: number
-          supports_deposit?: boolean
-          supports_withdraw?: boolean
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          created_at: string
-          display_name: string | null
-          email: string | null
-          id: string
-          phone: string | null
-          referral_code: string
-          referred_by: string | null
-          updated_at: string
-          username: string | null
-          vip_tier: Database["public"]["Enums"]["vip_tier"]
-          wallet_balance: number
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string
-          display_name?: string | null
-          email?: string | null
-          id: string
-          phone?: string | null
-          referral_code: string
-          referred_by?: string | null
-          updated_at?: string
-          username?: string | null
-          vip_tier?: Database["public"]["Enums"]["vip_tier"]
-          wallet_balance?: number
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string
-          display_name?: string | null
-          email?: string | null
-          id?: string
-          phone?: string | null
-          referral_code?: string
-          referred_by?: string | null
-          updated_at?: string
-          username?: string | null
-          vip_tier?: Database["public"]["Enums"]["vip_tier"]
-          wallet_balance?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_referred_by_fkey"
-            columns: ["referred_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      transactions: {
-        Row: {
-          admin_note: string | null
-          amount: number
-          approved_at: string | null
-          approved_by: string | null
-          created_at: string
-          id: string
-          payment_method_id: string | null
-          receiver_account: string | null
-          sender_account: string | null
-          status: Database["public"]["Enums"]["txn_status"]
-          txn_reference: string | null
-          type: Database["public"]["Enums"]["txn_type"]
-          updated_at: string
-          user_id: string
-          user_note: string | null
-        }
-        Insert: {
-          admin_note?: string | null
-          amount: number
-          approved_at?: string | null
-          approved_by?: string | null
-          created_at?: string
-          id?: string
-          payment_method_id?: string | null
-          receiver_account?: string | null
-          sender_account?: string | null
-          status?: Database["public"]["Enums"]["txn_status"]
-          txn_reference?: string | null
-          type: Database["public"]["Enums"]["txn_type"]
-          updated_at?: string
-          user_id: string
-          user_note?: string | null
-        }
-        Update: {
-          admin_note?: string | null
-          amount?: number
-          approved_at?: string | null
-          approved_by?: string | null
-          created_at?: string
-          id?: string
-          payment_method_id?: string | null
-          receiver_account?: string | null
-          sender_account?: string | null
-          status?: Database["public"]["Enums"]["txn_status"]
-          txn_reference?: string | null
-          type?: Database["public"]["Enums"]["txn_type"]
-          updated_at?: string
-          user_id?: string
-          user_note?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "transactions_payment_method_id_fkey"
-            columns: ["payment_method_id"]
-            isOneToOne: false
-            referencedRelation: "payment_methods"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_roles: {
-        Row: {
-          created_at: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      generate_referral_code: { Args: never; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
-      app_role: "admin" | "vip" | "player"
-      pm_kind: "bkash" | "nagad" | "rocket" | "bank" | "usdt" | "other"
-      txn_status: "pending" | "approved" | "rejected" | "cancelled"
-      txn_type: "deposit" | "withdraw" | "adjustment" | "bonus"
-      vip_tier: "bronze" | "silver" | "gold" | "platinum" | "diamond"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -341,12 +150,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      app_role: ["admin", "vip", "player"],
-      pm_kind: ["bkash", "nagad", "rocket", "bank", "usdt", "other"],
-      txn_status: ["pending", "approved", "rejected", "cancelled"],
-      txn_type: ["deposit", "withdraw", "adjustment", "bonus"],
-      vip_tier: ["bronze", "silver", "gold", "platinum", "diamond"],
-    },
+    Enums: {},
   },
 } as const
