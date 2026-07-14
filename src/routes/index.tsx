@@ -533,28 +533,23 @@ function DigitReel({ digit }: { digit: number }) {
 function MainCategoryCards() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-10 pt-16 sm:px-4 sm:pt-20 lg:px-6">
-      <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+    <section className="category-strip px-3 pb-9 pt-7 sm:px-4 sm:pb-11 sm:pt-9 lg:px-6">
+      <div className="category-row mx-auto">
         {mainCategories.map((item) => (
           <button
             key={item.key}
-            className="group relative flex justify-center pt-14 sm:pt-20"
+            className={`category-card group category-card-${item.key}`}
           >
-            {/* Mascot pops above the frame */}
+            <span className="category-panel" aria-hidden="true" />
             <img
               src={item.mascot}
               alt={t(item.key)}
               width={768}
               height={768}
               loading="lazy"
-              className="pointer-events-none absolute left-1/2 top-0 z-10 h-[150px] w-auto -translate-x-1/2 object-contain drop-shadow-[0_16px_22px_rgba(0,0,0,0.65)] transition-transform duration-300 group-hover:-translate-y-2 group-hover:scale-105 sm:h-[190px] lg:h-[210px]"
+              className="category-mascot"
             />
-            {/* Frame */}
-            <div className="relative flex h-[150px] w-full flex-col items-center justify-end overflow-hidden rounded-[22px] border-2 border-[var(--neon-green)]/70 bg-[linear-gradient(180deg,rgba(8,42,28,0.55),rgba(3,16,10,0.85))] pb-3 shadow-[0_0_24px_-4px_var(--neon-green)] transition-shadow duration-300 group-hover:shadow-[0_0_36px_-2px_var(--neon-green)] sm:h-[190px] lg:h-[210px]">
-              <div className="relative z-10 font-display text-2xl italic font-black tracking-wide text-gradient-gold sm:text-3xl">
-                {t(item.key)}
-              </div>
-            </div>
+            <span className="category-title text-gradient-gold">{t(item.key)}</span>
           </button>
         ))}
       </div>
