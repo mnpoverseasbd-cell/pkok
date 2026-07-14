@@ -400,9 +400,17 @@
 }
 
 /* App download section — reference-based */
+.app-section-strip {
+  position: relative;
+  background: #0c4b2d;
+  padding: 8px 16px 32px;
+}
+
 .app-section-wrap {
   position: relative;
   width: 100%;
+  max-width: 1487px;
+  margin-inline: auto;
   aspect-ratio: 1253 / 359;
   border-radius: 24px;
   overflow: hidden;
@@ -430,3 +438,4 @@
 }
 .app-section-hit-android { left: 62.4%; top: 55%; width: 14.5%; height: 38%; }
 .app-section-hit-ios     { left: 79.0%; top: 55%; width: 14.5%; height: 38%; }
+
