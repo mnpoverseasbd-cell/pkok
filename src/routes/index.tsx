@@ -561,42 +561,28 @@ function MainCategoryCards() {
 
 
 
+import appSectionReference from "@/assets/reference/app-section-reference.png.asset.json";
+
 function AppSection() {
-  const { t } = useLang();
   return (
     <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
-      <div className="grid items-center gap-6 rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-4 sm:p-6 lg:grid-cols-[1.1fr_1fr]">
-        <div className="relative flex min-h-[260px] items-center justify-center overflow-hidden rounded-2xl">
-          <div className="absolute left-0 top-1/2 hidden -translate-y-1/2 sm:block">
-            <div className="text-6xl">🐟</div>
-          </div>
-          <img src={phoneMockup} alt="PKOK app preview" width={800} height={1024} className="relative z-10 w-44 animate-float sm:w-56 lg:w-64" />
-        </div>
-        <div>
-          <div className="text-sm font-bold text-[var(--neon-green)]">{t("appTagline")}</div>
-          <h2 className="mt-1 text-4xl font-black text-white sm:text-5xl">PKOK APP</h2>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/80 sm:text-base">
-            {t("appDescription")}
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <button className="inline-flex items-center gap-2 rounded-xl bg-green-button px-4 py-3 font-black text-[var(--background)]"><Download className="h-5 w-5" /> Android APP</button>
-            <button className="inline-flex items-center gap-2 rounded-xl bg-black/35 px-4 py-3 font-black text-white border border-border"><Apple className="h-5 w-5" /> IOS APP</button>
-          </div>
-          <div className="mt-5 grid grid-cols-2 gap-4 sm:max-w-md">
-            {["Android APP", "IOS APP"].map((label) => (
-              <div key={label} className="rounded-2xl border border-[var(--neon-green)]/40 bg-black/35 p-3 text-center">
-                <div className="mx-auto grid h-28 w-28 place-items-center rounded-lg bg-white text-[var(--background)] sm:h-32 sm:w-32">
-                  <QrCode className="h-20 w-20" strokeWidth={1.5} />
-                </div>
-                <div className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-white"><Smartphone className="h-3.5 w-3.5" /> {label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="app-section-wrap">
+        <img
+          src={appSectionReference.url}
+          alt="PKOK APP download section"
+          className="app-section-image"
+        />
+        <button aria-label="Android APP download" className="app-section-hit app-section-hit-android">
+          <span className="sr-only">Android APP</span>
+        </button>
+        <button aria-label="iOS APP download" className="app-section-hit app-section-hit-ios">
+          <span className="sr-only">iOS APP</span>
+        </button>
       </div>
     </section>
   );
 }
+
 
 function ServiceStats() {
   const { t } = useLang();
