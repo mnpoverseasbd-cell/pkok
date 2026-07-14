@@ -411,16 +411,14 @@
   width: 100%;
   max-width: 1487px;
   margin-inline: auto;
-  border-radius: 24px;
-  overflow: hidden;
-  border: 1px solid color-mix(in oklab, var(--neon-green) 45%, transparent);
-  background: #052014;
+  background: transparent;
 }
 .app-section-image {
   display: block;
   width: 100%;
   height: auto;
 }
+
 
 .app-section-hit {
   position: absolute;
