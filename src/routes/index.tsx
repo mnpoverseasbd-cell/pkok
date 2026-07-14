@@ -63,7 +63,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Asik Game — Inspired Gaming Portal UI" },
       {
         property: "og:description",
-        content: "বাংলা gaming portal style responsive frontend with slots, live, sports, fish, promo and app download sections.",
+        content: "Asik Game inspired gaming portal UI — বাংলা interface, game sections, provider strips, app download, promo area and responsive mobile-first layout.",
       },
     ],
   }),
