@@ -565,7 +565,7 @@ import appSectionReference from "@/assets/reference/app-section-reference.png.as
 
 function AppSection() {
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
+    <section className="app-section-strip">
       <div className="app-section-wrap">
         <img
           src={appSectionReference.url}
@@ -582,6 +582,7 @@ function AppSection() {
     </section>
   );
 }
+
 
 
 function ServiceStats() {
