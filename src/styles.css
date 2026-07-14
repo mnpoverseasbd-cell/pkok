@@ -402,8 +402,8 @@
 /* App download section — reference-based */
 .app-section-strip {
   position: relative;
-  background: #0c4b2d;
-  padding: 8px 16px 32px;
+  background: transparent;
+  padding: 0 16px 32px;
 }
 
 .app-section-wrap {
