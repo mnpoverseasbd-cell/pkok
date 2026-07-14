@@ -347,7 +347,7 @@ function SocialRail() {
 
 function LeftFloatingBadges() {
   return (
-    <div className="fixed bottom-6 left-2 z-20 hidden flex-col gap-3 lg:flex">
+    <div className="fixed bottom-6 left-2 z-20 hidden flex-col gap-3 2xl:flex">
       {["🏆", "🎁", "🏆"].map((icon, index) => (
         <button key={`${icon}-${index}`} className="grid h-14 w-14 place-items-center rounded-full border border-[var(--neon-gold)]/40 bg-[color-mix(in_oklab,var(--surface)_90%,black)] text-3xl shadow-lg shadow-black/30">
           {icon}

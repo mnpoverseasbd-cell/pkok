@@ -186,24 +186,26 @@
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(90deg, rgba(236, 197, 64, 0.12), transparent 14%, transparent 86%, rgba(236, 197, 64, 0.12)),
-    radial-gradient(ellipse at 50% 0%, rgba(31, 113, 73, 0.42), transparent 58%);
+    linear-gradient(90deg, rgba(232, 196, 58, 0.13), rgba(6, 61, 38, 0.68) 14%, rgba(6, 61, 38, 0.58) 50%, rgba(6, 61, 38, 0.68) 86%, rgba(232, 196, 58, 0.13)),
+    linear-gradient(180deg, rgba(7, 75, 46, 0.96), rgba(3, 52, 31, 0.98)),
+    url("https://pkok-clone-vibes.lovable.app/__l5e/assets-v1/036072ec-d1e1-45fd-b0ce-5ff9572ab9e7/casino-bg.jpg");
+  background-size: auto, auto, 1600px auto;
+  background-position: center, center, center;
 }
 
 .category-row {
-  width: min(100%, 1184px);
+  width: min(100%, 1168px);
   display: flex;
   align-items: end;
   justify-content: center;
-  gap: clamp(24px, 4.4vw, 72px);
+  gap: clamp(42px, 6.6vw, 92px);
 }
 
 .category-card {
-  --card-w: 228px;
-  --card-h: 186px;
-  --panel-top: 82px;
-  --panel-h: 148px;
-  --mascot-h: 236px;
+  --card-w: 206px;
+  --panel-top: 104px;
+  --panel-h: 120px;
+  --mascot-h: 224px;
   --mascot-x: 50%;
   --mascot-y: -8px;
   --title-x: 77%;
@@ -223,16 +225,16 @@
   right: 0;
   bottom: 0;
   height: var(--panel-h);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 45% 100%, 45% 70%, 0 70%);
-  border-radius: 16px;
+  border-radius: 12px;
   background:
-    linear-gradient(180deg, rgba(12, 69, 46, 0.52), rgba(3, 22, 14, 0.94)),
+    radial-gradient(circle at 60% 24%, rgba(46, 249, 145, 0.14), transparent 35%),
+    linear-gradient(180deg, rgba(9, 58, 39, 0.42), rgba(2, 20, 12, 0.92)),
     url("https://pkok-clone-vibes.lovable.app/__l5e/assets-v1/036072ec-d1e1-45fd-b0ce-5ff9572ab9e7/casino-bg.jpg");
   background-size: cover;
   background-position: center;
   box-shadow:
-    0 0 0 2px color-mix(in oklab, var(--neon-green) 82%, transparent),
-    0 0 18px color-mix(in oklab, var(--neon-green) 62%, transparent),
+    0 0 0 2px color-mix(in oklab, var(--neon-green) 92%, transparent),
+    0 0 16px color-mix(in oklab, var(--neon-green) 66%, transparent),
     inset 0 0 18px color-mix(in oklab, var(--neon-green) 22%, transparent);
 }
 
@@ -240,8 +242,7 @@
   content: "";
   position: absolute;
   inset: 2px;
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 45% 100%, 45% 70%, 0 70%);
-  border-radius: 14px;
+  border-radius: 10px;
   box-shadow: inset 0 0 0 1px rgba(16, 255, 123, 0.5);
   pointer-events: none;
 }
@@ -269,11 +270,15 @@
 .category-title {
   position: absolute;
   left: var(--title-x);
-  bottom: 2px;
+  bottom: 0;
   z-index: 3;
+  display: grid;
+  min-width: 98px;
+  height: 56px;
+  place-items: center;
   transform: translateX(-50%);
   font-family: var(--font-display);
-  font-size: 36px;
+  font-size: 33px;
   font-style: italic;
   font-weight: 900;
   line-height: 1;
@@ -284,32 +289,44 @@
     0 0 18px rgba(255, 220, 44, 0.72);
 }
 
+.category-title::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 19px 0 10px 0;
+  background: linear-gradient(180deg, rgba(16, 86, 55, 0.94), rgba(5, 54, 33, 0.98));
+  box-shadow:
+    -2px -2px 0 color-mix(in oklab, var(--neon-green) 86%, transparent),
+    0 0 18px color-mix(in oklab, var(--neon-green) 46%, transparent);
+}
+
 .category-card-catSlots {
-  --mascot-h: 230px;
-  --mascot-x: 46%;
-  --mascot-y: -4px;
-  --title-x: 76%;
+  --mascot-h: 234px;
+  --mascot-x: 41%;
+  --mascot-y: -26px;
+  --title-x: 79%;
 }
 
 .category-card-catFish {
-  --mascot-h: 250px;
-  --mascot-x: 55%;
-  --mascot-y: -22px;
-  --title-x: 75%;
+  --mascot-h: 236px;
+  --mascot-x: 52%;
+  --mascot-y: -20px;
+  --title-x: 77%;
 }
 
 .category-card-catLive {
-  --mascot-h: 248px;
-  --mascot-x: 47%;
-  --mascot-y: -28px;
+  --mascot-h: 224px;
+  --mascot-x: 48%;
+  --mascot-y: -14px;
   --title-x: 78%;
 }
 
 .category-card-catPoker {
-  --mascot-h: 254px;
-  --mascot-x: 55%;
-  --mascot-y: -32px;
-  --title-x: 78%;
+  --mascot-h: 222px;
+  --mascot-x: 54%;
+  --mascot-y: -17px;
+  --title-x: 80%;
 }
 
 @media (max-width: 1023px) {
