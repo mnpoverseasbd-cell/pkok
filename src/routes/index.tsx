@@ -336,14 +336,32 @@ function TickerBar() {
 
 
 function HotGamesSection() {
-  const scrollerRef = (typeof window !== "undefined" ? (window as any) : {}) && null;
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useLang();
+  const [paused, setPaused] = useState(false);
+
   const scrollBy = (dir: number) => {
     const el = ref.current;
     if (!el) return;
     el.scrollBy({ left: dir * (el.clientWidth * 0.85), behavior: "smooth" });
   };
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || paused) return;
+    const id = setInterval(() => {
+      if (!el) return;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      const cardStep = el.clientWidth / (window.innerWidth >= 1024 ? 6 : window.innerWidth >= 640 ? 3 : 2);
+      if (el.scrollLeft + cardStep >= maxScroll - 4) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        el.scrollBy({ left: cardStep, behavior: "smooth" });
+      }
+    }, 2400);
+    return () => clearInterval(id);
+  }, [paused]);
+
   return (
     <section className="mx-auto max-w-7xl px-3 py-5 sm:px-4 lg:px-6">
       <div className="rounded-2xl inset-panel p-3 sm:p-4">
@@ -353,7 +371,13 @@ function HotGamesSection() {
           </div>
           <button className="rounded-full bg-green-button px-4 py-1 text-xs font-black text-[var(--background)]">{t("more")}</button>
         </div>
-        <div className="relative">
+        <div
+          className="relative"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onTouchStart={() => setPaused(true)}
+          onTouchEnd={() => setPaused(false)}
+        >
           <button
             aria-label="Previous"
             onClick={() => scrollBy(-1)}
@@ -368,7 +392,7 @@ function HotGamesSection() {
             {hotGames.map((game) => (
               <div
                 key={game.title}
-                className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-1.5 sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
+                className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-1.5 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
               >
                 {game.tag && (
                   <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[9px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
@@ -395,6 +419,7 @@ function HotGamesSection() {
     </section>
   );
 }
+
 
 
 
