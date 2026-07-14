@@ -508,12 +508,12 @@ function DigitReel({ digit }: { digit: number }) {
 function MainCategoryCards() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <section className="mx-auto max-w-7xl px-3 pb-10 sm:px-4 lg:px-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
         {mainCategories.map((item) => (
-          <div
+          <button
             key={item.key}
-            className="group relative flex h-[260px] flex-col items-center justify-end overflow-hidden rounded-2xl border border-[var(--neon-green)]/45 bg-[linear-gradient(180deg,rgba(7,40,28,0.85),rgba(4,18,12,0.95))] p-3 transition-transform hover:-translate-y-1"
+            className="group relative flex flex-col items-center justify-end pt-2"
           >
             <img
               src={item.mascot}
@@ -521,17 +521,18 @@ function MainCategoryCards() {
               width={768}
               height={768}
               loading="lazy"
-              className="absolute inset-x-0 top-2 mx-auto h-[78%] w-auto object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.55)] transition-transform duration-300 group-hover:scale-110"
+              className="h-[180px] w-auto object-contain drop-shadow-[0_14px_22px_rgba(0,0,0,0.6)] transition-transform duration-300 group-hover:-translate-y-2 group-hover:scale-105 sm:h-[220px] lg:h-[240px]"
             />
-            <div className="relative z-10 mt-auto w-full rounded-md bg-black/55 py-1.5 text-center font-display text-2xl italic font-black tracking-wide text-gradient-gold">
+            <div className="mt-1 font-display text-2xl italic font-black tracking-wide text-gradient-gold sm:text-3xl">
               {t(item.key)}
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </section>
   );
 }
+
 
 
 function AppSection() {
