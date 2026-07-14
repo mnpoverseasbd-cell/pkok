@@ -40,6 +40,7 @@ import mascotSlots from "@/assets/mascot-slots.png";
 import mascotFish from "@/assets/mascot-fish.png";
 import mascotLive from "@/assets/mascot-live.png";
 import mascotPoker from "@/assets/mascot-poker.png";
+import categoryReference from "@/assets/reference/category-reference.png.asset.json";
 import promoWelcome from "@/assets/promo-welcome.jpg";
 import promoDaily from "@/assets/promo-daily.jpg";
 import promoVip from "@/assets/promo-vip.jpg";
@@ -533,23 +534,23 @@ function DigitReel({ digit }: { digit: number }) {
 function MainCategoryCards() {
   const { t } = useLang();
   return (
-    <section className="category-strip px-3 pb-9 pt-7 sm:px-4 sm:pb-11 sm:pt-9 lg:px-6">
-      <div className="category-row mx-auto">
+    <section className="category-strip">
+      <div className="category-reference-wrap mx-auto">
+        <img
+          src={categoryReference.url}
+          alt="Slot, Fishing, Live and Poker game categories"
+          width={1487}
+          height={372}
+          loading="lazy"
+          className="category-reference-img"
+        />
         {mainCategories.map((item) => (
           <button
             key={item.key}
-            className={`category-card group category-card-${item.key}`}
+            aria-label={t(item.key)}
+            className={`category-hit category-hit-${item.key}`}
           >
-            <span className="category-panel" aria-hidden="true" />
-            <img
-              src={item.mascot}
-              alt={t(item.key)}
-              width={768}
-              height={768}
-              loading="lazy"
-              className="category-mascot"
-            />
-            <span className="category-title text-gradient-gold">{t(item.key)}</span>
+            <span className="sr-only">{t(item.key)}</span>
           </button>
         ))}
       </div>
