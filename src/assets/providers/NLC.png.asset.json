@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "11d6f71c-2b06-49a9-b1f1-6bb4a8784374",
-  "project_id": "98159d95-f4de-4ad8-a1ac-ba7f58ea8c42",
-  "url": "/__l5e/assets-v1/11d6f71c-2b06-49a9-b1f1-6bb4a8784374/NLC-COLOR.png",
-  "r2_key": "a/v1/98159d95-f4de-4ad8-a1ac-ba7f58ea8c42/11d6f71c-2b06-49a9-b1f1-6bb4a8784374/NLC-COLOR.png",
-  "original_filename": "NLC-COLOR.png",
-  "size": 4579,
   "content_type": "image/png",
-  "created_at": "2026-06-30T09:44:40Z"
+  "created_at": "2026-06-30T09:44:40Z",
+  "original_filename": "NLC-COLOR.png",
+  "project_id": "9abe7fca-1c88-41a2-9faa-2cc29e7c4795",
+  "r2_key": "a/v1/9abe7fca-1c88-41a2-9faa-2cc29e7c4795/11d6f71c-2b06-49a9-b1f1-6bb4a8784374/NLC-COLOR.png",
+  "size": 4579,
+  "url": "/__l5e/assets-v1/11d6f71c-2b06-49a9-b1f1-6bb4a8784374/NLC-COLOR.png",
+  "version": 1
 }

@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "72b03c3a-f52f-4497-b3e7-351886271b6a",
-  "project_id": "98159d95-f4de-4ad8-a1ac-ba7f58ea8c42",
-  "url": "/__l5e/assets-v1/72b03c3a-f52f-4497-b3e7-351886271b6a/VA-COLOR.png",
-  "r2_key": "a/v1/98159d95-f4de-4ad8-a1ac-ba7f58ea8c42/72b03c3a-f52f-4497-b3e7-351886271b6a/VA-COLOR.png",
-  "original_filename": "VA-COLOR.png",
-  "size": 8390,
   "content_type": "image/png",
-  "created_at": "2026-06-30T09:43:15Z"
+  "created_at": "2026-06-30T09:43:15Z",
+  "original_filename": "VA-COLOR.png",
+  "project_id": "9abe7fca-1c88-41a2-9faa-2cc29e7c4795",
+  "r2_key": "a/v1/9abe7fca-1c88-41a2-9faa-2cc29e7c4795/72b03c3a-f52f-4497-b3e7-351886271b6a/VA-COLOR.png",
+  "size": 8390,
+  "url": "/__l5e/assets-v1/72b03c3a-f52f-4497-b3e7-351886271b6a/VA-COLOR.png",
+  "version": 1
 }

@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "0baaca92-6ce1-4bc4-81a8-9f9fa9057f1c",
-  "project_id": "98159d95-f4de-4ad8-a1ac-ba7f58ea8c42",
-  "url": "/__l5e/assets-v1/0baaca92-6ce1-4bc4-81a8-9f9fa9057f1c/SPB-COLOR.png",
-  "r2_key": "a/v1/98159d95-f4de-4ad8-a1ac-ba7f58ea8c42/0baaca92-6ce1-4bc4-81a8-9f9fa9057f1c/SPB-COLOR.png",
-  "original_filename": "SPB-COLOR.png",
-  "size": 5366,
   "content_type": "image/png",
-  "created_at": "2026-06-30T09:41:48Z"
+  "created_at": "2026-06-30T09:41:48Z",
+  "original_filename": "SPB-COLOR.png",
+  "project_id": "9abe7fca-1c88-41a2-9faa-2cc29e7c4795",
+  "r2_key": "a/v1/9abe7fca-1c88-41a2-9faa-2cc29e7c4795/0baaca92-6ce1-4bc4-81a8-9f9fa9057f1c/SPB-COLOR.png",
+  "size": 5366,
+  "url": "/__l5e/assets-v1/0baaca92-6ce1-4bc4-81a8-9f9fa9057f1c/SPB-COLOR.png",
+  "version": 1
 }

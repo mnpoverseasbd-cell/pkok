@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "7bb2e50b-0078-42db-9370-9cd9da5ceb31",
-  "project_id": "98159d95-f4de-4ad8-a1ac-ba7f58ea8c42",
-  "url": "/__l5e/assets-v1/7bb2e50b-0078-42db-9370-9cd9da5ceb31/U9W-COLOR.png",
-  "r2_key": "a/v1/98159d95-f4de-4ad8-a1ac-ba7f58ea8c42/7bb2e50b-0078-42db-9370-9cd9da5ceb31/U9W-COLOR.png",
-  "original_filename": "U9W-COLOR.png",
-  "size": 7439,
   "content_type": "image/png",
-  "created_at": "2026-06-30T09:46:30Z"
+  "created_at": "2026-06-30T09:46:30Z",
+  "original_filename": "U9W-COLOR.png",
+  "project_id": "9abe7fca-1c88-41a2-9faa-2cc29e7c4795",
+  "r2_key": "a/v1/9abe7fca-1c88-41a2-9faa-2cc29e7c4795/7bb2e50b-0078-42db-9370-9cd9da5ceb31/U9W-COLOR.png",
+  "size": 7439,
+  "url": "/__l5e/assets-v1/7bb2e50b-0078-42db-9370-9cd9da5ceb31/U9W-COLOR.png",
+  "version": 1
 }

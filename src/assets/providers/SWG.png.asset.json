@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "1c5752c0-8026-4837-8233-e13b4abff15e",
-  "project_id": "98159d95-f4de-4ad8-a1ac-ba7f58ea8c42",
-  "url": "/__l5e/assets-v1/1c5752c0-8026-4837-8233-e13b4abff15e/SWG-COLOR.png",
-  "r2_key": "a/v1/98159d95-f4de-4ad8-a1ac-ba7f58ea8c42/1c5752c0-8026-4837-8233-e13b4abff15e/SWG-COLOR.png",
-  "original_filename": "SWG-COLOR.png",
-  "size": 17895,
   "content_type": "image/png",
-  "created_at": "2026-06-30T09:45:55Z"
+  "created_at": "2026-06-30T09:45:55Z",
+  "original_filename": "SWG-COLOR.png",
+  "project_id": "9abe7fca-1c88-41a2-9faa-2cc29e7c4795",
+  "r2_key": "a/v1/9abe7fca-1c88-41a2-9faa-2cc29e7c4795/1c5752c0-8026-4837-8233-e13b4abff15e/SWG-COLOR.png",
+  "size": 17895,
+  "url": "/__l5e/assets-v1/1c5752c0-8026-4837-8233-e13b4abff15e/SWG-COLOR.png",
+  "version": 1
 }

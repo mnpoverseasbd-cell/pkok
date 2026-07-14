@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "d9698b36-7459-40ff-a0b3-d40a9887ba47",
-  "project_id": "98159d95-f4de-4ad8-a1ac-ba7f58ea8c42",
-  "url": "/__l5e/assets-v1/d9698b36-7459-40ff-a0b3-d40a9887ba47/SV3-COLOR.png",
-  "r2_key": "a/v1/98159d95-f4de-4ad8-a1ac-ba7f58ea8c42/d9698b36-7459-40ff-a0b3-d40a9887ba47/SV3-COLOR.png",
-  "original_filename": "SV3-COLOR.png",
-  "size": 12976,
   "content_type": "image/png",
-  "created_at": "2026-06-30T09:41:12Z"
+  "created_at": "2026-06-30T09:41:12Z",
+  "original_filename": "SV3-COLOR.png",
+  "project_id": "9abe7fca-1c88-41a2-9faa-2cc29e7c4795",
+  "r2_key": "a/v1/9abe7fca-1c88-41a2-9faa-2cc29e7c4795/d9698b36-7459-40ff-a0b3-d40a9887ba47/SV3-COLOR.png",
+  "size": 12976,
+  "url": "/__l5e/assets-v1/d9698b36-7459-40ff-a0b3-d40a9887ba47/SV3-COLOR.png",
+  "version": 1
 }

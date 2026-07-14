@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "4018affa-6235-4e7e-a94c-19bad1c61fa5",
-  "project_id": "98159d95-f4de-4ad8-a1ac-ba7f58ea8c42",
-  "url": "/__l5e/assets-v1/4018affa-6235-4e7e-a94c-19bad1c61fa5/TCG_SEA-COLOR.png",
-  "r2_key": "a/v1/98159d95-f4de-4ad8-a1ac-ba7f58ea8c42/4018affa-6235-4e7e-a94c-19bad1c61fa5/TCG_SEA-COLOR.png",
-  "original_filename": "TCG_SEA-COLOR.png",
-  "size": 6456,
   "content_type": "image/png",
-  "created_at": "2026-06-30T09:41:36Z"
+  "created_at": "2026-06-30T09:41:36Z",
+  "original_filename": "TCG_SEA-COLOR.png",
+  "project_id": "9abe7fca-1c88-41a2-9faa-2cc29e7c4795",
+  "r2_key": "a/v1/9abe7fca-1c88-41a2-9faa-2cc29e7c4795/4018affa-6235-4e7e-a94c-19bad1c61fa5/TCG_SEA-COLOR.png",
+  "size": 6456,
+  "url": "/__l5e/assets-v1/4018affa-6235-4e7e-a94c-19bad1c61fa5/TCG_SEA-COLOR.png",
+  "version": 1
 }

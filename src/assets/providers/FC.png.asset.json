@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "def47ca7-d84b-4d9e-9471-12ca31d3402c",
-  "project_id": "98159d95-f4de-4ad8-a1ac-ba7f58ea8c42",
-  "url": "/__l5e/assets-v1/def47ca7-d84b-4d9e-9471-12ca31d3402c/FC-COLOR.png",
-  "r2_key": "a/v1/98159d95-f4de-4ad8-a1ac-ba7f58ea8c42/def47ca7-d84b-4d9e-9471-12ca31d3402c/FC-COLOR.png",
-  "original_filename": "FC-COLOR.png",
-  "size": 5399,
   "content_type": "image/png",
-  "created_at": "2026-06-30T09:42:01Z"
+  "created_at": "2026-06-30T09:42:01Z",
+  "original_filename": "FC-COLOR.png",
+  "project_id": "9abe7fca-1c88-41a2-9faa-2cc29e7c4795",
+  "r2_key": "a/v1/9abe7fca-1c88-41a2-9faa-2cc29e7c4795/def47ca7-d84b-4d9e-9471-12ca31d3402c/FC-COLOR.png",
+  "size": 5399,
+  "url": "/__l5e/assets-v1/def47ca7-d84b-4d9e-9471-12ca31d3402c/FC-COLOR.png",
+  "version": 1
 }

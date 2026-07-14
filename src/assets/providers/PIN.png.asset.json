@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "acb37937-359c-47bd-9856-8e28993ae8fe",
-  "project_id": "98159d95-f4de-4ad8-a1ac-ba7f58ea8c42",
-  "url": "/__l5e/assets-v1/acb37937-359c-47bd-9856-8e28993ae8fe/PIN-COLOR.png",
-  "r2_key": "a/v1/98159d95-f4de-4ad8-a1ac-ba7f58ea8c42/acb37937-359c-47bd-9856-8e28993ae8fe/PIN-COLOR.png",
-  "original_filename": "PIN-COLOR.png",
-  "size": 5004,
   "content_type": "image/png",
-  "created_at": "2026-06-30T09:41:04Z"
+  "created_at": "2026-06-30T09:41:04Z",
+  "original_filename": "PIN-COLOR.png",
+  "project_id": "9abe7fca-1c88-41a2-9faa-2cc29e7c4795",
+  "r2_key": "a/v1/9abe7fca-1c88-41a2-9faa-2cc29e7c4795/acb37937-359c-47bd-9856-8e28993ae8fe/PIN-COLOR.png",
+  "size": 5004,
+  "url": "/__l5e/assets-v1/acb37937-359c-47bd-9856-8e28993ae8fe/PIN-COLOR.png",
+  "version": 1
 }

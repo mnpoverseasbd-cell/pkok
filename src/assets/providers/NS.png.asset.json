@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "78017c6e-2d8d-4e36-b2a7-1b9adc0b5f6b",
-  "project_id": "98159d95-f4de-4ad8-a1ac-ba7f58ea8c42",
-  "url": "/__l5e/assets-v1/78017c6e-2d8d-4e36-b2a7-1b9adc0b5f6b/NS-COLOR.png",
-  "r2_key": "a/v1/98159d95-f4de-4ad8-a1ac-ba7f58ea8c42/78017c6e-2d8d-4e36-b2a7-1b9adc0b5f6b/NS-COLOR.png",
-  "original_filename": "NS-COLOR.png",
-  "size": 6284,
   "content_type": "image/png",
-  "created_at": "2026-06-30T09:41:44Z"
+  "created_at": "2026-06-30T09:41:44Z",
+  "original_filename": "NS-COLOR.png",
+  "project_id": "9abe7fca-1c88-41a2-9faa-2cc29e7c4795",
+  "r2_key": "a/v1/9abe7fca-1c88-41a2-9faa-2cc29e7c4795/78017c6e-2d8d-4e36-b2a7-1b9adc0b5f6b/NS-COLOR.png",
+  "size": 6284,
+  "url": "/__l5e/assets-v1/78017c6e-2d8d-4e36-b2a7-1b9adc0b5f6b/NS-COLOR.png",
+  "version": 1
 }
