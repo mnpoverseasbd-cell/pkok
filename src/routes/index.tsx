@@ -264,7 +264,7 @@ function HeroBanner() {
           alt={slide.alt}
           width={1920}
           height={768}
-          className="h-[180px] w-full animate-fade-in object-cover sm:h-[300px] lg:h-[420px]"
+          className="block h-auto w-full animate-fade-in object-contain"
         />
 
         {/* Prev / Next */}
