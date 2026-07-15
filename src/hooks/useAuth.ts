@@ -52,7 +52,8 @@ export function useProfile(userId: string | undefined) {
       .select("id, username, display_name, avatar_url, phone, email, referral_code, wallet_balance, vip_tier")
       .eq("id", userId)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) console.error("[useProfile] fetch error:", error);
         if (!cancelled) {
           setProfile(data as Profile | null);
           setLoading(false);
