@@ -587,13 +587,13 @@ function AppSection() {
           />
         </div>
         <div>
-          <div className="text-sm font-bold text-white sm:text-base">{t("appTagline")}</div>
-          <h2 className="mt-1 flex items-center gap-3 text-4xl font-black text-gradient-gold sm:text-5xl">
+          <div className="text-base font-bold text-white sm:text-lg">{t("appTagline")}</div>
+          <h2 className="mt-1 flex items-center gap-3 text-4xl font-black text-gradient-gold sm:text-5xl lg:text-6xl">
             <span>PKOK APP</span>
             <span aria-hidden className="h-[3px] flex-1 rounded-full bg-gradient-to-r from-[var(--neon-gold)] to-transparent" />
           </h2>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/80 sm:text-base">{t("appDescription")}</p>
-          <div className="mt-5 grid grid-cols-2 gap-4 sm:max-w-md">
+          <p className="mt-4 max-w-xl text-base leading-7 text-foreground/80 sm:text-lg sm:leading-8">{t("appDescription")}</p>
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:max-w-md">
             {[
               { label: "Android APP", Icon: Download },
               { label: "IOS APP", Icon: Apple },
@@ -602,9 +602,10 @@ function AppSection() {
                 <div className="mx-auto grid h-28 w-28 place-items-center rounded-lg bg-white text-[var(--background)] sm:h-32 sm:w-32">
                   <QrCode className="h-20 w-20" strokeWidth={1.5} />
                 </div>
-                <div className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-white">
-                  <Icon className="h-3.5 w-3.5" /> {label}
+                <div className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-white sm:text-base">
+                  <Icon className="h-4 w-4" /> {label}
                 </div>
+
               </div>
             ))}
           </div>
