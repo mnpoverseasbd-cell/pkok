@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeOff, Gift, Loader2, Lock, Phone, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -33,6 +34,11 @@ function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const registerAccount = useServerFn(createPhoneAccount);
+  const { user, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && user) navigate({ to: "/", replace: true });
+  }, [user, authLoading, navigate]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
