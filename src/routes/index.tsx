@@ -570,8 +570,9 @@ function MainCategoryCards() {
 function AppSection() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-[1440px] px-3 pb-8 sm:px-4 lg:px-6">
-      <div className="grid items-center gap-6 rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-4 sm:p-6 lg:grid-cols-[1.1fr_1fr]">
+    <section className="mx-auto max-w-[1440px] px-4 pb-10 sm:px-6 sm:pb-12 lg:px-8 lg:pb-14">
+      <div className="grid items-center gap-8 rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-6 sm:p-8 lg:grid-cols-[1.1fr_1fr] lg:p-10">
+
         <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-2xl sm:min-h-[380px] lg:min-h-[440px]">
           <img
             src={mascotAppScene}
