@@ -68,8 +68,10 @@ export function SiteShell({ children, footer = true }: { children: ReactNode; fo
     <LanguageProvider>
       <ModalsProvider>
         <div className="portal-shell min-h-screen text-foreground">
-          <TopBar />
-          <MainNav />
+          <div className="sticky top-0 z-40">
+            <TopBar />
+            <MainNav />
+          </div>
           <main className="pb-8">{children}</main>
           {footer ? <FooterBlock /> : null}
           <SocialRail />
@@ -301,7 +303,7 @@ function TopBar() {
 function MainNav() {
   const { t } = useLang();
   return (
-    <header className="bg-navbar sticky top-0 z-40 border-b border-black/20 shadow-lg shadow-black/25">
+    <header className="bg-navbar border-b border-black/20 shadow-lg shadow-black/25">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-2 sm:px-4 lg:px-6">
         <Link to="/" aria-label="PKOK home" className="flex shrink-0 items-center gap-1 font-display text-3xl font-black leading-none">
           <span className="text-white drop-shadow">PK</span>
