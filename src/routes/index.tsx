@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Apple,
@@ -207,8 +207,12 @@ function Index() {
 
 function PromoPopup() {
   const { user } = useAuth();
-  const images = user ? popupImagesUser : popupImagesGuest;
-  const storageKey = user ? "pkok_popup_hide_user" : "pkok_popup_hide_guest";
+  return user ? <UserCheckInPopup /> : <GuestPromoPopup />;
+}
+
+function GuestPromoPopup() {
+  const images = popupImagesGuest;
+  const storageKey = "pkok_popup_hide_guest";
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
   const [dontShow, setDontShow] = useState(false);
@@ -220,11 +224,10 @@ function PromoPopup() {
     if (hideUntil && Date.now() < hideUntil) return;
     const timer = setTimeout(() => setOpen(true), 600);
     return () => clearTimeout(timer);
-  }, [storageKey]);
+  }, []);
 
   const close = () => {
     if (dontShow && typeof window !== "undefined") {
-      // hide for 24 hours
       localStorage.setItem(storageKey, String(Date.now() + 24 * 60 * 60 * 1000));
     }
     setOpen(false);
@@ -255,18 +258,10 @@ function PromoPopup() {
           />
           {total > 1 && (
             <>
-              <button
-                onClick={prev}
-                aria-label="Previous"
-                className="absolute left-2 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white hover:bg-[var(--neon-green)]/70"
-              >
+              <button onClick={prev} aria-label="Previous" className="absolute left-2 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white hover:bg-[var(--neon-green)]/70">
                 <ChevronLeft className="h-5 w-5" />
               </button>
-              <button
-                onClick={next}
-                aria-label="Next"
-                className="absolute right-2 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white hover:bg-[var(--neon-green)]/70"
-              >
+              <button onClick={next} aria-label="Next" className="absolute right-2 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white hover:bg-[var(--neon-green)]/70">
                 <ChevronRight className="h-5 w-5" />
               </button>
             </>
@@ -275,36 +270,145 @@ function PromoPopup() {
 
         <div className="mt-3 flex items-center justify-center gap-1.5">
           {images.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setIdx(i)}
-              aria-label={`Slide ${i + 1}`}
-              className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-[var(--neon-gold)]" : "w-1.5 bg-white/40 hover:bg-white/70"}`}
-            />
+            <button key={i} onClick={() => setIdx(i)} aria-label={`Slide ${i + 1}`}
+              className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-[var(--neon-gold)]" : "w-1.5 bg-white/40 hover:bg-white/70"}`} />
           ))}
         </div>
 
         <div className="mt-4 flex items-center justify-between text-white">
           <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={dontShow}
-              onChange={(e) => setDontShow(e.target.checked)}
-              className="h-4 w-4 accent-[var(--neon-green)]"
-            />
+            <input type="checkbox" checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} className="h-4 w-4 accent-[var(--neon-green)]" />
             <span>{t("popupHideToday") || "আজকের জন্য আর দেখাবেন না"}</span>
           </label>
-          <button
-            onClick={close}
-            className="rounded-full bg-[var(--neon-green)] px-5 py-2 text-sm font-semibold text-black hover:brightness-110"
-          >
-            {t("popupClose") || "বন্ধ করুন"}
-          </button>
+          <div className="flex gap-2">
+            <Link to="/register" onClick={close} className="rounded-full bg-gold-button px-5 py-2 text-sm font-bold text-black hover:brightness-110">
+              {t("register") || "রেজিস্টার"}
+            </Link>
+            <button onClick={close} className="rounded-full bg-[var(--neon-green)] px-5 py-2 text-sm font-semibold text-black hover:brightness-110">
+              {t("popupClose") || "বন্ধ"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
+// Post-login daily check-in style popup (PKOK member popup)
+function UserCheckInPopup() {
+  const storageKey = "pkok_checkin_last";
+  const [open, setOpen] = useState(false);
+  const [dontShow, setDontShow] = useState(false);
+  const [claimedDay, setClaimedDay] = useState<number | null>(null);
+  const [today] = useState(() => new Date().getDay() || 7); // 1..7
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const last = localStorage.getItem(storageKey);
+    const todayStr = new Date().toDateString();
+    if (last === todayStr) return;
+    const timer = setTimeout(() => setOpen(true), 700);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const close = () => {
+    if (dontShow && typeof window !== "undefined") {
+      localStorage.setItem(storageKey, new Date().toDateString());
+    }
+    setOpen(false);
+  };
+
+  const claim = (day: number) => {
+    if (day !== today || claimedDay !== null) return;
+    setClaimedDay(day);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(storageKey, new Date().toDateString());
+    }
+  };
+
+  if (!open) return null;
+  const rewards = [10, 20, 30, 50, 80, 120, 200];
+  const dayLabels = ["দিন ১", "দিন ২", "দিন ৩", "দিন ৪", "দিন ৫", "দিন ৬", "দিন ৭"];
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full max-w-lg animate-scale-in">
+        <button aria-label="Close" onClick={close}
+          className="absolute -right-2 -top-10 grid h-9 w-9 place-items-center rounded-full border border-white/30 bg-black/60 text-white transition hover:bg-[var(--neon-green)]/70 hover:scale-110">
+          ✕
+        </button>
+
+        <div className="overflow-hidden rounded-2xl border border-[var(--neon-gold)]/40 bg-gradient-to-b from-[#0a3d1f] via-[#0d5a2c] to-[#062418] shadow-[0_20px_60px_rgba(0,0,0,0.7)]">
+          {/* Header */}
+          <div className="relative bg-gradient-to-r from-[#0d7a3d] via-[#12a651] to-[#0d7a3d] px-6 py-5 text-center">
+            <div className="absolute inset-0 opacity-30" style={{ background: "radial-gradient(circle at 30% 20%, rgba(255,215,80,0.5), transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,215,80,0.4), transparent 50%)" }} />
+            <div className="relative">
+              <div className="mb-1 flex items-center justify-center gap-2 text-2xl font-black text-white drop-shadow">
+                <Gift className="h-6 w-6 text-[var(--neon-gold)]" />
+                দৈনিক চেক-ইন বোনাস
+                <Gift className="h-6 w-6 text-[var(--neon-gold)]" />
+              </div>
+              <div className="text-sm text-white/85">পরপর ৭ দিন লগইন করে বোনাস দাবি করুন</div>
+            </div>
+          </div>
+
+          {/* Reward grid */}
+          <div className="px-5 py-5">
+            <div className="grid grid-cols-4 gap-2.5 sm:grid-cols-7">
+              {rewards.map((amt, i) => {
+                const day = i + 1;
+                const isToday = day === today;
+                const isPast = day < today;
+                const isClaimed = claimedDay !== null && day === claimedDay;
+                return (
+                  <button
+                    key={day}
+                    onClick={() => claim(day)}
+                    disabled={!isToday || claimedDay !== null}
+                    className={`group relative flex flex-col items-center justify-center rounded-xl border-2 p-2.5 text-center transition-all ${
+                      isToday && !isClaimed
+                        ? "border-[var(--neon-gold)] bg-gradient-to-b from-[#ffd95d]/25 to-[#0a3d1f] shadow-[0_0_20px_rgba(255,215,80,0.5)] animate-pulse hover:scale-105"
+                        : isClaimed
+                        ? "border-[var(--neon-green)] bg-[var(--neon-green)]/20 opacity-70"
+                        : isPast
+                        ? "border-white/10 bg-black/40 opacity-50"
+                        : "border-white/15 bg-black/30"
+                    }`}
+                  >
+                    <div className="text-[10px] font-semibold text-white/80">{dayLabels[i]}</div>
+                    <div className="my-1 text-2xl">{isClaimed ? "✅" : "🎁"}</div>
+                    <div className="text-sm font-black text-[var(--neon-gold)]">৳{amt}</div>
+                    {isToday && !isClaimed && (
+                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-[var(--neon-pink)] px-2 py-0.5 text-[9px] font-bold uppercase text-white">আজ</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* CTA row */}
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <label className="flex items-center gap-2 text-sm text-white/85 cursor-pointer select-none">
+                <input type="checkbox" checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} className="h-4 w-4 accent-[var(--neon-green)]" />
+                <span>আজকের জন্য আর দেখাবেন না</span>
+              </label>
+              <div className="flex gap-2">
+                <Link to="/promotion" onClick={close} className="rounded-full bg-gold-button px-4 py-2 text-sm font-bold text-black hover:brightness-110">
+                  প্রমোশন দেখুন
+                </Link>
+                <Link to="/wallet" search={{ tab: "deposit" }} onClick={close}
+                  className="rounded-full bg-green-button px-4 py-2 text-sm font-bold text-black hover:brightness-110">
+                  ডিপোজিট করুন
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 
 function HeroBanner() {
