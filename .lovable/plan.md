@@ -1,46 +1,101 @@
-# Asik Game — Gaming Landing Page (Frontend Only)
+## Goal
 
-PKOK11-এর হুবহু কপি না করে, একই ধরনের **dark + neon casino/gaming landing page** বানাবো নতুন ব্র্যান্ড **"Asik Game"** এর জন্য। সম্পূর্ণ ফ্রন্টএন্ড, কোনো লগইন/ব্যাকএন্ড/পেমেন্ট/রিয়েল গেম নেই — শুধু UI।
+Refactor the current codebase into a scalable, provider-agnostic gaming platform architecture. No third-party provider integrations — only interfaces, adapters, and placeholder services that throw `NotImplementedError` until wired up. Internal games get their own module. Wallet, auth, catalog, and game engine are unified so the UI never knows whether a game is internal or external.
 
-## Visual Direction
+## Scope
 
-- **Theme:** Deep dark background (#0a0613 / #120a1f) + neon accents
-- **Accents:** Gold `#f5c542`, Purple `#a855f7`, Red/Pink `#ef2967`, Cyan `#22d3ee`
-- **Typography:** Heading — `Outfit` (bold, display feel); Body — `Hind Siliguri` (বাংলা সাপোর্টের জন্য জরুরি)
-- **Effects:** Neon glow shadows, gradient borders, subtle hover lifts, gold/purple gradient CTAs, glassmorphic cards
-- **Imagery:** AI-generated hero banner (neon casino vibe), game thumbnails (slot/roulette/crash/fishing style), QR placeholder
+- Architecture scaffolding only — no visual redesign, no new pages, no gameplay logic.
+- Existing UI (SiteShell, landing, wallet, profile, admin) keeps working.
+- Supabase auth + wallet tables already exist; we wrap them in a repository/service layer rather than re-migrating.
+- No new provider SDKs, no fake data generators, no mocked balances.
 
-## Sections (top → bottom)
+## Folder structure (new)
 
-1. **Top Nav Bar** — Logo "Asik Game" (neon gold wordmark) • মেনু: হোম, গেমস, প্রমোশন, VIP, সাপোর্ট • Language selector (বাং/EN) • Login + Register বাটন (purple→pink gradient)। Mobile: hamburger drawer।
-2. **Hero Section** — Full-width neon background image, বড় বাংলা হেডলাইন ("জিতুন বড়, খেলুন স্মার্ট"), সাবহেডলাইন, দুটো CTA — "এখনই জয়েন করুন" (gold) + "অ্যাপ ডাউনলোড করুন" (outline cyan)। Animated glow।
-3. **Live Stats Strip** — তিন/চারটে counter (Active Players, Total Payout, Games, Winners Today)।
-4. **Game Categories Tabs** — All / Slots / Live Casino / Crash / Fishing / Table Games। Tab-active neon underline।
-5. **Games Grid** — 12টা game card (thumbnail + name + "PLAY" overlay button)। Hover: scale + neon glow। Mobile: 2-col, Tablet: 3-col, Desktop: 4-6 col।
-6. **Promotions / Bonus** — Carousel/grid 3-4 banner কার্ড: Welcome Bonus 200%, Daily Reward, Super Reward Event, VIP Cashback। Gradient borders।
-7. **Why Asik Game (Features)** — 4টা আইকন কার্ড: নিরাপদ ও বিশ্বস্ত, দ্রুত উত্তোলন, ২৪/৭ লাইভ সাপোর্ট, বিশাল জ্যাকপট।
-8. **App Download Section** — Split layout: বামে phone mockup + বাংলা copy + Android APK ও iOS বাটন; ডানে QR কোড placeholder।
-9. **Testimonials** — 3টা ইউজার রিভিউ কার্ড (avatar + নাম + ৫-star + বাংলা quote)।
-10. **Footer** — ৪ কলাম লিংক (Quick Links, Games, Support, Legal) + social আইকন (FB, Telegram, WhatsApp, YouTube) + payment method logos placeholder + কপিরাইট।
+```text
+src/
+  core/
+    types/          User, Wallet, Game, Provider, Transaction, Bonus, Promotion, Tournament
+    errors/         NotImplementedError, ProviderError, WalletError
+    constants/      game categories, transaction types, roles
+  repositories/     Supabase data access (walletRepo, gameRepo, txnRepo, profileRepo)
+  services/
+    auth/           session, roles, profile
+    wallet/         unified deposit/withdraw/bet/win/refund/history
+    catalog/        unified game catalog (internal + external merged)
+    bonus/          placeholder
+    promotion/      placeholder
+    favorites/      placeholder
+    recently-played/ placeholder
+    leaderboards/   placeholder (NotImplemented)
+    tournaments/    placeholder (NotImplemented)
+    notifications/  placeholder (NotImplemented)
+  game-engine/
+    Game.ts             abstract interface: launch/close/getMetadata/supportsDemo/supportsReal/supportsFavorite
+    GameRegistry.ts     resolves a game id -> concrete Game impl (internal or provider adapter)
+    LaunchContext.ts    { user, wallet, mode: 'demo'|'real', locale }
+  providers/
+    ProviderAdapter.ts  interface every provider implements
+    evolution/          placeholder adapter (throws NotImplemented)
+    pragmatic/          placeholder adapter
+    spribe/             placeholder adapter
+    pgsoft/             placeholder adapter
+    hacksaw/            placeholder adapter
+    index.ts            provider registry
+  internal-games/
+    InternalGame.ts     base class implementing Game
+    registry.ts         registers internal games
+    _example/           empty scaffold folder with README explaining how to add a game
+  hooks/                useWallet, useCatalog, useGameLaunch, useRoles (thin wrappers over services)
+  contexts/             existing
+  store/                lightweight zustand or context for UI-only state (dropdowns, modals)
+  components/ pages/ layouts/ lib/ utils/ assets/   existing, unchanged
+```
 
-## Responsiveness
+State management: TanStack Query already handles server state. Add a small `zustand` store (or plain context) for UI-only state — no data duplication.
 
-- Mobile-first। Nav → hamburger drawer। Hero stacks vertically। Grid → 2 col on mobile। সব text scale with `clamp()`/responsive utilities। Header rows use `grid-cols-[minmax(0,1fr)_auto]` pattern with `min-w-0` + `shrink-0`।
+## Key interfaces
 
-## Disclaimer
+- `Game` — `id, metadata, supportsDemo(), supportsReal(), supportsFavorite(), launch(ctx), close()`.
+- `ProviderAdapter` — `id, createPlayer(), launchGame(gameId, ctx), getBalance(userId), syncTransaction(txn), handleWebhook(payload), authenticate()`. All methods throw `NotImplementedError` in placeholders.
+- `WalletService` — `getBalances(userId)`, `deposit`, `withdraw`, `bet`, `win`, `refund`, `history`. Wraps existing `transactions` + `profiles` tables via `walletRepo`. Provider-agnostic; providers call this, not Supabase directly.
+- `CatalogService` — merges internal `registry` + provider-declared static catalogs into one `Game[]` with unified metadata (id, provider, type, category, image, thumbnail, rtp?, volatility?, demo, real, tags, popularity, featured).
 
-Footer-এ ছোট করে: "18+ • শুধুমাত্র ডেমো UI, কোনো real-money gaming নয়।"
+## Env vars
 
-## Technical
+Add placeholders to `.env.example` (not `.env`, which holds live Supabase keys):
 
-- TanStack Start routes:
-  - `src/routes/index.tsx` — পুরো landing page একসাথে (scroll sections)
-  - Hash anchors `#games`, `#promo`, `#features`, `#download` শুধু in-page scroll এর জন্য
-- Components under `src/components/landing/`: `Navbar`, `Hero`, `LiveStats`, `GamesGrid`, `Promotions`, `Features`, `AppDownload`, `Testimonials`, `Footer`
-- Design tokens in `src/styles.css` (`@theme inline`): semantic colors `--neon-gold`, `--neon-purple`, `--neon-pink`, `--neon-cyan`, gradient + glow shadow tokens। কোনো hardcoded color class নয়।
-- Fonts via `@fontsource/outfit` + `@fontsource/hind-siliguri` (bun add)
-- Icons via `lucide-react` (already available)
-- Images: AI-generated via `imagegen` — 1 hero banner (1920x900), 1 phone mockup, 8-12 game thumbnails (square)। Avatar/QR placeholders inline SVG।
-- No backend, no auth, no Lovable Cloud। Login/Register বাটন শুধু visual।
+```
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+# Future — server-only, add via Lovable Cloud secrets when integrating
+PROVIDER_API_URL=
+PROVIDER_API_KEY=
+PROVIDER_SECRET=
+```
 
-আপনি অনুমোদন দিলে বানানো শুরু করব।
+Frontend never reads provider secrets — those live in server functions later.
+
+## What stays untouched
+
+- All existing routes and components render exactly as today.
+- `src/routes/wallet.tsx` keeps working; internally we swap its direct `supabase.from(...)` calls to `walletService` in a follow-up (not this pass) to keep the diff small.
+- No database migration in this pass. Existing `profiles`, `user_roles`, `transactions`, `payment_methods` tables already cover wallet + roles.
+
+## Deliverables in this pass
+
+1. New folders + interface/type files under `src/core`, `src/game-engine`, `src/providers`, `src/internal-games`, `src/services`, `src/repositories`, `src/hooks`.
+2. Repositories wrap existing Supabase tables (thin, typed).
+3. `WalletService` + `CatalogService` fully implemented against existing tables.
+4. All provider adapters + future-ready services (leaderboards, tournaments, notifications, webhooks, balance sync) throw `NotImplementedError` with clear TODO comments.
+5. `README.md` inside `src/providers/` and `src/internal-games/` explaining how to add a provider / internal game.
+6. `.env.example` documenting future env vars.
+
+No UI changes, no new routes, no migrations.
+
+## Follow-up passes (not now, listed so you know the path)
+
+- Migrate `src/routes/wallet.tsx` and admin screens to call `walletService` instead of `supabase` directly.
+- Add `favorites` and `recently_played` tables when we're ready to expose those features.
+- Wire the first real provider adapter (likely Spribe or Pragmatic) via a TanStack server function that holds the provider secret.
+
+Confirm and I'll implement pass 1.
