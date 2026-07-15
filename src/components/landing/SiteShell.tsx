@@ -125,6 +125,7 @@ function LangSwitcher() {
 
 function ProfileMenu({ displayName, onSignOut }: { displayName: string; onSignOut: () => void }) {
   const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
   const items: { to: string; search?: Record<string, string>; icon: typeof UserIcon; label: string }[] = [
     { to: "/profile", icon: UserIcon, label: "সদস্য" },
     { to: "/wallet", search: { tab: "deposit" }, icon: CircleDollarSign, label: "ডিপোজিট" },
@@ -132,12 +133,21 @@ function ProfileMenu({ displayName, onSignOut }: { displayName: string; onSignOu
     { to: "/wallet", search: { tab: "history" }, icon: Ticket, label: "অ্যাকাউন্ট রেকর্ড" },
     { to: "/profile", icon: Trophy, label: "বেটিং রেকর্ড" },
   ];
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapRef}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        onBlur={() => setTimeout(() => setOpen(false), 180)}
         className="flex items-center gap-1.5 rounded-full bg-black/25 px-1 py-0.5 pr-2 hover:brightness-110"
       >
         <span className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-[var(--neon-gold)] to-[var(--neon-pink)] text-[11px] font-black text-black">
@@ -154,7 +164,7 @@ function ProfileMenu({ displayName, onSignOut }: { displayName: string; onSignOu
                 <Link
                   to={it.to}
                   search={it.search as never}
-                  onMouseDown={(e) => { e.preventDefault(); setOpen(false); }}
+                  onClick={() => setOpen(false)}
                   className="flex items-center gap-3 px-4 py-2.5 text-sm text-white/90 hover:bg-[var(--neon-green)]/15 hover:text-white"
                 >
                   <it.icon className="h-4 w-4 text-[var(--neon-gold)]" />
@@ -166,7 +176,7 @@ function ProfileMenu({ displayName, onSignOut }: { displayName: string; onSignOu
           <div className="border-t border-white/10">
             <button
               type="button"
-              onMouseDown={(e) => { e.preventDefault(); setOpen(false); onSignOut(); }}
+              onClick={() => { setOpen(false); onSignOut(); }}
               className="flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white hover:bg-[var(--neon-pink)]/20"
             >
               <LogOut className="h-4 w-4" />
