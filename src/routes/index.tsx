@@ -654,8 +654,9 @@ function FeatureList() {
           <div className="flex items-center gap-4 sm:gap-5">
             <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16" />
             <div className="min-w-0">
-              <h3 className="text-base font-black text-[var(--neon-gold)] sm:text-lg">{t(card.titleKey)}</h3>
-              <p className="mt-1 text-xs leading-6 text-foreground/80 sm:text-sm sm:leading-6">{t(card.bodyKey)}</p>
+              <h3 className="text-lg font-black text-[var(--neon-gold)] sm:text-xl">{t(card.titleKey)}</h3>
+              <p className="mt-1 text-sm leading-6 text-foreground/80 sm:text-base sm:leading-7">{t(card.bodyKey)}</p>
+
             </div>
           </div>
         </div>
