@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
-import { usernameToEmail } from "./register";
+import { phoneToEmail } from "./register";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -19,8 +19,11 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+const phoneRegex = /^01[3-9]\d{8}$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const loginSchema = z.object({
-  username: z.string().trim().min(3, { message: "ইউজারনেম দিন" }).max(30),
+  identifier: z.string().trim().min(3, { message: "ফোন নম্বর দিন" }).max(255),
   password: z.string().min(6, { message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষর" }).max(72),
 });
 
@@ -33,19 +36,25 @@ function LoginPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = loginSchema.safeParse({ username, password });
+    const parsed = loginSchema.safeParse({ identifier: username, password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "ভুল ইনপুট");
       return;
     }
+    const id = parsed.data.identifier;
+    let email: string;
+    if (phoneRegex.test(id)) email = phoneToEmail(id);
+    else if (emailRegex.test(id)) email = id.toLowerCase();
+    else email = `${id.toLowerCase()}@asikgame.app`;
+
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
-      email: usernameToEmail(parsed.data.username),
+      email,
       password: parsed.data.password,
     });
     setLoading(false);
     if (error) {
-      toast.error(error.message === "Invalid login credentials" ? "ইউজারনেম বা পাসওয়ার্ড ভুল" : error.message);
+      toast.error(error.message === "Invalid login credentials" ? "ফোন নম্বর বা পাসওয়ার্ড ভুল" : error.message);
       return;
     }
     toast.success("সফলভাবে লগইন হয়েছে");
