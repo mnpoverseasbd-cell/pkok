@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { X, Megaphone, Volume2, Gift, Trophy, Sparkles, Crown, ShieldAlert, CheckCircle2, AlertTriangle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import tutorialImg from "@/assets/bkash-tutorial.jpg";
 
 type Announcement = {
@@ -216,19 +217,32 @@ const announcements: Announcement[] = [
 ];
 
 export function WelcomePopup() {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>("bkash");
 
+  // Guest: show once per session on first visit
   useEffect(() => {
+    if (user) return;
     const dismissed = sessionStorage.getItem("welcome_popup_dismissed");
     if (!dismissed) {
       const t = setTimeout(() => setOpen(true), 500);
       return () => clearTimeout(t);
     }
-  }, []);
+  }, [user]);
+
+  // Logged-in: show once per user per session right after login
+  useEffect(() => {
+    if (!user) return;
+    const key = `welcome_popup_user_${user.id}`;
+    if (sessionStorage.getItem(key)) return;
+    const t = setTimeout(() => setOpen(true), 600);
+    return () => clearTimeout(t);
+  }, [user]);
 
   const close = () => {
     sessionStorage.setItem("welcome_popup_dismissed", "1");
+    if (user) sessionStorage.setItem(`welcome_popup_user_${user.id}`, "1");
     setOpen(false);
   };
 
