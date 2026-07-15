@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Menu, X, Globe, Crown, LogOut, Wallet, User as UserIcon } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { useAuth, useProfile, signOut } from "@/hooks/useAuth";
+import { Menu, X, Globe, Crown } from "lucide-react";
 
 const navItems = [
   { label: "হোম", href: "#home" },
@@ -14,9 +12,6 @@ const navItems = [
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [lang, setLang] = useState<"BN" | "EN">("BN");
-  const { user, loading } = useAuth();
-  const { profile } = useProfile(user?.id);
-  const isAuthed = !!user;
 
   return (
     <header className="sticky top-0 z-50 w-full glass border-b border-[color-mix(in_oklab,var(--neon-purple)_30%,transparent)]">
@@ -51,48 +46,12 @@ export function Navbar() {
             <Globe className="h-3.5 w-3.5" />
             {lang}
           </button>
-
-          {loading ? null : isAuthed ? (
-            <>
-              <Link
-                to="/wallet"
-                className="hidden items-center gap-1.5 rounded-md border border-[var(--neon-gold)]/50 bg-black/30 px-3 py-2 text-xs font-bold text-[var(--neon-gold)] transition-all hover:glow-gold sm:inline-flex"
-              >
-                <Wallet className="h-3.5 w-3.5" />
-                ৳{Number(profile?.wallet_balance ?? 0).toFixed(0)}
-              </Link>
-              <Link
-                to="/profile"
-                className="grid h-10 w-10 place-items-center rounded-md border border-[var(--neon-cyan)]/50 text-[var(--neon-cyan)] transition-all hover:bg-[var(--neon-cyan)]/10"
-                aria-label="Profile"
-              >
-                <UserIcon className="h-4 w-4" />
-              </Link>
-              <button
-                onClick={() => signOut()}
-                className="hidden rounded-md bg-gradient-neon px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:glow-pink sm:inline-flex"
-              >
-                <LogOut className="mr-1.5 inline h-4 w-4" />
-                লগআউট
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="hidden rounded-md border border-[var(--neon-cyan)]/50 px-4 py-2 text-sm font-bold text-[var(--neon-cyan)] transition-all hover:bg-[var(--neon-cyan)]/10 hover:glow-cyan sm:inline-flex"
-              >
-                লগইন
-              </Link>
-              <Link
-                to="/register"
-                className="rounded-md bg-gradient-neon px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:glow-pink"
-              >
-                রেজিস্টার
-              </Link>
-            </>
-          )}
-
+          <button className="hidden rounded-md border border-[var(--neon-cyan)]/50 px-4 py-2 text-sm font-bold text-[var(--neon-cyan)] transition-all hover:bg-[var(--neon-cyan)]/10 hover:glow-cyan sm:inline-flex">
+            লগইন
+          </button>
+          <button className="rounded-md bg-gradient-neon px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:glow-pink">
+            রেজিস্টার
+          </button>
           <button
             onClick={() => setOpen(!open)}
             className="grid h-10 w-10 place-items-center rounded-md border border-border lg:hidden"
@@ -117,21 +76,9 @@ export function Navbar() {
               </a>
             ))}
             <div className="mt-2 flex gap-2 sm:hidden">
-              {isAuthed ? (
-                <button
-                  onClick={() => signOut()}
-                  className="flex-1 rounded-md border border-[var(--neon-pink)]/50 px-4 py-2 text-sm font-bold text-[var(--neon-pink)]"
-                >
-                  লগআউট
-                </button>
-              ) : (
-                <Link
-                  to="/login"
-                  className="flex-1 rounded-md border border-[var(--neon-cyan)]/50 px-4 py-2 text-sm font-bold text-[var(--neon-cyan)] text-center"
-                >
-                  লগইন
-                </Link>
-              )}
+              <button className="flex-1 rounded-md border border-[var(--neon-cyan)]/50 px-4 py-2 text-sm font-bold text-[var(--neon-cyan)]">
+                লগইন
+              </button>
               <button
                 onClick={() => setLang(lang === "BN" ? "EN" : "BN")}
                 className="flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs font-bold"
