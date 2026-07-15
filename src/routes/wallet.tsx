@@ -276,15 +276,17 @@ function WithdrawForm({ userId, balance, onCreated }: { userId: string; balance:
       return toast.error(`সর্বনিম্ন ৳${selected.min_withdraw}`);
     if (amt > balance) return toast.error("পর্যাপ্ত ব্যালেন্স নেই");
     if (!receiver.trim()) return toast.error("রিসিভ একাউন্ট নম্বর দিন");
+    const parsed = withdrawSchema.safeParse({ amount: amt, receiver, note });
+    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "Invalid input");
     setSubmitting(true);
     const { error } = await supabase.from("transactions").insert({
       user_id: userId,
       type: "withdraw",
       status: "pending",
-      amount: amt,
+      amount: parsed.data.amount,
       payment_method_id: methodId,
-      receiver_account: receiver.trim(),
-      user_note: note.trim() || null,
+      receiver_account: parsed.data.receiver,
+      user_note: parsed.data.note || null,
     });
     setSubmitting(false);
     if (error) return toast.error(error.message);
