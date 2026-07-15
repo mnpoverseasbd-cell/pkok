@@ -479,22 +479,23 @@ function LatestWinners() {
   const loop = [...winners, ...winners];
   return (
     <div>
-      <div className="mb-4 flex items-center gap-2 text-base font-black text-[var(--neon-gold)] sm:text-lg"><Trophy className="h-5 w-5" /> {t("latestWinners")}</div>
+      <div className="mb-4 flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl"><Trophy className="h-5 w-5 sm:h-6 sm:w-6" /> {t("latestWinners")}</div>
       <div className="relative h-[400px] overflow-hidden rounded-xl border border-[var(--neon-green)]/40 bg-black/35 p-3">
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-black/70 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-black/70 to-transparent" />
         <div className="flex flex-col gap-2 animate-marquee-y">
           {loop.map((entry, i) => (
-            <div key={`${entry.name}-${i}`} className="flex shrink-0 items-center gap-3 rounded-lg border border-[var(--neon-green)]/30 bg-black/55 p-2">
-              <img src={entry.image} alt="" loading="lazy" decoding="async" className="h-10 w-10 shrink-0 rounded-md object-cover" />
+            <div key={`${entry.name}-${i}`} className="flex shrink-0 items-center gap-3 rounded-lg border border-[var(--neon-green)]/30 bg-black/55 p-2.5">
+              <img src={entry.image} alt="" loading="lazy" decoding="async" className="h-11 w-11 shrink-0 rounded-md object-cover" />
               <div className="min-w-0 flex-1">
-                <div className="truncate text-xs font-semibold text-white">{entry.name}</div>
-                <div className="truncate text-[10px] text-foreground/65">{t("justWonIn")} <span className="text-[var(--neon-gold)]">{entry.game}</span></div>
+                <div className="truncate text-sm font-semibold text-white">{entry.name}</div>
+                <div className="truncate text-xs text-foreground/65">{t("justWonIn")} <span className="text-[var(--neon-gold)]">{entry.game}</span></div>
               </div>
-              <div className="shrink-0 text-sm font-black text-[var(--neon-gold)]">{entry.amount}</div>
+              <div className="shrink-0 text-base font-black text-[var(--neon-gold)]">{entry.amount}</div>
             </div>
           ))}
+
         </div>
       </div>
     </div>
