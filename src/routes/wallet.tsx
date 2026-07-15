@@ -17,6 +17,23 @@ const searchSchema = z.object({
   tab: z.enum(["deposit", "withdraw", "history"]).optional(),
 });
 
+const accountRe = /^[0-9+\-\s]{6,32}$/;
+const txnRefRe = /^[A-Za-z0-9._-]{4,64}$/;
+const noteMax = 500;
+
+const depositSchema = z.object({
+  amount: z.number().positive().max(10_000_000),
+  sender: z.string().trim().regex(accountRe, "Invalid account number"),
+  txnRef: z.string().trim().regex(txnRefRe, "Invalid Transaction ID"),
+  note: z.string().trim().max(noteMax).optional(),
+});
+
+const withdrawSchema = z.object({
+  amount: z.number().positive().max(10_000_000),
+  receiver: z.string().trim().regex(accountRe, "Invalid account number"),
+  note: z.string().trim().max(noteMax).optional(),
+});
+
 export const Route = createFileRoute("/wallet")({
   head: () => ({
     meta: [
