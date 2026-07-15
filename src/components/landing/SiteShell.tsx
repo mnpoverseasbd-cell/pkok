@@ -232,7 +232,8 @@ function TopBar() {
 
   return (
     <div className="bg-topbar border-b border-border/60">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-3 py-2 text-xs sm:px-4 lg:px-6">
+      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-3 px-3 py-2.5 text-[13px] sm:px-4 lg:px-6">
+
         <div className="flex min-w-0 items-center gap-2 text-foreground/90">
           <Globe className="h-3.5 w-3.5 shrink-0" />
           <LangSwitcher />
