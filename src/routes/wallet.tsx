@@ -174,17 +174,19 @@ function DepositForm({ userId, onCreated }: { userId: string; onCreated: () => v
       return toast.error(`সর্বনিম্ন ৳${selected.min_deposit}`);
     if (!sender.trim()) return toast.error("আপনার একাউন্ট নম্বর দিন");
     if (!txnRef.trim()) return toast.error("Transaction ID দিন");
+    const parsed = depositSchema.safeParse({ amount: amt, sender, txnRef, note });
+    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "Invalid input");
     setSubmitting(true);
     const { error } = await supabase.from("transactions").insert({
       user_id: userId,
       type: "deposit",
       status: "pending",
-      amount: amt,
+      amount: parsed.data.amount,
       payment_method_id: methodId,
-      sender_account: sender.trim(),
+      sender_account: parsed.data.sender,
       receiver_account: selected.account_number,
-      txn_reference: txnRef.trim(),
-      user_note: note.trim() || null,
+      txn_reference: parsed.data.txnRef,
+      user_note: parsed.data.note || null,
     });
     setSubmitting(false);
     if (error) return toast.error(error.message);
