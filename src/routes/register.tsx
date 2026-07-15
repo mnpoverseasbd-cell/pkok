@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, EyeOff, Gift, Loader2, Lock, ShieldCheck, Sparkles, User } from "lucide-react";
+import { Eye, EyeOff, Gift, Loader2, Lock, Phone, ShieldCheck, Sparkles, User } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { SiteShell } from "@/components/landing/SiteShell";
@@ -25,11 +25,15 @@ const registerSchema = z.object({
     .min(3, { message: "ইউজারনেম কমপক্ষে ৩ অক্ষর" })
     .max(30, { message: "ইউজারনেম সর্বোচ্চ ৩০ অক্ষর" })
     .regex(/^[a-zA-Z0-9_]+$/, { message: "শুধু অক্ষর, সংখ্যা, _ ব্যবহার করুন" }),
+  contact: z.string().trim().max(255).optional(),
   password: z
     .string()
     .min(6, { message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষর" })
     .max(72),
 });
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^01[3-9]\d{8}$/; // Bangladeshi 11-digit mobile
 
 export function usernameToEmail(username: string) {
   return `${username.trim().toLowerCase()}@asikgame.app`;
@@ -38,19 +42,34 @@ export function usernameToEmail(username: string) {
 function RegisterPage() {
   const [show, setShow] = useState(false);
   const [username, setUsername] = useState("");
+  const [contact, setContact] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = registerSchema.safeParse({ username, password });
+    const parsed = registerSchema.safeParse({ username, contact, password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "ভুল ইনপুট");
       return;
     }
+
+    // Determine phone vs email vs neither
+    const c = parsed.data.contact?.trim() ?? "";
+    let realEmail: string | null = null;
+    let phone: string | null = null;
+    if (c) {
+      if (phoneRegex.test(c)) phone = c;
+      else if (emailRegex.test(c)) realEmail = c.toLowerCase();
+      else {
+        toast.error("সঠিক ১১ ডিজিটের ফোন নম্বর বা ইমেইল দিন (অথবা ফাঁকা রাখুন)");
+        return;
+      }
+    }
+
     setLoading(true);
-    const email = usernameToEmail(parsed.data.username);
+    const email = realEmail ?? usernameToEmail(parsed.data.username);
     const { data: signUpData, error } = await supabase.auth.signUp({
       email,
       password: parsed.data.password,
@@ -58,15 +77,15 @@ function RegisterPage() {
         data: {
           username: parsed.data.username,
           display_name: parsed.data.username,
+          phone: phone,
         },
       },
     });
     if (error) {
       setLoading(false);
-      toast.error(error.message.includes("registered") ? "এই ইউজারনেম আগে থেকে আছে" : error.message);
+      toast.error(error.message.includes("registered") ? "এই তথ্য দিয়ে আগে অ্যাকাউন্ট আছে" : error.message);
       return;
     }
-    // If email confirmation is enabled, signUp returns no session. Try to sign in immediately.
     if (!signUpData.session) {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: parsed.data.password });
       if (signInError) {
@@ -75,6 +94,12 @@ function RegisterPage() {
         return;
       }
     }
+
+    // Save phone into profile if provided
+    if (phone && signUpData.user) {
+      await supabase.from("profiles").update({ phone }).eq("id", signUpData.user.id);
+    }
+
     setLoading(false);
     toast.success("অ্যাকাউন্ট তৈরি হয়েছে! স্বাগতম 🎉");
     navigate({ to: "/" });
@@ -91,7 +116,7 @@ function RegisterPage() {
 
           <form className="space-y-4" onSubmit={onSubmit}>
             <div>
-              <label className="mb-1 block text-xs font-bold text-foreground/85">ইউজারনেম</label>
+              <label className="mb-1 block text-xs font-bold text-foreground/85">ইউজারনেম <span className="text-[var(--neon-pink)]">*</span></label>
               <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-green)]/45 bg-black/35 px-3 py-2.5">
                 <User className="h-4 w-4 text-foreground/70" />
                 <input
@@ -105,7 +130,23 @@ function RegisterPage() {
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-bold text-foreground/85">পাসওয়ার্ড</label>
+              <label className="mb-1 block text-xs font-bold text-foreground/85">
+                ফোন / ইমেইল <span className="text-foreground/50">(ঐচ্ছিক)</span>
+              </label>
+              <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-green)]/45 bg-black/35 px-3 py-2.5">
+                <Phone className="h-4 w-4 text-foreground/70" />
+                <input
+                  type="text"
+                  autoComplete="tel"
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
+                  placeholder="১১ ডিজিট ফোন অথবা ইমেইল"
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/40"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-bold text-foreground/85">পাসওয়ার্ড <span className="text-[var(--neon-pink)]">*</span></label>
               <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-green)]/45 bg-black/35 px-3 py-2.5">
                 <Lock className="h-4 w-4 text-foreground/70" />
                 <input
@@ -136,6 +177,7 @@ function RegisterPage() {
             </p>
           </form>
         </div>
+
 
         <div className="rounded-3xl border border-[var(--neon-gold)]/40 panel-dark p-8 order-1 lg:order-2">
           <Sparkles className="h-8 w-8 text-[var(--neon-gold)]" />
