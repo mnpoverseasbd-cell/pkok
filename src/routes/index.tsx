@@ -570,18 +570,23 @@ function AppSection() {
   return (
     <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
       <div className="grid items-center gap-6 rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-4 sm:p-6 lg:grid-cols-[1.1fr_1fr]">
-        <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-2xl">
-          <img src={mascotSharkChest} alt="" aria-hidden width={320} height={320} loading="lazy" className="pointer-events-none absolute left-1 bottom-2 w-28 sm:w-36 lg:w-44 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]" />
-          <img src={mascotFootballer} alt="" aria-hidden width={320} height={320} loading="lazy" className="pointer-events-none absolute left-24 top-2 w-24 sm:w-32 lg:w-40 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] z-20" />
-          <img src={mascotSlotMachine} alt="" aria-hidden width={320} height={320} loading="lazy" className="pointer-events-none absolute left-20 bottom-1 w-20 sm:w-24 lg:w-28 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]" />
-          <img src={mascotRocket} alt="" aria-hidden width={200} height={200} loading="lazy" className="pointer-events-none absolute right-6 top-4 w-16 sm:w-20 lg:w-24 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]" />
+        <div className="relative flex min-h-[380px] items-end justify-center overflow-hidden rounded-2xl sm:min-h-[440px] lg:min-h-[480px]">
+          {/* Shark in treasure chest — bottom left */}
+          <img src={mascotSharkChest} alt="" aria-hidden width={320} height={320} loading="lazy" className="pointer-events-none absolute bottom-0 left-0 z-20 w-32 sm:w-40 lg:w-52 drop-shadow-[0_10px_20px_rgba(0,0,0,0.55)]" />
+          {/* Slot machine tilted — bottom center-left, behind footballer */}
+          <img src={mascotSlotMachine} alt="" aria-hidden width={320} height={320} loading="lazy" className="pointer-events-none absolute bottom-2 left-[22%] z-10 w-24 rotate-[-18deg] sm:w-32 lg:w-40 drop-shadow-[0_10px_20px_rgba(0,0,0,0.55)]" />
+          {/* Footballer standing tall next to phone */}
+          <img src={mascotFootballer} alt="" aria-hidden width={320} height={320} loading="lazy" className="pointer-events-none absolute bottom-0 left-[30%] z-30 h-[85%] w-auto max-w-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.55)]" />
+          {/* Rocket top right of phone */}
+          <img src={mascotRocket} alt="" aria-hidden width={200} height={200} loading="lazy" className="pointer-events-none absolute right-[18%] top-4 z-30 w-16 rotate-12 sm:w-20 lg:w-24 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]" />
+          {/* Phone mockup — center */}
           <img
             src={phoneMockup}
             alt="PKOK app preview"
             width={800}
             height={1024}
             loading="lazy"
-            className="relative z-10 w-44 animate-float sm:w-56 lg:w-64"
+            className="relative z-20 h-[92%] w-auto animate-float"
           />
         </div>
         <div>
