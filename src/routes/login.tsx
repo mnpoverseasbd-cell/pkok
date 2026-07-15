@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeOff, Loader2, Lock, ShieldCheck, Sparkles, User } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -33,6 +34,12 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && user) navigate({ to: "/", replace: true });
+  }, [user, authLoading, navigate]);
+
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
