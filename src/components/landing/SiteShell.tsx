@@ -187,15 +187,7 @@ function TopBar() {
                 <Mail className="h-4 w-4" />
                 <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--neon-pink)] px-1 text-[10px] font-bold text-white">5</span>
               </button>
-              <div className="relative">
-                <Link to="/profile" className="flex items-center gap-1.5 rounded-full bg-black/25 px-1 py-0.5 pr-2 hover:brightness-110">
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-[var(--neon-gold)] to-[var(--neon-pink)] text-[11px] font-black text-black">
-                    {displayName.charAt(0).toUpperCase()}
-                  </span>
-                  <span className="max-w-[110px] truncate font-bold text-white">{displayName}</span>
-                  <ChevronDown className="h-3 w-3 text-white/70" />
-                </Link>
-              </div>
+              <ProfileMenu displayName={displayName} onSignOut={handleSignOut} />
               <button
                 onClick={handleSignOut}
                 title="লগআউট"
