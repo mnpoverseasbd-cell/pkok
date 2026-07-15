@@ -144,7 +144,7 @@ function TopBar() {
     setSubmitting(true);
     try {
       const { supabase } = await import("@/integrations/supabase/client");
-      const email = `${phone.replace(/\D/g, "")}@pkok.local`;
+      const email = `${phone.replace(/\D/g, "")}@asikgame.app`;
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast.success("লগইন সফল");
