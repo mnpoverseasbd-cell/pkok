@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, LogOut, MessageCircle, Radio, Smartphone, Spade, Ticket, Trophy, User as UserIcon } from "lucide-react";
+import { Bell, ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, LogOut, Mail, MessageCircle, Radio, RefreshCw, Smartphone, Spade, Ticket, Trophy, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth, useProfile, signOut } from "@/hooks/useAuth";
 import type { ComponentType, ReactNode } from "react";
@@ -169,20 +169,35 @@ function TopBar() {
         <div className="flex shrink-0 items-center gap-2">
           {user ? (
             <>
-              <div className="hidden md:flex items-center gap-2 rounded-full border border-border/70 bg-black/25 px-2 py-1 sm:px-3">
-                <CircleDollarSign className="h-3.5 w-3.5 text-foreground/80" />
-                <span className="text-[var(--neon-green)] font-bold">৳ {balance.toFixed(2)}</span>
-                <Link to="/wallet" search={{ tab: "deposit" }} className="rounded-full bg-green-button px-3 py-1 font-bold text-[var(--background)]">{t("deposit")}</Link>
-                <Link to="/wallet" search={{ tab: "withdraw" }} className="rounded-full bg-gold-button px-3 py-1 font-bold text-[var(--background)]">{t("withdraw")}</Link>
+              <div className="flex items-center gap-1.5 rounded-full bg-black/40 px-2 py-1 text-white">
+                <CircleDollarSign className="h-4 w-4 text-[var(--neon-gold)]" />
+                <span className="font-bold">{showPw ? `৳ ${balance.toFixed(2)}` : "৳ ****"}</span>
+                <button type="button" onClick={() => setShowPw((v) => !v)} className="text-white/70 hover:text-white">
+                  {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+                <button type="button" title="রিফ্রেশ" className="text-white/70 hover:text-white">
+                  <RefreshCw className="h-3.5 w-3.5" />
+                </button>
               </div>
-              <Link to="/profile" className="flex items-center gap-1.5 rounded-full border border-border/70 bg-black/25 px-2.5 py-1 hover:border-[var(--neon-gold)]">
-                <UserIcon className="h-3.5 w-3.5 text-[var(--neon-gold)]" />
-                <span className="max-w-[100px] truncate font-bold text-white">{displayName}</span>
-              </Link>
+              <Link to="/wallet" search={{ tab: "deposit" }} className="rounded-md bg-green-button px-3 py-1.5 font-bold text-[var(--background)]">{t("deposit")}</Link>
+              <Link to="/wallet" search={{ tab: "withdraw" }} className="rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">{t("withdraw")}</Link>
+              <button type="button" title="ইনবক্স" className="relative grid h-8 w-8 place-items-center rounded-full bg-gold-button text-[var(--background)]">
+                <Mail className="h-4 w-4" />
+                <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--neon-pink)] px-1 text-[10px] font-bold text-white">5</span>
+              </button>
+              <div className="relative">
+                <Link to="/profile" className="flex items-center gap-1.5 rounded-full bg-black/25 px-1 py-0.5 pr-2 hover:brightness-110">
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-[var(--neon-gold)] to-[var(--neon-pink)] text-[11px] font-black text-black">
+                    {displayName.charAt(0).toUpperCase()}
+                  </span>
+                  <span className="max-w-[110px] truncate font-bold text-white">{displayName}</span>
+                  <ChevronDown className="h-3 w-3 text-white/70" />
+                </Link>
+              </div>
               <button
                 onClick={handleSignOut}
                 title="লগআউট"
-                className="inline-flex items-center gap-1 rounded-md bg-[var(--neon-pink)]/80 px-2.5 py-1.5 font-bold text-white hover:brightness-110"
+                className="inline-flex items-center gap-1 rounded-md bg-[var(--neon-pink)]/80 px-2 py-1.5 font-bold text-white hover:brightness-110"
               >
                 <LogOut className="h-3.5 w-3.5" />
               </button>
