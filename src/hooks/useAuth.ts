@@ -37,7 +37,7 @@ export function useAuth() {
 
 export function useProfile(userId: string | undefined) {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
