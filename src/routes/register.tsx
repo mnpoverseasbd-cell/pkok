@@ -50,8 +50,9 @@ function RegisterPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email: usernameToEmail(parsed.data.username),
+    const email = usernameToEmail(parsed.data.username);
+    const { data: signUpData, error } = await supabase.auth.signUp({
+      email,
       password: parsed.data.password,
       options: {
         data: {
@@ -60,11 +61,21 @@ function RegisterPage() {
         },
       },
     });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       toast.error(error.message.includes("registered") ? "এই ইউজারনেম আগে থেকে আছে" : error.message);
       return;
     }
+    // If email confirmation is enabled, signUp returns no session. Try to sign in immediately.
+    if (!signUpData.session) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: parsed.data.password });
+      if (signInError) {
+        setLoading(false);
+        toast.error("অ্যাকাউন্ট তৈরি হয়েছে কিন্তু লগইন করা যায়নি। Supabase-এ Email Confirmation বন্ধ করুন।");
+        return;
+      }
+    }
+    setLoading(false);
     toast.success("অ্যাকাউন্ট তৈরি হয়েছে! স্বাগতম 🎉");
     navigate({ to: "/" });
   }
