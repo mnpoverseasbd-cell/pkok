@@ -257,7 +257,7 @@ function HeroBanner() {
   const slide = heroSlides[idx];
   return (
     <section id="home" className="w-full">
-      <div className="relative w-full overflow-hidden border-b border-black/20 aspect-[1920/620] sm:aspect-[1920/560] md:aspect-[1920/520] lg:aspect-[1920/480]">
+      <div className="relative w-full overflow-hidden border-b border-black/20 aspect-[1920/720] sm:aspect-[1920/640] md:aspect-[1920/600] lg:aspect-[1920/580] xl:aspect-[1920/560]">
 
         <img
           key={idx}
