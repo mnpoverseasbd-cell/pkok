@@ -406,7 +406,7 @@ function HotGamesSection() {
                   {game.provider}
                 </span>
                 <img src={game.image} alt={game.title} width={512} height={512} loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" />
-                <div className="pt-1.5 text-center text-[11px] font-semibold text-foreground/90 sm:text-xs">{game.title}</div>
+                <div className="pt-2 text-center text-[12px] font-semibold text-foreground/90 sm:text-[13px]">{game.title}</div>
               </div>
             ))}
           </div>
