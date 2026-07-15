@@ -3,7 +3,7 @@ import { Bell, ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, F
 import { toast } from "sonner";
 import { useAuth, useProfile, signOut } from "@/hooks/useAuth";
 import type { ComponentType, ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 import { WelcomePopup } from "@/components/landing/WelcomePopup";
 import { GoldenEggPopup } from "@/components/landing/GoldenEggPopup";
