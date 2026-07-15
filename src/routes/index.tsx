@@ -566,10 +566,13 @@ function AppSection() {
   return (
     <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
       <div className="grid items-center gap-6 rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-4 sm:p-6 lg:grid-cols-[1.1fr_1fr]">
-        <div className="relative flex min-h-[260px] items-center justify-center overflow-hidden rounded-2xl">
-          <div className="absolute left-0 top-1/2 hidden -translate-y-1/2 sm:block">
-            <div className="text-6xl">🐟</div>
-          </div>
+        <div className="relative flex min-h-[280px] items-center justify-center overflow-hidden rounded-2xl">
+          {/* Decorative characters around phone */}
+          <div className="pointer-events-none absolute left-2 top-6 text-5xl sm:text-6xl lg:text-7xl select-none">🦈</div>
+          <div className="pointer-events-none absolute left-10 bottom-4 text-4xl sm:text-5xl lg:text-6xl select-none">💰</div>
+          <div className="pointer-events-none absolute left-24 top-1/2 -translate-y-1/2 text-5xl sm:text-6xl lg:text-7xl select-none">⚽</div>
+          <div className="pointer-events-none absolute right-6 top-4 text-4xl sm:text-5xl select-none">🚀</div>
+          <div className="pointer-events-none absolute right-4 bottom-6 text-4xl sm:text-5xl select-none">🎰</div>
           <img
             src={phoneMockup}
             alt="PKOK app preview"
@@ -580,25 +583,23 @@ function AppSection() {
           />
         </div>
         <div>
-          <div className="text-sm font-bold text-[var(--neon-green)]">{t("appTagline")}</div>
-          <h2 className="mt-1 text-4xl font-black text-white sm:text-5xl">PKOK APP</h2>
+          <div className="text-sm font-bold text-white sm:text-base">{t("appTagline")}</div>
+          <h2 className="mt-1 flex items-center gap-3 text-4xl font-black text-gradient-gold sm:text-5xl">
+            <span>PKOK APP</span>
+            <span aria-hidden className="h-[3px] flex-1 rounded-full bg-gradient-to-r from-[var(--neon-gold)] to-transparent" />
+          </h2>
           <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/80 sm:text-base">{t("appDescription")}</p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <button className="inline-flex items-center gap-2 rounded-xl bg-green-button px-4 py-3 font-black text-[var(--background)]">
-              <Download className="h-5 w-5" /> Android APP
-            </button>
-            <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-black/35 px-4 py-3 font-black text-white">
-              <Apple className="h-5 w-5" /> IOS APP
-            </button>
-          </div>
           <div className="mt-5 grid grid-cols-2 gap-4 sm:max-w-md">
-            {["Android APP", "IOS APP"].map((label) => (
+            {[
+              { label: "Android APP", Icon: Download },
+              { label: "IOS APP", Icon: Apple },
+            ].map(({ label, Icon }) => (
               <div key={label} className="rounded-2xl border border-[var(--neon-green)]/40 bg-black/35 p-3 text-center">
                 <div className="mx-auto grid h-28 w-28 place-items-center rounded-lg bg-white text-[var(--background)] sm:h-32 sm:w-32">
                   <QrCode className="h-20 w-20" strokeWidth={1.5} />
                 </div>
                 <div className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-white">
-                  <Smartphone className="h-3.5 w-3.5" /> {label}
+                  <Icon className="h-3.5 w-3.5" /> {label}
                 </div>
               </div>
             ))}
