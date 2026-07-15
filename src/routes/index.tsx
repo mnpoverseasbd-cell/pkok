@@ -368,11 +368,12 @@ function HotGamesSection() {
     <section className="mx-auto max-w-[1440px] px-3 py-5 sm:px-4 lg:px-6">
       <div className="rounded-2xl inset-panel p-3 sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]">
-            <Flame className="h-4 w-4" /> {t("hotGames")}
+          <div className="flex items-center gap-2 text-base font-black text-[var(--neon-gold)] sm:text-lg">
+            <Flame className="h-5 w-5" /> {t("hotGames")}
           </div>
-          <button className="rounded-full bg-green-button px-4 py-1 text-xs font-black text-[var(--background)]">{t("more")}</button>
+          <button className="rounded-full bg-green-button px-4 py-1.5 text-xs font-black text-[var(--background)] sm:text-sm">{t("more")}</button>
         </div>
+
         <div
           className="relative"
           onMouseEnter={() => setPaused(true)}
