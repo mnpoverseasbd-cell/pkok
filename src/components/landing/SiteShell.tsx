@@ -393,24 +393,43 @@ const providerLogos = [
 ];
 
 function ProvidersStrip() {
+  // Split into 3 rows for tri-directional marquee like PKOK
+  const rows = [
+    providerLogos.filter((_, i) => i % 3 === 0),
+    providerLogos.filter((_, i) => i % 3 === 1),
+    providerLogos.filter((_, i) => i % 3 === 2),
+  ];
   return (
     <section className="bg-[#1a1a1a] py-8 sm:py-10">
-      <div className="mx-auto grid max-w-[1440px] grid-cols-4 gap-x-6 gap-y-6 px-4 sm:grid-cols-6 sm:px-6 md:grid-cols-8 lg:grid-cols-10 lg:px-8">
-        {providerLogos.map((item, i) => (
-          <div key={item.name} className="provider-logo-wrap flex h-14 items-center justify-center px-2">
-            <img
-              src={item.logo}
-              alt={item.name}
-              loading="lazy"
-              className="provider-logo max-h-12 max-w-full object-contain"
-              style={{ animationDelay: `${(i % 10) * 0.18}s` }}
-            />
+      <div className="mx-auto max-w-[1440px] space-y-5 px-4 sm:px-6 lg:px-8">
+        {rows.map((row, idx) => (
+          <div key={idx} className="group overflow-hidden">
+            <div
+              className="flex w-max items-center gap-10"
+              style={{
+                animation: `marquee-x ${40 + idx * 8}s linear infinite`,
+                animationDirection: idx % 2 === 1 ? "reverse" : "normal",
+              }}
+            >
+              {[...row, ...row].map((item, i) => (
+                <div key={`${item.name}-${i}`} className="flex h-14 shrink-0 items-center justify-center px-2">
+                  <img
+                    src={item.logo}
+                    alt={item.name}
+                    loading="lazy"
+                    className="max-h-12 max-w-none object-contain opacity-90 transition duration-200 hover:scale-110 hover:opacity-100"
+                    style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.4))" }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
     </section>
   );
 }
+
 
 
 function FooterBlock() {
