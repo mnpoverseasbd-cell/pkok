@@ -257,7 +257,7 @@ function HeroBanner() {
   const slide = heroSlides[idx];
   return (
     <section id="home" className="w-full">
-      <div className="relative w-full overflow-hidden border-b border-black/20 aspect-[1920/620] sm:aspect-[1920/560] md:aspect-[1920/520] lg:aspect-[1920/480]">
+      <div className="relative w-full overflow-hidden border-b border-black/20 aspect-[1920/720] sm:aspect-[1920/640] md:aspect-[1920/600] lg:aspect-[1920/580] xl:aspect-[1920/560]">
 
         <img
           key={idx}
@@ -365,14 +365,15 @@ function HotGamesSection() {
   }, [paused]);
 
   return (
-    <section className="mx-auto max-w-7xl px-3 py-5 sm:px-4 lg:px-6">
+    <section className="mx-auto max-w-[1440px] px-3 py-5 sm:px-4 lg:px-6">
       <div className="rounded-2xl inset-panel p-3 sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]">
-            <Flame className="h-4 w-4" /> {t("hotGames")}
+          <div className="flex items-center gap-2 text-base font-black text-[var(--neon-gold)] sm:text-lg">
+            <Flame className="h-5 w-5" /> {t("hotGames")}
           </div>
-          <button className="rounded-full bg-green-button px-4 py-1 text-xs font-black text-[var(--background)]">{t("more")}</button>
+          <button className="rounded-full bg-green-button px-4 py-1.5 text-xs font-black text-[var(--background)] sm:text-sm">{t("more")}</button>
         </div>
+
         <div
           className="relative"
           onMouseEnter={() => setPaused(true)}
@@ -405,7 +406,7 @@ function HotGamesSection() {
                   {game.provider}
                 </span>
                 <img src={game.image} alt={game.title} width={512} height={512} loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" />
-                <div className="pt-1.5 text-center text-[11px] font-semibold text-foreground/90 sm:text-xs">{game.title}</div>
+                <div className="pt-2 text-center text-[12px] font-semibold text-foreground/90 sm:text-[13px]">{game.title}</div>
               </div>
             ))}
           </div>
@@ -428,7 +429,7 @@ function HotGamesSection() {
 function JackpotSection() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-5 sm:px-4 lg:px-6">
+    <section className="mx-auto max-w-[1440px] px-3 pb-5 sm:px-4 lg:px-6">
       <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)_320px]">
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]"><Gift className="h-4 w-4" /> {t("promo")}</div>
@@ -565,7 +566,7 @@ function MainCategoryCards() {
 function AppSection() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
+    <section className="mx-auto max-w-[1440px] px-3 pb-8 sm:px-4 lg:px-6">
       <div className="grid items-center gap-6 rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-4 sm:p-6 lg:grid-cols-[1.1fr_1fr]">
         <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-2xl sm:min-h-[380px] lg:min-h-[440px]">
           <img
@@ -610,7 +611,7 @@ function AppSection() {
 function ServiceStats() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-3 pt-2 sm:px-4 lg:px-6">
+    <section className="mx-auto max-w-[1440px] px-3 pb-3 pt-2 sm:px-4 lg:px-6">
       <div className="mb-3 flex justify-center">
         <div className="rounded-xl bg-green-button px-10 py-1.5 text-base font-black text-[var(--background)] shadow-lg sm:text-lg">
           {t("serviceQualityTitle")}
@@ -636,7 +637,7 @@ function ServiceStats() {
 function FeatureList() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-7xl space-y-2.5 px-3 pb-6 sm:px-4 lg:px-6">
+    <section className="mx-auto max-w-[1440px] space-y-2.5 px-3 pb-6 sm:px-4 lg:px-6">
       {featureCards.map((card) => (
         <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 p-3 sm:p-3.5">
           <div className="flex items-center gap-3 sm:gap-4">
@@ -748,7 +749,7 @@ const providerLogos = [
 function ProviderStrip() {
   return (
     <section className="bg-black py-10">
-      <div className="mx-auto max-w-7xl px-4 lg:px-6">
+      <div className="mx-auto max-w-[1440px] px-4 lg:px-6">
         <div className="mb-6 text-center text-[11px] font-bold uppercase tracking-[0.25em] text-foreground/55">
           আমাদের গেম প্রোভাইডার
         </div>
@@ -795,7 +796,7 @@ function ProviderStrip() {
 
 function CategoryListSection({ section }: { section: { id: string; title: string; items: string[] } }) {
   return (
-    <section id={section.id} className="mx-auto max-w-7xl px-3 py-6 sm:px-4 lg:px-6">
+    <section id={section.id} className="mx-auto max-w-[1440px] px-3 py-6 sm:px-4 lg:px-6">
       <div className="mb-4 flex items-center gap-2 text-lg font-black text-[var(--neon-gold)]"><Medal className="h-5 w-5" /> {section.title}</div>
       <div className={`grid gap-3 ${section.id === "rng-list" ? "grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"}`}>
         {section.items.map((img, index) => (
