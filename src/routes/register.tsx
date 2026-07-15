@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, EyeOff, Gift, Loader2, Lock, Phone, ShieldCheck, Sparkles, User } from "lucide-react";
+import { Eye, EyeOff, Gift, Loader2, Lock, Phone, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { SiteShell } from "@/components/landing/SiteShell";
@@ -18,72 +18,55 @@ export const Route = createFileRoute("/register")({
   component: RegisterPage,
 });
 
-const registerSchema = z.object({
-  username: z
-    .string()
-    .trim()
-    .min(3, { message: "ইউজারনেম কমপক্ষে ৩ অক্ষর" })
-    .max(30, { message: "ইউজারনেম সর্বোচ্চ ৩০ অক্ষর" })
-    .regex(/^[a-zA-Z0-9_]+$/, { message: "শুধু অক্ষর, সংখ্যা, _ ব্যবহার করুন" }),
-  contact: z.string().trim().max(255).optional(),
-  password: z
-    .string()
-    .min(6, { message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষর" })
-    .max(72),
-});
-
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^01[3-9]\d{8}$/; // Bangladeshi 11-digit mobile
 
-export function usernameToEmail(username: string) {
-  return `${username.trim().toLowerCase()}@asikgame.app`;
+const registerSchema = z.object({
+  phone: z.string().trim().regex(phoneRegex, { message: "১১ ডিজিটের সঠিক ফোন নম্বর দিন (01XXXXXXXXX)" }),
+  password: z.string().min(6, { message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষর" }).max(72),
+});
+
+export function phoneToEmail(phone: string) {
+  return `${phone.trim()}@asikgame.app`;
 }
 
 function RegisterPage() {
   const [show, setShow] = useState(false);
-  const [username, setUsername] = useState("");
-  const [contact, setContact] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = registerSchema.safeParse({ username, contact, password });
+    const parsed = registerSchema.safeParse({ phone, password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "ভুল ইনপুট");
       return;
     }
 
-    // Determine phone vs email vs neither
-    const c = parsed.data.contact?.trim() ?? "";
-    let realEmail: string | null = null;
-    let phone: string | null = null;
-    if (c) {
-      if (phoneRegex.test(c)) phone = c;
-      else if (emailRegex.test(c)) realEmail = c.toLowerCase();
-      else {
-        toast.error("সঠিক ১১ ডিজিটের ফোন নম্বর বা ইমেইল দিন (অথবা ফাঁকা রাখুন)");
-        return;
-      }
-    }
-
     setLoading(true);
-    const email = realEmail ?? usernameToEmail(parsed.data.username);
+    const email = phoneToEmail(parsed.data.phone);
     const { data: signUpData, error } = await supabase.auth.signUp({
       email,
       password: parsed.data.password,
       options: {
         data: {
-          username: parsed.data.username,
-          display_name: parsed.data.username,
-          phone: phone,
+          username: parsed.data.phone,
+          display_name: parsed.data.phone,
+          phone: parsed.data.phone,
         },
       },
     });
     if (error) {
       setLoading(false);
-      toast.error(error.message.includes("registered") ? "এই তথ্য দিয়ে আগে অ্যাকাউন্ট আছে" : error.message);
+      const msg = error.message.toLowerCase();
+      if (msg.includes("registered") || msg.includes("already")) {
+        toast.error("এই ফোন নম্বর দিয়ে আগে অ্যাকাউন্ট আছে");
+      } else if (msg.includes("rate limit")) {
+        toast.error("অনেক বেশি রিকোয়েস্ট হয়েছে, কিছুক্ষণ পর আবার চেষ্টা করুন");
+      } else {
+        toast.error(error.message);
+      }
       return;
     }
     if (!signUpData.session) {
@@ -95,9 +78,8 @@ function RegisterPage() {
       }
     }
 
-    // Save phone into profile if provided
-    if (phone && signUpData.user) {
-      await supabase.from("profiles").update({ phone }).eq("id", signUpData.user.id);
+    if (signUpData.user) {
+      await supabase.from("profiles").update({ phone: parsed.data.phone }).eq("id", signUpData.user.id);
     }
 
     setLoading(false);
@@ -116,31 +98,16 @@ function RegisterPage() {
 
           <form className="space-y-4" onSubmit={onSubmit}>
             <div>
-              <label className="mb-1 block text-xs font-bold text-foreground/85">ইউজারনেম <span className="text-[var(--neon-pink)]">*</span></label>
-              <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-green)]/45 bg-black/35 px-3 py-2.5">
-                <User className="h-4 w-4 text-foreground/70" />
-                <input
-                  type="text"
-                  autoComplete="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="৩-৩০ অক্ষর, শুধু অক্ষর/সংখ্যা/_"
-                  className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/40"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-bold text-foreground/85">
-                ফোন / ইমেইল <span className="text-foreground/50">(ঐচ্ছিক)</span>
-              </label>
+              <label className="mb-1 block text-xs font-bold text-foreground/85">ফোন নম্বর <span className="text-[var(--neon-pink)]">*</span></label>
               <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-green)]/45 bg-black/35 px-3 py-2.5">
                 <Phone className="h-4 w-4 text-foreground/70" />
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="numeric"
                   autoComplete="tel"
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  placeholder="১১ ডিজিট ফোন অথবা ইমেইল"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                  placeholder="01XXXXXXXXX"
                   className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/40"
                 />
               </div>
