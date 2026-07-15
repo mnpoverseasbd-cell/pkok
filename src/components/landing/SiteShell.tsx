@@ -120,8 +120,10 @@ function LangSwitcher() {
 }
 
 function TopBar() {
-  const { setOpen } = useModals();
   const [showPw, setShowPw] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const { t } = useLang();
   const { user } = useAuth();
   const { profile } = useProfile(user?.id);
@@ -131,6 +133,27 @@ function TopBar() {
     await signOut();
     toast.success("লগআউট হয়েছে");
     navigate({ to: "/" });
+  }
+
+  async function handleQuickLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!phone || !password) {
+      toast.error("ফোন ও পাসওয়ার্ড দিন");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const email = `${phone.replace(/\D/g, "")}@pkok.local`;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("লগইন সফল");
+      navigate({ to: "/" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "লগইন ব্যর্থ");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const balance = profile?.wallet_balance ?? 0;
@@ -146,7 +169,6 @@ function TopBar() {
         <div className="flex shrink-0 items-center gap-2">
           {user ? (
             <>
-              {/* Signed-in wallet chip */}
               <div className="hidden md:flex items-center gap-2 rounded-full border border-border/70 bg-black/25 px-2 py-1 sm:px-3">
                 <CircleDollarSign className="h-3.5 w-3.5 text-foreground/80" />
                 <span className="text-[var(--neon-green)] font-bold">৳ {balance.toFixed(2)}</span>
@@ -165,12 +187,44 @@ function TopBar() {
                 <LogOut className="h-3.5 w-3.5" />
               </button>
             </>
-
           ) : (
-            <>
-              <Link to="/login" className="inline-flex items-center gap-1 rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">{t("login")}</Link>
-              <Link to="/register" className="inline-flex items-center gap-1 rounded-md bg-[var(--neon-pink)] px-3 py-1.5 font-bold text-white">{t("register")}</Link>
-            </>
+            <form onSubmit={handleQuickLogin} className="flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-1.5 rounded-md bg-white px-2.5 py-1.5 text-[13px] text-black">
+                <span className="text-base leading-none">🇧🇩</span>
+                <span className="font-semibold text-black/70">+880</span>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="01XXXXXXXXX"
+                  className="w-32 border-none bg-transparent text-black placeholder:text-black/40 focus:outline-none"
+                />
+              </div>
+              <div className="hidden md:flex items-center gap-1 rounded-md bg-white px-2.5 py-1.5 text-[13px] text-black">
+                <input
+                  type={showPw ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="পাসওয়ার্ড"
+                  className="w-28 border-none bg-transparent text-black placeholder:text-black/40 focus:outline-none"
+                />
+                <button type="button" onClick={() => setShowPw((v) => !v)} className="text-black/50 hover:text-black">
+                  {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+              </div>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex items-center gap-1 rounded-md bg-green-button px-3 py-1.5 font-bold text-[var(--background)] disabled:opacity-60"
+              >
+                {t("login")}
+                <span className="mx-0.5 h-3.5 w-px bg-black/30" />
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+              <Link to="/register" className="inline-flex items-center gap-1 rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">
+                {t("register")}
+              </Link>
+            </form>
           )}
         </div>
       </div>
