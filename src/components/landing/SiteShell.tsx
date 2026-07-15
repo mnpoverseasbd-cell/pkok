@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, LogOut, MessageCircle, Radio, Smartphone, Spade, Ticket, Trophy, User as UserIcon } from "lucide-react";
+import { Bell, ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, LogOut, Mail, MessageCircle, Radio, RefreshCw, Smartphone, Spade, Ticket, Trophy, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth, useProfile, signOut } from "@/hooks/useAuth";
 import type { ComponentType, ReactNode } from "react";
