@@ -17,6 +17,23 @@ const searchSchema = z.object({
   tab: z.enum(["deposit", "withdraw", "history"]).optional(),
 });
 
+const accountRe = /^[0-9+\-\s]{6,32}$/;
+const txnRefRe = /^[A-Za-z0-9._-]{4,64}$/;
+const noteMax = 500;
+
+const depositSchema = z.object({
+  amount: z.number().positive().max(10_000_000),
+  sender: z.string().trim().regex(accountRe, "Invalid account number"),
+  txnRef: z.string().trim().regex(txnRefRe, "Invalid Transaction ID"),
+  note: z.string().trim().max(noteMax).optional(),
+});
+
+const withdrawSchema = z.object({
+  amount: z.number().positive().max(10_000_000),
+  receiver: z.string().trim().regex(accountRe, "Invalid account number"),
+  note: z.string().trim().max(noteMax).optional(),
+});
+
 export const Route = createFileRoute("/wallet")({
   head: () => ({
     meta: [
@@ -157,17 +174,19 @@ function DepositForm({ userId, onCreated }: { userId: string; onCreated: () => v
       return toast.error(`সর্বনিম্ন ৳${selected.min_deposit}`);
     if (!sender.trim()) return toast.error("আপনার একাউন্ট নম্বর দিন");
     if (!txnRef.trim()) return toast.error("Transaction ID দিন");
+    const parsed = depositSchema.safeParse({ amount: amt, sender, txnRef, note });
+    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "Invalid input");
     setSubmitting(true);
     const { error } = await supabase.from("transactions").insert({
       user_id: userId,
       type: "deposit",
       status: "pending",
-      amount: amt,
+      amount: parsed.data.amount,
       payment_method_id: methodId,
-      sender_account: sender.trim(),
+      sender_account: parsed.data.sender,
       receiver_account: selected.account_number,
-      txn_reference: txnRef.trim(),
-      user_note: note.trim() || null,
+      txn_reference: parsed.data.txnRef,
+      user_note: parsed.data.note || null,
     });
     setSubmitting(false);
     if (error) return toast.error(error.message);
@@ -257,15 +276,17 @@ function WithdrawForm({ userId, balance, onCreated }: { userId: string; balance:
       return toast.error(`সর্বনিম্ন ৳${selected.min_withdraw}`);
     if (amt > balance) return toast.error("পর্যাপ্ত ব্যালেন্স নেই");
     if (!receiver.trim()) return toast.error("রিসিভ একাউন্ট নম্বর দিন");
+    const parsed = withdrawSchema.safeParse({ amount: amt, receiver, note });
+    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "Invalid input");
     setSubmitting(true);
     const { error } = await supabase.from("transactions").insert({
       user_id: userId,
       type: "withdraw",
       status: "pending",
-      amount: amt,
+      amount: parsed.data.amount,
       payment_method_id: methodId,
-      receiver_account: receiver.trim(),
-      user_note: note.trim() || null,
+      receiver_account: parsed.data.receiver,
+      user_note: parsed.data.note || null,
     });
     setSubmitting(false);
     if (error) return toast.error(error.message);
