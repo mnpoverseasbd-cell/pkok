@@ -22,14 +22,14 @@ export const Route = createFileRoute("/profile")({
 });
 
 function ProfilePage() {
-  const { user, loading } = useAuth();
-  const { profile, refetch } = useProfile(user?.id);
+  const { user, loading: authLoading } = useAuth();
+  const { profile, loading: profileLoading, refetch } = useProfile(user?.id);
   const { isAdmin } = useIsAdmin(user?.id);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !user) navigate({ to: "/login" });
-  }, [loading, user, navigate]);
+    if (!authLoading && !user) navigate({ to: "/login", replace: true });
+  }, [authLoading, user, navigate]);
 
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
@@ -56,8 +56,25 @@ function ProfilePage() {
       .then(({ data }) => setTxns(data ?? []));
   }, [user]);
 
-  if (!user || !profile) {
+  if (authLoading || !user) {
     return <SiteShell><div className="mx-auto max-w-3xl px-4 py-16 text-center text-white/80">Loading…</div></SiteShell>;
+  }
+
+  if (!profile) {
+    return (
+      <SiteShell>
+        <div className="mx-auto max-w-3xl px-4 py-16 text-center text-white/80 space-y-4">
+          {profileLoading ? (
+            <div>প্রোফাইল লোড হচ্ছে…</div>
+          ) : (
+            <>
+              <div>প্রোফাইল পাওয়া যায়নি।</div>
+              <Button onClick={refetch} variant="outline">আবার চেষ্টা করুন</Button>
+            </>
+          )}
+        </div>
+      </SiteShell>
+    );
   }
 
   async function save() {

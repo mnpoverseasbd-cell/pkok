@@ -168,28 +168,6 @@ function TopBar() {
 
           ) : (
             <>
-              {/* PKOK-style quick login (visual only when signed out) */}
-              <div className="hidden items-center gap-1.5 lg:flex">
-                <div className="flex items-center gap-1 rounded-md border border-border/70 bg-black/30 px-2 py-1.5">
-                  <span className="h-3 w-4 rounded-sm bg-[var(--neon-pink)]" />
-                  <span className="font-bold text-white/90">+880</span>
-                </div>
-                <input
-                  type="tel"
-                  placeholder={t("mobilePlaceholder")}
-                  className="h-7 w-36 rounded-md border border-border/70 bg-black/30 px-2 text-[11px] text-white placeholder:text-foreground/55 outline-none focus:border-[var(--neon-green)]"
-                />
-                <div className="relative">
-                  <input
-                    type={showPw ? "text" : "password"}
-                    placeholder={t("passwordPlaceholder")}
-                    className="h-7 w-32 rounded-md border border-border/70 bg-black/30 px-2 pr-6 text-[11px] text-white placeholder:text-foreground/55 outline-none focus:border-[var(--neon-green)]"
-                  />
-                  <button type="button" onClick={() => setShowPw((v) => !v)} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-foreground/60">
-                    {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                  </button>
-                </div>
-              </div>
               <Link to="/login" className="inline-flex items-center gap-1 rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">{t("login")}</Link>
               <Link to="/register" className="inline-flex items-center gap-1 rounded-md bg-[var(--neon-pink)] px-3 py-1.5 font-bold text-white">{t("register")}</Link>
             </>
