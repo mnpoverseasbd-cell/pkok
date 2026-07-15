@@ -610,22 +610,22 @@ function AppSection() {
 function ServiceStats() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-6 sm:px-4 lg:px-6">
-      <div className="relative rounded-[28px] border border-[var(--neon-green)]/45 panel-dark px-4 pb-5 pt-10 sm:px-6 sm:pb-6">
+    <section className="mx-auto max-w-7xl px-3 pb-2 sm:px-4 lg:px-6">
+      <div className="relative rounded-[28px] border border-[var(--neon-green)]/45 panel-dark px-4 pb-4 pt-9 sm:px-6 sm:pb-5">
         {/* Curved green header tab */}
         <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
           <div className="rounded-b-none rounded-t-[22px] bg-green-button px-14 py-2 text-lg font-black text-[var(--background)] shadow-lg">
             {t("serviceQualityTitle")}
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
           {statCards.map((item) => (
-            <div key={item.labelKey} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-5 pb-3 text-center">
+            <div key={item.labelKey} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-3 pb-2 text-center">
               <div className="flex items-baseline justify-center">
-                <span className="text-5xl font-black text-[var(--neon-gold)] leading-none">{item.value}</span>
-                {item.unit && <span className="ml-1 text-lg font-bold text-[var(--neon-gold)]">{item.unit}</span>}
+                <span className="text-4xl font-black text-[var(--neon-gold)] leading-none sm:text-5xl">{item.value}</span>
+                {item.unit && <span className="ml-1 text-base font-bold text-[var(--neon-gold)] sm:text-lg">{item.unit}</span>}
               </div>
-              <div className="mx-auto mt-4 w-full rounded-full bg-green-button px-3 py-1.5 text-xs font-black text-[var(--background)] sm:text-sm">
+              <div className="mx-auto mt-2.5 w-full rounded-full bg-green-button px-3 py-1 text-xs font-black text-[var(--background)] sm:text-sm">
                 {t(item.labelKey)}
               </div>
             </div>
@@ -639,16 +639,16 @@ function ServiceStats() {
 function FeatureList() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
-      <div className="space-y-3 rounded-[28px] border border-[var(--neon-green)]/45 panel-dark p-3 sm:p-4">
+    <section className="mx-auto max-w-7xl px-3 pb-6 sm:px-4 lg:px-6">
+      <div className="space-y-2 rounded-[28px] border border-[var(--neon-green)]/45 panel-dark p-2.5 sm:p-3">
         {featureCards.map((card) => (
-          <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-4">
-            <div className="flex items-start gap-4">
-              <img src={card.icon} alt="" loading="lazy" width={80} height={80} className="h-16 w-16 shrink-0 object-contain sm:h-20 sm:w-20" />
+          <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-3 sm:p-3.5">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
 
               <div className="min-w-0">
-                <h3 className="text-base font-black text-[var(--neon-gold)] sm:text-lg">{t(card.titleKey)}</h3>
-                <p className="mt-1 text-xs leading-6 text-foreground/80 sm:text-sm">{t(card.bodyKey)}</p>
+                <h3 className="text-sm font-black text-[var(--neon-gold)] sm:text-base">{t(card.titleKey)}</h3>
+                <p className="mt-0.5 text-[11px] leading-5 text-foreground/75 sm:text-xs sm:leading-5">{t(card.bodyKey)}</p>
               </div>
             </div>
           </div>
@@ -657,6 +657,7 @@ function FeatureList() {
     </section>
   );
 }
+
 
 
 const providerLogos = [
