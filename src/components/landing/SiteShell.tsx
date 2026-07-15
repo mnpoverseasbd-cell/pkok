@@ -394,15 +394,15 @@ const providerLogos = [
 
 function ProvidersStrip() {
   return (
-    <section className="bg-black py-5">
-      <div className="mx-auto grid max-w-7xl grid-cols-4 gap-x-4 gap-y-4 px-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
+    <section className="bg-[#1a1a1a] py-8 sm:py-10">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-4 gap-x-6 gap-y-6 px-4 sm:grid-cols-6 sm:px-6 md:grid-cols-8 lg:grid-cols-10 lg:px-8">
         {providerLogos.map((item) => (
-          <div key={item.name} className="flex h-10 items-center justify-center px-1">
+          <div key={item.name} className="flex h-14 items-center justify-center px-2">
             <img
               src={item.logo}
               alt={item.name}
               loading="lazy"
-              className="max-h-8 max-w-full object-contain opacity-90 transition duration-200 hover:scale-105 hover:opacity-100"
+              className="max-h-12 max-w-full object-contain opacity-95 transition duration-200 hover:scale-110 hover:opacity-100"
             />
           </div>
         ))}
@@ -417,26 +417,39 @@ function FooterBlock() {
     <>
       <ProvidersStrip />
       <footer className="bg-[#2a2a27] text-foreground/90">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr] lg:px-6">
+        <div className="mx-auto grid max-w-[1440px] items-center gap-10 px-4 py-10 sm:px-6 sm:py-12 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-12 lg:px-8">
           <div>
-            <p className="max-w-2xl text-sm leading-7 text-foreground/85">{t("footerAbout")}</p>
+            <p className="max-w-2xl text-sm leading-7 text-foreground/85 sm:text-[15px] sm:leading-7">{t("footerAbout")}</p>
           </div>
-          <div className="space-y-3 text-center lg:text-left">
-            <div className="text-3xl font-black text-white/80">mga</div>
-            <div className="text-lg font-semibold text-white/90">{t("mgaCert")}</div>
+          <div className="flex flex-col items-center gap-3 text-center lg:items-start lg:text-left">
+            <div className="flex items-center gap-2">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-white/95 text-lg font-black text-[#c11d1d]">M</span>
+              <div className="flex flex-col leading-tight">
+                <span className="text-xl font-black tracking-wide text-white">mga</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white/70">Malta Gaming Authority</span>
+              </div>
+            </div>
+            <div className="text-sm font-semibold text-white/90 sm:text-base">{t("mgaCert")}</div>
           </div>
-          <div className="space-y-3 text-center lg:text-left">
-            <div className="text-3xl font-black text-white/80">BVI</div>
-            <div className="text-lg font-semibold text-white/90">{t("bviCert")}</div>
+          <div className="flex flex-col items-center gap-3 text-center lg:items-start lg:text-left">
+            <div className="flex items-center gap-2">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-white/95 text-sm font-black text-[#1a4a8a]">BVI</span>
+              <div className="flex flex-col leading-tight">
+                <span className="text-lg font-black tracking-wide text-white">British Virgin Islands</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white/70">Financial Services Commission</span>
+              </div>
+            </div>
+            <div className="text-sm font-semibold text-white/90 sm:text-base">{t("bviCert")}</div>
           </div>
         </div>
-        <div className="mx-auto max-w-7xl border-t border-white/10 px-4 py-6 text-center text-sm text-foreground/65 sm:px-6 lg:px-6">
+        <div className="mx-auto max-w-[1440px] border-t border-white/10 px-4 py-6 text-center text-sm text-foreground/65 sm:px-6 sm:text-base lg:px-8">
           {t("footerCopy")}
         </div>
       </footer>
     </>
   );
 }
+
 
 function SocialRail() {
   return (
