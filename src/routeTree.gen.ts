@@ -11,19 +11,23 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as VipRouteImport } from './routes/vip'
+import { Route as TournamentsRouteImport } from './routes/tournaments'
 import { Route as SportsRouteImport } from './routes/sports'
 import { Route as SlotsRouteImport } from './routes/slots'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as RecentlyPlayedRouteImport } from './routes/recently-played'
 import { Route as PromotionRouteImport } from './routes/promotion'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PokerRouteImport } from './routes/poker'
 import { Route as LotteryRouteImport } from './routes/lottery'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LiveRouteImport } from './routes/live'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as HotRouteImport } from './routes/hot'
 import { Route as GamesRouteImport } from './routes/games'
 import { Route as FishingRouteImport } from './routes/fishing'
 import { Route as FishRouteImport } from './routes/fish'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as EsportsRouteImport } from './routes/esports'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as CrashRouteImport } from './routes/crash'
@@ -40,6 +44,11 @@ const VipRoute = VipRouteImport.update({
   path: '/vip',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TournamentsRoute = TournamentsRouteImport.update({
+  id: '/tournaments',
+  path: '/tournaments',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SportsRoute = SportsRouteImport.update({
   id: '/sports',
   path: '/sports',
@@ -53,6 +62,11 @@ const SlotsRoute = SlotsRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecentlyPlayedRoute = RecentlyPlayedRouteImport.update({
+  id: '/recently-played',
+  path: '/recently-played',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PromotionRoute = PromotionRouteImport.update({
@@ -85,6 +99,11 @@ const LiveRoute = LiveRouteImport.update({
   path: '/live',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HotRoute = HotRouteImport.update({
   id: '/hot',
   path: '/hot',
@@ -103,6 +122,11 @@ const FishingRoute = FishingRouteImport.update({
 const FishRoute = FishRouteImport.update({
   id: '/fish',
   path: '/fish',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EsportsRoute = EsportsRouteImport.update({
@@ -137,19 +161,23 @@ export interface FileRoutesByFullPath {
   '/crash': typeof CrashRoute
   '/download': typeof DownloadRoute
   '/esports': typeof EsportsRoute
+  '/favorites': typeof FavoritesRoute
   '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
   '/hot': typeof HotRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/live': typeof LiveRoute
   '/login': typeof LoginRoute
   '/lottery': typeof LotteryRoute
   '/poker': typeof PokerRoute
   '/profile': typeof ProfileRoute
   '/promotion': typeof PromotionRoute
+  '/recently-played': typeof RecentlyPlayedRoute
   '/register': typeof RegisterRoute
   '/slots': typeof SlotsRoute
   '/sports': typeof SportsRoute
+  '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
 }
@@ -159,19 +187,23 @@ export interface FileRoutesByTo {
   '/crash': typeof CrashRoute
   '/download': typeof DownloadRoute
   '/esports': typeof EsportsRoute
+  '/favorites': typeof FavoritesRoute
   '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
   '/hot': typeof HotRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/live': typeof LiveRoute
   '/login': typeof LoginRoute
   '/lottery': typeof LotteryRoute
   '/poker': typeof PokerRoute
   '/profile': typeof ProfileRoute
   '/promotion': typeof PromotionRoute
+  '/recently-played': typeof RecentlyPlayedRoute
   '/register': typeof RegisterRoute
   '/slots': typeof SlotsRoute
   '/sports': typeof SportsRoute
+  '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
 }
@@ -182,19 +214,23 @@ export interface FileRoutesById {
   '/crash': typeof CrashRoute
   '/download': typeof DownloadRoute
   '/esports': typeof EsportsRoute
+  '/favorites': typeof FavoritesRoute
   '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
   '/games': typeof GamesRoute
   '/hot': typeof HotRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/live': typeof LiveRoute
   '/login': typeof LoginRoute
   '/lottery': typeof LotteryRoute
   '/poker': typeof PokerRoute
   '/profile': typeof ProfileRoute
   '/promotion': typeof PromotionRoute
+  '/recently-played': typeof RecentlyPlayedRoute
   '/register': typeof RegisterRoute
   '/slots': typeof SlotsRoute
   '/sports': typeof SportsRoute
+  '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
 }
@@ -206,19 +242,23 @@ export interface FileRouteTypes {
     | '/crash'
     | '/download'
     | '/esports'
+    | '/favorites'
     | '/fish'
     | '/fishing'
     | '/games'
     | '/hot'
+    | '/leaderboard'
     | '/live'
     | '/login'
     | '/lottery'
     | '/poker'
     | '/profile'
     | '/promotion'
+    | '/recently-played'
     | '/register'
     | '/slots'
     | '/sports'
+    | '/tournaments'
     | '/vip'
     | '/wallet'
   fileRoutesByTo: FileRoutesByTo
@@ -228,19 +268,23 @@ export interface FileRouteTypes {
     | '/crash'
     | '/download'
     | '/esports'
+    | '/favorites'
     | '/fish'
     | '/fishing'
     | '/games'
     | '/hot'
+    | '/leaderboard'
     | '/live'
     | '/login'
     | '/lottery'
     | '/poker'
     | '/profile'
     | '/promotion'
+    | '/recently-played'
     | '/register'
     | '/slots'
     | '/sports'
+    | '/tournaments'
     | '/vip'
     | '/wallet'
   id:
@@ -250,19 +294,23 @@ export interface FileRouteTypes {
     | '/crash'
     | '/download'
     | '/esports'
+    | '/favorites'
     | '/fish'
     | '/fishing'
     | '/games'
     | '/hot'
+    | '/leaderboard'
     | '/live'
     | '/login'
     | '/lottery'
     | '/poker'
     | '/profile'
     | '/promotion'
+    | '/recently-played'
     | '/register'
     | '/slots'
     | '/sports'
+    | '/tournaments'
     | '/vip'
     | '/wallet'
   fileRoutesById: FileRoutesById
@@ -273,19 +321,23 @@ export interface RootRouteChildren {
   CrashRoute: typeof CrashRoute
   DownloadRoute: typeof DownloadRoute
   EsportsRoute: typeof EsportsRoute
+  FavoritesRoute: typeof FavoritesRoute
   FishRoute: typeof FishRoute
   FishingRoute: typeof FishingRoute
   GamesRoute: typeof GamesRoute
   HotRoute: typeof HotRoute
+  LeaderboardRoute: typeof LeaderboardRoute
   LiveRoute: typeof LiveRoute
   LoginRoute: typeof LoginRoute
   LotteryRoute: typeof LotteryRoute
   PokerRoute: typeof PokerRoute
   ProfileRoute: typeof ProfileRoute
   PromotionRoute: typeof PromotionRoute
+  RecentlyPlayedRoute: typeof RecentlyPlayedRoute
   RegisterRoute: typeof RegisterRoute
   SlotsRoute: typeof SlotsRoute
   SportsRoute: typeof SportsRoute
+  TournamentsRoute: typeof TournamentsRoute
   VipRoute: typeof VipRoute
   WalletRoute: typeof WalletRoute
 }
@@ -304,6 +356,13 @@ declare module '@tanstack/react-router' {
       path: '/vip'
       fullPath: '/vip'
       preLoaderRoute: typeof VipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments': {
+      id: '/tournaments'
+      path: '/tournaments'
+      fullPath: '/tournaments'
+      preLoaderRoute: typeof TournamentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sports': {
@@ -325,6 +384,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recently-played': {
+      id: '/recently-played'
+      path: '/recently-played'
+      fullPath: '/recently-played'
+      preLoaderRoute: typeof RecentlyPlayedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/promotion': {
@@ -369,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hot': {
       id: '/hot'
       path: '/hot'
@@ -395,6 +468,13 @@ declare module '@tanstack/react-router' {
       path: '/fish'
       fullPath: '/fish'
       preLoaderRoute: typeof FishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/esports': {
@@ -441,19 +521,23 @@ const rootRouteChildren: RootRouteChildren = {
   CrashRoute: CrashRoute,
   DownloadRoute: DownloadRoute,
   EsportsRoute: EsportsRoute,
+  FavoritesRoute: FavoritesRoute,
   FishRoute: FishRoute,
   FishingRoute: FishingRoute,
   GamesRoute: GamesRoute,
   HotRoute: HotRoute,
+  LeaderboardRoute: LeaderboardRoute,
   LiveRoute: LiveRoute,
   LoginRoute: LoginRoute,
   LotteryRoute: LotteryRoute,
   PokerRoute: PokerRoute,
   ProfileRoute: ProfileRoute,
   PromotionRoute: PromotionRoute,
+  RecentlyPlayedRoute: RecentlyPlayedRoute,
   RegisterRoute: RegisterRoute,
   SlotsRoute: SlotsRoute,
   SportsRoute: SportsRoute,
+  TournamentsRoute: TournamentsRoute,
   VipRoute: VipRoute,
   WalletRoute: WalletRoute,
 }
