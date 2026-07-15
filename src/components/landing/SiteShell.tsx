@@ -128,7 +128,7 @@ function ProfileMenu({ displayName, onSignOut }: { displayName: string; onSignOu
     { to: "/wallet", search: { tab: "deposit" }, icon: CircleDollarSign, label: "ডিপোজিট" },
     { to: "/wallet", search: { tab: "withdraw" }, icon: RefreshCw, label: "উত্তোলন" },
     { to: "/wallet", search: { tab: "history" }, icon: Ticket, label: "অ্যাকাউন্ট রেকর্ড" },
-    { to: "/wallet", search: { tab: "bets" }, icon: Trophy, label: "বেটিং রেকর্ড" },
+    { to: "/profile", icon: Trophy, label: "বেটিং রেকর্ড" },
   ];
   return (
     <div className="relative">
