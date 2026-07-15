@@ -391,25 +391,26 @@ function HotGamesSection() {
           </button>
           <div
             ref={ref}
-            className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {hotGames.map((game) => (
               <div
                 key={game.title}
-                className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-1.5 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
+                className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-2 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
               >
                 {game.tag && (
-                  <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[9px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
+                  <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[10px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
                     {game.tag}
                   </span>
                 )}
-                <span className="absolute right-2 top-2 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[9px] font-bold text-[var(--neon-gold)]">
+                <span className="absolute right-2 top-2 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-bold text-[var(--neon-gold)]">
                   {game.provider}
                 </span>
                 <img src={game.image} alt={game.title} width={512} height={512} loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" />
-                <div className="pt-2 text-center text-[12px] font-semibold text-foreground/90 sm:text-[13px]">{game.title}</div>
+                <div className="pt-3 text-center text-[13px] font-semibold text-foreground/90 sm:text-[14px] lg:text-[15px]">{game.title}</div>
               </div>
             ))}
+
           </div>
           <button
             aria-label="Next"
