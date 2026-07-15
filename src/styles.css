@@ -441,3 +441,32 @@
 
 
 
+
+/* Hero animated overlays (shine sweep + sparkles) */
+.hero-anim { isolation: isolate; }
+.hero-shine {
+  background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
+  mix-blend-mode: screen;
+  transform: translateX(-100%);
+  animation: hero-shine-sweep 4.5s ease-in-out infinite;
+}
+@keyframes hero-shine-sweep {
+  0%   { transform: translateX(-100%); }
+  60%  { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
+}
+.hero-spark {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff 0%, rgba(255,215,80,0.9) 40%, transparent 70%);
+  box-shadow: 0 0 12px 3px rgba(255,215,80,0.7);
+  opacity: 0;
+  animation: hero-spark-twinkle 2.6s ease-in-out infinite;
+}
+@keyframes hero-spark-twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.6); }
+  40%      { opacity: 1; transform: scale(1.2); }
+  60%      { opacity: 0.7; transform: scale(1); }
+}

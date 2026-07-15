@@ -421,7 +421,7 @@ function HeroBanner() {
   const slide = heroSlides[idx];
   return (
     <section id="home" className="w-full">
-      <div className="relative w-full overflow-hidden border-b border-black/20 aspect-[1920/720] sm:aspect-[1920/640] md:aspect-[1920/600] lg:aspect-[1920/580] xl:aspect-[1920/560]">
+      <div className="hero-anim relative w-full overflow-hidden border-b border-black/20 aspect-[1920/720] sm:aspect-[1920/640] md:aspect-[1920/600] lg:aspect-[1920/580] xl:aspect-[1920/560]">
 
         <img
           key={idx}
@@ -431,6 +431,26 @@ function HeroBanner() {
           height={768}
           className="absolute inset-0 block h-full w-full animate-fade-in object-cover"
         />
+
+        {/* Animated overlays: shine sweep + sparkles + pulsing hot badge */}
+        <div className="pointer-events-none absolute inset-0 hero-shine" aria-hidden />
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          <span className="hero-spark" style={{ left: "12%", top: "22%", animationDelay: "0s" }} />
+          <span className="hero-spark" style={{ left: "28%", top: "68%", animationDelay: "0.6s" }} />
+          <span className="hero-spark" style={{ left: "48%", top: "18%", animationDelay: "1.1s" }} />
+          <span className="hero-spark" style={{ left: "62%", top: "55%", animationDelay: "1.6s" }} />
+          <span className="hero-spark" style={{ left: "78%", top: "30%", animationDelay: "2.1s" }} />
+          <span className="hero-spark" style={{ left: "88%", top: "72%", animationDelay: "2.6s" }} />
+        </div>
+        <div className="pointer-events-none absolute left-3 top-3 z-10 flex items-center gap-2 sm:left-5 sm:top-5">
+          <span className="inline-flex items-center gap-1 rounded-full bg-red-600/90 px-2 py-0.5 text-[10px] font-black text-white ring-1 ring-white/40 backdrop-blur">
+            <span className="h-1.5 w-1.5 animate-ping rounded-full bg-white" />
+            LIVE
+          </span>
+          <span className="animate-pulse rounded-full bg-[var(--neon-gold)]/90 px-2 py-0.5 text-[10px] font-black text-black ring-1 ring-white/40 backdrop-blur">
+            HOT
+          </span>
+        </div>
 
         {/* Prev / Next */}
         <button
