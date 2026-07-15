@@ -1,10 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Eye, EyeOff, Gift, Loader2, Lock, Phone, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
+import { createPhoneAccount } from "@/lib/auth.functions";
+import { phoneRegex } from "@/lib/auth-utils";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -18,16 +21,10 @@ export const Route = createFileRoute("/register")({
   component: RegisterPage,
 });
 
-const phoneRegex = /^01[3-9]\d{8}$/; // Bangladeshi 11-digit mobile
-
 const registerSchema = z.object({
   phone: z.string().trim().regex(phoneRegex, { message: "১১ ডিজিটের সঠিক ফোন নম্বর দিন (01XXXXXXXXX)" }),
   password: z.string().min(6, { message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষর" }).max(72),
 });
-
-export function phoneToEmail(phone: string) {
-  return `${phone.trim()}@asikgame.app`;
-}
 
 function RegisterPage() {
   const [show, setShow] = useState(false);
@@ -35,6 +32,7 @@ function RegisterPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const registerAccount = useServerFn(createPhoneAccount);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,47 +42,33 @@ function RegisterPage() {
       return;
     }
 
-    setLoading(true);
-    const email = phoneToEmail(parsed.data.phone);
-    const { data: signUpData, error } = await supabase.auth.signUp({
-      email,
-      password: parsed.data.password,
-      options: {
-        data: {
-          username: parsed.data.phone,
-          display_name: parsed.data.phone,
-          phone: parsed.data.phone,
-        },
-      },
-    });
-    if (error) {
-      setLoading(false);
-      const msg = error.message.toLowerCase();
-      if (msg.includes("registered") || msg.includes("already")) {
+    try {
+      setLoading(true);
+      const result = await registerAccount({ data: parsed.data });
+
+      if (!result.success) {
         toast.error("এই ফোন নম্বর দিয়ে আগে অ্যাকাউন্ট আছে");
-      } else if (msg.includes("rate limit")) {
-        toast.error("অনেক বেশি রিকোয়েস্ট হয়েছে, কিছুক্ষণ পর আবার চেষ্টা করুন");
-      } else {
-        toast.error(error.message);
-      }
-      return;
-    }
-    if (!signUpData.session) {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: parsed.data.password });
-      if (signInError) {
-        setLoading(false);
-        toast.error("অ্যাকাউন্ট তৈরি হয়েছে কিন্তু লগইন করা যায়নি। Supabase-এ Email Confirmation বন্ধ করুন।");
         return;
       }
-    }
 
-    if (signUpData.user) {
-      await supabase.from("profiles").update({ phone: parsed.data.phone }).eq("id", signUpData.user.id);
-    }
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: result.email,
+        password: parsed.data.password,
+      });
 
-    setLoading(false);
-    toast.success("অ্যাকাউন্ট তৈরি হয়েছে! স্বাগতম 🎉");
-    navigate({ to: "/" });
+      if (signInError) {
+        toast.error("অ্যাকাউন্ট তৈরি হয়েছে, এখন ফোন নম্বর ও পাসওয়ার্ড দিয়ে লগইন করুন");
+        return;
+      }
+
+      toast.success("অ্যাকাউন্ট তৈরি হয়েছে! স্বাগতম 🎉");
+      navigate({ to: "/" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "রেজিস্ট্রেশন করা যায়নি";
+      toast.error(message.includes("rate limit") ? "অনেক বেশি রিকোয়েস্ট হয়েছে, কিছুক্ষণ পর আবার চেষ্টা করুন" : message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

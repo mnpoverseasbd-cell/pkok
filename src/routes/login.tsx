@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
-import { phoneToEmail } from "./register";
+import { phoneToEmail } from "@/lib/auth-utils";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
