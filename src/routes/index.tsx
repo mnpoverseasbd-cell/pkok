@@ -622,7 +622,7 @@ function ServiceStats() {
   return (
     <section className="mx-auto max-w-[1440px] px-4 pb-6 pt-4 sm:px-6 sm:pb-8 lg:px-8">
       <div className="mb-5 flex justify-center sm:mb-6">
-        <div className="rounded-xl bg-green-button px-12 py-2.5 text-lg font-black text-[var(--background)] shadow-lg sm:text-xl">
+        <div className="rounded-xl bg-green-button px-12 py-3 text-xl font-black text-[var(--background)] shadow-lg sm:text-2xl">
           {t("serviceQualityTitle")}
         </div>
       </div>
@@ -633,9 +633,10 @@ function ServiceStats() {
               <span className="text-5xl font-black text-[var(--neon-gold)] leading-none sm:text-6xl lg:text-7xl">{item.value}</span>
               {item.unit && <span className="ml-1 text-lg font-bold text-[var(--neon-gold)] sm:text-2xl">{item.unit}</span>}
             </div>
-            <div className="mx-auto mt-4 w-full rounded-full bg-green-button px-3 py-1.5 text-xs font-black text-[var(--background)] sm:text-sm">
+            <div className="mx-auto mt-4 w-full rounded-full bg-green-button px-3 py-1.5 text-sm font-black text-[var(--background)] sm:text-base">
               {t(item.labelKey)}
             </div>
+
           </div>
         ))}
       </div>
