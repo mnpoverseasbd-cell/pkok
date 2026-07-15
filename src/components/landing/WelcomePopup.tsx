@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { X, Megaphone, Volume2, Gift, Trophy, Sparkles, Crown, ShieldAlert, CheckCircle2, AlertTriangle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import tutorialImg from "@/assets/bkash-tutorial.jpg";
 
 type Announcement = {
