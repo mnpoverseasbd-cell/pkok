@@ -400,15 +400,16 @@ function HotGamesSection() {
                 className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-2 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
               >
                 {game.tag && (
-                  <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[10px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
+                  <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[11px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
                     {game.tag}
                   </span>
                 )}
-                <span className="absolute right-2 top-2 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-bold text-[var(--neon-gold)]">
+                <span className="absolute right-2 top-2 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[11px] font-bold text-[var(--neon-gold)]">
                   {game.provider}
                 </span>
                 <img src={game.image} alt={game.title} width={512} height={512} loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" />
-                <div className="pt-3 text-center text-[13px] font-semibold text-foreground/90 sm:text-[14px] lg:text-[15px]">{game.title}</div>
+                <div className="pt-3 text-center text-sm font-semibold text-foreground/90 sm:text-[15px] lg:text-base">{game.title}</div>
+
               </div>
             ))}
 
