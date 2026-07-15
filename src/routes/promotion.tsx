@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { Search, Gift, Sparkles } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 
 export const Route = createFileRoute("/promotion")({
@@ -58,25 +59,76 @@ const promos: { img: string; title: string; cats: Cat[] }[] = [
 
 function PromotionPage() {
   const [active, setActive] = useState<Cat>("all");
-  const visible = active === "all" ? promos : promos.filter((p) => p.cats.includes(active));
+  const [query, setQuery] = useState("");
+
+  const counts = useMemo(() => {
+    const m: Record<Cat, number> = { all: promos.length, new: 0, deposit: 0, slot: 0, fishing: 0, live: 0, poker: 0, sports: 0 };
+    for (const p of promos) for (const c of p.cats) if (c in m) m[c]++;
+    return m;
+  }, []);
+
+  const visible = useMemo(() => {
+    const base = active === "all" ? promos : promos.filter((p) => p.cats.includes(active));
+    const q = query.trim().toLowerCase();
+    return q ? base.filter((p) => p.title.toLowerCase().includes(q)) : base;
+  }, [active, query]);
 
   return (
     <SiteShell>
-      <section className="mx-auto max-w-7xl px-3 pt-5 sm:px-4 lg:px-6">
+      {/* Hero strip */}
+      <section
+        className="relative overflow-hidden"
+        style={{
+          background:
+            "radial-gradient(ellipse at 20% 10%, rgba(255,220,120,0.22), transparent 55%), radial-gradient(ellipse at 80% 90%, rgba(120,255,180,0.16), transparent 55%), linear-gradient(180deg, #0f5a34 0%, #0a4527 60%, #062e19 100%)",
+        }}
+      >
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-6">
+          <div className="flex items-center gap-3">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-black/40 ring-1 ring-[var(--neon-gold)]/60">
+              <Gift className="h-5 w-5 text-[var(--neon-gold)]" />
+            </div>
+            <div>
+              <h1 className="text-xl font-black text-[var(--neon-gold)] drop-shadow-[0_2px_10px_rgba(255,215,80,0.35)]">
+                সকল প্রমোশন
+              </h1>
+              <p className="text-xs text-white/70">
+                <Sparkles className="mr-1 inline h-3 w-3 text-[var(--neon-gold)]" />
+                {promos.length}টি চলমান অফার · প্রতিদিন আপডেট
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 rounded-lg bg-white/95 px-3 py-1.5 ring-1 ring-black/10">
+            <Search className="h-4 w-4 text-black/50" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="প্রমোশন খুঁজুন..."
+              className="w-40 border-none bg-transparent text-sm text-black placeholder:text-black/40 focus:outline-none sm:w-64"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-3 pt-4 sm:px-4 lg:px-6">
         <div className="flex justify-center gap-1 overflow-x-auto pb-2">
           {tabs.map((t) => {
             const on = active === t.key;
+            const n = counts[t.key] ?? 0;
             return (
               <button
                 key={t.key}
                 onClick={() => setActive(t.key)}
-                className={`shrink-0 px-5 py-2 text-sm font-bold transition-colors ${
+                className={`shrink-0 px-4 py-2 text-sm font-bold transition-colors ${
                   on
                     ? "text-[var(--neon-gold)] border-b-2 border-[var(--neon-gold)]"
                     : "text-white/75 hover:text-white border-b-2 border-transparent"
                 }`}
               >
                 {t.label}
+                <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] ${on ? "bg-[var(--neon-gold)]/20 text-[var(--neon-gold)]" : "bg-white/10 text-white/60"}`}>
+                  {n}
+                </span>
               </button>
             );
           })}
@@ -84,34 +136,43 @@ function PromotionPage() {
       </section>
 
       <section className="mx-auto max-w-5xl px-3 py-6 sm:px-4">
-        <div key={active} className="grid gap-4 sm:grid-cols-2">
-          {visible.map((p, i) => (
-            <article
-              key={p.title + i}
-              style={{
-                animationDelay: `${i * 60}ms`,
-                animationFillMode: "backwards",
-              }}
-              className="promo-card group relative overflow-hidden rounded-xl border border-[var(--neon-green)]/50 bg-black/30 animate-fade-in transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(57,255,20,0.45)] hover:border-[var(--neon-gold)]"
-            >
-              <div className="relative overflow-hidden">
-                <img
-                  src={p.img}
-                  alt={p.title}
-                  loading="lazy"
-                  className="block w-full h-auto transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="pointer-events-none absolute inset-0 promo-shimmer" aria-hidden />
-              </div>
-              <div className="flex items-center justify-between gap-3 px-3 py-2 bg-black/50 backdrop-blur">
-                <h3 className="text-xs font-semibold text-foreground/90 truncate">{p.title}</h3>
-                <button className="shrink-0 rounded-md bg-green-button px-4 py-1 text-[11px] font-black text-[var(--background)] transition hover:brightness-110 hover:scale-105 active:scale-95">
-                  আরও
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
+        {visible.length === 0 ? (
+          <div className="py-16 text-center text-sm text-white/70">কোন প্রমোশন পাওয়া যায়নি</div>
+        ) : (
+          <div key={active + query} className="grid gap-4 sm:grid-cols-2">
+            {visible.map((p, i) => (
+              <article
+                key={p.title + i}
+                style={{
+                  animationDelay: `${Math.min(i * 60, 800)}ms`,
+                  animationFillMode: "backwards",
+                }}
+                className="promo-card group relative overflow-hidden rounded-xl border border-[var(--neon-green)]/50 bg-black/30 animate-fade-in transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(57,255,20,0.45)] hover:border-[var(--neon-gold)]"
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={p.img}
+                    alt={p.title}
+                    loading="lazy"
+                    className="block w-full h-auto transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="pointer-events-none absolute inset-0 promo-shimmer" aria-hidden />
+                  {p.cats.includes("new") && (
+                    <span className="absolute left-2 top-2 rounded-full bg-red-600/90 px-2 py-0.5 text-[10px] font-black text-white ring-1 ring-white/40 backdrop-blur">
+                      HOT
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center justify-between gap-3 px-3 py-2 bg-black/50 backdrop-blur">
+                  <h3 className="text-xs font-semibold text-foreground/90 truncate">{p.title}</h3>
+                  <button className="shrink-0 rounded-md bg-green-button px-4 py-1 text-[11px] font-black text-[var(--background)] transition hover:brightness-110 hover:scale-105 active:scale-95">
+                    আরও
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </SiteShell>
   );
