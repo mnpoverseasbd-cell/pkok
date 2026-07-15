@@ -396,13 +396,14 @@ function ProvidersStrip() {
   return (
     <section className="bg-[#1a1a1a] py-8 sm:py-10">
       <div className="mx-auto grid max-w-[1440px] grid-cols-4 gap-x-6 gap-y-6 px-4 sm:grid-cols-6 sm:px-6 md:grid-cols-8 lg:grid-cols-10 lg:px-8">
-        {providerLogos.map((item) => (
-          <div key={item.name} className="flex h-14 items-center justify-center px-2">
+        {providerLogos.map((item, i) => (
+          <div key={item.name} className="provider-logo-wrap flex h-14 items-center justify-center px-2">
             <img
               src={item.logo}
               alt={item.name}
               loading="lazy"
-              className="max-h-12 max-w-full object-contain opacity-95 transition duration-200 hover:scale-110 hover:opacity-100"
+              className="provider-logo max-h-12 max-w-full object-contain"
+              style={{ animationDelay: `${(i % 10) * 0.18}s` }}
             />
           </div>
         ))}
@@ -410,6 +411,7 @@ function ProvidersStrip() {
     </section>
   );
 }
+
 
 function FooterBlock() {
   const { t } = useLang();
