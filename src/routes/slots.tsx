@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { Search, Gamepad2 } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 
 export const Route = createFileRoute("/slots")({
@@ -12,6 +14,7 @@ export const Route = createFileRoute("/slots")({
   }),
   component: SlotsPage,
 });
+
 
 type Provider = { code: string; name: string; count: number; icon: string };
 
