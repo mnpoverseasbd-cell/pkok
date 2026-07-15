@@ -68,8 +68,10 @@ export function SiteShell({ children, footer = true }: { children: ReactNode; fo
     <LanguageProvider>
       <ModalsProvider>
         <div className="portal-shell min-h-screen text-foreground">
-          <TopBar />
-          <MainNav />
+          <div className="sticky top-0 z-40">
+            <TopBar />
+            <MainNav />
+          </div>
           <main className="pb-8">{children}</main>
           {footer ? <FooterBlock /> : null}
           <SocialRail />
