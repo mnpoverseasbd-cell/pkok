@@ -316,12 +316,12 @@ function MainNav() {
   return (
     <header className="bg-navbar border-b border-black/20 shadow-lg shadow-black/25">
       <div className="mx-auto flex max-w-[1440px] items-center gap-3 px-3 py-3 sm:px-4 sm:py-3.5 lg:px-6 lg:py-4">
-        <Link to="/" aria-label="PKOK home" className="flex shrink-0 items-center gap-1 font-display text-4xl font-black leading-none sm:text-[42px] lg:text-[46px]">
+        <Link to="/" aria-label="PKOK home" className="flex shrink-0 items-center gap-1 font-display text-2xl font-black leading-none sm:text-[28px] lg:text-[32px]">
           <span className="text-white drop-shadow">PK</span>
-          <span className="rounded-[8px] bg-[#ff9700] px-2 text-black shadow-[0_3px_0_rgba(0,0,0,0.35)]">OK</span>
+          <span className="rounded-[6px] bg-[#ff9700] px-1.5 text-black shadow-[0_2px_0_rgba(0,0,0,0.35)]">OK</span>
           <span className="-ml-1 text-[#ff9700] drop-shadow">👌</span>
         </Link>
-        <nav className="hidden min-w-0 flex-1 items-center justify-start gap-2 whitespace-nowrap pl-6 text-[18px] font-bold text-white lg:flex xl:gap-3 xl:pl-8 xl:text-[19px]">
+        <nav className="hidden min-w-0 flex-1 items-center justify-start gap-1 whitespace-nowrap pl-4 text-[14px] font-bold text-white lg:flex xl:gap-2 xl:pl-6 xl:text-[15px]">
           {topMenu.map((item) => (
             <Link
               key={item.key}
