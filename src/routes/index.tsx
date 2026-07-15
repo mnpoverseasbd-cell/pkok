@@ -314,7 +314,7 @@ function TickerBar() {
   const loop = [...items, ...items];
   return (
     <section className="w-full border-y border-white/10 bg-black/60">
-      <div className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-medium leading-none text-white/95 sm:px-4 sm:text-[14px] lg:px-6">
+      <div className="flex items-center gap-3 px-3 py-3 text-sm font-medium leading-none text-white/95 sm:px-4 sm:text-base lg:px-6">
         <span className="shrink-0 grid h-7 w-7 place-items-center rounded-full bg-[var(--neon-green)]/25 text-[var(--neon-green)] ring-1 ring-[var(--neon-green)]/40 sm:h-8 sm:w-8">
           <Megaphone className="h-4 w-4" />
         </span>
