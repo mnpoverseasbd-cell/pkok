@@ -257,7 +257,7 @@ function HeroBanner() {
   const slide = heroSlides[idx];
   return (
     <section id="home" className="w-full">
-      <div className="relative w-full overflow-hidden border-b border-black/20 min-h-[180px] sm:min-h-[240px] md:min-h-[300px] lg:min-h-[380px]">
+      <div className="relative w-full overflow-hidden border-b border-black/20 aspect-[1920/620] sm:aspect-[1920/560] md:aspect-[1920/520] lg:aspect-[1920/480]">
 
         <img
           key={idx}
@@ -265,7 +265,7 @@ function HeroBanner() {
           alt={slide.alt}
           width={1920}
           height={768}
-          className="block h-full w-full animate-fade-in object-cover"
+          className="absolute inset-0 block h-full w-full animate-fade-in object-cover"
         />
 
         {/* Prev / Next */}
