@@ -610,27 +610,24 @@ function AppSection() {
 function ServiceStats() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-2 sm:px-4 lg:px-6">
-      <div className="relative rounded-[28px] border border-[var(--neon-green)]/45 panel-dark px-4 pb-4 pt-9 sm:px-6 sm:pb-5">
-        {/* Curved green header tab */}
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
-          <div className="rounded-b-none rounded-t-[22px] bg-green-button px-14 py-2 text-lg font-black text-[var(--background)] shadow-lg">
-            {t("serviceQualityTitle")}
-          </div>
+    <section className="mx-auto max-w-7xl px-3 pb-3 pt-2 sm:px-4 lg:px-6">
+      <div className="mb-3 flex justify-center">
+        <div className="rounded-xl bg-green-button px-10 py-1.5 text-base font-black text-[var(--background)] shadow-lg sm:text-lg">
+          {t("serviceQualityTitle")}
         </div>
-        <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
-          {statCards.map((item) => (
-            <div key={item.labelKey} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-3 pb-2 text-center">
-              <div className="flex items-baseline justify-center">
-                <span className="text-4xl font-black text-[var(--neon-gold)] leading-none sm:text-5xl">{item.value}</span>
-                {item.unit && <span className="ml-1 text-base font-bold text-[var(--neon-gold)] sm:text-lg">{item.unit}</span>}
-              </div>
-              <div className="mx-auto mt-2.5 w-full rounded-full bg-green-button px-3 py-1 text-xs font-black text-[var(--background)] sm:text-sm">
-                {t(item.labelKey)}
-              </div>
+      </div>
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 xl:grid-cols-4">
+        {statCards.map((item) => (
+          <div key={item.labelKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 px-3 py-3 text-center">
+            <div className="flex items-baseline justify-center">
+              <span className="text-5xl font-black text-[var(--neon-gold)] leading-none sm:text-6xl">{item.value}</span>
+              {item.unit && <span className="ml-0.5 text-base font-bold text-[var(--neon-gold)] sm:text-xl">{item.unit}</span>}
             </div>
-          ))}
-        </div>
+            <div className="mx-auto mt-3 w-full rounded-full bg-green-button px-3 py-1 text-[11px] font-black text-[var(--background)] sm:text-xs">
+              {t(item.labelKey)}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -639,24 +636,22 @@ function ServiceStats() {
 function FeatureList() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-7xl px-3 pb-6 sm:px-4 lg:px-6">
-      <div className="space-y-2 rounded-[28px] border border-[var(--neon-green)]/45 panel-dark p-2.5 sm:p-3">
-        {featureCards.map((card) => (
-          <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/35 bg-black/40 p-3 sm:p-3.5">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
-
-              <div className="min-w-0">
-                <h3 className="text-sm font-black text-[var(--neon-gold)] sm:text-base">{t(card.titleKey)}</h3>
-                <p className="mt-0.5 text-[11px] leading-5 text-foreground/75 sm:text-xs sm:leading-5">{t(card.bodyKey)}</p>
-              </div>
+    <section className="mx-auto max-w-7xl space-y-2.5 px-3 pb-6 sm:px-4 lg:px-6">
+      {featureCards.map((card) => (
+        <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 p-3 sm:p-3.5">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
+            <div className="min-w-0">
+              <h3 className="text-sm font-black text-[var(--neon-gold)] sm:text-base">{t(card.titleKey)}</h3>
+              <p className="mt-0.5 text-[11px] leading-5 text-foreground/80 sm:text-xs sm:leading-5">{t(card.bodyKey)}</p>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </section>
   );
 }
+
 
 
 
