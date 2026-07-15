@@ -24,6 +24,10 @@ import heroSlide3 from "@/assets/hero-slide-3.jpg";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { useLang } from "@/components/landing/LanguageContext";
 import phoneMockup from "@/assets/phone-mockup.png";
+import mascotSharkChest from "@/assets/mascots/shark-chest.png";
+import mascotFootballer from "@/assets/mascots/footballer.png";
+import mascotSlotMachine from "@/assets/mascots/slot-machine.png";
+import mascotRocket from "@/assets/mascots/rocket.png";
 import g1 from "@/assets/game-slot1.jpg";
 import g2 from "@/assets/game-roulette.jpg";
 import g3 from "@/assets/game-crash.jpg";
@@ -566,13 +570,11 @@ function AppSection() {
   return (
     <section className="mx-auto max-w-7xl px-3 pb-8 sm:px-4 lg:px-6">
       <div className="grid items-center gap-6 rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-4 sm:p-6 lg:grid-cols-[1.1fr_1fr]">
-        <div className="relative flex min-h-[280px] items-center justify-center overflow-hidden rounded-2xl">
-          {/* Decorative characters around phone */}
-          <div className="pointer-events-none absolute left-2 top-6 text-5xl sm:text-6xl lg:text-7xl select-none">🦈</div>
-          <div className="pointer-events-none absolute left-10 bottom-4 text-4xl sm:text-5xl lg:text-6xl select-none">💰</div>
-          <div className="pointer-events-none absolute left-24 top-1/2 -translate-y-1/2 text-5xl sm:text-6xl lg:text-7xl select-none">⚽</div>
-          <div className="pointer-events-none absolute right-6 top-4 text-4xl sm:text-5xl select-none">🚀</div>
-          <div className="pointer-events-none absolute right-4 bottom-6 text-4xl sm:text-5xl select-none">🎰</div>
+        <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-2xl">
+          <img src={mascotSharkChest} alt="" aria-hidden width={320} height={320} loading="lazy" className="pointer-events-none absolute left-1 bottom-2 w-28 sm:w-36 lg:w-44 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]" />
+          <img src={mascotFootballer} alt="" aria-hidden width={320} height={320} loading="lazy" className="pointer-events-none absolute left-24 top-2 w-24 sm:w-32 lg:w-40 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] z-20" />
+          <img src={mascotSlotMachine} alt="" aria-hidden width={320} height={320} loading="lazy" className="pointer-events-none absolute left-20 bottom-1 w-20 sm:w-24 lg:w-28 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]" />
+          <img src={mascotRocket} alt="" aria-hidden width={200} height={200} loading="lazy" className="pointer-events-none absolute right-6 top-4 w-16 sm:w-20 lg:w-24 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]" />
           <img
             src={phoneMockup}
             alt="PKOK app preview"
