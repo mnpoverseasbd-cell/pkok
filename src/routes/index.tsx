@@ -22,6 +22,7 @@ import heroSlide1 from "@/assets/hero-slide-1.jpg";
 import heroSlide2 from "@/assets/hero-slide-2.jpg";
 import heroSlide3 from "@/assets/hero-slide-3.jpg";
 import { SiteShell } from "@/components/landing/SiteShell";
+import { useAuth } from "@/hooks/useAuth";
 import { useLang } from "@/components/landing/LanguageContext";
 import phoneMockup from "@/assets/phone-mockup.png";
 import mascotAppScene from "@/assets/mascots/app-scene.png";
@@ -174,16 +175,23 @@ const listSections = [
   },
 ];
 
-const popupImages = [
+const popupImagesGuest = [
   "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/3013088_1749471837701.png",
   "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/3013088_1747144146761.png",
   "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/3026578_1781775033023.gif",
   "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1782533197055_PKOK.jpg",
 ];
 
+const popupImagesUser = [
+  "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/3026578_1781775033023.gif",
+  "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/1782533197055_PKOK.jpg",
+  "https://images.23924894.com/mcs-images/announcement/pkokbdtf6/3013088_1747144146761.png",
+];
+
 function Index() {
   return (
     <SiteShell>
+      <PromoPopup />
       <HeroBanner />
       <TickerBar />
       <HotGamesSection />
@@ -198,54 +206,106 @@ function Index() {
 }
 
 function PromoPopup() {
+  const { user } = useAuth();
+  const images = user ? popupImagesUser : popupImagesGuest;
+  const storageKey = user ? "pkok_popup_hide_user" : "pkok_popup_hide_guest";
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
+  const [dontShow, setDontShow] = useState(false);
   const { t } = useLang();
+
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hideUntil = Number(localStorage.getItem(storageKey) || 0);
+    if (hideUntil && Date.now() < hideUntil) return;
     const timer = setTimeout(() => setOpen(true), 600);
     return () => clearTimeout(timer);
-  }, []);
-  if (!open) return null;
-  const total = popupImages.length;
-  const next = () => {
-    if (idx < total - 1) setIdx(idx + 1);
-    else setOpen(false);
+  }, [storageKey]);
+
+  const close = () => {
+    if (dontShow && typeof window !== "undefined") {
+      // hide for 24 hours
+      localStorage.setItem(storageKey, String(Date.now() + 24 * 60 * 60 * 1000));
+    }
+    setOpen(false);
   };
+
+  if (!open) return null;
+  const total = images.length;
+  const next = () => setIdx((i) => (i + 1) % total);
+  const prev = () => setIdx((i) => (i - 1 + total) % total);
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-md">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full max-w-md animate-scale-in">
         <button
           aria-label="Close"
-          onClick={() => setOpen(false)}
-          className="absolute -right-2 -top-10 grid h-9 w-9 place-items-center rounded-full border border-white/30 bg-black/60 text-white hover:bg-[var(--neon-green)]/70"
+          onClick={close}
+          className="absolute -right-2 -top-10 grid h-9 w-9 place-items-center rounded-full border border-white/30 bg-black/60 text-white transition hover:bg-[var(--neon-green)]/70 hover:scale-110"
         >
           ✕
         </button>
-        <img
-          src={popupImages[idx]}
-          alt={`Promo ${idx + 1}`}
-          className="w-full rounded-lg shadow-2xl"
-        />
+
+        <div className="relative overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10">
+          <img
+            key={idx}
+            src={images[idx]}
+            alt={`Promo ${idx + 1}`}
+            className="w-full animate-fade-in"
+          />
+          {total > 1 && (
+            <>
+              <button
+                onClick={prev}
+                aria-label="Previous"
+                className="absolute left-2 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white hover:bg-[var(--neon-green)]/70"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                onClick={next}
+                aria-label="Next"
+                className="absolute right-2 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/50 text-white hover:bg-[var(--neon-green)]/70"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </>
+          )}
+        </div>
+
+        <div className="mt-3 flex items-center justify-center gap-1.5">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              aria-label={`Slide ${i + 1}`}
+              className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-[var(--neon-gold)]" : "w-1.5 bg-white/40 hover:bg-white/70"}`}
+            />
+          ))}
+        </div>
+
         <div className="mt-4 flex items-center justify-between text-white">
-          <div className="flex gap-1.5">
-            {popupImages.map((_, i) => (
-              <span
-                key={i}
-                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-[var(--neon-gold)]" : "w-1.5 bg-white/40"}`}
-              />
-            ))}
-          </div>
+          <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={dontShow}
+              onChange={(e) => setDontShow(e.target.checked)}
+              className="h-4 w-4 accent-[var(--neon-green)]"
+            />
+            <span>{t("popupHideToday") || "আজকের জন্য আর দেখাবেন না"}</span>
+          </label>
           <button
-            onClick={next}
+            onClick={close}
             className="rounded-full bg-[var(--neon-green)] px-5 py-2 text-sm font-semibold text-black hover:brightness-110"
           >
-            {idx < total - 1 ? t("popupNext") : t("popupClose")}
+            {t("popupClose") || "বন্ধ করুন"}
           </button>
         </div>
       </div>
     </div>
   );
 }
+
 
 function HeroBanner() {
   const [idx, setIdx] = useState(0);
