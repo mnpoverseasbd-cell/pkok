@@ -365,14 +365,15 @@ function HotGamesSection() {
   }, [paused]);
 
   return (
-    <section className="mx-auto max-w-[1440px] px-3 py-5 sm:px-4 lg:px-6">
-      <div className="rounded-2xl inset-panel p-3 sm:p-4">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-base font-black text-[var(--neon-gold)] sm:text-lg">
-            <Flame className="h-5 w-5" /> {t("hotGames")}
+    <section className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 sm:py-9 lg:px-8 lg:py-10">
+      <div className="rounded-2xl inset-panel p-4 sm:p-5 lg:p-6">
+        <div className="mb-4 flex items-center justify-between gap-2 sm:mb-5">
+          <div className="flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl">
+            <Flame className="h-6 w-6 sm:h-7 sm:w-7" /> {t("hotGames")}
           </div>
-          <button className="rounded-full bg-green-button px-4 py-1.5 text-xs font-black text-[var(--background)] sm:text-sm">{t("more")}</button>
+          <button className="rounded-full bg-green-button px-5 py-2 text-sm font-black text-[var(--background)] sm:px-6 sm:py-2.5 sm:text-base">{t("more")}</button>
         </div>
+
 
         <div
           className="relative"
