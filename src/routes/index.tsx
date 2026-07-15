@@ -314,7 +314,7 @@ function TickerBar() {
   const loop = [...items, ...items];
   return (
     <section className="w-full border-y border-white/10 bg-black/60">
-      <div className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-medium leading-none text-white/95 sm:px-4 sm:text-[14px] lg:px-6">
+      <div className="flex items-center gap-3 px-3 py-3 text-sm font-medium leading-none text-white/95 sm:px-4 sm:text-base lg:px-6">
         <span className="shrink-0 grid h-7 w-7 place-items-center rounded-full bg-[var(--neon-green)]/25 text-[var(--neon-green)] ring-1 ring-[var(--neon-green)]/40 sm:h-8 sm:w-8">
           <Megaphone className="h-4 w-4" />
         </span>
@@ -368,11 +368,12 @@ function HotGamesSection() {
     <section className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 sm:py-9 lg:px-8 lg:py-10">
       <div className="rounded-2xl inset-panel p-4 sm:p-5 lg:p-6">
         <div className="mb-4 flex items-center justify-between gap-2 sm:mb-5">
-          <div className="flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl">
+          <div className="flex items-center gap-2 text-xl font-black text-[var(--neon-gold)] sm:text-2xl lg:text-[26px]">
             <Flame className="h-6 w-6 sm:h-7 sm:w-7" /> {t("hotGames")}
           </div>
-          <button className="rounded-full bg-green-button px-5 py-2 text-sm font-black text-[var(--background)] sm:px-6 sm:py-2.5 sm:text-base">{t("more")}</button>
+          <button className="rounded-full bg-green-button px-5 py-2 text-base font-black text-[var(--background)] sm:px-7 sm:py-2.5 sm:text-lg">{t("more")}</button>
         </div>
+
 
 
         <div
@@ -399,15 +400,16 @@ function HotGamesSection() {
                 className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-2 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
               >
                 {game.tag && (
-                  <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[10px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
+                  <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[11px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
                     {game.tag}
                   </span>
                 )}
-                <span className="absolute right-2 top-2 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-bold text-[var(--neon-gold)]">
+                <span className="absolute right-2 top-2 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[11px] font-bold text-[var(--neon-gold)]">
                   {game.provider}
                 </span>
                 <img src={game.image} alt={game.title} width={512} height={512} loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" />
-                <div className="pt-3 text-center text-[13px] font-semibold text-foreground/90 sm:text-[14px] lg:text-[15px]">{game.title}</div>
+                <div className="pt-3 text-center text-sm font-semibold text-foreground/90 sm:text-[15px] lg:text-base">{game.title}</div>
+
               </div>
             ))}
 
@@ -434,7 +436,7 @@ function JackpotSection() {
     <section className="mx-auto max-w-[1440px] px-4 pb-8 sm:px-6 sm:pb-10 lg:px-8 lg:pb-12">
       <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:gap-6">
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-base font-black text-[var(--neon-gold)] sm:text-lg"><Gift className="h-5 w-5" /> {t("promo")}</div>
+          <div className="flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl"><Gift className="h-5 w-5 sm:h-6 sm:w-6" /> {t("promo")}</div>
           {promoCards.map((card) => (
             <div key={card.titleKey} className="overflow-hidden rounded-xl border border-[var(--neon-green)]/45 bg-black/35">
               <img src={card.image} alt={t(card.titleKey)} width={1024} height={512} loading="lazy" className="block w-full" />
@@ -477,22 +479,23 @@ function LatestWinners() {
   const loop = [...winners, ...winners];
   return (
     <div>
-      <div className="mb-4 flex items-center gap-2 text-base font-black text-[var(--neon-gold)] sm:text-lg"><Trophy className="h-5 w-5" /> {t("latestWinners")}</div>
+      <div className="mb-4 flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl"><Trophy className="h-5 w-5 sm:h-6 sm:w-6" /> {t("latestWinners")}</div>
       <div className="relative h-[400px] overflow-hidden rounded-xl border border-[var(--neon-green)]/40 bg-black/35 p-3">
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-black/70 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-black/70 to-transparent" />
         <div className="flex flex-col gap-2 animate-marquee-y">
           {loop.map((entry, i) => (
-            <div key={`${entry.name}-${i}`} className="flex shrink-0 items-center gap-3 rounded-lg border border-[var(--neon-green)]/30 bg-black/55 p-2">
-              <img src={entry.image} alt="" loading="lazy" decoding="async" className="h-10 w-10 shrink-0 rounded-md object-cover" />
+            <div key={`${entry.name}-${i}`} className="flex shrink-0 items-center gap-3 rounded-lg border border-[var(--neon-green)]/30 bg-black/55 p-2.5">
+              <img src={entry.image} alt="" loading="lazy" decoding="async" className="h-11 w-11 shrink-0 rounded-md object-cover" />
               <div className="min-w-0 flex-1">
-                <div className="truncate text-xs font-semibold text-white">{entry.name}</div>
-                <div className="truncate text-[10px] text-foreground/65">{t("justWonIn")} <span className="text-[var(--neon-gold)]">{entry.game}</span></div>
+                <div className="truncate text-sm font-semibold text-white">{entry.name}</div>
+                <div className="truncate text-xs text-foreground/65">{t("justWonIn")} <span className="text-[var(--neon-gold)]">{entry.game}</span></div>
               </div>
-              <div className="shrink-0 text-sm font-black text-[var(--neon-gold)]">{entry.amount}</div>
+              <div className="shrink-0 text-base font-black text-[var(--neon-gold)]">{entry.amount}</div>
             </div>
           ))}
+
         </div>
       </div>
     </div>
@@ -584,13 +587,13 @@ function AppSection() {
           />
         </div>
         <div>
-          <div className="text-sm font-bold text-white sm:text-base">{t("appTagline")}</div>
-          <h2 className="mt-1 flex items-center gap-3 text-4xl font-black text-gradient-gold sm:text-5xl">
+          <div className="text-base font-bold text-white sm:text-lg">{t("appTagline")}</div>
+          <h2 className="mt-1 flex items-center gap-3 text-4xl font-black text-gradient-gold sm:text-5xl lg:text-6xl">
             <span>PKOK APP</span>
             <span aria-hidden className="h-[3px] flex-1 rounded-full bg-gradient-to-r from-[var(--neon-gold)] to-transparent" />
           </h2>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/80 sm:text-base">{t("appDescription")}</p>
-          <div className="mt-5 grid grid-cols-2 gap-4 sm:max-w-md">
+          <p className="mt-4 max-w-xl text-base leading-7 text-foreground/80 sm:text-lg sm:leading-8">{t("appDescription")}</p>
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:max-w-md">
             {[
               { label: "Android APP", Icon: Download },
               { label: "IOS APP", Icon: Apple },
@@ -599,9 +602,10 @@ function AppSection() {
                 <div className="mx-auto grid h-28 w-28 place-items-center rounded-lg bg-white text-[var(--background)] sm:h-32 sm:w-32">
                   <QrCode className="h-20 w-20" strokeWidth={1.5} />
                 </div>
-                <div className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-white">
-                  <Icon className="h-3.5 w-3.5" /> {label}
+                <div className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-white sm:text-base">
+                  <Icon className="h-4 w-4" /> {label}
                 </div>
+
               </div>
             ))}
           </div>
@@ -618,7 +622,7 @@ function ServiceStats() {
   return (
     <section className="mx-auto max-w-[1440px] px-4 pb-6 pt-4 sm:px-6 sm:pb-8 lg:px-8">
       <div className="mb-5 flex justify-center sm:mb-6">
-        <div className="rounded-xl bg-green-button px-12 py-2.5 text-lg font-black text-[var(--background)] shadow-lg sm:text-xl">
+        <div className="rounded-xl bg-green-button px-12 py-3 text-xl font-black text-[var(--background)] shadow-lg sm:text-2xl">
           {t("serviceQualityTitle")}
         </div>
       </div>
@@ -629,9 +633,10 @@ function ServiceStats() {
               <span className="text-5xl font-black text-[var(--neon-gold)] leading-none sm:text-6xl lg:text-7xl">{item.value}</span>
               {item.unit && <span className="ml-1 text-lg font-bold text-[var(--neon-gold)] sm:text-2xl">{item.unit}</span>}
             </div>
-            <div className="mx-auto mt-4 w-full rounded-full bg-green-button px-3 py-1.5 text-xs font-black text-[var(--background)] sm:text-sm">
+            <div className="mx-auto mt-4 w-full rounded-full bg-green-button px-3 py-1.5 text-sm font-black text-[var(--background)] sm:text-base">
               {t(item.labelKey)}
             </div>
+
           </div>
         ))}
       </div>
@@ -649,8 +654,9 @@ function FeatureList() {
           <div className="flex items-center gap-4 sm:gap-5">
             <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16" />
             <div className="min-w-0">
-              <h3 className="text-base font-black text-[var(--neon-gold)] sm:text-lg">{t(card.titleKey)}</h3>
-              <p className="mt-1 text-xs leading-6 text-foreground/80 sm:text-sm sm:leading-6">{t(card.bodyKey)}</p>
+              <h3 className="text-lg font-black text-[var(--neon-gold)] sm:text-xl">{t(card.titleKey)}</h3>
+              <p className="mt-1 text-sm leading-6 text-foreground/80 sm:text-base sm:leading-7">{t(card.bodyKey)}</p>
+
             </div>
           </div>
         </div>
