@@ -326,7 +326,7 @@ function MainNav() {
             <Link
               key={item.key}
               to={item.to}
-              className="group flex shrink-0 items-center gap-2 rounded-md px-3 py-2.5 transition-colors hover:text-[var(--neon-gold)]"
+              className="group flex shrink-0 items-center gap-1.5 rounded-md px-2 py-2 transition-colors hover:text-[var(--neon-gold)]"
               activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}
             >
               <item.icon className="h-7 w-7 transition-transform group-hover:scale-110" />
