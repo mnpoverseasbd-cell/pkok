@@ -480,7 +480,7 @@ function LatestWinners() {
         <div className="flex flex-col gap-2 animate-marquee-y">
           {loop.map((entry, i) => (
             <div key={`${entry.name}-${i}`} className="flex shrink-0 items-center gap-3 rounded-lg border border-[var(--neon-green)]/30 bg-black/55 p-2">
-              <img src={entry.image} alt="" className="h-10 w-10 shrink-0 rounded-md object-cover" />
+              <img src={entry.image} alt="" loading="lazy" decoding="async" className="h-10 w-10 shrink-0 rounded-md object-cover" />
               <div className="min-w-0 flex-1">
                 <div className="truncate text-xs font-semibold text-white">{entry.name}</div>
                 <div className="truncate text-[10px] text-foreground/65">{t("justWonIn")} <span className="text-[var(--neon-gold)]">{entry.game}</span></div>
