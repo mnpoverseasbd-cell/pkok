@@ -32,7 +32,7 @@ const registerSchema = z.object({
 });
 
 export function usernameToEmail(username: string) {
-  return `${username.trim().toLowerCase()}@asik.local`;
+  return `${username.trim().toLowerCase()}@asikgame.app`;
 }
 
 function RegisterPage() {
