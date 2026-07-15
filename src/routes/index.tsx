@@ -436,7 +436,7 @@ function JackpotSection() {
     <section className="mx-auto max-w-[1440px] px-4 pb-8 sm:px-6 sm:pb-10 lg:px-8 lg:pb-12">
       <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:gap-6">
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-base font-black text-[var(--neon-gold)] sm:text-lg"><Gift className="h-5 w-5" /> {t("promo")}</div>
+          <div className="flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl"><Gift className="h-5 w-5 sm:h-6 sm:w-6" /> {t("promo")}</div>
           {promoCards.map((card) => (
             <div key={card.titleKey} className="overflow-hidden rounded-xl border border-[var(--neon-green)]/45 bg-black/35">
               <img src={card.image} alt={t(card.titleKey)} width={1024} height={512} loading="lazy" className="block w-full" />
