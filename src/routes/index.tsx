@@ -365,14 +365,15 @@ function HotGamesSection() {
   }, [paused]);
 
   return (
-    <section className="mx-auto max-w-[1440px] px-3 py-5 sm:px-4 lg:px-6">
-      <div className="rounded-2xl inset-panel p-3 sm:p-4">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-base font-black text-[var(--neon-gold)] sm:text-lg">
-            <Flame className="h-5 w-5" /> {t("hotGames")}
+    <section className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 sm:py-9 lg:px-8 lg:py-10">
+      <div className="rounded-2xl inset-panel p-4 sm:p-5 lg:p-6">
+        <div className="mb-4 flex items-center justify-between gap-2 sm:mb-5">
+          <div className="flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl">
+            <Flame className="h-6 w-6 sm:h-7 sm:w-7" /> {t("hotGames")}
           </div>
-          <button className="rounded-full bg-green-button px-4 py-1.5 text-xs font-black text-[var(--background)] sm:text-sm">{t("more")}</button>
+          <button className="rounded-full bg-green-button px-5 py-2 text-sm font-black text-[var(--background)] sm:px-6 sm:py-2.5 sm:text-base">{t("more")}</button>
         </div>
+
 
         <div
           className="relative"
@@ -390,25 +391,26 @@ function HotGamesSection() {
           </button>
           <div
             ref={ref}
-            className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {hotGames.map((game) => (
               <div
                 key={game.title}
-                className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-1.5 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
+                className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-2 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
               >
                 {game.tag && (
-                  <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[9px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
+                  <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[10px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
                     {game.tag}
                   </span>
                 )}
-                <span className="absolute right-2 top-2 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[9px] font-bold text-[var(--neon-gold)]">
+                <span className="absolute right-2 top-2 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-bold text-[var(--neon-gold)]">
                   {game.provider}
                 </span>
                 <img src={game.image} alt={game.title} width={512} height={512} loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" />
-                <div className="pt-2 text-center text-[12px] font-semibold text-foreground/90 sm:text-[13px]">{game.title}</div>
+                <div className="pt-3 text-center text-[13px] font-semibold text-foreground/90 sm:text-[14px] lg:text-[15px]">{game.title}</div>
               </div>
             ))}
+
           </div>
           <button
             aria-label="Next"
@@ -429,16 +431,17 @@ function HotGamesSection() {
 function JackpotSection() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-[1440px] px-3 pb-5 sm:px-4 lg:px-6">
-      <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)_320px]">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]"><Gift className="h-4 w-4" /> {t("promo")}</div>
+    <section className="mx-auto max-w-[1440px] px-4 pb-8 sm:px-6 sm:pb-10 lg:px-8 lg:pb-12">
+      <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:gap-6">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-base font-black text-[var(--neon-gold)] sm:text-lg"><Gift className="h-5 w-5" /> {t("promo")}</div>
           {promoCards.map((card) => (
             <div key={card.titleKey} className="overflow-hidden rounded-xl border border-[var(--neon-green)]/45 bg-black/35">
               <img src={card.image} alt={t(card.titleKey)} width={1024} height={512} loading="lazy" className="block w-full" />
             </div>
           ))}
         </div>
+
 
         <div className="overflow-hidden rounded-2xl border border-[var(--neon-green)]/45 bg-[radial-gradient(ellipse_at_top,rgba(22,80,54,0.6),rgba(4,18,12,0.95))] p-3 text-center">
           <img
@@ -474,8 +477,9 @@ function LatestWinners() {
   const loop = [...winners, ...winners];
   return (
     <div>
-      <div className="mb-3 flex items-center gap-2 text-sm font-black text-[var(--neon-gold)]"><Trophy className="h-4 w-4" /> {t("latestWinners")}</div>
-      <div className="relative h-[360px] overflow-hidden rounded-xl border border-[var(--neon-green)]/40 bg-black/35 p-2">
+      <div className="mb-4 flex items-center gap-2 text-base font-black text-[var(--neon-gold)] sm:text-lg"><Trophy className="h-5 w-5" /> {t("latestWinners")}</div>
+      <div className="relative h-[400px] overflow-hidden rounded-xl border border-[var(--neon-green)]/40 bg-black/35 p-3">
+
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-black/70 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-black/70 to-transparent" />
         <div className="flex flex-col gap-2 animate-marquee-y">
@@ -566,8 +570,9 @@ function MainCategoryCards() {
 function AppSection() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-[1440px] px-3 pb-8 sm:px-4 lg:px-6">
-      <div className="grid items-center gap-6 rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-4 sm:p-6 lg:grid-cols-[1.1fr_1fr]">
+    <section className="mx-auto max-w-[1440px] px-4 pb-10 sm:px-6 sm:pb-12 lg:px-8 lg:pb-14">
+      <div className="grid items-center gap-8 rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-6 sm:p-8 lg:grid-cols-[1.1fr_1fr] lg:p-10">
+
         <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-2xl sm:min-h-[380px] lg:min-h-[440px]">
           <img
             src={mascotAppScene}
@@ -611,45 +616,47 @@ function AppSection() {
 function ServiceStats() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-[1440px] px-3 pb-3 pt-2 sm:px-4 lg:px-6">
-      <div className="mb-3 flex justify-center">
-        <div className="rounded-xl bg-green-button px-10 py-1.5 text-base font-black text-[var(--background)] shadow-lg sm:text-lg">
+    <section className="mx-auto max-w-[1440px] px-4 pb-6 pt-4 sm:px-6 sm:pb-8 lg:px-8">
+      <div className="mb-5 flex justify-center sm:mb-6">
+        <div className="rounded-xl bg-green-button px-12 py-2.5 text-lg font-black text-[var(--background)] shadow-lg sm:text-xl">
           {t("serviceQualityTitle")}
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {statCards.map((item) => (
-          <div key={item.labelKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 px-3 py-3 text-center">
+          <div key={item.labelKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 px-4 py-5 text-center sm:px-5 sm:py-6">
             <div className="flex items-baseline justify-center">
-              <span className="text-5xl font-black text-[var(--neon-gold)] leading-none sm:text-6xl">{item.value}</span>
-              {item.unit && <span className="ml-0.5 text-base font-bold text-[var(--neon-gold)] sm:text-xl">{item.unit}</span>}
+              <span className="text-5xl font-black text-[var(--neon-gold)] leading-none sm:text-6xl lg:text-7xl">{item.value}</span>
+              {item.unit && <span className="ml-1 text-lg font-bold text-[var(--neon-gold)] sm:text-2xl">{item.unit}</span>}
             </div>
-            <div className="mx-auto mt-3 w-full rounded-full bg-green-button px-3 py-1 text-[11px] font-black text-[var(--background)] sm:text-xs">
+            <div className="mx-auto mt-4 w-full rounded-full bg-green-button px-3 py-1.5 text-xs font-black text-[var(--background)] sm:text-sm">
               {t(item.labelKey)}
             </div>
           </div>
         ))}
       </div>
     </section>
+
   );
 }
 
 function FeatureList() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-[1440px] space-y-2.5 px-3 pb-6 sm:px-4 lg:px-6">
+    <section className="mx-auto max-w-[1440px] space-y-3.5 px-4 pb-10 sm:px-6 sm:pb-12 lg:px-8">
       {featureCards.map((card) => (
-        <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 p-3 sm:p-3.5">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
+        <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 p-4 sm:p-5">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16" />
             <div className="min-w-0">
-              <h3 className="text-sm font-black text-[var(--neon-gold)] sm:text-base">{t(card.titleKey)}</h3>
-              <p className="mt-0.5 text-[11px] leading-5 text-foreground/80 sm:text-xs sm:leading-5">{t(card.bodyKey)}</p>
+              <h3 className="text-base font-black text-[var(--neon-gold)] sm:text-lg">{t(card.titleKey)}</h3>
+              <p className="mt-1 text-xs leading-6 text-foreground/80 sm:text-sm sm:leading-6">{t(card.bodyKey)}</p>
             </div>
           </div>
         </div>
       ))}
     </section>
+
   );
 }
 
