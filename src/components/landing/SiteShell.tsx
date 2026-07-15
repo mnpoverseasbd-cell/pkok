@@ -121,6 +121,63 @@ function LangSwitcher() {
   );
 }
 
+function ProfileMenu({ displayName, onSignOut }: { displayName: string; onSignOut: () => void }) {
+  const [open, setOpen] = useState(false);
+  const items: { to: string; search?: Record<string, string>; icon: typeof UserIcon; label: string }[] = [
+    { to: "/profile", icon: UserIcon, label: "সদস্য" },
+    { to: "/wallet", search: { tab: "deposit" }, icon: CircleDollarSign, label: "ডিপোজিট" },
+    { to: "/wallet", search: { tab: "withdraw" }, icon: RefreshCw, label: "উত্তোলন" },
+    { to: "/wallet", search: { tab: "history" }, icon: Ticket, label: "অ্যাকাউন্ট রেকর্ড" },
+    { to: "/wallet", search: { tab: "bets" }, icon: Trophy, label: "বেটিং রেকর্ড" },
+  ];
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        onBlur={() => setTimeout(() => setOpen(false), 180)}
+        className="flex items-center gap-1.5 rounded-full bg-black/25 px-1 py-0.5 pr-2 hover:brightness-110"
+      >
+        <span className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-[var(--neon-gold)] to-[var(--neon-pink)] text-[11px] font-black text-black">
+          {displayName.charAt(0).toUpperCase()}
+        </span>
+        <span className="max-w-[110px] truncate font-bold text-white">{displayName}</span>
+        <ChevronDown className={`h-3 w-3 text-white/70 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full z-[100] mt-2 w-56 overflow-hidden rounded-xl border border-[var(--neon-gold)]/50 bg-[#0b1f14]/98 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.7)] backdrop-blur animate-fade-in">
+          <ul className="py-1">
+            {items.map((it) => (
+              <li key={it.label}>
+                <Link
+                  to={it.to}
+                  search={it.search as never}
+                  onMouseDown={(e) => { e.preventDefault(); setOpen(false); }}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-white/90 hover:bg-[var(--neon-green)]/15 hover:text-white"
+                >
+                  <it.icon className="h-4 w-4 text-[var(--neon-gold)]" />
+                  <span>{it.label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="border-t border-white/10">
+            <button
+              type="button"
+              onMouseDown={(e) => { e.preventDefault(); setOpen(false); onSignOut(); }}
+              className="flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white hover:bg-[var(--neon-pink)]/20"
+            >
+              <LogOut className="h-4 w-4" />
+              সাইন আউট
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 function TopBar() {
   const [showPw, setShowPw] = useState(false);
   const [phone, setPhone] = useState("");
@@ -187,15 +244,7 @@ function TopBar() {
                 <Mail className="h-4 w-4" />
                 <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--neon-pink)] px-1 text-[10px] font-bold text-white">5</span>
               </button>
-              <div className="relative">
-                <Link to="/profile" className="flex items-center gap-1.5 rounded-full bg-black/25 px-1 py-0.5 pr-2 hover:brightness-110">
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-[var(--neon-gold)] to-[var(--neon-pink)] text-[11px] font-black text-black">
-                    {displayName.charAt(0).toUpperCase()}
-                  </span>
-                  <span className="max-w-[110px] truncate font-bold text-white">{displayName}</span>
-                  <ChevronDown className="h-3 w-3 text-white/70" />
-                </Link>
-              </div>
+              <ProfileMenu displayName={displayName} onSignOut={handleSignOut} />
               <button
                 onClick={handleSignOut}
                 title="লগআউট"
