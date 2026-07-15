@@ -1,0 +1,10 @@
+export { authService } from "./auth";
+export { walletService } from "./wallet";
+export { catalogService } from "./catalog";
+export { bonusService } from "./bonus";
+export { promotionService } from "./promotion";
+export { favoritesService } from "./favorites";
+export { recentlyPlayedService } from "./recently-played";
+export { leaderboardService } from "./leaderboards";
+export { tournamentService } from "./tournaments";
+export { notificationService } from "./notifications";
