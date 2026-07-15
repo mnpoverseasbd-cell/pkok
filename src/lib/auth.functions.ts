@@ -11,11 +11,31 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { createClient } = await import("@supabase/supabase-js");
+    const url = process.env.SUPABASE_URL;
+    const serviceKey = process.env.SERVICE_ROLE_KEY;
+    if (!url || !serviceKey) {
+      throw new Error("Server configuration missing");
+    }
+
+    const isNewKey = serviceKey.startsWith("sb_publishable_") || serviceKey.startsWith("sb_secret_");
+    const admin = createClient(url, serviceKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      global: {
+        fetch: (input, init) => {
+          const headers = new Headers(init?.headers);
+          if (isNewKey && headers.get("Authorization") === `Bearer ${serviceKey}`) {
+            headers.delete("Authorization");
+          }
+          headers.set("apikey", serviceKey);
+          return fetch(input, { ...init, headers });
+        },
+      },
+    });
 
     const email = `${data.phone}@asikgame.app`;
 
-    const { data: existingProfile, error: lookupError } = await supabaseAdmin
+    const { data: existingProfile, error: lookupError } = await admin
       .from("profiles")
       .select("id")
       .eq("phone", data.phone)
@@ -29,7 +49,7 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
       return { success: false as const, reason: "already_registered" as const };
     }
 
-    const { data: created, error: createError } = await supabaseAdmin.auth.admin.createUser({
+    const { data: created, error: createError } = await admin.auth.admin.createUser({
       email,
       password: data.password,
       email_confirm: true,
@@ -52,7 +72,7 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
       throw new Error("Account creation failed");
     }
 
-    const { error: profileError } = await supabaseAdmin.from("profiles").upsert(
+    const { error: profileError } = await admin.from("profiles").upsert(
       {
         id: created.user.id,
         username: data.phone,
@@ -64,16 +84,16 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
     );
 
     if (profileError) {
-      await supabaseAdmin.auth.admin.deleteUser(created.user.id);
+      await admin.auth.admin.deleteUser(created.user.id);
       throw new Error("Profile setup failed");
     }
 
-    const { error: roleError } = await supabaseAdmin
+    const { error: roleError } = await admin
       .from("user_roles")
       .upsert({ user_id: created.user.id, role: "user" }, { onConflict: "user_id,role" });
 
     if (roleError) {
-      await supabaseAdmin.auth.admin.deleteUser(created.user.id);
+      await admin.auth.admin.deleteUser(created.user.id);
       throw new Error("Account role setup failed");
     }
 
