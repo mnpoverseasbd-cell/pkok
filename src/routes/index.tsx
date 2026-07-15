@@ -643,19 +643,20 @@ function ServiceStats() {
 function FeatureList() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-[1440px] space-y-2.5 px-3 pb-6 sm:px-4 lg:px-6">
+    <section className="mx-auto max-w-[1440px] space-y-3.5 px-4 pb-10 sm:px-6 sm:pb-12 lg:px-8">
       {featureCards.map((card) => (
-        <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 p-3 sm:p-3.5">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
+        <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 p-4 sm:p-5">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16" />
             <div className="min-w-0">
-              <h3 className="text-sm font-black text-[var(--neon-gold)] sm:text-base">{t(card.titleKey)}</h3>
-              <p className="mt-0.5 text-[11px] leading-5 text-foreground/80 sm:text-xs sm:leading-5">{t(card.bodyKey)}</p>
+              <h3 className="text-base font-black text-[var(--neon-gold)] sm:text-lg">{t(card.titleKey)}</h3>
+              <p className="mt-1 text-xs leading-6 text-foreground/80 sm:text-sm sm:leading-6">{t(card.bodyKey)}</p>
             </div>
           </div>
         </div>
       ))}
     </section>
+
   );
 }
 
