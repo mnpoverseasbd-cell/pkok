@@ -31,9 +31,11 @@ const registerSchema = z.object({
 });
 
 function RegisterPage() {
+  const search = Route.useSearch();
   const [show, setShow] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [refCode, setRefCode] = useState(search.ref ?? "");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const registerAccount = useServerFn(createPhoneAccount);
@@ -53,7 +55,8 @@ function RegisterPage() {
 
     try {
       setLoading(true);
-      const result = await registerAccount({ data: parsed.data });
+      const ref = refCode.trim() || undefined;
+      const result = await registerAccount({ data: { ...parsed.data, ref } });
 
       if (!result.success) {
         toast.error("এই ফোন নম্বর দিয়ে আগে অ্যাকাউন্ট আছে");
