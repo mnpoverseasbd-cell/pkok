@@ -56,6 +56,7 @@ function Crash() {
         setCrashAt(target);
         setState("crashed");
         setMsg(`💥 CRASHED @ ${target}× · -${bet}`);
+        record({ pnl: -bet, multiplier: 0 });
         stop();
         return;
       }
@@ -71,8 +72,9 @@ function Crash() {
     const won = Math.floor(bet * mult);
     credit(won);
     setState("cashed");
-    setMsg(`🎉 Cashed @ ${mult}× · +${won}`);
+    setMsg(`🎉 Cashed @ ${mult}× · +${won - bet}`);
     setCrashAt(targetRef.current);
+    record({ pnl: won - bet, multiplier: mult });
   };
 
   const reset = () => { setState("idle"); setMsg(""); setMult(1.0); setCrashAt(null); };
