@@ -36,9 +36,9 @@ function CoinFlip() {
     const result: Side = Math.random() < 0.49 ? "H" : "T";
     setFace(result);
     if (result === pick) {
-      const won = bet * 2; credit(won);
+      const won = Math.floor(bet * 2 * (1 - edge)); credit(won);
       setMsg(`🎉 জয় +${won - bet}`);
-      record({ pnl: won - bet, multiplier: 2 });
+      record({ pnl: won - bet, multiplier: won / bet });
     } else {
       setMsg(`💥 হার -${bet}`);
       record({ pnl: -bet, multiplier: 0 });
