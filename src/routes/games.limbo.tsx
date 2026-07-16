@@ -51,17 +51,19 @@ function LimboGame() {
     const final = await fairLimbo(pf.serverSeed, pf.clientSeed, pf.nonce, edge);
     setResult(final);
     let pnl: number;
+    let won = 0, mult = 0;
     if (final >= target) {
-      const won = Math.floor(roundBet * payout * (1 - edge)); credit(won);
-      pnl = won - roundBet;
+      won = Math.floor(roundBet * payout * (1 - edge)); credit(won);
+      pnl = won - roundBet; mult = won / roundBet;
       setMsg(`🎉 জয় +${pnl} · ${final}×`);
-      record({ pnl, multiplier: won / roundBet });
+      record({ pnl, multiplier: mult });
     } else {
       pnl = -roundBet;
       setMsg(`💥 হার ${pnl} · ${final}×`);
       record({ pnl, multiplier: 0 });
     }
     pf.consume(`crash=${final}× target≥${target}×`);
+    recordMyBet({ game: "limbo", bet: roundBet, multiplier: mult, payout: won });
     setRolling(false);
     return { pnl };
   }, [pf, placeBet, credit, edge, payout, target, record]);
