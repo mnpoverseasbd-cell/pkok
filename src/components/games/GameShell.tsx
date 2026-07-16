@@ -98,7 +98,10 @@ export function GameShell({
             <GameConfigContext.Provider value={active}>
               <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
                 <div className="min-w-0">{children}</div>
-                <aside className="lg:sticky lg:top-4 lg:self-start"><LiveBetsFeed /></aside>
+                <aside className="flex flex-col gap-3 lg:sticky lg:top-4 lg:self-start">
+                  <LiveBetsFeed />
+                  <BetHistoryPanel gameFilter={gameKey} />
+                </aside>
               </div>
             </GameConfigContext.Provider>
           )}
