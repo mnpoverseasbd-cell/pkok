@@ -8,7 +8,7 @@ import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { adminAdjustBalance, adminCreateUser, adminDeleteUser } from "@/lib/admin.functions";
+import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts } from "@/lib/admin.functions";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus } from "lucide-react";
