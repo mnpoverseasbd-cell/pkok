@@ -1,47 +1,85 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-const KEY = "asik_demo_wallet_v1";
-const START = 1000;
-
-function read(): number {
-  if (typeof window === "undefined") return START;
-  const v = window.localStorage.getItem(KEY);
-  const n = v ? Number(v) : NaN;
-  return Number.isFinite(n) ? n : START;
-}
-
-function write(v: number) {
-  if (typeof window !== "undefined") window.localStorage.setItem(KEY, String(v));
-  window.dispatchEvent(new CustomEvent("demo-wallet-change"));
-}
-
+/**
+ * Coin wallet backed by profiles.wallet_balance in Supabase.
+ * Requires the user to be logged in. Games check `ready` before allowing bets.
+ */
 export function useDemoWallet() {
-  const [balance, setBalance] = useState<number>(START);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [balance, setBalance] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
+  const balanceRef = useRef(0);
 
   useEffect(() => {
-    setBalance(read());
-    const on = () => setBalance(read());
-    window.addEventListener("demo-wallet-change", on);
-    window.addEventListener("storage", on);
+    balanceRef.current = balance;
+  }, [balance]);
+
+  const load = useCallback(async (uid: string) => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("wallet_balance")
+      .eq("id", uid)
+      .maybeSingle();
+    const n = Number(data?.wallet_balance ?? 0);
+    setBalance(Number.isFinite(n) ? n : 0);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getUser().then(({ data }) => {
+      if (cancelled) return;
+      const uid = data.user?.id ?? null;
+      setUserId(uid);
+      if (uid) load(uid);
+      else setLoading(false);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      const uid = session?.user?.id ?? null;
+      setUserId(uid);
+      if (uid) load(uid);
+      else {
+        setBalance(0);
+        setLoading(false);
+      }
+    });
     return () => {
-      window.removeEventListener("demo-wallet-change", on);
-      window.removeEventListener("storage", on);
+      cancelled = true;
+      sub.subscription.unsubscribe();
     };
+  }, [load]);
+
+  const persist = useCallback(async (uid: string, next: number) => {
+    await supabase.from("profiles").update({ wallet_balance: next }).eq("id", uid);
   }, []);
 
-  const bet = useCallback((amount: number) => {
-    const cur = read();
-    if (amount <= 0 || amount > cur) return false;
-    write(cur - amount);
-    return true;
-  }, []);
+  const bet = useCallback(
+    (amount: number) => {
+      if (!userId) return false;
+      const cur = balanceRef.current;
+      if (amount <= 0 || amount > cur) return false;
+      const next = cur - amount;
+      setBalance(next);
+      void persist(userId, next);
+      return true;
+    },
+    [userId, persist],
+  );
 
-  const credit = useCallback((amount: number) => {
-    if (amount <= 0) return;
-    write(read() + amount);
-  }, []);
+  const credit = useCallback(
+    (amount: number) => {
+      if (!userId || amount <= 0) return;
+      const next = balanceRef.current + amount;
+      setBalance(next);
+      void persist(userId, next);
+    },
+    [userId, persist],
+  );
 
-  const reset = useCallback(() => write(START), []);
+  const refresh = useCallback(() => {
+    if (userId) load(userId);
+  }, [userId, load]);
 
-  return { balance, bet, credit, reset };
+  return { balance, bet, credit, reset: refresh, refresh, userId, ready: !!userId && balance > 0, loading };
 }
