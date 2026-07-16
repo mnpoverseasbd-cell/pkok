@@ -129,6 +129,10 @@ export const adminCreateUser = createServerFn({ method: "POST" })
         approved_at: new Date().toISOString(),
       });
     }
+    await writeAudit(admin, context.userId, "user.create", "user", created.user.id, {
+      phone: data.phone,
+      initialBalance: data.initialBalance ?? 0,
+    });
     return { success: true as const, userId: created.user.id };
   });
 
