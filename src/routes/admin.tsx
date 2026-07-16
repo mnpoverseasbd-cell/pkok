@@ -28,7 +28,7 @@ function AdminPage() {
   const tab = search.tab ?? "overview";
 
   useEffect(() => {
-    if (!loading && !user) navigate({ to: "/login" });
+    if (!loading && !user) navigate({ to: "/login", search: { redirect: "/admin" } as any });
   }, [loading, user, navigate]);
 
   if (loading || roleLoading) return <SiteShell><div className="p-16 text-center text-white/70">Loading…</div></SiteShell>;
