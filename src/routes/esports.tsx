@@ -1,7 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Gamepad2, Sparkles } from "lucide-react";
+import { Search, Gamepad2, Sparkles, Heart } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
+import dicePoster from "@/assets/games/dice.jpg";
+import crashPoster from "@/assets/games/crash.jpg";
+import minesPoster from "@/assets/games/mines.jpg";
+import coinflipPoster from "@/assets/games/coinflip.jpg";
+import plinkoPoster from "@/assets/games/plinko.jpg";
+import wheelPoster from "@/assets/games/wheel.jpg";
 
 export const Route = createFileRoute("/esports")({
   head: () => ({
@@ -15,25 +21,23 @@ export const Route = createFileRoute("/esports")({
   component: MyGamesPage,
 });
 
-// Add your custom-built games here as you create them.
-// Each game should have its own route under src/routes/ (e.g. src/routes/games.dice.tsx).
 type OriginalGame = {
   slug: string;
-  name: string;
-  tagline: string;
-  emoji: string;
-  gradient: string;
+  name: string;      // English name
+  nameBn: string;    // Bengali label under card
+  provider: string;  // JILI-style provider badge
+  poster: string;
   status: "live" | "soon";
   to?: string;
 };
 
 const myGames: OriginalGame[] = [
-  { slug: "dice",     name: "Lucky Dice",        tagline: "Predict & Win",     emoji: "🎲", gradient: "from-emerald-500 to-teal-800",  status: "live", to: "/games/dice" },
-  { slug: "crash",    name: "Crash",             tagline: "Cash out in time",  emoji: "🚀", gradient: "from-indigo-600 to-purple-900", status: "live", to: "/games/crash" },
-  { slug: "mines",    name: "Mines",             tagline: "Dodge the bombs",   emoji: "💣", gradient: "from-slate-700 to-black",       status: "live", to: "/games/mines" },
-  { slug: "coinflip", name: "Coin Flip",         tagline: "Heads or Tails",    emoji: "🪙", gradient: "from-yellow-500 to-orange-700", status: "live", to: "/games/coinflip" },
-  { slug: "plinko",   name: "Plinko",            tagline: "Drop & multiply",   emoji: "🎯", gradient: "from-pink-500 to-red-800",      status: "live", to: "/games/plinko" },
-  { slug: "wheel",    name: "Wheel of Fortune",  tagline: "Spin to win",       emoji: "🎡", gradient: "from-fuchsia-500 to-rose-800",  status: "live", to: "/games/wheel" },
+  { slug: "dice",     name: "Lucky Dice",       nameBn: "লাকি ডাইস",       provider: "ASIK", poster: dicePoster,     status: "live", to: "/games/dice" },
+  { slug: "crash",    name: "Crash",            nameBn: "ক্র্যাশ",          provider: "ASIK", poster: crashPoster,    status: "live", to: "/games/crash" },
+  { slug: "mines",    name: "Mines",            nameBn: "মাইনস",           provider: "ASIK", poster: minesPoster,    status: "live", to: "/games/mines" },
+  { slug: "coinflip", name: "Coin Flip",        nameBn: "কয়েন ফ্লিপ",       provider: "ASIK", poster: coinflipPoster, status: "live", to: "/games/coinflip" },
+  { slug: "plinko",   name: "Plinko",           nameBn: "প্লিঙ্কো",         provider: "ASIK", poster: plinkoPoster,   status: "live", to: "/games/plinko" },
+  { slug: "wheel",    name: "Wheel of Fortune", nameBn: "হুইল অফ ফরচুন",   provider: "ASIK", poster: wheelPoster,    status: "live", to: "/games/wheel" },
 ];
 
 function MyGamesPage() {
@@ -41,7 +45,9 @@ function MyGamesPage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return myGames;
-    return myGames.filter((g) => g.name.toLowerCase().includes(q) || g.slug.includes(q));
+    return myGames.filter(
+      (g) => g.name.toLowerCase().includes(q) || g.nameBn.includes(q) || g.slug.includes(q),
+    );
   }, [query]);
 
   return (
@@ -94,49 +100,54 @@ function MyGamesPage() {
 function GameCard({ g, index }: { g: OriginalGame; index: number }) {
   const inner = (
     <div className="game-card__inner">
-      <div
-        className={`relative aspect-[4/3] w-full bg-gradient-to-br ${g.gradient} flex items-center justify-center`}
-      >
-        {/* deep vignette */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.55)_100%)]" />
-        {/* floating emoji */}
-        <span aria-hidden className="game-card__emoji relative z-[1] text-6xl drop-shadow-2xl">
-          {g.emoji}
+      {/* Poster tile with green outline (JILI-style) */}
+      <div className="relative aspect-square w-full overflow-hidden rounded-md bg-black ring-2 ring-[var(--neon-green,#22c55e)] shadow-[0_0_0_2px_rgba(0,0,0,0.6),0_8px_20px_rgba(0,0,0,0.55)]">
+        <img
+          src={g.poster}
+          alt={g.name}
+          loading="lazy"
+          width={640}
+          height={640}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
+        />
+
+        {/* Provider badge (top-left) */}
+        <span className="absolute left-1.5 top-1.5 z-[3] rounded-sm bg-gradient-to-b from-emerald-500 to-emerald-800 px-1.5 py-0.5 text-[9px] font-black tracking-wider text-white shadow ring-1 ring-black/40">
+          {g.provider}
         </span>
-        {/* sparkles */}
-        <span className="game-card__spark" style={{ left: "12%", top: "18%", animationDelay: "0s" }} />
-        <span className="game-card__spark" style={{ left: "82%", top: "24%", animationDelay: "0.9s" }} />
-        <span className="game-card__spark" style={{ left: "22%", top: "72%", animationDelay: "1.6s" }} />
-        <span className="game-card__spark" style={{ left: "76%", top: "68%", animationDelay: "2.2s" }} />
-        {/* shine sweep */}
+
+        {/* Heart (top-right) */}
+        <span className="absolute right-1.5 top-1.5 z-[3] grid h-5 w-5 place-items-center rounded-full bg-black/55 text-white/85 ring-1 ring-white/25 backdrop-blur">
+          <Heart className="h-3 w-3" />
+        </span>
+
+        {/* LIVE / SOON */}
+        <span
+          className={`absolute bottom-1.5 left-1.5 z-[3] inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-black ring-1 backdrop-blur ${
+            g.status === "live"
+              ? "bg-red-600/95 text-white ring-white/50 shadow-[0_0_10px_rgba(255,60,60,0.7)]"
+              : "bg-yellow-400/95 text-black ring-white/50"
+          }`}
+        >
+          {g.status === "live" ? (
+            <>
+              <span className="gc-live-dot" />
+              LIVE
+            </>
+          ) : (
+            "SOON"
+          )}
+        </span>
+
+        {/* subtle shine + hover spotlight (keeps existing animations working) */}
         <div className="game-card__shine" />
-        {/* hover spotlight */}
         <div className="game-card__spot" />
       </div>
 
-      {/* footer */}
-      <div className="absolute inset-x-0 bottom-0 z-[3] bg-gradient-to-t from-black/90 via-black/60 to-transparent p-2 text-left">
-        <div className="text-sm font-black tracking-wide text-white drop-shadow">{g.name}</div>
-        <div className="text-[10px] font-medium text-white/80">{g.tagline}</div>
+      {/* Bengali label BELOW the tile (like JILI reference) */}
+      <div className="mt-2 text-center text-[13px] font-semibold text-white/95 drop-shadow">
+        {g.nameBn}
       </div>
-
-      {/* LIVE / SOON badge */}
-      <span
-        className={`absolute left-2 top-2 z-[4] inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-black ring-1 backdrop-blur ${
-          g.status === "live"
-            ? "bg-red-600/95 text-white ring-white/50 shadow-[0_0_12px_rgba(255,60,60,0.7)]"
-            : "bg-yellow-400/95 text-black ring-white/50"
-        }`}
-      >
-        {g.status === "live" ? (
-          <>
-            <span className="gc-live-dot" />
-            LIVE
-          </>
-        ) : (
-          "SOON"
-        )}
-      </span>
     </div>
   );
 
