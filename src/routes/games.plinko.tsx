@@ -111,9 +111,12 @@ function Plinko() {
   return (
     <GameShell title="Plinko" emoji="🎯" gameKey="plinko">
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mb-3">
+        <MultiplierHistoryStrip gameKey="plinko" />
+      </div>
       <GameFrame>
         <div className="mx-auto w-full max-w-md flex-1">
-          <div className="relative">
+          <div ref={bucketsWrapRef} className="relative">
             <button
               onClick={() => setMutedState(toggleMuted())}
               className="absolute right-2 top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-black/50 text-white/80 backdrop-blur hover:bg-black/70"
@@ -122,13 +125,18 @@ function Plinko() {
               {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             </button>
             <PlinkoBoard ref={boardRef} rows={ROWS} buckets={BUCKETS} onLand={onLand} />
-          </div>
-          <div className="mt-3 grid grid-cols-11 gap-1">
-            {MULTS.map((m, i) => (
-              <div key={i} className={`rounded-md px-1 py-2 text-center text-[10px] font-black transition-all ${bucketColor(m, bucket === i)}`}>
-                {m}×
-              </div>
-            ))}
+            <ParticleLayer ref={fxRef} />
+            <div className="mt-3 grid grid-cols-11 gap-1">
+              {MULTS.map((m, i) => (
+                <div
+                  key={i}
+                  data-bucket={i}
+                  className={`rounded-md px-1 py-2 text-center text-[10px] font-black transition-all ${bucketColor(m, bucket === i)} ${bucket === i ? "animate-cash-pop" : ""}`}
+                >
+                  {m}×
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <ControlsPanel>
