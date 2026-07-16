@@ -224,24 +224,25 @@ function AdminOverview() {
 
 function Panel({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#0d1119] overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
-        <div className="text-sm font-black uppercase tracking-wider text-white">{title}</div>
+    <div className="rounded-3xl bg-white shadow-sm ring-1 ring-slate-100 overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-4">
+        <div className="text-sm font-black uppercase tracking-wider text-slate-800">{title}</div>
         {action}
       </div>
-      <div className="p-5">{children}</div>
+      <div className="p-6">{children}</div>
     </div>
   );
 }
 
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {
-    pending: "bg-orange-500/15 text-orange-300 border-orange-500/30",
-    approved: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-    rejected: "bg-red-500/15 text-red-300 border-red-500/30",
+    pending: "bg-amber-50 text-amber-700 ring-amber-200",
+    approved: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+    rejected: "bg-rose-50 text-rose-700 ring-rose-200",
   };
-  return <span className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase ${map[status] ?? "bg-white/10 text-white/70 border-white/20"}`}>{status}</span>;
+  return <span className={`inline-block rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ring-1 ${map[status] ?? "bg-slate-50 text-slate-600 ring-slate-200"}`}>{status}</span>;
 }
+
 
 function AdminTxns() {
   const [rows, setRows] = useState<any[]>([]);
