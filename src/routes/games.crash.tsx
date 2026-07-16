@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { GameShell, BetControls } from "@/components/games/GameShell";
+import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
+import { useGameStats } from "@/hooks/useGameStats";
 
 export const Route = createFileRoute("/games/crash")({
   head: () => ({ meta: [{ title: "Crash — Asik Game" }, { name: "description", content: "Cash out before the crash." }] }),
@@ -18,6 +20,7 @@ function nextCrash(): number {
 
 function Crash() {
   const { bet: placeBet, credit } = useDemoWallet();
+  const { stats, record, reset: resetStats } = useGameStats("crash");
   const [bet, setBet] = useState(50);
   const [state, setState] = useState<"idle" | "flying" | "crashed" | "cashed">("idle");
   const [mult, setMult] = useState(1.0);
@@ -53,6 +56,7 @@ function Crash() {
         setCrashAt(target);
         setState("crashed");
         setMsg(`💥 CRASHED @ ${target}× · -${bet}`);
+        record({ pnl: -bet, multiplier: 0 });
         stop();
         return;
       }
@@ -68,8 +72,9 @@ function Crash() {
     const won = Math.floor(bet * mult);
     credit(won);
     setState("cashed");
-    setMsg(`🎉 Cashed @ ${mult}× · +${won}`);
+    setMsg(`🎉 Cashed @ ${mult}× · +${won - bet}`);
     setCrashAt(targetRef.current);
+    record({ pnl: won - bet, multiplier: mult });
   };
 
   const reset = () => { setState("idle"); setMsg(""); setMult(1.0); setCrashAt(null); };
@@ -78,6 +83,7 @@ function Crash() {
 
   return (
     <GameShell title="Crash" emoji="🚀">
+      <StatsBar stats={stats} onReset={resetStats} />
       <div className="grid gap-4 rounded-xl bg-black/40 p-6 ring-1 ring-white/10 md:grid-cols-[1fr_320px]">
         <div className="relative flex h-72 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-b from-indigo-950 to-black ring-1 ring-white/10">
           <div className={`text-7xl font-black tabular-nums ${color} ${state === "flying" ? "animate-pulse" : ""}`}>

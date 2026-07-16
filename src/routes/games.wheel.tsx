@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameShell, BetControls } from "@/components/games/GameShell";
+import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
+import { useGameStats } from "@/hooks/useGameStats";
 
 export const Route = createFileRoute("/games/wheel")({
   head: () => ({ meta: [{ title: "Wheel of Fortune — Asik Game" }, { name: "description", content: "Spin the wheel." }] }),
@@ -14,6 +16,7 @@ const COLORS = ["#0f5a34", "#c81e5b", "#0f5a34", "#f1c40f", "#0f5a34", "#c81e5b"
 
 function Wheel() {
   const { bet: placeBet, credit } = useDemoWallet();
+  const { stats, record, reset: resetStats } = useGameStats("wheel");
   const [bet, setBet] = useState(50);
   const [spinning, setSpinning] = useState(false);
   const [angle, setAngle] = useState(0);
@@ -32,7 +35,9 @@ function Wheel() {
       const m = SEGMENTS[idx];
       const won = Math.floor(bet * m);
       if (won > 0) credit(won);
-      setMsg(m > 0 ? `🎉 ${m}× · +${won}` : `💥 Zero · -${bet}`);
+      const pnl = won - bet;
+      record({ pnl, multiplier: m });
+      setMsg(m > 0 ? `🎉 ${m}× · ${pnl >= 0 ? "+" : ""}${pnl}` : `💥 Zero · -${bet}`);
       setSpinning(false);
     }, 4200);
   };
@@ -46,6 +51,7 @@ function Wheel() {
 
   return (
     <GameShell title="Wheel of Fortune" emoji="🎡">
+      <StatsBar stats={stats} onReset={resetStats} />
       <div className="grid gap-4 rounded-xl bg-black/40 p-6 ring-1 ring-white/10 md:grid-cols-[1fr_280px]">
         <div className="relative mx-auto flex h-80 w-80 items-center justify-center">
           <div

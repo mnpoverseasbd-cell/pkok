@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameShell, BetControls } from "@/components/games/GameShell";
+import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
+import { useGameStats } from "@/hooks/useGameStats";
 
 export const Route = createFileRoute("/games/plinko")({
   head: () => ({ meta: [{ title: "Plinko — Asik Game" }, { name: "description", content: "Drop the ball, hit multipliers." }] }),
@@ -15,6 +17,7 @@ const MULTS = [8.9, 3, 1.4, 1.1, 1, 0.5, 1, 1.1, 1.4, 3, 8.9];
 
 function Plinko() {
   const { bet: placeBet, credit } = useDemoWallet();
+  const { stats, record, reset: resetStats } = useGameStats("plinko");
   const [bet, setBet] = useState(50);
   const [dropping, setDropping] = useState(false);
   const [path, setPath] = useState<number[]>([]); // 0=left,1=right per row
@@ -42,15 +45,15 @@ function Plinko() {
     const m = MULTS[b];
     const won = Math.floor(bet * m);
     if (won > 0) credit(won);
-    setMsg(m >= 1 ? `🎯 ${m}× · +${won}` : `😅 ${m}× · +${won}`);
+    const pnl = won - bet;
+    record({ pnl, multiplier: m });
+    setMsg(pnl >= 0 ? `🎯 ${m}× · ${pnl >= 0 ? "+" : ""}${pnl}` : `😅 ${m}× · ${pnl}`);
     setDropping(false);
   };
 
-  // ball column at each row
-  let col = 0;
-
   return (
     <GameShell title="Plinko" emoji="🎯">
+      <StatsBar stats={stats} onReset={resetStats} />
       <div className="grid gap-4 rounded-xl bg-black/40 p-6 ring-1 ring-white/10 md:grid-cols-[1fr_260px]">
         <div className="mx-auto w-full max-w-md">
           <div className="flex flex-col items-center gap-1 py-2">

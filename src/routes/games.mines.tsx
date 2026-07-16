@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Bomb, Gem } from "lucide-react";
 import { GameShell, BetControls } from "@/components/games/GameShell";
+import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
+import { useGameStats } from "@/hooks/useGameStats";
 
 export const Route = createFileRoute("/games/mines")({
   head: () => ({ meta: [{ title: "Mines — Asik Game" }, { name: "description", content: "Reveal gems, dodge mines." }] }),
@@ -26,6 +28,7 @@ function multiplier(picks: number, mines: number): number {
 
 function Mines() {
   const { bet: placeBet, credit } = useDemoWallet();
+  const { stats, record, reset: resetStats } = useGameStats("mines");
   const [bet, setBet] = useState(50);
   const [mines, setMines] = useState(3);
   const [active, setActive] = useState(false);
@@ -53,6 +56,7 @@ function Mines() {
       setDead(i);
       setActive(false);
       setMsg(`💥 Boom! -${bet}`);
+      record({ pnl: -bet, multiplier: 0 });
       return;
     }
     const next = new Set(revealed);
@@ -60,8 +64,11 @@ function Mines() {
     setRevealed(next);
     if (next.size + mines === SIZE) {
       // cleared everything
-      credit(potential);
-      setMsg(`🏆 Cleared! +${potential}`);
+      const finalMult = multiplier(next.size, mines);
+      const win = Math.floor(bet * finalMult);
+      credit(win);
+      setMsg(`🏆 Cleared! +${win - bet}`);
+      record({ pnl: win - bet, multiplier: finalMult });
       setActive(false);
     }
   };
@@ -69,12 +76,14 @@ function Mines() {
   const cashout = () => {
     if (!active || picks === 0) return;
     credit(potential);
-    setMsg(`🎉 Cashed +${potential}`);
+    setMsg(`🎉 Cashed +${potential - bet}`);
+    record({ pnl: potential - bet, multiplier: mult });
     setActive(false);
   };
 
   return (
     <GameShell title="Mines" emoji="💣">
+      <StatsBar stats={stats} onReset={resetStats} />
       <div className="grid gap-4 rounded-xl bg-black/40 p-6 ring-1 ring-white/10 md:grid-cols-[1fr_280px]">
         <div className="grid grid-cols-5 gap-2">
           {Array.from({ length: SIZE }).map((_, i) => {
