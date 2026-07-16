@@ -95,6 +95,7 @@ export const translations: Dict = {
   // Popup
   popupNext: { BN: "পরবর্তী →", EN: "Next →" },
   popupClose: { BN: "বন্ধ করুন", EN: "Close" },
+  popupHideToday: { BN: "আজকের জন্য আর দেখাবেন না", EN: "Don't show again today" },
 
   // Winners feed
   justWonIn: { BN: "সদ্য জিতেছেন", EN: "Just won in" },
@@ -103,7 +104,7 @@ export const translations: Dict = {
 type Ctx = {
   lang: Lang;
   setLang: (l: Lang) => void;
-  t: (key: keyof typeof translations) => string;
+  t: (key: string) => string;
 };
 
 const LanguageContext = createContext<Ctx | null>(null);
@@ -120,7 +121,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLangState(l);
     try { localStorage.setItem("pkok_lang", l); } catch {}
   };
-  const t = (key: keyof typeof translations) => translations[key][lang];
+  const t = (key: string) => translations[key]?.[lang] ?? translations[key]?.BN ?? key;
   return (
     <LanguageContext.Provider value={{ lang, setLang, t }}>{children}</LanguageContext.Provider>
   );
