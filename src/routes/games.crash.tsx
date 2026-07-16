@@ -72,7 +72,7 @@ function Crash() {
   const glow = state === "crashed" ? "shadow-[0_0_40px_rgba(255,68,68,0.4)]" : isFlying || state === "cashed" ? "shadow-[0_0_50px_rgba(0,255,136,0.4)]" : "";
 
   return (
-    <GameShell title="Crash" emoji="🚀">
+    <GameShell title="Crash" emoji="🚀" gameKey="crash">
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className={`relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[#1a3321] bg-gradient-to-b from-[#0a120b] to-[#050a06] p-8 min-h-[280px] ${glow}`}>
