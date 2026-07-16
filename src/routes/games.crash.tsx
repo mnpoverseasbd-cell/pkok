@@ -83,6 +83,7 @@ function Crash() {
 
   return (
     <GameShell title="Crash" emoji="🚀">
+      <StatsBar stats={stats} onReset={resetStats} />
       <div className="grid gap-4 rounded-xl bg-black/40 p-6 ring-1 ring-white/10 md:grid-cols-[1fr_320px]">
         <div className="relative flex h-72 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-b from-indigo-950 to-black ring-1 ring-white/10">
           <div className={`text-7xl font-black tabular-nums ${color} ${state === "flying" ? "animate-pulse" : ""}`}>
