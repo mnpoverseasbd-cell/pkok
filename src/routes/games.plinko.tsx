@@ -62,6 +62,7 @@ function Plinko() {
     if (!pf.ready || !boardRef.current) return { pnl: 0 };
     if (!placeBet(roundBet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return { pnl: 0 }; }
     setDropping(true); setMsg(""); setBucket(null); setLastMult(null);
+    try { sfxDrop(); } catch { /* noop */ }
     const path = await fairPlinko(pf.serverSeed, pf.clientSeed, pf.nonce, ROWS);
     const targetBucket = Math.min(BUCKETS - 1, path.reduce<number>((a, b) => a + b, 0));
     const landed = await new Promise<number>((res) => {
@@ -76,7 +77,21 @@ function Plinko() {
     if (won > 0) credit(won);
     const pnl = won - roundBet;
     record({ pnl, multiplier: won / roundBet });
-    if (m >= 2) sfxWin(m); else if (m < 1) sfxBust();
+    pushMultiplierHistory("plinko", m);
+    // burst positioned above the landed bucket
+    const wrap = bucketsWrapRef.current;
+    const cell = wrap?.querySelector<HTMLElement>(`[data-bucket="${b}"]`);
+    if (wrap && cell && fxRef.current) {
+      const wr = wrap.getBoundingClientRect();
+      const cr = cell.getBoundingClientRect();
+      const x = cr.left - wr.left + cr.width / 2;
+      const y = cr.top - wr.top + cr.height / 2;
+      if (m >= 3) fxRef.current.burst({ x, y, count: 70, kind: "confetti", speed: 9 });
+      else if (m >= 1.1) fxRef.current.burst({ x, y, count: 30, kind: "spark", color: "#00ff88", speed: 6 });
+      else fxRef.current.burst({ x, y, count: 20, kind: "smoke", color: "#ff4d4d", speed: 4 });
+    }
+    if (m >= 2) { try { sfxWin(m); sfxCashout(); } catch { /* noop */ } }
+    else if (m < 1) { try { sfxBust(); } catch { /* noop */ } }
     setMsg(pnl >= 0 ? `🎯 ${m}× · +${pnl}` : `😅 ${m}× · ${pnl}`);
     pf.consume(`bucket=${b} mult=${m}× risk=${risk}`);
     recordMyBet({ game: "plinko", bet: roundBet, multiplier: m, payout: won });
