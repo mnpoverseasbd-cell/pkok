@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
+import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
@@ -13,6 +14,8 @@ export const Route = createFileRoute("/games/dice")({
 function DiceGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("dice");
+  const { data: cfg } = useGameConfig("dice");
+  const edge = cfg?.house_edge ?? 0;
   const [bet, setBet] = useState(50);
   const [target, setTarget] = useState(50);
   const [rolling, setRolling] = useState(false);
@@ -34,9 +37,9 @@ function DiceGame() {
     const final = +(Math.random() * 100).toFixed(2);
     setRoll(final);
     if (final < target) {
-      const won = Math.floor(bet * payout); credit(won);
+      const won = Math.floor(bet * payout * (1 - edge)); credit(won);
       setMsg(`🎉 জয় +${won - bet}`);
-      record({ pnl: won - bet, multiplier: payout });
+      record({ pnl: won - bet, multiplier: won / bet });
     } else {
       setMsg(`💥 হার -${bet}`);
       record({ pnl: -bet, multiplier: 0 });
@@ -47,7 +50,7 @@ function DiceGame() {
   const win = roll !== null && roll < target;
 
   return (
-    <GameShell title="Lucky Dice" emoji="🎲">
+    <GameShell title="Lucky Dice" emoji="🎲" gameKey="dice">
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="flex flex-1 flex-col items-center justify-center gap-6">

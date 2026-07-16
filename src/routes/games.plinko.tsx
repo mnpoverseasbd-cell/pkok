@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
+import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
@@ -17,6 +18,8 @@ const MULTS = [8.9, 3, 1.4, 1.1, 1, 0.5, 1, 1.1, 1.4, 3, 8.9];
 function Plinko() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("plinko");
+  const { data: cfg } = useGameConfig("plinko");
+  const edge = cfg?.house_edge ?? 0;
   const [bet, setBet] = useState(50);
   const [dropping, setDropping] = useState(false);
   const [path, setPath] = useState<number[]>([]);
@@ -40,10 +43,10 @@ function Plinko() {
     setBucket(b);
     const m = MULTS[b];
     setLastMult(m);
-    const won = Math.floor(bet * m);
+    const won = Math.floor(bet * m * (1 - edge));
     if (won > 0) credit(won);
     const pnl = won - bet;
-    record({ pnl, multiplier: m });
+    record({ pnl, multiplier: won / bet });
     setMsg(pnl >= 0 ? `🎯 ${m}× · +${pnl}` : `😅 ${m}× · ${pnl}`);
     setDropping(false);
   };
@@ -56,7 +59,7 @@ function Plinko() {
   };
 
   return (
-    <GameShell title="Plinko" emoji="🎯">
+    <GameShell title="Plinko" emoji="🎯" gameKey="plinko">
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="mx-auto w-full max-w-md flex-1">

@@ -1,18 +1,32 @@
 import { ReactNode } from "react";
-import { Coins, RefreshCw } from "lucide-react";
+import { Coins, RefreshCw, Wrench } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
+import {
+  DEFAULT_GAME_CONFIG,
+  GameConfigContext,
+  useGameConfig,
+  useGameConfigCtx,
+} from "@/hooks/useGameConfig";
+
+export { useGameConfigCtx };
 
 export function GameShell({
   title,
   emoji,
+  gameKey,
   children,
 }: {
   title: string;
   emoji: string;
+  gameKey?: string;
   children: ReactNode;
 }) {
   const { balance, reset } = useDemoWallet();
+  const { data: cfg, isLoading } = useGameConfig(gameKey ?? "");
+  const active = gameKey ? cfg ?? DEFAULT_GAME_CONFIG : DEFAULT_GAME_CONFIG;
+  const disabled = !!gameKey && !isLoading && cfg && !cfg.is_enabled;
+
   return (
     <SiteShell>
       <section
@@ -42,23 +56,36 @@ export function GameShell({
             </button>
           </div>
         </div>
-        <div className="mx-auto w-full max-w-5xl">{children}</div>
+        <div className="mx-auto w-full max-w-5xl">
+          {disabled ? (
+            <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[var(--neon-gold)]/30 bg-black/50 p-10 text-center">
+              <Wrench className="h-10 w-10 text-[var(--neon-gold)]" />
+              <div className="text-2xl font-black text-[var(--neon-gold)]">Under Maintenance</div>
+              <p className="text-sm text-white/70">এই গেমটি এখন বন্ধ আছে। অ্যাডমিন খুব শীঘ্রই চালু করবেন।</p>
+            </div>
+          ) : (
+            <GameConfigContext.Provider value={active}>{children}</GameConfigContext.Provider>
+          )}
+        </div>
       </section>
     </SiteShell>
   );
 }
 
 export function BetControls({
-  bet, setBet, min = 10, max = 500, disabled,
+  bet, setBet, min, max, disabled,
 }: { bet: number; setBet: (n: number) => void; min?: number; max?: number; disabled?: boolean }) {
-  const set = (n: number) => setBet(Math.max(min, Math.min(max, Math.round(n))));
+  const cfg = useGameConfigCtx();
+  const lo = min ?? cfg.min_bet ?? 10;
+  const hi = max ?? cfg.max_bet ?? 500;
+  const set = (n: number) => setBet(Math.max(lo, Math.min(hi, Math.round(n))));
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-xs font-bold uppercase tracking-widest text-[#00ff88]">বাজি</label>
+      <label className="text-xs font-bold uppercase tracking-widest text-[#00ff88]">বাজি (৳{lo}–৳{hi})</label>
       <div className="relative">
         <input
-          type="number" value={bet} min={min} max={max} disabled={disabled}
-          onChange={(e) => set(Number(e.target.value) || min)}
+          type="number" value={bet} min={lo} max={hi} disabled={disabled}
+          onChange={(e) => set(Number(e.target.value) || lo)}
           className="w-full rounded-lg border border-[#1a3321] bg-[#112216] p-3 pr-20 font-bold text-white outline-none focus:border-[#00ff88] disabled:opacity-60"
         />
         <div className="absolute inset-y-1 right-1 flex gap-1">
@@ -67,8 +94,8 @@ export function BetControls({
         </div>
       </div>
       <div className="flex gap-2">
-        <button disabled={disabled} onClick={() => set(min)} className="flex-1 rounded bg-[#1a3321] py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:bg-[#254a30] disabled:opacity-40">সর্বনিম্ন</button>
-        <button disabled={disabled} onClick={() => set(max)} className="flex-1 rounded bg-[#1a3321] py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:bg-[#254a30] disabled:opacity-40">সর্বোচ্চ</button>
+        <button disabled={disabled} onClick={() => set(lo)} className="flex-1 rounded bg-[#1a3321] py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:bg-[#254a30] disabled:opacity-40">সর্বনিম্ন</button>
+        <button disabled={disabled} onClick={() => set(hi)} className="flex-1 rounded bg-[#1a3321] py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:bg-[#254a30] disabled:opacity-40">সর্বোচ্চ</button>
       </div>
     </div>
   );

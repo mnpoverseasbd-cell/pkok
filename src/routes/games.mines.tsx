@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { GameShell } from "@/components/games/GameShell";
+import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
@@ -11,8 +12,6 @@ export const Route = createFileRoute("/games/mines")({
 });
 
 const SIZE = 25;
-const MIN_BET = 10;
-const MAX_BET = 500;
 
 function randomMines(count: number): Set<number> {
   const s = new Set<number>();
@@ -20,16 +19,18 @@ function randomMines(count: number): Set<number> {
   return s;
 }
 
-// Fair-ish multiplier: prod of (25-i)/(25-i-mines) with 3% edge
-function multiplier(picks: number, mines: number): number {
+// Fair-ish multiplier: prod of (25-i)/(25-i-mines) with configurable edge
+function multiplier(picks: number, mines: number, edge: number): number {
   let m = 1;
   for (let i = 0; i < picks; i++) m *= (SIZE - i) / (SIZE - i - mines);
-  return +(m * 0.97).toFixed(2);
+  return +(m * (1 - edge)).toFixed(2);
 }
 
 function Mines() {
   const { bet: placeBet, credit, balance } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("mines");
+  const { data: cfg } = useGameConfig("mines");
+  const edge = cfg?.house_edge ?? 0.03;
   const [bet, setBet] = useState(50);
   const [mines, setMines] = useState(3);
   const [active, setActive] = useState(false);
@@ -39,10 +40,11 @@ function Mines() {
   const [msg, setMsg] = useState("");
 
   const picks = revealed.size;
-  const mult = useMemo(() => (picks > 0 ? multiplier(picks, mines) : 1), [picks, mines]);
-  const nextMult = useMemo(() => multiplier(picks + 1, mines), [picks, mines]);
+  const mult = useMemo(() => (picks > 0 ? multiplier(picks, mines, edge) : 1), [picks, mines, edge]);
+  const nextMult = useMemo(() => multiplier(picks + 1, mines, edge), [picks, mines, edge]);
   const potential = Math.floor(bet * mult);
-
+  const MIN_BET = cfg?.min_bet ?? 10;
+  const MAX_BET = cfg?.max_bet ?? 500;
   const clampBet = (n: number) => Math.max(MIN_BET, Math.min(MAX_BET, Math.round(n)));
 
   const start = () => {
@@ -67,7 +69,7 @@ function Mines() {
     next.add(i);
     setRevealed(next);
     if (next.size + mines === SIZE) {
-      const finalMult = multiplier(next.size, mines);
+      const finalMult = multiplier(next.size, mines, edge);
       const win = Math.floor(bet * finalMult);
       credit(win);
       setMsg(`🏆 ক্লিয়ার! +${win - bet}`);
@@ -85,7 +87,7 @@ function Mines() {
   };
 
   return (
-    <GameShell title="Mines" emoji="💣">
+    <GameShell title="Mines" emoji="💣" gameKey="mines">
       <StatsBar stats={stats} onReset={resetStats} />
 
       <div className="mt-3 flex flex-col gap-6 rounded-[2rem] border border-[#1a3321] bg-[#0d1a10] p-4 shadow-2xl shadow-black sm:p-6 lg:flex-row lg:p-8">

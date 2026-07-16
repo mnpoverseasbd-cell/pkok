@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
+import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
@@ -15,6 +16,8 @@ type Side = "H" | "T";
 function CoinFlip() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("coinflip");
+  const { data: cfg } = useGameConfig("coinflip");
+  const edge = cfg?.house_edge ?? 0;
   const [bet, setBet] = useState(50);
   const [pick, setPick] = useState<Side>("H");
   const [flipping, setFlipping] = useState(false);
@@ -33,9 +36,9 @@ function CoinFlip() {
     const result: Side = Math.random() < 0.49 ? "H" : "T";
     setFace(result);
     if (result === pick) {
-      const won = bet * 2; credit(won);
+      const won = Math.floor(bet * 2 * (1 - edge)); credit(won);
       setMsg(`🎉 জয় +${won - bet}`);
-      record({ pnl: won - bet, multiplier: 2 });
+      record({ pnl: won - bet, multiplier: won / bet });
     } else {
       setMsg(`💥 হার -${bet}`);
       record({ pnl: -bet, multiplier: 0 });
@@ -44,7 +47,7 @@ function CoinFlip() {
   };
 
   return (
-    <GameShell title="Coin Flip" emoji="🪙">
+    <GameShell title="Coin Flip" emoji="🪙" gameKey="coinflip">
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="flex flex-1 flex-col items-center justify-center gap-4">

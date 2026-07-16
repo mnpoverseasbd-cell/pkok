@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
+import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
@@ -18,6 +19,8 @@ export const Route = createFileRoute("/games/limbo")({
 function LimboGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("limbo");
+  const { data: cfg } = useGameConfig("limbo");
+  const edge = cfg?.house_edge ?? 0;
   const [bet, setBet] = useState(50);
   const [target, setTarget] = useState(2.0);
   const [rolling, setRolling] = useState(false);
@@ -41,9 +44,9 @@ function LimboGame() {
     const final = +Math.max(1, 0.99 / u).toFixed(2);
     setResult(final);
     if (final >= target) {
-      const won = Math.floor(bet * payout); credit(won);
+      const won = Math.floor(bet * payout * (1 - edge)); credit(won);
       setMsg(`🎉 জয় +${won - bet}`);
-      record({ pnl: won - bet, multiplier: payout });
+      record({ pnl: won - bet, multiplier: won / bet });
     } else {
       setMsg(`💥 হার -${bet}`);
       record({ pnl: -bet, multiplier: 0 });
@@ -54,7 +57,7 @@ function LimboGame() {
   const win = result !== null && result >= target;
 
   return (
-    <GameShell title="Limbo" emoji="🚀">
+    <GameShell title="Limbo" emoji="🚀" gameKey="limbo">
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
