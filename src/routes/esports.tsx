@@ -1,7 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Gamepad2, Sparkles } from "lucide-react";
+import { Search, Gamepad2, Sparkles, Heart } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
+import dicePoster from "@/assets/games/dice.jpg";
+import crashPoster from "@/assets/games/crash.jpg";
+import minesPoster from "@/assets/games/mines.jpg";
+import coinflipPoster from "@/assets/games/coinflip.jpg";
+import plinkoPoster from "@/assets/games/plinko.jpg";
+import wheelPoster from "@/assets/games/wheel.jpg";
 
 export const Route = createFileRoute("/esports")({
   head: () => ({
@@ -15,25 +21,23 @@ export const Route = createFileRoute("/esports")({
   component: MyGamesPage,
 });
 
-// Add your custom-built games here as you create them.
-// Each game should have its own route under src/routes/ (e.g. src/routes/games.dice.tsx).
 type OriginalGame = {
   slug: string;
-  name: string;
-  tagline: string;
-  emoji: string;
-  gradient: string;
+  name: string;      // English name
+  nameBn: string;    // Bengali label under card
+  provider: string;  // JILI-style provider badge
+  poster: string;
   status: "live" | "soon";
   to?: string;
 };
 
 const myGames: OriginalGame[] = [
-  { slug: "dice",     name: "Lucky Dice",        tagline: "Predict & Win",     emoji: "🎲", gradient: "from-emerald-500 to-teal-800",  status: "live", to: "/games/dice" },
-  { slug: "crash",    name: "Crash",             tagline: "Cash out in time",  emoji: "🚀", gradient: "from-indigo-600 to-purple-900", status: "live", to: "/games/crash" },
-  { slug: "mines",    name: "Mines",             tagline: "Dodge the bombs",   emoji: "💣", gradient: "from-slate-700 to-black",       status: "live", to: "/games/mines" },
-  { slug: "coinflip", name: "Coin Flip",         tagline: "Heads or Tails",    emoji: "🪙", gradient: "from-yellow-500 to-orange-700", status: "live", to: "/games/coinflip" },
-  { slug: "plinko",   name: "Plinko",            tagline: "Drop & multiply",   emoji: "🎯", gradient: "from-pink-500 to-red-800",      status: "live", to: "/games/plinko" },
-  { slug: "wheel",    name: "Wheel of Fortune",  tagline: "Spin to win",       emoji: "🎡", gradient: "from-fuchsia-500 to-rose-800",  status: "live", to: "/games/wheel" },
+  { slug: "dice",     name: "Lucky Dice",       nameBn: "লাকি ডাইস",       provider: "ASIK", poster: dicePoster,     status: "live", to: "/games/dice" },
+  { slug: "crash",    name: "Crash",            nameBn: "ক্র্যাশ",          provider: "ASIK", poster: crashPoster,    status: "live", to: "/games/crash" },
+  { slug: "mines",    name: "Mines",            nameBn: "মাইনস",           provider: "ASIK", poster: minesPoster,    status: "live", to: "/games/mines" },
+  { slug: "coinflip", name: "Coin Flip",        nameBn: "কয়েন ফ্লিপ",       provider: "ASIK", poster: coinflipPoster, status: "live", to: "/games/coinflip" },
+  { slug: "plinko",   name: "Plinko",           nameBn: "প্লিঙ্কো",         provider: "ASIK", poster: plinkoPoster,   status: "live", to: "/games/plinko" },
+  { slug: "wheel",    name: "Wheel of Fortune", nameBn: "হুইল অফ ফরচুন",   provider: "ASIK", poster: wheelPoster,    status: "live", to: "/games/wheel" },
 ];
 
 function MyGamesPage() {
