@@ -42,15 +42,19 @@ function LimboGame() {
   const winChance = Math.min(99, +(99 / target).toFixed(2));
   const payout = target;
 
+  const fxRef = useRef<ParticleBurstHandle>(null);
+  const [phase, setPhase] = useState<"idle" | "flying" | "crashed" | "cashed">("idle");
+
   const runRound = useCallback(async (roundBet: number) => {
     if (!pf.ready) return { pnl: 0 };
     if (target < 1.01) { setMsg("টার্গেট ≥ 1.01× হতে হবে"); return { pnl: 0 }; }
     if (!placeBet(roundBet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return { pnl: 0 }; }
-    setRolling(true); setMsg("");
-    for (let i = 0; i < 8; i++) {
+    setRolling(true); setMsg(""); setPhase("flying");
+    for (let i = 0; i < 10; i++) {
       setResult(+(1 + Math.random() * (target * 2)).toFixed(2));
+      if (i % 2 === 0) { try { sfxPeg(0.35); } catch { /* noop */ } }
       // eslint-disable-next-line no-await-in-loop
-      await new Promise((r) => setTimeout(r, 45));
+      await new Promise((r) => setTimeout(r, 50));
     }
     const final = await fairLimbo(pf.serverSeed, pf.clientSeed, pf.nonce, edge);
     setResult(final);
@@ -61,35 +65,58 @@ function LimboGame() {
       pnl = won - roundBet; mult = won / roundBet;
       setMsg(`🎉 জয় +${pnl} · ${final}×`);
       record({ pnl, multiplier: mult });
+      setPhase("cashed");
+      fxRef.current?.burst({ count: 70, kind: "confetti", speed: 8 });
+      try { sfxWin(mult); sfxCashout(); } catch { /* noop */ }
     } else {
       pnl = -roundBet;
       setMsg(`💥 হার ${pnl} · ${final}×`);
       record({ pnl, multiplier: 0 });
+      setPhase("crashed");
+      fxRef.current?.burst({ count: 40, kind: "smoke", color: "#ff4d4d", speed: 5 });
+      try { sfxBust(); } catch { /* noop */ }
     }
     pf.consume(`crash=${final}× target≥${target}×`);
     recordMyBet({ game: "limbo", bet: roundBet, multiplier: mult, payout: won });
+    pushMultiplierHistory("limbo", final);
     setRolling(false);
     return { pnl };
   }, [pf, placeBet, credit, edge, payout, target, record]);
 
   const auto = useAutoBet({ runRound, baseBet: bet });
   const win = result !== null && result >= target;
+  const frameGlow =
+    phase === "crashed" ? "shadow-[0_0_60px_-10px_rgba(255,77,77,0.45)] border-[#3a1414]" :
+    phase === "cashed" ? "shadow-[0_0_60px_-10px_rgba(0,255,136,0.5)] border-[#143a1f]" :
+    phase === "flying" ? "shadow-[0_0_60px_-10px_rgba(255,209,102,0.4)] border-[#3a2f14]" :
+    "border-[#1a3321]";
 
   return (
     <GameShell title="Limbo" emoji="🚀" gameKey="limbo">
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mb-3">
+        <MultiplierHistoryStrip gameKey="limbo" />
+      </div>
       <GameFrame>
-        <div className="flex flex-1 flex-col items-center justify-center gap-4">
-          <div
-            className={`grid min-h-[220px] w-full max-w-md place-items-center rounded-3xl border-2 bg-gradient-to-br text-7xl font-black tabular-nums shadow-2xl transition-colors ${
-              win ? "border-[#00ff88] from-[#00ff88]/15 to-[#004d2a] text-[#00ff88] shadow-[0_0_40px_rgba(0,255,136,0.4)]"
-                  : result !== null ? "border-[#ff4444]/50 from-[#4d0000]/30 to-[#0a120b] text-white"
-                  : "border-[#1a3321] from-[#112216] to-[#0a120b] text-white"
-            } ${rolling ? "animate-pulse" : ""}`}
-          >
-            {result?.toFixed(2) ?? "0.00"}×
+        <div className={`relative flex flex-1 flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border bg-gradient-to-b from-[#0a120b] via-[#070f08] to-[#020604] p-6 min-h-[340px] transition-shadow duration-500 ${frameGlow}`}>
+          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,255,136,0.08),transparent_60%)]" />
+          <div className="relative z-10 flex flex-col items-center gap-3">
+            <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50">
+              টার্গেট <span className="text-[var(--neon-gold)]">{target.toFixed(2)}×</span>
+            </div>
+            <MultiplierHUD value={result ?? 1.0} state={phase} />
+            <div className={`text-[11px] font-bold uppercase tracking-[0.25em] ${
+              phase === "cashed" ? "text-[#00ff88]" :
+              phase === "crashed" ? "text-[#ff4d4d]" :
+              phase === "flying" ? "text-[var(--neon-gold)]" : "text-white/40"
+            }`}>
+              {phase === "cashed" && win ? "🎯 টার্গেট হিট" :
+                phase === "crashed" ? "💥 টার্গেট মিস" :
+                phase === "flying" ? "রোলিং…" : "প্লে দাও"}
+            </div>
           </div>
-          {msg && <div className="animate-fade-in text-lg font-black text-[var(--neon-gold)]">{msg}</div>}
+          {msg && <div className="relative z-10 animate-fade-in text-lg font-black text-[var(--neon-gold)]">{msg}</div>}
+          <ParticleLayer ref={fxRef} />
         </div>
         <ControlsPanel>
           <ModeTabs mode={mode} setMode={setMode} disabled={rolling || auto.running} />
