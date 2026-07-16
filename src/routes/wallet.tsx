@@ -131,7 +131,12 @@ function WalletPage() {
           ))}
         </div>
 
-        {tab === "deposit" && <DepositForm userId={user.id} onCreated={refetch} />}
+        {tab === "deposit" && (
+          <>
+            <QuickBuyCoins userId={user.id} balance={profile?.wallet_balance ?? 0} onCredited={refetch} />
+            <DepositForm userId={user.id} onCreated={refetch} />
+          </>
+        )}
         {tab === "withdraw" && (
           <WithdrawForm userId={user.id} balance={profile?.wallet_balance ?? 0} onCreated={refetch} />
         )}
@@ -151,6 +156,82 @@ function useMethods() {
       .then(({ data }) => setMethods((data as PaymentMethod[]) ?? []));
   }, []);
   return methods;
+}
+
+function QuickBuyCoins({
+  userId,
+  balance,
+  onCredited,
+}: {
+  userId: string;
+  balance: number;
+  onCredited: () => void;
+}) {
+  const [amount, setAmount] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const presets = [100, 500, 1000, 5000, 10000];
+
+  async function buy() {
+    const amt = Math.floor(Number(amount));
+    if (!Number.isFinite(amt) || amt <= 0) return toast.error("সঠিক পরিমাণ দিন");
+    if (amt > 10_000_000) return toast.error("পরিমাণ অনেক বেশি");
+    setSubmitting(true);
+    const next = Number(balance) + amt;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ wallet_balance: next })
+      .eq("id", userId);
+    setSubmitting(false);
+    if (error) return toast.error(error.message);
+    toast.success(`+${amt.toLocaleString()} কয়েন যোগ হয়েছে`);
+    setAmount("");
+    onCredited();
+  }
+
+  return (
+    <Card className="mb-4 border-[var(--neon-gold)]/40 bg-black/50">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-white">
+          <CircleDollarSign className="h-5 w-5 text-[var(--neon-gold)]" /> কয়েন যোগ করুন
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex flex-wrap gap-2">
+          {presets.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setAmount(String(p))}
+              className="rounded-md border border-[var(--neon-gold)]/40 bg-black/40 px-3 py-1.5 text-sm font-bold text-[var(--neon-gold)] hover:bg-[var(--neon-gold)]/10"
+            >
+              +{p.toLocaleString()}
+            </button>
+          ))}
+        </div>
+        <div>
+          <label className="text-xs text-white/70">কয়েন পরিমাণ</label>
+          <Input
+            type="number"
+            inputMode="numeric"
+            min={1}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="যেমন 1000"
+          />
+        </div>
+        <Button
+          disabled={submitting}
+          onClick={buy}
+          className="w-full bg-gold-button font-bold text-[var(--background)]"
+        >
+          {submitting ? "যোগ হচ্ছে…" : "ব্যালেন্সে যোগ করুন"}
+        </Button>
+        <p className="text-[11px] text-white/50">
+          ইনস্ট্যান্ট টপ-আপ — সরাসরি আপনার ব্যালেন্সে যোগ হবে। নিচের ফর্মটি অ্যাডমিন-অনুমোদিত ডিপোজিটের জন্য।
+        </p>
+      </CardContent>
+    </Card>
+  );
 }
 
 function DepositForm({ userId, onCreated }: { userId: string; onCreated: () => void }) {
