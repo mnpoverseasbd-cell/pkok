@@ -768,14 +768,41 @@ function AdminVipTiers() {
   };
 
   const runPayouts = useServerFn(adminRunVipPayouts);
+  const previewPayouts = useServerFn(adminPreviewVipPayouts);
   const [running, setRunning] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
   const [lastRun, setLastRun] = useState<any>(null);
+  const [preview, setPreview] = useState<any>(null);
+  const [confirmRun, setConfirmRun] = useState(false);
+
+  const doPreview = async () => {
+    setPreviewing(true);
+    setLastRun(null);
+    try {
+      const res: any = await previewPayouts();
+      setPreview(res);
+      toast.success(
+        `Dry-run: D ${res.daily.users}u/৳${res.daily.total} • W ${res.weekly.users}u/৳${res.weekly.total} • C ${res.cashback.users}u/৳${res.cashback.total}`,
+      );
+    } catch (e: any) {
+      toast.error(e?.message || "Preview failed");
+    } finally {
+      setPreviewing(false);
+    }
+  };
 
   const triggerNow = async () => {
+    if (!confirmRun) {
+      setConfirmRun(true);
+      setTimeout(() => setConfirmRun(false), 4000);
+      return;
+    }
+    setConfirmRun(false);
     setRunning(true);
     try {
       const res: any = await runPayouts();
       setLastRun(res);
+      setPreview(null);
       const d = res.daily, w = res.weekly, c = res.cashback;
       toast.success(`Payouts done — Daily: ${d.credited_users}u/৳${d.total_amount} • Weekly: ${w.credited_users}u/৳${w.total_amount} • Cashback: ${c.credited_users}u/৳${c.total_amount}`);
     } catch (e: any) {
@@ -789,18 +816,67 @@ function AdminVipTiers() {
     <Panel title="VIP Tier Configuration">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="text-xs text-slate-500">Deposit করা টাকার total এর ভিত্তিতে ইউজার এই tier-এ auto upgrade হবে।</div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {lastRun && (
             <div className="text-[10px] font-semibold text-slate-500">
               Last: D {lastRun.daily.credited_users}/৳{lastRun.daily.total_amount} • W {lastRun.weekly.credited_users}/৳{lastRun.weekly.total_amount} • C {lastRun.cashback.credited_users}/৳{lastRun.cashback.total_amount}
             </div>
           )}
-          <Button size="sm" onClick={triggerNow} disabled={running} className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-black hover:opacity-90">
+          <Button size="sm" variant="outline" onClick={doPreview} disabled={previewing || running} className="font-bold">
+            <Eye className={`h-3.5 w-3.5 mr-1.5 ${previewing ? "animate-pulse" : ""}`} />
+            {previewing ? "Estimating…" : "Dry Run"}
+          </Button>
+          <Button size="sm" onClick={triggerNow} disabled={running || previewing} className={`font-black text-white ${confirmRun ? "bg-rose-500 hover:bg-rose-600" : "bg-gradient-to-r from-indigo-500 to-blue-500 hover:opacity-90"}`}>
             <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${running ? "animate-spin" : ""}`} />
-            {running ? "Running…" : "Run VIP Payouts Now"}
+            {running ? "Running…" : confirmRun ? "Click again to confirm" : "Run VIP Payouts Now"}
           </Button>
         </div>
       </div>
+
+      {preview && (
+        <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-xs font-black uppercase tracking-widest text-amber-700">
+              Dry-run estimate · no wallets touched
+            </div>
+            <button onClick={() => setPreview(null)} className="text-[10px] font-bold text-amber-600 hover:text-amber-800">
+              Dismiss
+            </button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {(["daily", "weekly", "cashback"] as const).map((k) => {
+              const p = preview[k];
+              const colors: Record<string, string> = {
+                daily: "from-emerald-500 to-teal-500",
+                weekly: "from-indigo-500 to-blue-500",
+                cashback: "from-amber-500 to-orange-500",
+              };
+              return (
+                <div key={k} className="rounded-xl bg-white border border-slate-200 p-3">
+                  <div className={`inline-flex rounded-md bg-gradient-to-br ${colors[k]} px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white`}>
+                    {k}
+                  </div>
+                  <div className="mt-2 text-2xl font-black text-slate-800">৳{Number(p.total).toLocaleString()}</div>
+                  <div className="text-[11px] font-semibold text-slate-500">{p.users} user{p.users === 1 ? "" : "s"} eligible</div>
+                  {p.entries.length > 0 && (
+                    <div className="mt-2 max-h-32 overflow-y-auto text-[11px] text-slate-600 space-y-0.5">
+                      {p.entries.slice(0, 20).map((e: any, i: number) => (
+                        <div key={i} className="flex justify-between gap-2 border-b border-slate-100 py-1 last:border-0">
+                          <span className="truncate">{e.display}{e.tier ? ` · ${e.tier}` : ""}</span>
+                          <span className="font-bold text-emerald-600">৳{Number(e.amount).toLocaleString()}</span>
+                        </div>
+                      ))}
+                      {p.entries.length > 20 && (
+                        <div className="text-[10px] text-slate-400 pt-1">+{p.entries.length - 20} more…</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
       {loading ? (
         <div className="p-6 text-center text-sm text-slate-400">Loading tiers…</div>
       ) : (
