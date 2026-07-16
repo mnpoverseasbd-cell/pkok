@@ -17,6 +17,7 @@ const MULTS = [8.9, 3, 1.4, 1.1, 1, 0.5, 1, 1.1, 1.4, 3, 8.9];
 
 function Plinko() {
   const { bet: placeBet, credit } = useDemoWallet();
+  const { stats, record, reset: resetStats } = useGameStats("plinko");
   const [bet, setBet] = useState(50);
   const [dropping, setDropping] = useState(false);
   const [path, setPath] = useState<number[]>([]); // 0=left,1=right per row
