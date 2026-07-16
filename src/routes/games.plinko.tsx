@@ -50,6 +50,8 @@ function Plinko() {
   const [muted, setMutedState] = useState(isMuted());
   const boardRef = useRef<PlinkoBoardHandle | null>(null);
   const landResolveRef = useRef<((b: number) => void) | null>(null);
+  const fxRef = useRef<ParticleBurstHandle>(null);
+  const bucketsWrapRef = useRef<HTMLDivElement>(null);
 
   const onLand = useCallback((b: number) => {
     landResolveRef.current?.(b);
