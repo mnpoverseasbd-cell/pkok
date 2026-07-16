@@ -28,6 +28,7 @@ function multiplier(picks: number, mines: number): number {
 
 function Mines() {
   const { bet: placeBet, credit } = useDemoWallet();
+  const { stats, record, reset: resetStats } = useGameStats("mines");
   const [bet, setBet] = useState(50);
   const [mines, setMines] = useState(3);
   const [active, setActive] = useState(false);
