@@ -16,6 +16,8 @@ type Side = "H" | "T";
 function CoinFlip() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("coinflip");
+  const { data: cfg } = useGameConfig("coinflip");
+  const edge = cfg?.house_edge ?? 0;
   const [bet, setBet] = useState(50);
   const [pick, setPick] = useState<Side>("H");
   const [flipping, setFlipping] = useState(false);
