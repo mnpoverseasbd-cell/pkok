@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,10 +8,12 @@ import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { adminAdjustBalance, adminCreateUser, adminDeleteUser } from "@/lib/admin.functions";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
+
 
 const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games"]).optional() });
 
