@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { GameShell, BetControls } from "@/components/games/GameShell";
+import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
@@ -23,23 +23,21 @@ function CoinFlip() {
 
   const play = async () => {
     if (flipping) return;
-    if (!placeBet(bet)) { setMsg("Not enough balance"); return; }
-    setFlipping(true);
-    setMsg("");
+    if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
+    setFlipping(true); setMsg("");
     for (let i = 0; i < 14; i++) {
       setFace(Math.random() < 0.5 ? "H" : "T");
       // eslint-disable-next-line no-await-in-loop
       await new Promise(r => setTimeout(r, 80));
     }
-    const result: Side = Math.random() < 0.49 ? "H" : "T"; // slight edge
+    const result: Side = Math.random() < 0.49 ? "H" : "T";
     setFace(result);
     if (result === pick) {
-      const won = bet * 2;
-      credit(won);
-      setMsg(`🎉 WIN +${won - bet}`);
+      const won = bet * 2; credit(won);
+      setMsg(`🎉 জয় +${won - bet}`);
       record({ pnl: won - bet, multiplier: 2 });
     } else {
-      setMsg(`💥 LOSE -${bet}`);
+      setMsg(`💥 হার -${bet}`);
       record({ pnl: -bet, multiplier: 0 });
     }
     setFlipping(false);
@@ -48,26 +46,27 @@ function CoinFlip() {
   return (
     <GameShell title="Coin Flip" emoji="🪙">
       <StatsBar stats={stats} onReset={resetStats} />
-      <div className="grid gap-4 rounded-xl bg-black/40 p-6 ring-1 ring-white/10 md:grid-cols-2">
-        <div className="flex flex-col items-center justify-center gap-4">
+      <GameFrame>
+        <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <div
-            className={`grid h-40 w-40 place-items-center rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 text-5xl font-black text-black shadow-2xl ring-4 ring-yellow-200/60 ${flipping ? "animate-spin" : ""}`}
+            className={`grid h-48 w-48 place-items-center rounded-full bg-gradient-to-br from-[var(--neon-gold)] to-yellow-700 text-6xl font-black text-[#050a06] shadow-[0_0_40px_rgba(255,215,0,0.35),inset_0_0_30px_rgba(0,0,0,0.4)] ring-4 ring-[#00ff88]/40 ${flipping ? "animate-spin" : ""}`}
           >
             {face === "H" ? "H" : "T"}
           </div>
-          {msg && <div className="text-lg font-black text-[var(--neon-gold)] animate-fade-in">{msg}</div>}
+          {msg && <div className="animate-fade-in text-lg font-black text-[var(--neon-gold)]">{msg}</div>}
         </div>
-        <div className="flex flex-col gap-4">
-          <div>
-            <div className="mb-2 text-xs text-white/70">PICK</div>
+        <ControlsPanel>
+          <MultDisplay label="পেআউট" value="2.00×" sub={<>সম্ভাব্য জয়: <span className="text-[#00ff88]">{bet * 2}</span></>} />
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-bold uppercase tracking-widest text-[#00ff88]">পিক করুন</label>
             <div className="grid grid-cols-2 gap-2">
               {(["H", "T"] as Side[]).map(s => (
                 <button
                   key={s} disabled={flipping} onClick={() => setPick(s)}
-                  className={`rounded-lg px-4 py-3 font-black transition ${
+                  className={`rounded-lg border-2 px-4 py-3 font-black transition ${
                     pick === s
-                      ? "bg-[var(--neon-gold)] text-black ring-2 ring-white/40"
-                      : "bg-white/10 text-white hover:bg-white/20"
+                      ? "border-[#00ff88] bg-[#00ff88]/15 text-[#00ff88] shadow-[0_0_15px_rgba(0,255,136,0.4)]"
+                      : "border-[#1a3321] bg-[#112216] text-white/70 hover:border-[#254a30]"
                   }`}
                 >
                   {s === "H" ? "HEADS" : "TAILS"}
@@ -76,14 +75,11 @@ function CoinFlip() {
             </div>
           </div>
           <BetControls bet={bet} setBet={setBet} disabled={flipping} />
-          <button
-            onClick={play} disabled={flipping}
-            className="rounded-lg bg-gradient-to-r from-[var(--neon-gold)] to-yellow-500 px-4 py-3 font-black text-black shadow-lg transition hover:brightness-110 disabled:opacity-50"
-          >
-            {flipping ? "Flipping..." : `FLIP · Win ${bet * 2}`}
-          </button>
-        </div>
-      </div>
+          <PrimaryButton onClick={play} disabled={flipping}>
+            {flipping ? "ফ্লিপ হচ্ছে..." : `ফ্লিপ · ${bet}`}
+          </PrimaryButton>
+        </ControlsPanel>
+      </GameFrame>
     </GameShell>
   );
 }
