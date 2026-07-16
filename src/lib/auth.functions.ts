@@ -7,6 +7,7 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
       .object({
         phone: z.string().trim().regex(/^01[3-9]\d{8}$/),
         password: z.string().min(6).max(72),
+        ref: z.string().trim().min(1).max(64).optional(),
       })
       .parse(input),
   )
