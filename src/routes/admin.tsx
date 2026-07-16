@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, LayoutDashboard, Users as UsersIcon, Wallet, TrendingUp, Clock } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 
-const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods"]).optional() });
+const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games"]).optional() });
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — PKOK" }, { name: "robots", content: "noindex" }] }),
