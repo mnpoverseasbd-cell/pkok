@@ -176,6 +176,11 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
       approved_by: context.userId,
       approved_at: new Date().toISOString(),
     });
+    await writeAudit(admin, context.userId, "wallet.adjust", "user", data.userId, {
+      delta: data.amount,
+      balance_after: next,
+      note: data.note ?? null,
+    });
     return { success: true as const, balance: next };
   });
 
