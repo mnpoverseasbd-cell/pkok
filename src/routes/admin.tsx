@@ -8,14 +8,14 @@ import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts, adminListAuditLogs, adminLogAction } from "@/lib/admin.functions";
+import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts, adminListAuditLogs, adminLogAction, adminListFeatureFlags, adminUpsertFeatureFlag, adminDeleteFeatureFlag } from "@/lib/admin.functions";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus } from "lucide-react";
+import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 
 
-const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit"]).optional() });
+const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit", "flags"]).optional() });
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — PKOK" }, { name: "robots", content: "noindex" }] }),
@@ -31,6 +31,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   games: { title: "Game Controls", subtitle: "Bet limits এবং house edge টিউন করুন" },
   vip: { title: "VIP Tiers", subtitle: "Deposit threshold, cashback, bonus আর limits কনফিগ করুন" },
   audit: { title: "Audit Logs", subtitle: "সমস্ত অ্যাডমিন অ্যাকশনের রেকর্ড" },
+  flags: { title: "Feature Flags", subtitle: "রানটাইম ফিচার টগল করুন কোড ডিপ্লয় ছাড়াই" },
 };
 
 function AdminPage() {
@@ -82,6 +83,7 @@ function AdminPage() {
         </div>
       )}
       {tab === "audit" && <AdminAuditLogs />}
+      {tab === "flags" && <AdminFeatureFlags />}
     </AdminShell>
   );
 }
@@ -1250,5 +1252,156 @@ function AdminAuditLogs() {
         </Table>
       </div>
     </Panel>
+  );
+}
+
+function AdminFeatureFlags() {
+  const listFlags = useServerFn(adminListFeatureFlags);
+  const upsertFlag = useServerFn(adminUpsertFeatureFlag);
+  const deleteFlag = useServerFn(adminDeleteFeatureFlag);
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [form, setForm] = useState({ flag_key: "", enabled: true, description: "" });
+  const [creating, setCreating] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await listFlags({ data: undefined as any });
+      setRows(res.rows);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to load flags");
+    } finally {
+      setLoading(false);
+    }
+  }, [listFlags]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function toggle(row: any) {
+    setBusy(row.flag_key);
+    try {
+      await upsertFlag({ data: { flag_key: row.flag_key, enabled: !row.enabled, description: row.description, metadata: row.metadata ?? {} } });
+      toast.success(`${row.flag_key} → ${!row.enabled ? "ON" : "OFF"}`);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Toggle failed");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function create() {
+    if (!form.flag_key.trim()) return toast.error("flag_key দিন");
+    setCreating(true);
+    try {
+      await upsertFlag({ data: { flag_key: form.flag_key.trim(), enabled: form.enabled, description: form.description.trim() || null, metadata: {} } });
+      toast.success("Flag সেভ হয়েছে");
+      setForm({ flag_key: "", enabled: true, description: "" });
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Save failed");
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function remove(key: string) {
+    if (!confirm(`Delete flag "${key}"?`)) return;
+    setBusy(key);
+    try {
+      await deleteFlag({ data: { flag_key: key } });
+      toast.success("Deleted");
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Delete failed");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <Panel title="নতুন Flag যোগ করুন">
+        <div className="grid gap-3 sm:grid-cols-[1fr,1fr,auto,auto]">
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">flag_key</label>
+            <Input value={form.flag_key} onChange={(e) => setForm((f) => ({ ...f, flag_key: e.target.value }))} placeholder="e.g. hero_promo_banner" className="h-9 mt-1" />
+          </div>
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">description</label>
+            <Input value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Optional" className="h-9 mt-1" />
+          </div>
+          <div className="flex items-end">
+            <label className="flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-xs">
+              <input type="checkbox" checked={form.enabled} onChange={(e) => setForm((f) => ({ ...f, enabled: e.target.checked }))} />
+              Enabled
+            </label>
+          </div>
+          <div className="flex items-end">
+            <Button onClick={create} disabled={creating} className="h-9 bg-gradient-to-r from-cyan-500 to-sky-600 text-white">
+              {creating ? <RefreshCw className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />} সেভ / আপডেট
+            </Button>
+          </div>
+        </div>
+      </Panel>
+
+      <Panel
+        title={`Feature Flags (${rows.length})`}
+        action={
+          <Button size="sm" variant="outline" onClick={load} disabled={loading} className="h-8">
+            <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} /> Refresh
+          </Button>
+        }
+      >
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Key</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="w-40">Updated</TableHead>
+                <TableHead className="w-32 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="py-8 text-center text-sm text-slate-500">
+                    {loading ? "Loading…" : "কোনো flag নেই — উপরে থেকে যোগ করুন"}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                rows.map((r) => (
+                  <TableRow key={r.id}>
+                    <TableCell className="font-mono text-xs font-semibold text-slate-800">
+                      <span className="inline-flex items-center gap-2"><Flag className="h-3 w-3 text-cyan-600" />{r.flag_key}</span>
+                    </TableCell>
+                    <TableCell>
+                      <button
+                        onClick={() => toggle(r)}
+                        disabled={busy === r.flag_key}
+                        className={`inline-flex h-6 w-11 items-center rounded-full p-0.5 transition ${r.enabled ? "bg-emerald-500" : "bg-slate-300"} ${busy === r.flag_key ? "opacity-50" : ""}`}
+                      >
+                        <span className={`h-5 w-5 rounded-full bg-white shadow transition-transform ${r.enabled ? "translate-x-5" : ""}`} />
+                      </button>
+                    </TableCell>
+                    <TableCell className="text-xs text-slate-600">{r.description || "—"}</TableCell>
+                    <TableCell className="text-xs text-slate-500">{new Date(r.updated_at).toLocaleString()}</TableCell>
+                    <TableCell className="text-right">
+                      <Button size="sm" variant="ghost" onClick={() => remove(r.flag_key)} disabled={busy === r.flag_key} className="h-7 text-rose-600 hover:bg-rose-50">
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </Panel>
+    </div>
   );
 }
