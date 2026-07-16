@@ -81,11 +81,11 @@ export function BetControls({
   const set = (n: number) => setBet(Math.max(lo, Math.min(hi, Math.round(n))));
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-xs font-bold uppercase tracking-widest text-[#00ff88]">বাজি</label>
+      <label className="text-xs font-bold uppercase tracking-widest text-[#00ff88]">বাজি (৳{lo}–৳{hi})</label>
       <div className="relative">
         <input
-          type="number" value={bet} min={min} max={max} disabled={disabled}
-          onChange={(e) => set(Number(e.target.value) || min)}
+          type="number" value={bet} min={lo} max={hi} disabled={disabled}
+          onChange={(e) => set(Number(e.target.value) || lo)}
           className="w-full rounded-lg border border-[#1a3321] bg-[#112216] p-3 pr-20 font-bold text-white outline-none focus:border-[#00ff88] disabled:opacity-60"
         />
         <div className="absolute inset-y-1 right-1 flex gap-1">
@@ -94,8 +94,8 @@ export function BetControls({
         </div>
       </div>
       <div className="flex gap-2">
-        <button disabled={disabled} onClick={() => set(min)} className="flex-1 rounded bg-[#1a3321] py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:bg-[#254a30] disabled:opacity-40">সর্বনিম্ন</button>
-        <button disabled={disabled} onClick={() => set(max)} className="flex-1 rounded bg-[#1a3321] py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:bg-[#254a30] disabled:opacity-40">সর্বোচ্চ</button>
+        <button disabled={disabled} onClick={() => set(lo)} className="flex-1 rounded bg-[#1a3321] py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:bg-[#254a30] disabled:opacity-40">সর্বনিম্ন</button>
+        <button disabled={disabled} onClick={() => set(hi)} className="flex-1 rounded bg-[#1a3321] py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:bg-[#254a30] disabled:opacity-40">সর্বোচ্চ</button>
       </div>
     </div>
   );
