@@ -47,8 +47,9 @@ function AdminPage() {
     <SiteShell>
       <div className="mx-auto max-w-6xl px-3 py-6 sm:px-4">
         <h1 className="mb-3 text-2xl font-black text-white">Admin Dashboard</h1>
-        <div className="mb-4 flex gap-2 rounded-lg border border-white/10 bg-black/40 p-1">
+        <div className="mb-4 flex gap-2 rounded-lg border border-white/10 bg-black/40 p-1 overflow-x-auto">
           {[
+            { k: "overview", label: "Overview" },
             { k: "txns", label: "Transactions" },
             { k: "users", label: "Users" },
             { k: "methods", label: "Payment Methods" },
@@ -56,17 +57,121 @@ function AdminPage() {
             <button
               key={t.k}
               onClick={() => navigate({ to: "/admin", search: { tab: t.k as any } })}
-              className={`flex-1 rounded-md px-3 py-2 text-sm font-bold ${tab === t.k ? "bg-[var(--neon-green)]/20 text-[var(--neon-green)]" : "text-white/70 hover:text-white"}`}
+              className={`flex-1 min-w-[110px] rounded-md px-3 py-2 text-sm font-bold ${tab === t.k ? "bg-[var(--neon-green)]/20 text-[var(--neon-green)]" : "text-white/70 hover:text-white"}`}
             >
               {t.label}
             </button>
           ))}
         </div>
+        {tab === "overview" && <AdminOverview />}
         {tab === "txns" && <AdminTxns />}
         {tab === "users" && <AdminUsers />}
         {tab === "methods" && <AdminMethods />}
       </div>
     </SiteShell>
+  );
+}
+
+function AdminOverview() {
+  const [stats, setStats] = useState<{
+    userCount: number;
+    pendingCount: number;
+    totalBalance: number;
+    depositsToday: number;
+    withdrawsToday: number;
+    depositsAllTime: number;
+    withdrawsAllTime: number;
+    loading: boolean;
+  }>({ userCount: 0, pendingCount: 0, totalBalance: 0, depositsToday: 0, withdrawsToday: 0, depositsAllTime: 0, withdrawsAllTime: 0, loading: true });
+
+  useEffect(() => {
+    (async () => {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const iso = startOfDay.toISOString();
+
+      const [users, pending, balances, depToday, wdToday, depAll, wdAll] = await Promise.all([
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase.from("transactions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("profiles").select("wallet_balance"),
+        supabase.from("transactions").select("amount").eq("type", "deposit").eq("status", "approved").gte("created_at", iso),
+        supabase.from("transactions").select("amount").eq("type", "withdraw").eq("status", "approved").gte("created_at", iso),
+        supabase.from("transactions").select("amount").eq("type", "deposit").eq("status", "approved"),
+        supabase.from("transactions").select("amount").eq("type", "withdraw").eq("status", "approved"),
+      ]);
+
+      const sum = (rows: any[] | null | undefined) =>
+        (rows ?? []).reduce((a, r) => a + Number(r.amount ?? r.wallet_balance ?? 0), 0);
+
+      setStats({
+        userCount: users.count ?? 0,
+        pendingCount: pending.count ?? 0,
+        totalBalance: sum(balances.data),
+        depositsToday: sum(depToday.data),
+        withdrawsToday: sum(wdToday.data),
+        depositsAllTime: sum(depAll.data),
+        withdrawsAllTime: sum(wdAll.data),
+        loading: false,
+      });
+    })();
+  }, []);
+
+  if (stats.loading) return <div className="text-white/70">Loading stats…</div>;
+
+  const revenue = stats.depositsAllTime - stats.withdrawsAllTime;
+  const netToday = stats.depositsToday - stats.withdrawsToday;
+
+  const cards = [
+    { label: "মোট User", value: stats.userCount.toLocaleString(), icon: UsersIcon, color: "text-cyan-400", hint: "Registered profiles" },
+    { label: "Pending Requests", value: stats.pendingCount.toLocaleString(), icon: Clock, color: "text-orange-400", hint: "Awaiting approval", urgent: stats.pendingCount > 0 },
+    { label: "মোট User Balance", value: `৳${stats.totalBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: Wallet, color: "text-[var(--neon-green)]", hint: "Sum of all wallets" },
+    { label: "Net Revenue", value: `৳${revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: TrendingUp, color: revenue >= 0 ? "text-[var(--neon-gold)]" : "text-red-400", hint: "Deposits − Withdraws (all time)" },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {cards.map((c) => (
+          <Card key={c.label} className={`border-white/10 bg-black/40 ${c.urgent ? "ring-2 ring-orange-500/50 animate-pulse" : ""}`}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-bold uppercase tracking-wide text-white/60">{c.label}</div>
+                <c.icon className={`h-4 w-4 ${c.color}`} />
+              </div>
+              <div className={`mt-2 text-2xl font-black ${c.color}`}>{c.value}</div>
+              <div className="mt-1 text-[10px] text-white/50">{c.hint}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="border-white/10 bg-black/40">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-white">
+            <LayoutDashboard className="h-4 w-4 text-[var(--neon-gold)]" />
+            আজকের কার্যক্রম
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-lg border border-[var(--neon-green)]/30 bg-black/30 p-4">
+              <div className="text-xs font-bold text-white/60">আজ Deposit</div>
+              <div className="mt-1 text-xl font-black text-[var(--neon-green)]">৳{stats.depositsToday.toLocaleString()}</div>
+            </div>
+            <div className="rounded-lg border border-red-500/30 bg-black/30 p-4">
+              <div className="text-xs font-bold text-white/60">আজ Withdraw</div>
+              <div className="mt-1 text-xl font-black text-red-400">৳{stats.withdrawsToday.toLocaleString()}</div>
+            </div>
+            <div className="rounded-lg border border-[var(--neon-gold)]/30 bg-black/30 p-4">
+              <div className="text-xs font-bold text-white/60">আজ Net</div>
+              <div className={`mt-1 text-xl font-black ${netToday >= 0 ? "text-[var(--neon-gold)]" : "text-red-400"}`}>
+                ৳{netToday.toLocaleString()}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
