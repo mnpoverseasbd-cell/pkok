@@ -303,6 +303,32 @@ export type Database = {
         }
         Returns: boolean
       }
+      preview_daily_bonuses: {
+        Args: never
+        Returns: {
+          amount: number
+          tier: string
+          user_id: string
+        }[]
+      }
+      preview_daily_cashback: {
+        Args: never
+        Returns: {
+          amount: number
+          cashback_pct: number
+          tier: string
+          user_id: string
+          yday_deposits: number
+        }[]
+      }
+      preview_weekly_bonuses: {
+        Args: never
+        Returns: {
+          amount: number
+          tier: string
+          user_id: string
+        }[]
+      }
       recompute_vip_tier: { Args: { _user_id: string }; Returns: undefined }
       run_daily_bonuses: {
         Args: never

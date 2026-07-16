@@ -165,3 +165,51 @@ export const adminRunVipPayouts = createServerFn({ method: "POST" })
       cashback: (cashback.data as any)?.[0] ?? { credited_users: 0, total_amount: 0 },
     };
   });
+
+export const adminPreviewVipPayouts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    const [daily, weekly, cashback] = await Promise.all([
+      admin.rpc("preview_daily_bonuses"),
+      admin.rpc("preview_weekly_bonuses"),
+      admin.rpc("preview_daily_cashback"),
+    ]);
+    if (daily.error) throw new Error(`daily: ${daily.error.message}`);
+    if (weekly.error) throw new Error(`weekly: ${weekly.error.message}`);
+    if (cashback.error) throw new Error(`cashback: ${cashback.error.message}`);
+
+    const dailyRows = (daily.data as any[]) ?? [];
+    const weeklyRows = (weekly.data as any[]) ?? [];
+    const cashbackRows = ((cashback.data as any[]) ?? []).filter((r) => Number(r.amount) > 0);
+
+    const allIds = Array.from(
+      new Set([...dailyRows, ...weeklyRows, ...cashbackRows].map((r) => r.user_id)),
+    );
+    let nameMap: Record<string, string> = {};
+    if (allIds.length) {
+      const { data: profs } = await admin
+        .from("profiles")
+        .select("id, display_name, username, phone")
+        .in("id", allIds);
+      (profs ?? []).forEach((p: any) => {
+        nameMap[p.id] = p.display_name || p.username || p.phone || p.id.slice(0, 8);
+      });
+    }
+
+    const sum = (rows: any[]) => rows.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const decorate = (rows: any[]) =>
+      rows.map((r) => ({ ...r, display: nameMap[r.user_id] || r.user_id.slice(0, 8) }));
+
+    return {
+      previewed_at: new Date().toISOString(),
+      daily: { users: dailyRows.length, total: sum(dailyRows), entries: decorate(dailyRows) },
+      weekly: { users: weeklyRows.length, total: sum(weeklyRows), entries: decorate(weeklyRows) },
+      cashback: {
+        users: cashbackRows.length,
+        total: sum(cashbackRows),
+        entries: decorate(cashbackRows),
+      },
+    };
+  });
