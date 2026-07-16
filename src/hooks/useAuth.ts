@@ -103,6 +103,7 @@ export function useIsAdmin(userId: string | undefined) {
   useEffect(() => {
     if (!userId) {
       setIsAdmin(false);
+      setLoading(false);
       return;
     }
     let cancelled = false;
