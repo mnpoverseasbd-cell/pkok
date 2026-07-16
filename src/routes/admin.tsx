@@ -74,22 +74,28 @@ function AdminPage() {
   );
 }
 
-function StatCard({ label, value, hint, icon: Icon, tone = "cyan", urgent }: any) {
-  const tones: Record<string, string> = {
-    cyan: "from-cyan-500/20 to-cyan-500/0 text-cyan-300 border-cyan-500/20",
-    orange: "from-orange-500/20 to-orange-500/0 text-orange-300 border-orange-500/20",
-    green: "from-emerald-500/20 to-emerald-500/0 text-emerald-300 border-emerald-500/20",
-    gold: "from-yellow-500/20 to-yellow-500/0 text-yellow-300 border-yellow-500/20",
-    red: "from-red-500/20 to-red-500/0 text-red-300 border-red-500/20",
+function StatCard({ label, value, hint, icon: Icon, tone = "indigo", urgent }: any) {
+  const tones: Record<string, { grad: string; ring: string; shadow: string }> = {
+    indigo: { grad: "from-indigo-500 via-blue-500 to-cyan-400", ring: "ring-indigo-500/20", shadow: "shadow-indigo-500/30" },
+    pink:   { grad: "from-pink-500 via-rose-500 to-red-400",   ring: "ring-rose-500/20",   shadow: "shadow-rose-500/30" },
+    violet: { grad: "from-violet-500 via-purple-500 to-fuchsia-500", ring: "ring-violet-500/20", shadow: "shadow-violet-500/30" },
+    amber:  { grad: "from-amber-400 via-orange-500 to-rose-500", ring: "ring-orange-500/20", shadow: "shadow-orange-500/30" },
+    emerald:{ grad: "from-emerald-400 via-teal-500 to-cyan-500", ring: "ring-emerald-500/20", shadow: "shadow-emerald-500/30" },
   };
+  const t = tones[tone] ?? tones.indigo;
   return (
-    <div className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${tones[tone]} p-5 ${urgent ? "ring-2 ring-orange-500/60 animate-pulse" : ""}`}>
-      <div className="flex items-start justify-between">
-        <div className="text-[11px] font-bold uppercase tracking-widest text-white/60">{label}</div>
-        <div className="rounded-lg bg-white/5 p-2"><Icon className="h-4 w-4" /></div>
+    <div className={`group relative overflow-hidden rounded-3xl bg-white p-5 shadow-sm ring-1 ${t.ring} transition hover:-translate-y-0.5 hover:shadow-xl ${urgent ? "animate-pulse ring-2 ring-orange-400" : ""}`}>
+      <div className={`absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br ${t.grad} opacity-10 blur-2xl transition group-hover:opacity-20`} />
+      <div className="relative flex items-start justify-between">
+        <div>
+          <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{label}</div>
+          <div className="mt-3 text-3xl font-black text-slate-900 tabular-nums">{value}</div>
+          {hint && <div className="mt-1 text-[11px] text-slate-400">{hint}</div>}
+        </div>
+        <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${t.grad} text-white shadow-lg ${t.shadow}`}>
+          <Icon className="h-5 w-5" strokeWidth={2.2} />
+        </div>
       </div>
-      <div className="mt-3 text-3xl font-black text-white">{value}</div>
-      {hint && <div className="mt-1 text-[11px] text-white/50">{hint}</div>}
     </div>
   );
 }
@@ -126,57 +132,86 @@ function AdminOverview() {
   }, []);
   useEffect(() => { load(); }, [load]);
 
-  if (stats.loading) return <div className="flex items-center gap-2 text-white/60"><RefreshCw className="h-4 w-4 animate-spin" /> Loading stats…</div>;
+  if (stats.loading) return <div className="flex items-center gap-2 text-slate-500"><RefreshCw className="h-4 w-4 animate-spin" /> Loading stats…</div>;
 
   const revenue = stats.depositsAllTime - stats.withdrawsAllTime;
   const netToday = stats.depositsToday - stats.withdrawsToday;
 
   return (
     <div className="space-y-6">
+      {/* Welcome banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-400 p-6 sm:p-8 text-white shadow-xl shadow-blue-500/20">
+        <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-cyan-300/20 blur-3xl" />
+        <div className="relative flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-white/70">Welcome back to</div>
+            <div className="mt-1 text-2xl sm:text-3xl font-black">PKOK Admin Dashboard</div>
+            <div className="mt-1 text-sm text-white/80">প্ল্যাটফর্মের সব কিছু এক নজরে দেখুন</div>
+          </div>
+          <div className="flex gap-3">
+            <div className="rounded-2xl bg-white/15 backdrop-blur px-4 py-3 text-center min-w-[110px]">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Deposit Today</div>
+              <div className="mt-1 text-xl font-black">৳{stats.depositsToday.toLocaleString()}</div>
+            </div>
+            <div className="rounded-2xl bg-white/15 backdrop-blur px-4 py-3 text-center min-w-[110px]">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Withdraw Today</div>
+              <div className="mt-1 text-xl font-black">৳{stats.withdrawsToday.toLocaleString()}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stat cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total Users" value={stats.userCount.toLocaleString()} hint="Registered profiles" icon={UsersIcon} tone="cyan" />
-        <StatCard label="Pending Requests" value={stats.pendingCount.toLocaleString()} hint="Awaiting approval" icon={Clock} tone="orange" urgent={stats.pendingCount > 0} />
-        <StatCard label="User Balance" value={`৳${stats.totalBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} hint="Sum of all wallets" icon={Wallet} tone="green" />
-        <StatCard label="Net Revenue" value={`৳${revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} hint="Deposits − Withdraws" icon={TrendingUp} tone={revenue >= 0 ? "gold" : "red"} />
+        <StatCard label="Total Users" value={stats.userCount.toLocaleString()} hint="Registered profiles" icon={UsersIcon} tone="indigo" />
+        <StatCard label="Pending Requests" value={stats.pendingCount.toLocaleString()} hint="Awaiting approval" icon={Clock} tone="pink" urgent={stats.pendingCount > 0} />
+        <StatCard label="User Balance" value={`৳${stats.totalBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} hint="Sum of all wallets" icon={Wallet} tone="violet" />
+        <StatCard label="Net Revenue" value={`৳${revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} hint="Deposits − Withdraws" icon={TrendingUp} tone={revenue >= 0 ? "emerald" : "amber"} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-2xl border border-white/10 bg-[#0d1119] p-5">
-          <div className="mb-4 flex items-center justify-between">
+        <div className="lg:col-span-2 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+          <div className="mb-5 flex items-center justify-between">
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-widest text-white/50">Today</div>
-              <div className="text-lg font-black text-white">আজকের কার্যক্রম</div>
+              <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Today</div>
+              <div className="text-lg font-black text-slate-900">আজকের কার্যক্রম</div>
             </div>
-            <button onClick={load} className="rounded-md border border-white/10 p-2 text-white/60 hover:text-white"><RefreshCw className="h-3.5 w-3.5" /></button>
+            <button onClick={load} className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-100">
+              <RefreshCw className="h-3 w-3" /> Refresh
+            </button>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-              <div className="flex items-center gap-2 text-[11px] font-bold uppercase text-white/60"><ArrowDownRight className="h-3 w-3 text-emerald-400" /> Deposit</div>
-              <div className="mt-2 text-2xl font-black text-emerald-300">৳{stats.depositsToday.toLocaleString()}</div>
+            <div className="rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 p-4 ring-1 ring-emerald-100">
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase text-emerald-700"><ArrowDownRight className="h-3 w-3" /> Deposit</div>
+              <div className="mt-2 text-2xl font-black text-emerald-600 tabular-nums">৳{stats.depositsToday.toLocaleString()}</div>
             </div>
-            <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
-              <div className="flex items-center gap-2 text-[11px] font-bold uppercase text-white/60"><ArrowUpRight className="h-3 w-3 text-red-400" /> Withdraw</div>
-              <div className="mt-2 text-2xl font-black text-red-300">৳{stats.withdrawsToday.toLocaleString()}</div>
+            <div className="rounded-2xl bg-gradient-to-br from-rose-50 to-pink-50 p-4 ring-1 ring-rose-100">
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase text-rose-700"><ArrowUpRight className="h-3 w-3" /> Withdraw</div>
+              <div className="mt-2 text-2xl font-black text-rose-600 tabular-nums">৳{stats.withdrawsToday.toLocaleString()}</div>
             </div>
-            <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4">
-              <div className="text-[11px] font-bold uppercase text-white/60">Net</div>
-              <div className={`mt-2 text-2xl font-black ${netToday >= 0 ? "text-yellow-300" : "text-red-300"}`}>৳{netToday.toLocaleString()}</div>
+            <div className="rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 p-4 ring-1 ring-amber-100">
+              <div className="text-[11px] font-bold uppercase text-amber-700">Net</div>
+              <div className={`mt-2 text-2xl font-black tabular-nums ${netToday >= 0 ? "text-amber-600" : "text-rose-600"}`}>৳{netToday.toLocaleString()}</div>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-[#0d1119] p-5">
-          <div className="mb-3 text-[11px] font-bold uppercase tracking-widest text-white/50">Recent Activity</div>
+        <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Recent Activity</div>
+            <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-600">Live</span>
+          </div>
           <div className="space-y-2">
-            {stats.recent.length === 0 && <div className="text-xs text-white/40">No activity yet</div>}
+            {stats.recent.length === 0 && <div className="text-xs text-slate-400">No activity yet</div>}
             {stats.recent.map((r: any) => (
-              <div key={r.id} className="flex items-center gap-2 rounded-lg border border-white/5 bg-black/30 px-3 py-2">
-                <div className={`h-2 w-2 rounded-full ${r.status === "approved" ? "bg-emerald-400" : r.status === "pending" ? "bg-orange-400" : "bg-red-400"}`} />
+              <div key={r.id} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/60 px-3 py-2.5 hover:bg-slate-50">
+                <div className={`h-2.5 w-2.5 rounded-full shrink-0 ${r.status === "approved" ? "bg-emerald-500" : r.status === "pending" ? "bg-amber-500" : "bg-rose-500"}`} />
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-xs font-bold text-white">{r.profiles?.display_name || r.profiles?.username || r.profiles?.phone || "User"}</div>
-                  <div className="text-[10px] text-white/40 capitalize">{r.type} · {r.status}</div>
+                  <div className="truncate text-xs font-bold text-slate-800">{r.profiles?.display_name || r.profiles?.username || r.profiles?.phone || "User"}</div>
+                  <div className="text-[10px] text-slate-400 capitalize">{r.type} · {r.status}</div>
                 </div>
-                <div className="text-xs font-black text-[var(--neon-green)]">৳{Number(r.amount).toFixed(0)}</div>
+                <div className="text-sm font-black text-slate-900 tabular-nums">৳{Number(r.amount).toFixed(0)}</div>
               </div>
             ))}
           </div>
@@ -185,6 +220,7 @@ function AdminOverview() {
     </div>
   );
 }
+
 
 function Panel({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
