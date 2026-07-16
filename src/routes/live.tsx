@@ -48,6 +48,13 @@ function LivePage() {
   return (
     <SiteShell>
       <h1 className="sr-only">লাইভ ক্যাসিনো</h1>
+      <div className="pt-4">
+        <ComingSoonBanner
+          title="লাইভ ক্যাসিনো শীঘ্রই চালু হচ্ছে"
+          message="Evolution, Pragmatic Live, SA Gaming সহ live dealer provider এর real integration এখনো active নয়। বৈধ access পেলে এখানে চালু হবে।"
+          providers={["Evolution", "Pragmatic Live", "SA Gaming", "Sexy", "Ezugi"]}
+        />
+      </div>
       <section
         className="game-lobby LIVE"
         aria-label="Live casino providers"
