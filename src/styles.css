@@ -596,20 +596,20 @@
 /* ===== My Games (uniform bigger tiles + blinking neon border) ===== */
 .mygames-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 18px;
   width: 1200px;
   max-width: calc(100vw - 96px);
   margin: 0 auto;
 }
 @media (max-width: 1024px) {
-  .mygames-grid { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .mygames-grid { grid-template-columns: repeat(5, 1fr); gap: 14px; }
 }
 @media (max-width: 720px) {
-  .mygames-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .mygames-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; }
 }
 @media (max-width: 480px) {
-  .mygames-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .mygames-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
 }
 
 .mygames-item {
