@@ -44,9 +44,9 @@ function LimboGame() {
     const final = +Math.max(1, 0.99 / u).toFixed(2);
     setResult(final);
     if (final >= target) {
-      const won = Math.floor(bet * payout); credit(won);
+      const won = Math.floor(bet * payout * (1 - edge)); credit(won);
       setMsg(`🎉 জয় +${won - bet}`);
-      record({ pnl: won - bet, multiplier: payout });
+      record({ pnl: won - bet, multiplier: won / bet });
     } else {
       setMsg(`💥 হার -${bet}`);
       record({ pnl: -bet, multiplier: 0 });
