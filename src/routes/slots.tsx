@@ -101,6 +101,13 @@ function SlotsPage() {
   return (
     <SiteShell>
       <h1 className="sr-only">স্লট গেমস</h1>
+      <div className="pt-4">
+        <ComingSoonBanner
+          title="স্লট প্রোভাইডার শীঘ্রই চালু হচ্ছে"
+          message="PG Soft, Pragmatic Play, Hacksaw সহ সব স্লট provider এর real integration এখনো active নয়। ততক্ষণে আমাদের নিজস্ব অরিজিনাল গেমস উপভোগ করুন।"
+          providers={["PG Soft", "Pragmatic Play", "Hacksaw Gaming", "JILI", "JDB"]}
+        />
+      </div>
       <section
         className="game-lobby RNG"
         aria-label="Slot providers"
