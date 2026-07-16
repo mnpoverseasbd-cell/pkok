@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameShell, BetControls } from "@/components/games/GameShell";
+import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
+import { useGameStats } from "@/hooks/useGameStats";
 
 export const Route = createFileRoute("/games/coinflip")({
   head: () => ({ meta: [{ title: "Coin Flip — Asik Game" }, { name: "description", content: "Heads or Tails, 2× payout." }] }),
@@ -12,6 +14,7 @@ type Side = "H" | "T";
 
 function CoinFlip() {
   const { bet: placeBet, credit } = useDemoWallet();
+  const { stats, record, reset: resetStats } = useGameStats("coinflip");
   const [bet, setBet] = useState(50);
   const [pick, setPick] = useState<Side>("H");
   const [flipping, setFlipping] = useState(false);
