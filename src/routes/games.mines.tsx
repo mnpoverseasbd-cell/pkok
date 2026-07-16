@@ -1,3 +1,4 @@
+import { recordMyBet } from "@/lib/liveFeed";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { GameShell } from "@/components/games/GameShell";
