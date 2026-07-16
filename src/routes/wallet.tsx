@@ -167,22 +167,38 @@ function QuickBuyCoins({
   balance: number;
   onCredited: () => void;
 }) {
+  const MIN_COINS = 50;
+  const MAX_COINS = 100_000;
   const [amount, setAmount] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const presets = [100, 500, 1000, 5000, 10000];
 
+  function validate(amt: number): string | null {
+    if (!Number.isFinite(amt) || amt <= 0) return "সঠিক পরিমাণ দিন";
+    if (!Number.isInteger(amt)) return "পূর্ণ সংখ্যা দিন";
+    if (amt < MIN_COINS) return `ন্যূনতম ${MIN_COINS} কয়েন`;
+    if (amt > MAX_COINS) return `সর্বোচ্চ ${MAX_COINS.toLocaleString()} কয়েন এক বারে`;
+    return null;
+  }
+
   async function buy() {
     const amt = Math.floor(Number(amount));
-    if (!Number.isFinite(amt) || amt <= 0) return toast.error("সঠিক পরিমাণ দিন");
-    if (amt > 10_000_000) return toast.error("পরিমাণ অনেক বেশি");
+    const err = validate(amt);
+    if (err) {
+      setError(err);
+      toast.error(err);
+      return;
+    }
+    setError(null);
     setSubmitting(true);
     const next = Number(balance) + amt;
-    const { error } = await supabase
+    const { error: dbErr } = await supabase
       .from("profiles")
       .update({ wallet_balance: next })
       .eq("id", userId);
     setSubmitting(false);
-    if (error) return toast.error(error.message);
+    if (dbErr) return toast.error(dbErr.message);
     toast.success(`+${amt.toLocaleString()} কয়েন যোগ হয়েছে`);
     setAmount("");
     onCredited();
@@ -201,7 +217,7 @@ function QuickBuyCoins({
             <button
               key={p}
               type="button"
-              onClick={() => setAmount(String(p))}
+              onClick={() => { setAmount(String(p)); setError(null); }}
               className="rounded-md border border-[var(--neon-gold)]/40 bg-black/40 px-3 py-1.5 text-sm font-bold text-[var(--neon-gold)] hover:bg-[var(--neon-gold)]/10"
             >
               +{p.toLocaleString()}
@@ -209,15 +225,21 @@ function QuickBuyCoins({
           ))}
         </div>
         <div>
-          <label className="text-xs text-white/70">কয়েন পরিমাণ</label>
+          <label className="text-xs text-white/70">
+            কয়েন পরিমাণ ({MIN_COINS}–{MAX_COINS.toLocaleString()})
+          </label>
           <Input
             type="number"
             inputMode="numeric"
-            min={1}
+            min={MIN_COINS}
+            max={MAX_COINS}
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="যেমন 1000"
+            onChange={(e) => { setAmount(e.target.value); setError(null); }}
+            placeholder={`যেমন ${MIN_COINS * 20}`}
+            aria-invalid={!!error}
+            className={error ? "border-red-500 focus-visible:ring-red-500" : ""}
           />
+          {error && <p className="mt-1 text-xs font-semibold text-red-400">{error}</p>}
         </div>
         <Button
           disabled={submitting}
@@ -248,11 +270,16 @@ function DepositForm({ userId, onCreated }: { userId: string; onCreated: () => v
     if (!methodId && methods[0]) setMethodId(methods[0].id);
   }, [methods, methodId]);
 
+  const MAX_DEPOSIT = 1_000_000;
+
   async function submit() {
     const amt = Number(amount);
     if (!methodId || !selected) return toast.error("পেমেন্ট মেথড বাছাই করুন");
-    if (!amt || amt < selected.min_deposit)
-      return toast.error(`সর্বনিম্ন ৳${selected.min_deposit}`);
+    if (!Number.isFinite(amt) || amt <= 0) return toast.error("সঠিক পরিমাণ দিন");
+    if (amt < selected.min_deposit)
+      return toast.error(`ন্যূনতম ৳${selected.min_deposit.toLocaleString()}`);
+    if (amt > MAX_DEPOSIT)
+      return toast.error(`সর্বোচ্চ ৳${MAX_DEPOSIT.toLocaleString()} এক বারে`);
     if (!sender.trim()) return toast.error("আপনার একাউন্ট নম্বর দিন");
     if (!txnRef.trim()) return toast.error("Transaction ID দিন");
     const parsed = depositSchema.safeParse({ amount: amt, sender, txnRef, note });
