@@ -156,7 +156,7 @@ function Crash() {
             <AutoBetPanel auto={auto} canStart={pf.ready && !isFlying} />
           )}
           {msg && <div className={`animate-fade-in text-center text-sm font-bold ${color}`}>{msg}</div>}
-          <ProvablyFairPanel pf={pf} />
+          <ProvablyFairPanel pf={pf} gameKey="crash" />
         </ControlsPanel>
       </GameFrame>
     </GameShell>
