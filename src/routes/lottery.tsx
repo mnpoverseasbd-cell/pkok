@@ -44,6 +44,13 @@ function LotteryPage() {
   return (
     <SiteShell>
       <h1 className="sr-only">লটারি ও বিঙ্গো</h1>
+      <div className="pt-4">
+        <ComingSoonBanner
+          title="লটারি ও বিঙ্গো শীঘ্রই চালু হচ্ছে"
+          message="TCG, VR, GPI সহ lottery/bingo provider এর real integration এখনো active নয়।"
+          providers={["TCG", "TCG SEA", "VR", "GPI"]}
+        />
+      </div>
       <section
         className="game-lobby ELOTT"
         aria-label="Lottery providers"
