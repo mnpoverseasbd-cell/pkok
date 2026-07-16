@@ -404,14 +404,14 @@ function ProvidersStrip() {
       <div className="mx-auto max-w-[1440px] space-y-5 px-4 sm:px-6 lg:px-8">
         {rows.map((row, idx) => (
           <div key={idx} className="overflow-hidden">
-            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-x-8">
               {row.map((item) => (
-                <div key={item.name} className="flex h-14 shrink-0 items-center justify-center px-2">
+                <div key={item.name} className="flex h-8 shrink-0 items-center justify-center px-1">
                   <img
                     src={item.logo}
                     alt={item.name}
                     loading="lazy"
-                    className="max-h-12 max-w-none object-contain opacity-90 transition duration-200 hover:scale-110 hover:opacity-100"
+                    className="max-h-7 max-w-none object-contain opacity-90 transition duration-200 hover:scale-110 hover:opacity-100"
                     style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.4))" }}
                   />
                 </div>
