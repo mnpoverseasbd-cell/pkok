@@ -407,7 +407,7 @@ function ProvidersStrip() {
             <div
               className="flex w-max items-center gap-10"
               style={{
-                animation: `marquee-x ${90 + idx * 15}s linear infinite`,
+                animation: `marquee-x ${40 + idx * 8}s linear infinite`,
                 animationDirection: idx % 2 === 1 ? "reverse" : "normal",
               }}
             >
