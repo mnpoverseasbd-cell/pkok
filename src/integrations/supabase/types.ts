@@ -230,9 +230,11 @@ export type Database = {
           approved_at: string | null
           approved_by: string | null
           created_at: string
+          game_id: string | null
           id: string
           payment_method_id: string | null
           receiver_account: string | null
+          round_id: string | null
           sender_account: string | null
           status: Database["public"]["Enums"]["txn_status"]
           txn_reference: string | null
@@ -247,9 +249,11 @@ export type Database = {
           approved_at?: string | null
           approved_by?: string | null
           created_at?: string
+          game_id?: string | null
           id?: string
           payment_method_id?: string | null
           receiver_account?: string | null
+          round_id?: string | null
           sender_account?: string | null
           status?: Database["public"]["Enums"]["txn_status"]
           txn_reference?: string | null
@@ -264,9 +268,11 @@ export type Database = {
           approved_at?: string | null
           approved_by?: string | null
           created_at?: string
+          game_id?: string | null
           id?: string
           payment_method_id?: string | null
           receiver_account?: string | null
+          round_id?: string | null
           sender_account?: string | null
           status?: Database["public"]["Enums"]["txn_status"]
           txn_reference?: string | null
@@ -425,11 +431,31 @@ export type Database = {
           total_amount: number
         }[]
       }
+      wallet_mutate: {
+        Args: {
+          _amount: number
+          _game_id?: string
+          _note?: string
+          _round_id?: string
+          _type: Database["public"]["Enums"]["txn_type"]
+        }
+        Returns: {
+          new_balance: number
+          txn_id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
       txn_status: "pending" | "approved" | "rejected" | "cancelled"
-      txn_type: "deposit" | "withdraw" | "bonus" | "cashback"
+      txn_type:
+        | "deposit"
+        | "withdraw"
+        | "bonus"
+        | "cashback"
+        | "bet"
+        | "win"
+        | "refund"
       vip_tier: "bronze" | "silver" | "gold" | "platinum" | "diamond"
     }
     CompositeTypes: {
@@ -560,7 +586,15 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       txn_status: ["pending", "approved", "rejected", "cancelled"],
-      txn_type: ["deposit", "withdraw", "bonus", "cashback"],
+      txn_type: [
+        "deposit",
+        "withdraw",
+        "bonus",
+        "cashback",
+        "bet",
+        "win",
+        "refund",
+      ],
       vip_tier: ["bronze", "silver", "gold", "platinum", "diamond"],
     },
   },
