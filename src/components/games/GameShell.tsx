@@ -49,35 +49,71 @@ export function GameShell({
 }
 
 export function BetControls({
-  bet,
-  setBet,
-  min = 10,
-  max = 500,
-  disabled,
-}: {
-  bet: number;
-  setBet: (n: number) => void;
-  min?: number;
-  max?: number;
-  disabled?: boolean;
-}) {
+  bet, setBet, min = 10, max = 500, disabled,
+}: { bet: number; setBet: (n: number) => void; min?: number; max?: number; disabled?: boolean }) {
   const set = (n: number) => setBet(Math.max(min, Math.min(max, Math.round(n))));
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs font-bold text-white/70">BET</span>
-      <button disabled={disabled} onClick={() => set(bet / 2)} className="rounded bg-white/10 px-2 py-1 text-xs text-white hover:bg-white/20 disabled:opacity-40">½</button>
-      <input
-        type="number"
-        value={bet}
-        min={min}
-        max={max}
-        disabled={disabled}
-        onChange={(e) => set(Number(e.target.value) || min)}
-        className="w-24 rounded bg-white/90 px-2 py-1 text-center text-sm font-bold text-black disabled:opacity-60"
-      />
-      <button disabled={disabled} onClick={() => set(bet * 2)} className="rounded bg-white/10 px-2 py-1 text-xs text-white hover:bg-white/20 disabled:opacity-40">2×</button>
-      <button disabled={disabled} onClick={() => set(min)} className="rounded bg-white/10 px-2 py-1 text-xs text-white hover:bg-white/20 disabled:opacity-40">MIN</button>
-      <button disabled={disabled} onClick={() => set(max)} className="rounded bg-white/10 px-2 py-1 text-xs text-white hover:bg-white/20 disabled:opacity-40">MAX</button>
+    <div className="flex flex-col gap-2">
+      <label className="text-xs font-bold uppercase tracking-widest text-[#00ff88]">বাজি</label>
+      <div className="relative">
+        <input
+          type="number" value={bet} min={min} max={max} disabled={disabled}
+          onChange={(e) => set(Number(e.target.value) || min)}
+          className="w-full rounded-lg border border-[#1a3321] bg-[#112216] p-3 pr-20 font-bold text-white outline-none focus:border-[#00ff88] disabled:opacity-60"
+        />
+        <div className="absolute inset-y-1 right-1 flex gap-1">
+          <button disabled={disabled} onClick={() => set(bet / 2)} className="rounded bg-[#1a3321] px-2 text-xs font-bold text-white hover:bg-[#254a30] disabled:opacity-40">½</button>
+          <button disabled={disabled} onClick={() => set(bet * 2)} className="rounded bg-[#1a3321] px-2 text-xs font-bold text-white hover:bg-[#254a30] disabled:opacity-40">2×</button>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <button disabled={disabled} onClick={() => set(min)} className="flex-1 rounded bg-[#1a3321] py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:bg-[#254a30] disabled:opacity-40">সর্বনিম্ন</button>
+        <button disabled={disabled} onClick={() => set(max)} className="flex-1 rounded bg-[#1a3321] py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:bg-[#254a30] disabled:opacity-40">সর্বোচ্চ</button>
+      </div>
+    </div>
+  );
+}
+
+export function GameFrame({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={`mt-3 flex flex-col gap-6 rounded-[2rem] border border-[#1a3321] bg-[#0d1a10] p-4 shadow-2xl shadow-black sm:p-6 lg:flex-row lg:p-8 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+export function ControlsPanel({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex w-full flex-col gap-5 rounded-2xl border border-[#1a3321] bg-[#0a120b] p-5 lg:w-80">
+      {children}
+    </div>
+  );
+}
+
+export function PrimaryButton({
+  onClick, disabled, children, tone = "emerald",
+}: { onClick: () => void; disabled?: boolean; children: ReactNode; tone?: "emerald" | "gold" }) {
+  const cls = tone === "emerald"
+    ? "bg-[#00ff88] text-[#050a06] shadow-[0_6px_0_0_#00884a] hover:bg-[#00e07a]"
+    : "bg-[var(--neon-gold)] text-[#050a06] shadow-[0_6px_0_0_#a37f00] hover:brightness-110";
+  return (
+    <button
+      onClick={onClick} disabled={disabled}
+      className={`w-full rounded-xl py-5 text-xl font-extrabold uppercase tracking-wider transition-all active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none ${cls}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+export function MultDisplay({ label, value, sub }: { label: string; value: string; sub?: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs font-semibold uppercase tracking-widest text-[#00ff88]">{label}</span>
+      <div className="text-4xl font-bold tracking-tighter text-white">
+        {value}
+      </div>
+      {sub && <div className="text-[11px] text-white/50">{sub}</div>}
     </div>
   );
 }
