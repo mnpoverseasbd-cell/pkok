@@ -4,6 +4,7 @@ import { Coins, RefreshCw, Wrench, LogIn, ShoppingCart } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { LiveBetsFeed } from "@/components/games/LiveBetsFeed";
+import { BetHistoryPanel } from "@/components/games/BetHistoryPanel";
 import {
   DEFAULT_GAME_CONFIG,
   GameConfigContext,
