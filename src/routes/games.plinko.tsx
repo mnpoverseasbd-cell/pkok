@@ -115,7 +115,7 @@ function Plinko() {
     ["#f97316", "#c2410c"],
     ["#ef4444", "#b91c1c"],
   ];
-  const bucketStyle = (i: number, active: boolean): React.CSSProperties => {
+  const bucketStyle = (i: number, active: boolean): CSSProperties => {
     const [c1, c2] = PIN_PALETTES[i] ?? ["#64748b", "#334155"];
     return {
       background: `linear-gradient(180deg, ${c1} 0%, ${c2} 100%)`,
