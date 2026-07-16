@@ -1,10 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
+import { useProvablyFair } from "@/hooks/useProvablyFair";
+import { useAutoBet } from "@/hooks/useAutoBet";
+import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
+import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
+import { fairLimbo } from "@/lib/provablyFair";
 
 export const Route = createFileRoute("/games/limbo")({
   head: () => ({
@@ -20,40 +25,47 @@ function LimboGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("limbo");
   const { data: cfg } = useGameConfig("limbo");
-  const edge = cfg?.house_edge ?? 0;
+  const edge = cfg?.house_edge ?? 0.01;
+  const pf = useProvablyFair("limbo");
   const [bet, setBet] = useState(50);
   const [target, setTarget] = useState(2.0);
   const [rolling, setRolling] = useState(false);
   const [result, setResult] = useState<number | null>(null);
   const [msg, setMsg] = useState("");
+  const [mode, setMode] = useState<"manual" | "auto">("manual");
 
   const winChance = Math.min(99, +(99 / target).toFixed(2));
   const payout = target;
 
-  const play = async () => {
-    if (rolling) return;
-    if (target < 1.01) { setMsg("টার্গেট ≥ 1.01× হতে হবে"); return; }
-    if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
+  const runRound = useCallback(async (roundBet: number) => {
+    if (!pf.ready) return { pnl: 0 };
+    if (target < 1.01) { setMsg("টার্গেট ≥ 1.01× হতে হবে"); return { pnl: 0 }; }
+    if (!placeBet(roundBet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return { pnl: 0 }; }
     setRolling(true); setMsg("");
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 8; i++) {
       setResult(+(1 + Math.random() * (target * 2)).toFixed(2));
       // eslint-disable-next-line no-await-in-loop
-      await new Promise((r) => setTimeout(r, 55));
+      await new Promise((r) => setTimeout(r, 45));
     }
-    const u = Math.random();
-    const final = +Math.max(1, 0.99 / u).toFixed(2);
+    const final = await fairLimbo(pf.serverSeed, pf.clientSeed, pf.nonce, edge);
     setResult(final);
+    let pnl: number;
     if (final >= target) {
-      const won = Math.floor(bet * payout * (1 - edge)); credit(won);
-      setMsg(`🎉 জয় +${won - bet}`);
-      record({ pnl: won - bet, multiplier: won / bet });
+      const won = Math.floor(roundBet * payout * (1 - edge)); credit(won);
+      pnl = won - roundBet;
+      setMsg(`🎉 জয় +${pnl} · ${final}×`);
+      record({ pnl, multiplier: won / roundBet });
     } else {
-      setMsg(`💥 হার -${bet}`);
-      record({ pnl: -bet, multiplier: 0 });
+      pnl = -roundBet;
+      setMsg(`💥 হার ${pnl} · ${final}×`);
+      record({ pnl, multiplier: 0 });
     }
+    pf.consume(`crash=${final}× target≥${target}×`);
     setRolling(false);
-  };
+    return { pnl };
+  }, [pf, placeBet, credit, edge, payout, target, record]);
 
+  const auto = useAutoBet({ runRound, baseBet: bet });
   const win = result !== null && result >= target;
 
   return (
@@ -73,6 +85,7 @@ function LimboGame() {
           {msg && <div className="animate-fade-in text-lg font-black text-[var(--neon-gold)]">{msg}</div>}
         </div>
         <ControlsPanel>
+          <ModeTabs mode={mode} setMode={setMode} disabled={rolling || auto.running} />
           <MultDisplay
             label="টার্গেট"
             value={`${target.toFixed(2)}×`}
@@ -81,14 +94,14 @@ function LimboGame() {
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold uppercase tracking-widest text-[#00ff88]">টার্গেট মাল্টিপ্লায়ার</label>
             <input
-              type="number" step="0.01" min={1.01} max={1000} value={target} disabled={rolling}
+              type="number" step="0.01" min={1.01} max={1000} value={target} disabled={rolling || auto.running}
               onChange={(e) => setTarget(Math.max(1.01, Number(e.target.value) || 1.01))}
               className="w-full rounded-lg border border-[#1a3321] bg-[#112216] p-3 font-bold text-white outline-none focus:border-[#00ff88] disabled:opacity-60"
             />
             <div className="flex gap-1">
               {[1.5, 2, 5, 10, 100].map((t) => (
                 <button
-                  key={t} onClick={() => setTarget(t)} disabled={rolling}
+                  key={t} onClick={() => setTarget(t)} disabled={rolling || auto.running}
                   className={`flex-1 rounded px-2 py-1.5 text-xs font-bold transition ${
                     target === t ? "bg-[#00ff88]/15 text-[#00ff88] ring-1 ring-[#00ff88]" : "bg-[#1a3321] text-white/80 hover:bg-[#254a30]"
                   } disabled:opacity-40`}
@@ -98,10 +111,15 @@ function LimboGame() {
               ))}
             </div>
           </div>
-          <BetControls bet={bet} setBet={setBet} disabled={rolling} />
-          <PrimaryButton onClick={play} disabled={rolling}>
-            {rolling ? "রোলিং..." : `প্লে · ${Math.floor(bet * payout)}`}
-          </PrimaryButton>
+          <BetControls bet={bet} setBet={setBet} disabled={rolling || auto.running} />
+          {mode === "manual" ? (
+            <PrimaryButton onClick={() => runRound(bet)} disabled={rolling}>
+              {rolling ? "রোলিং..." : `প্লে · ${Math.floor(bet * payout)}`}
+            </PrimaryButton>
+          ) : (
+            <AutoBetPanel auto={auto} canStart={pf.ready} />
+          )}
+          <ProvablyFairPanel pf={pf} />
         </ControlsPanel>
       </GameFrame>
     </GameShell>
