@@ -197,7 +197,7 @@ function TopBar() {
   const [submitting, setSubmitting] = useState(false);
   const { t } = useLang();
   const { user } = useAuth();
-  const { profile } = useProfile(user?.id);
+  const { profile, refetch: refetchProfile } = useProfile(user?.id);
   const navigate = useNavigate();
 
   async function handleSignOut() {
