@@ -186,11 +186,19 @@ function Mines() {
   return (
     <GameShell title="Mines" emoji="💣" gameKey="mines">
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3">
+        <MultiplierHistoryStrip gameKey="mines" />
+      </div>
 
       <div className="mt-3 flex flex-col gap-6 rounded-[2rem] border border-[#1a3321] bg-[#0d1a10] p-4 shadow-2xl shadow-black sm:p-6 lg:flex-row lg:p-8">
         {/* Game Board */}
         <div className="flex-1">
-          <div className="grid grid-cols-5 gap-2 sm:gap-3">
+          <div ref={boardWrapRef} className="relative grid grid-cols-5 gap-2 sm:gap-3">
+            <ParticleLayer ref={fxRef} />
+            {Array.from({ length: SIZE }).map((_, i) => {
+              const isRev = revealed.has(i);
+              const isBombHere = board.has(i);
+              const showBomb = dead === i || (!active && isBombHere && dead !== null);
             {Array.from({ length: SIZE }).map((_, i) => {
               const isRev = revealed.has(i);
               const isBombHere = board.has(i);
