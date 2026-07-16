@@ -124,31 +124,49 @@ function Crash() {
   const reset = () => { setState("idle"); setMsg(""); setMult(1.0); setCrashAt(null); };
 
   const isFlying = state === "flying";
-  const color = state === "crashed" ? "text-[#ff4444]" : state === "cashed" ? "text-[#00ff88]" : isFlying ? "text-[#00ff88]" : "text-white";
-  const glow = state === "crashed" ? "shadow-[0_0_40px_rgba(255,68,68,0.4)]" : isFlying || state === "cashed" ? "shadow-[0_0_50px_rgba(0,255,136,0.4)]" : "";
+  const statusColor = state === "crashed" ? "text-[#ff4d4d]" : state === "cashed" ? "text-[#ffd166]" : isFlying ? "text-[#00ff88]" : "text-white/50";
+  const frameGlow =
+    state === "crashed" ? "shadow-[0_0_60px_-10px_rgba(255,77,77,0.45)] border-[#3a1414]" :
+    state === "cashed" ? "shadow-[0_0_60px_-10px_rgba(255,209,102,0.5)] border-[#3a2f14]" :
+    isFlying ? "shadow-[0_0_70px_-10px_rgba(0,255,136,0.45)] border-[#143a1f]" :
+    "border-[#1a3321]";
 
   return (
     <GameShell title="Crash" emoji="🚀" gameKey="crash">
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <MultiplierHistoryStrip gameKey="crash" />
+        <div className={`hidden items-center gap-2 rounded-full border border-white/5 bg-black/30 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] sm:inline-flex ${statusColor}`}>
+          <span className={`h-2 w-2 rounded-full ${isFlying ? "bg-[#00ff88] animate-pulse" : state === "crashed" ? "bg-[#ff4d4d]" : state === "cashed" ? "bg-[#ffd166]" : "bg-white/40"}`} />
+          {isFlying ? "in flight" : state === "crashed" ? "busted" : state === "cashed" ? "cashed out" : "ready"}
+        </div>
+      </div>
       <GameFrame>
-        <div className={`relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[#1a3321] bg-gradient-to-b from-[#0a120b] to-[#050a06] p-8 min-h-[280px] ${glow}`}>
-          <div className={`text-8xl font-black tabular-nums drop-shadow-[0_0_20px_currentColor] ${color} ${isFlying ? "animate-pulse" : ""}`}>
-            {mult.toFixed(2)}×
+        <div className={`relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border bg-gradient-to-b from-[#0a120b] via-[#070f08] to-[#020604] p-6 min-h-[320px] transition-shadow duration-500 ${frameGlow}`}>
+          <CrashChart multiplier={mult} active={isFlying} state={state} />
+          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(0,255,136,0.08),transparent_60%)]" />
+          <div className="relative z-10 flex flex-col items-center gap-3">
+            <MultiplierHUD value={mult} state={state} />
+            <div className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] ${statusColor}`}>
+              {isFlying && <><Rocket className="h-3.5 w-3.5 animate-rocket-idle" /> উড়ছে…</>}
+              {state === "crashed" && <>💥 বাস্ট @ {crashAt}×</>}
+              {state === "cashed" && <>💰 ক্যাশ আউট · বাস্ট ছিল @ {crashAt}×</>}
+              {state === "idle" && <>বাজি রাখুন — লাফ দাও</>}
+            </div>
           </div>
-          <div className="absolute bottom-3 left-4 text-xs font-bold uppercase tracking-widest text-white/50">
-            {isFlying && "🚀 উড়ছে..."}
-            {state === "crashed" && `বাস্ট @ ${crashAt}×`}
-            {state === "cashed" && `ক্যাশ আউট (বাস্ট ছিল @ ${crashAt}×)`}
-            {state === "idle" && "বাজি রাখুন"}
-          </div>
+          <ParticleLayer ref={fxRef} />
         </div>
         <ControlsPanel>
           <ModeTabs mode={mode} setMode={setMode} disabled={isFlying || auto.running} />
-          <MultDisplay
-            label="বর্তমান"
-            value={`${mult.toFixed(2)}×`}
-            sub={isFlying ? <>ক্যাশআউট মূল্য: <span className="text-[#00ff88]">{Math.floor(bet * mult)}</span></> : "উড়ানোর জন্য বাজি রাখুন"}
-          />
+          <div className="rounded-xl border border-white/5 bg-black/30 p-3">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-white/50">সম্ভাব্য পেআউট</div>
+            <div className="mt-0.5 flex items-baseline gap-2">
+              <span className="text-2xl font-black tabular-nums text-[#00ff88] drop-shadow-[0_0_10px_rgba(0,255,136,0.4)]">
+                ৳ {Math.floor(bet * mult).toLocaleString("en-BD")}
+              </span>
+              <span className="text-xs font-bold text-white/40 tabular-nums">@ {mult.toFixed(2)}×</span>
+            </div>
+          </div>
           <BetControls bet={bet} setBet={setBet} disabled={isFlying || auto.running} />
 
           {mode === "auto" && (
@@ -165,7 +183,7 @@ function Crash() {
           {mode === "manual" ? (
             isFlying ? (
               <PrimaryButton onClick={manualCashout} tone="gold">
-                ক্যাশআউট · {Math.floor(bet * mult)}
+                ক্যাশআউট · {Math.floor(bet * mult).toLocaleString("en-BD")}
               </PrimaryButton>
             ) : (
               <PrimaryButton onClick={state === "idle" ? () => runRound(bet) : reset}>
@@ -175,7 +193,7 @@ function Crash() {
           ) : (
             <AutoBetPanel auto={auto} canStart={pf.ready && !isFlying} />
           )}
-          {msg && <div className={`animate-fade-in text-center text-sm font-bold ${color}`}>{msg}</div>}
+          {msg && <div className={`animate-fade-in text-center text-sm font-bold ${statusColor}`}>{msg}</div>}
           <ProvablyFairPanel pf={pf} gameKey="crash" />
         </ControlsPanel>
       </GameFrame>
