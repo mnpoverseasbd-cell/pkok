@@ -14,6 +14,8 @@ export const Route = createFileRoute("/games/dice")({
 function DiceGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("dice");
+  const { data: cfg } = useGameConfig("dice");
+  const edge = cfg?.house_edge ?? 0;
   const [bet, setBet] = useState(50);
   const [target, setTarget] = useState(50);
   const [rolling, setRolling] = useState(false);
