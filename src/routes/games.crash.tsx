@@ -108,6 +108,9 @@ function Crash() {
     record({ pnl, multiplier: won / bet });
     pf.consume(`crash=${targetRef.current}× cashout=${cashMult}×`);
     recordMyBet({ game: "crash", bet, multiplier: cashMult, payout: won });
+    pushMultiplierHistory("crash", targetRef.current);
+    fxRef.current?.burst({ count: 70, kind: "confetti", speed: 8 });
+    try { sfxCashout(); } catch { /* noop */ }
     manualResolveRef.current?.({ pnl });
     manualResolveRef.current = null;
   };
