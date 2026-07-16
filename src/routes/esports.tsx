@@ -86,7 +86,7 @@ function MyGamesPage() {
         {filtered.length === 0 ? (
           <EmptyState hasQuery={query.trim().length > 0} />
         ) : (
-          <div className="game-list" style={{ gridTemplateColumns: "repeat(6, 1fr)" }}>
+          <div className="mygames-grid">
             {filtered.map((g, i) => (
               <GameCard key={g.slug} g={g} index={i} />
             ))}
@@ -99,9 +99,8 @@ function MyGamesPage() {
 
 function GameCard({ g, index }: { g: OriginalGame; index: number }) {
   const inner = (
-    <div className="game-card__inner">
-      {/* Poster tile with green outline (JILI-style) */}
-      <div className="relative aspect-square w-full overflow-hidden rounded-md bg-black ring-2 ring-[var(--neon-green,#22c55e)] shadow-[0_0_0_2px_rgba(0,0,0,0.6),0_8px_20px_rgba(0,0,0,0.55)]">
+    <>
+      <div className="mygames-tile group">
         <img
           src={g.poster}
           alt={g.name}
@@ -112,18 +111,18 @@ function GameCard({ g, index }: { g: OriginalGame; index: number }) {
         />
 
         {/* Provider badge (top-left) */}
-        <span className="absolute left-1.5 top-1.5 z-[3] rounded-sm bg-gradient-to-b from-emerald-500 to-emerald-800 px-1.5 py-0.5 text-[9px] font-black tracking-wider text-white shadow ring-1 ring-black/40">
+        <span className="absolute left-1.5 top-1.5 z-[3] rounded-sm bg-gradient-to-b from-emerald-500 to-emerald-800 px-1.5 py-0.5 text-[10px] font-black tracking-wider text-white shadow ring-1 ring-black/40">
           {g.provider}
         </span>
 
         {/* Heart (top-right) */}
-        <span className="absolute right-1.5 top-1.5 z-[3] grid h-5 w-5 place-items-center rounded-full bg-black/55 text-white/85 ring-1 ring-white/25 backdrop-blur">
-          <Heart className="h-3 w-3" />
+        <span className="absolute right-1.5 top-1.5 z-[3] grid h-6 w-6 place-items-center rounded-full bg-black/55 text-white/85 ring-1 ring-white/25 backdrop-blur">
+          <Heart className="h-3.5 w-3.5" />
         </span>
 
         {/* LIVE / SOON */}
         <span
-          className={`absolute bottom-1.5 left-1.5 z-[3] inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-black ring-1 backdrop-blur ${
+          className={`absolute bottom-1.5 left-1.5 z-[3] inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black ring-1 backdrop-blur ${
             g.status === "live"
               ? "bg-red-600/95 text-white ring-white/50 shadow-[0_0_10px_rgba(255,60,60,0.7)]"
               : "bg-yellow-400/95 text-black ring-white/50"
@@ -138,20 +137,16 @@ function GameCard({ g, index }: { g: OriginalGame; index: number }) {
             "SOON"
           )}
         </span>
-
-        {/* subtle shine + hover spotlight (keeps existing animations working) */}
-        <div className="game-card__shine" />
-        <div className="game-card__spot" />
       </div>
 
-      {/* Bengali label BELOW the tile (like JILI reference) */}
-      <div className="mt-2 text-center text-[13px] font-semibold text-white/95 drop-shadow">
+      {/* Bengali label BELOW the tile */}
+      <div className="mt-2 text-center text-[14px] font-semibold text-white/95 drop-shadow">
         {g.nameBn}
       </div>
-    </div>
+    </>
   );
 
-  const className = "lobby-item game-card group animate-fade-in";
+  const className = "mygames-item animate-fade-in";
   const style = { animationDelay: `${Math.min(index * 40, 600)}ms`, animationFillMode: "backwards" as const };
 
   if (g.status === "live" && g.to) {
@@ -167,6 +162,7 @@ function GameCard({ g, index }: { g: OriginalGame; index: number }) {
     </button>
   );
 }
+
 
 function EmptyState({ hasQuery }: { hasQuery: boolean }) {
   if (hasQuery) {
