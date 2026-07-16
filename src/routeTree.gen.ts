@@ -15,6 +15,7 @@ import { Route as TournamentsRouteImport } from './routes/tournaments'
 import { Route as SportsRouteImport } from './routes/sports'
 import { Route as SlotsRouteImport } from './routes/slots'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ReferralRouteImport } from './routes/referral'
 import { Route as RecentlyPlayedRouteImport } from './routes/recently-played'
 import { Route as PromotionRouteImport } from './routes/promotion'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -69,6 +70,11 @@ const SlotsRoute = SlotsRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferralRoute = ReferralRouteImport.update({
+  id: '/referral',
+  path: '/referral',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RecentlyPlayedRoute = RecentlyPlayedRouteImport.update({
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/promotion': typeof PromotionRoute
   '/recently-played': typeof RecentlyPlayedRoute
+  '/referral': typeof ReferralRoute
   '/register': typeof RegisterRoute
   '/slots': typeof SlotsRoute
   '/sports': typeof SportsRoute
@@ -248,6 +255,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/promotion': typeof PromotionRoute
   '/recently-played': typeof RecentlyPlayedRoute
+  '/referral': typeof ReferralRoute
   '/register': typeof RegisterRoute
   '/slots': typeof SlotsRoute
   '/sports': typeof SportsRoute
@@ -282,6 +290,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/promotion': typeof PromotionRoute
   '/recently-played': typeof RecentlyPlayedRoute
+  '/referral': typeof ReferralRoute
   '/register': typeof RegisterRoute
   '/slots': typeof SlotsRoute
   '/sports': typeof SportsRoute
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/promotion'
     | '/recently-played'
+    | '/referral'
     | '/register'
     | '/slots'
     | '/sports'
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/promotion'
     | '/recently-played'
+    | '/referral'
     | '/register'
     | '/slots'
     | '/sports'
@@ -383,6 +394,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/promotion'
     | '/recently-played'
+    | '/referral'
     | '/register'
     | '/slots'
     | '/sports'
@@ -417,6 +429,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   PromotionRoute: typeof PromotionRoute
   RecentlyPlayedRoute: typeof RecentlyPlayedRoute
+  ReferralRoute: typeof ReferralRoute
   RegisterRoute: typeof RegisterRoute
   SlotsRoute: typeof SlotsRoute
   SportsRoute: typeof SportsRoute
@@ -475,6 +488,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/referral': {
+      id: '/referral'
+      path: '/referral'
+      fullPath: '/referral'
+      preLoaderRoute: typeof ReferralRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recently-played': {
@@ -673,6 +693,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   PromotionRoute: PromotionRoute,
   RecentlyPlayedRoute: RecentlyPlayedRoute,
+  ReferralRoute: ReferralRoute,
   RegisterRoute: RegisterRoute,
   SlotsRoute: SlotsRoute,
   SportsRoute: SportsRoute,

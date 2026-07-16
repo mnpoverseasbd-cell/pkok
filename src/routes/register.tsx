@@ -10,7 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { createPhoneAccount } from "@/lib/auth.functions";
 import { phoneRegex } from "@/lib/auth-utils";
 
+const searchSchema = z.object({ ref: z.string().trim().min(1).max(64).optional() });
+
 export const Route = createFileRoute("/register")({
+  validateSearch: (s) => searchSchema.parse(s),
   head: () => ({
     meta: [
       { title: "রেজিস্টার — Asik Game" },
@@ -28,9 +31,11 @@ const registerSchema = z.object({
 });
 
 function RegisterPage() {
+  const search = Route.useSearch();
   const [show, setShow] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [refCode, setRefCode] = useState(search.ref ?? "");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const registerAccount = useServerFn(createPhoneAccount);
@@ -50,7 +55,8 @@ function RegisterPage() {
 
     try {
       setLoading(true);
-      const result = await registerAccount({ data: parsed.data });
+      const ref = refCode.trim() || undefined;
+      const result = await registerAccount({ data: { ...parsed.data, ref } });
 
       if (!result.success) {
         toast.error("এই ফোন নম্বর দিয়ে আগে অ্যাকাউন্ট আছে");
@@ -119,6 +125,21 @@ function RegisterPage() {
                 </button>
               </div>
             </div>
+            <div>
+              <label className="mb-1 block text-xs font-bold text-foreground/85">রেফারেল কোড <span className="text-foreground/50">(ঐচ্ছিক)</span></label>
+              <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-gold)]/40 bg-black/35 px-3 py-2.5">
+                <Gift className="h-4 w-4 text-[var(--neon-gold)]" />
+                <input
+                  type="text"
+                  value={refCode}
+                  onChange={(e) => setRefCode(e.target.value.trim())}
+                  placeholder="বন্ধুর রেফারেল কোড"
+                  className="w-full bg-transparent text-sm uppercase outline-none placeholder:text-foreground/40"
+                />
+              </div>
+            </div>
+
+
 
             <button
               type="submit"

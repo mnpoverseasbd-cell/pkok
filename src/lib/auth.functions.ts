@@ -7,6 +7,7 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
       .object({
         phone: z.string().trim().regex(/^01[3-9]\d{8}$/),
         password: z.string().min(6).max(72),
+        ref: z.string().trim().min(1).max(64).optional(),
       })
       .parse(input),
   )
@@ -72,6 +73,18 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
       throw new Error("Account creation failed");
     }
 
+    let referredBy: string | null = null;
+    if (data.ref) {
+      const { data: refProfile } = await admin
+        .from("profiles")
+        .select("id")
+        .eq("referral_code", data.ref)
+        .maybeSingle();
+      if (refProfile && refProfile.id !== created.user.id) {
+        referredBy = refProfile.id;
+      }
+    }
+
     const { error: profileError } = await admin.from("profiles").upsert(
       {
         id: created.user.id,
@@ -79,6 +92,7 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
         display_name: data.phone,
         email,
         phone: data.phone,
+        referred_by: referredBy,
       },
       { onConflict: "id" },
     );

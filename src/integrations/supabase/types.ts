@@ -68,6 +68,7 @@ export type Database = {
           id: string
           phone: string | null
           referral_code: string
+          referred_by: string | null
           updated_at: string
           username: string | null
           vip_tier: Database["public"]["Enums"]["vip_tier"]
@@ -81,6 +82,7 @@ export type Database = {
           id: string
           phone?: string | null
           referral_code?: string
+          referred_by?: string | null
           updated_at?: string
           username?: string | null
           vip_tier?: Database["public"]["Enums"]["vip_tier"]
@@ -94,12 +96,21 @@ export type Database = {
           id?: string
           phone?: string | null
           referral_code?: string
+          referred_by?: string | null
           updated_at?: string
           username?: string | null
           vip_tier?: Database["public"]["Enums"]["vip_tier"]
           wallet_balance?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transactions: {
         Row: {
