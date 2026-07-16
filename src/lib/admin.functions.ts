@@ -33,6 +33,35 @@ function getAdminClient() {
   );
 }
 
+async function writeAudit(
+  admin: any,
+  actorId: string,
+  action: string,
+  targetType: string | null,
+  targetId: string | null,
+  details: Record<string, unknown> = {},
+) {
+  try {
+    const { data: prof } = await admin
+      .from("profiles")
+      .select("display_name, username, phone, email")
+      .eq("id", actorId)
+      .maybeSingle();
+    const label =
+      prof?.display_name || prof?.username || prof?.phone || prof?.email || actorId.slice(0, 8);
+    await admin.rpc("record_audit", {
+      _actor_id: actorId,
+      _actor_label: label,
+      _action: action,
+      _target_type: targetType,
+      _target_id: targetId,
+      _details: details,
+    });
+  } catch (e) {
+    console.error("[audit] failed", action, e);
+  }
+}
+
 export const adminDeleteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ userId: z.string().uuid() }).parse(input))
@@ -42,6 +71,7 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
     const admin = await getAdminClient();
     const { error } = await admin.auth.admin.deleteUser(data.userId);
     if (error) throw new Error(error.message);
+    await writeAudit(admin, context.userId, "user.delete", "user", data.userId, {});
     return { success: true as const };
   });
 
