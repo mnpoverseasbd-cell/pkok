@@ -50,7 +50,7 @@ function DiceGame() {
   const win = roll !== null && roll < target;
 
   return (
-    <GameShell title="Lucky Dice" emoji="🎲">
+    <GameShell title="Lucky Dice" emoji="🎲" gameKey="dice">
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="flex flex-1 flex-col items-center justify-center gap-6">
