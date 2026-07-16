@@ -35,12 +35,20 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesIndexRouteImport } from './routes/games.index'
 import { Route as GamesWheelRouteImport } from './routes/games.wheel'
+import { Route as GamesTowerRouteImport } from './routes/games.tower'
+import { Route as GamesShellGameRouteImport } from './routes/games.shell-game'
+import { Route as GamesScratchCardRouteImport } from './routes/games.scratch-card'
 import { Route as GamesPlinkoRouteImport } from './routes/games.plinko'
 import { Route as GamesMinesRouteImport } from './routes/games.mines'
+import { Route as GamesLuckyCardRouteImport } from './routes/games.lucky-card'
 import { Route as GamesLimboRouteImport } from './routes/games.limbo'
+import { Route as GamesKenoRouteImport } from './routes/games.keno'
+import { Route as GamesHiLoRouteImport } from './routes/games.hi-lo'
 import { Route as GamesDiceRouteImport } from './routes/games.dice'
 import { Route as GamesCrashRouteImport } from './routes/games.crash'
+import { Route as GamesColorPredictionRouteImport } from './routes/games.color-prediction'
 import { Route as GamesCoinflipRouteImport } from './routes/games.coinflip'
+import { Route as GamesChickenRoadRouteImport } from './routes/games.chicken-road'
 import { Route as ApiPublicHooksVipDailyRouteImport } from './routes/api/public/hooks/vip-daily'
 
 const WalletRoute = WalletRouteImport.update({
@@ -173,6 +181,21 @@ const GamesWheelRoute = GamesWheelRouteImport.update({
   path: '/games/wheel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesTowerRoute = GamesTowerRouteImport.update({
+  id: '/games/tower',
+  path: '/games/tower',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesShellGameRoute = GamesShellGameRouteImport.update({
+  id: '/games/shell-game',
+  path: '/games/shell-game',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesScratchCardRoute = GamesScratchCardRouteImport.update({
+  id: '/games/scratch-card',
+  path: '/games/scratch-card',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesPlinkoRoute = GamesPlinkoRouteImport.update({
   id: '/games/plinko',
   path: '/games/plinko',
@@ -183,9 +206,24 @@ const GamesMinesRoute = GamesMinesRouteImport.update({
   path: '/games/mines',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesLuckyCardRoute = GamesLuckyCardRouteImport.update({
+  id: '/games/lucky-card',
+  path: '/games/lucky-card',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesLimboRoute = GamesLimboRouteImport.update({
   id: '/games/limbo',
   path: '/games/limbo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesKenoRoute = GamesKenoRouteImport.update({
+  id: '/games/keno',
+  path: '/games/keno',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesHiLoRoute = GamesHiLoRouteImport.update({
+  id: '/games/hi-lo',
+  path: '/games/hi-lo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesDiceRoute = GamesDiceRouteImport.update({
@@ -198,9 +236,19 @@ const GamesCrashRoute = GamesCrashRouteImport.update({
   path: '/games/crash',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesColorPredictionRoute = GamesColorPredictionRouteImport.update({
+  id: '/games/color-prediction',
+  path: '/games/color-prediction',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesCoinflipRoute = GamesCoinflipRouteImport.update({
   id: '/games/coinflip',
   path: '/games/coinflip',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesChickenRoadRoute = GamesChickenRoadRouteImport.update({
+  id: '/games/chicken-road',
+  path: '/games/chicken-road',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicHooksVipDailyRoute = ApiPublicHooksVipDailyRouteImport.update({
@@ -234,12 +282,20 @@ export interface FileRoutesByFullPath {
   '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
+  '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
+  '/games/color-prediction': typeof GamesColorPredictionRoute
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
+  '/games/hi-lo': typeof GamesHiLoRoute
+  '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
+  '/games/lucky-card': typeof GamesLuckyCardRoute
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
+  '/games/scratch-card': typeof GamesScratchCardRoute
+  '/games/shell-game': typeof GamesShellGameRoute
+  '/games/tower': typeof GamesTowerRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games/': typeof GamesIndexRoute
   '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
@@ -269,12 +325,20 @@ export interface FileRoutesByTo {
   '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
+  '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
+  '/games/color-prediction': typeof GamesColorPredictionRoute
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
+  '/games/hi-lo': typeof GamesHiLoRoute
+  '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
+  '/games/lucky-card': typeof GamesLuckyCardRoute
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
+  '/games/scratch-card': typeof GamesScratchCardRoute
+  '/games/shell-game': typeof GamesShellGameRoute
+  '/games/tower': typeof GamesTowerRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games': typeof GamesIndexRoute
   '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
@@ -305,12 +369,20 @@ export interface FileRoutesById {
   '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
+  '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
+  '/games/color-prediction': typeof GamesColorPredictionRoute
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
+  '/games/hi-lo': typeof GamesHiLoRoute
+  '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
+  '/games/lucky-card': typeof GamesLuckyCardRoute
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
+  '/games/scratch-card': typeof GamesScratchCardRoute
+  '/games/shell-game': typeof GamesShellGameRoute
+  '/games/tower': typeof GamesTowerRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games/': typeof GamesIndexRoute
   '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
@@ -342,12 +414,20 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/vip'
     | '/wallet'
+    | '/games/chicken-road'
     | '/games/coinflip'
+    | '/games/color-prediction'
     | '/games/crash'
     | '/games/dice'
+    | '/games/hi-lo'
+    | '/games/keno'
     | '/games/limbo'
+    | '/games/lucky-card'
     | '/games/mines'
     | '/games/plinko'
+    | '/games/scratch-card'
+    | '/games/shell-game'
+    | '/games/tower'
     | '/games/wheel'
     | '/games/'
     | '/api/public/hooks/vip-daily'
@@ -377,12 +457,20 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/vip'
     | '/wallet'
+    | '/games/chicken-road'
     | '/games/coinflip'
+    | '/games/color-prediction'
     | '/games/crash'
     | '/games/dice'
+    | '/games/hi-lo'
+    | '/games/keno'
     | '/games/limbo'
+    | '/games/lucky-card'
     | '/games/mines'
     | '/games/plinko'
+    | '/games/scratch-card'
+    | '/games/shell-game'
+    | '/games/tower'
     | '/games/wheel'
     | '/games'
     | '/api/public/hooks/vip-daily'
@@ -412,12 +500,20 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/vip'
     | '/wallet'
+    | '/games/chicken-road'
     | '/games/coinflip'
+    | '/games/color-prediction'
     | '/games/crash'
     | '/games/dice'
+    | '/games/hi-lo'
+    | '/games/keno'
     | '/games/limbo'
+    | '/games/lucky-card'
     | '/games/mines'
     | '/games/plinko'
+    | '/games/scratch-card'
+    | '/games/shell-game'
+    | '/games/tower'
     | '/games/wheel'
     | '/games/'
     | '/api/public/hooks/vip-daily'
@@ -448,12 +544,20 @@ export interface RootRouteChildren {
   TournamentsRoute: typeof TournamentsRoute
   VipRoute: typeof VipRoute
   WalletRoute: typeof WalletRoute
+  GamesChickenRoadRoute: typeof GamesChickenRoadRoute
   GamesCoinflipRoute: typeof GamesCoinflipRoute
+  GamesColorPredictionRoute: typeof GamesColorPredictionRoute
   GamesCrashRoute: typeof GamesCrashRoute
   GamesDiceRoute: typeof GamesDiceRoute
+  GamesHiLoRoute: typeof GamesHiLoRoute
+  GamesKenoRoute: typeof GamesKenoRoute
   GamesLimboRoute: typeof GamesLimboRoute
+  GamesLuckyCardRoute: typeof GamesLuckyCardRoute
   GamesMinesRoute: typeof GamesMinesRoute
   GamesPlinkoRoute: typeof GamesPlinkoRoute
+  GamesScratchCardRoute: typeof GamesScratchCardRoute
+  GamesShellGameRoute: typeof GamesShellGameRoute
+  GamesTowerRoute: typeof GamesTowerRoute
   GamesWheelRoute: typeof GamesWheelRoute
   GamesIndexRoute: typeof GamesIndexRoute
   ApiPublicHooksVipDailyRoute: typeof ApiPublicHooksVipDailyRoute
@@ -643,6 +747,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesWheelRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/tower': {
+      id: '/games/tower'
+      path: '/games/tower'
+      fullPath: '/games/tower'
+      preLoaderRoute: typeof GamesTowerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/shell-game': {
+      id: '/games/shell-game'
+      path: '/games/shell-game'
+      fullPath: '/games/shell-game'
+      preLoaderRoute: typeof GamesShellGameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/scratch-card': {
+      id: '/games/scratch-card'
+      path: '/games/scratch-card'
+      fullPath: '/games/scratch-card'
+      preLoaderRoute: typeof GamesScratchCardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/plinko': {
       id: '/games/plinko'
       path: '/games/plinko'
@@ -657,11 +782,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesMinesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/lucky-card': {
+      id: '/games/lucky-card'
+      path: '/games/lucky-card'
+      fullPath: '/games/lucky-card'
+      preLoaderRoute: typeof GamesLuckyCardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/limbo': {
       id: '/games/limbo'
       path: '/games/limbo'
       fullPath: '/games/limbo'
       preLoaderRoute: typeof GamesLimboRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/keno': {
+      id: '/games/keno'
+      path: '/games/keno'
+      fullPath: '/games/keno'
+      preLoaderRoute: typeof GamesKenoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/hi-lo': {
+      id: '/games/hi-lo'
+      path: '/games/hi-lo'
+      fullPath: '/games/hi-lo'
+      preLoaderRoute: typeof GamesHiLoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/dice': {
@@ -678,11 +824,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesCrashRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/color-prediction': {
+      id: '/games/color-prediction'
+      path: '/games/color-prediction'
+      fullPath: '/games/color-prediction'
+      preLoaderRoute: typeof GamesColorPredictionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/coinflip': {
       id: '/games/coinflip'
       path: '/games/coinflip'
       fullPath: '/games/coinflip'
       preLoaderRoute: typeof GamesCoinflipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/chicken-road': {
+      id: '/games/chicken-road'
+      path: '/games/chicken-road'
+      fullPath: '/games/chicken-road'
+      preLoaderRoute: typeof GamesChickenRoadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/vip-daily': {
@@ -720,12 +880,20 @@ const rootRouteChildren: RootRouteChildren = {
   TournamentsRoute: TournamentsRoute,
   VipRoute: VipRoute,
   WalletRoute: WalletRoute,
+  GamesChickenRoadRoute: GamesChickenRoadRoute,
   GamesCoinflipRoute: GamesCoinflipRoute,
+  GamesColorPredictionRoute: GamesColorPredictionRoute,
   GamesCrashRoute: GamesCrashRoute,
   GamesDiceRoute: GamesDiceRoute,
+  GamesHiLoRoute: GamesHiLoRoute,
+  GamesKenoRoute: GamesKenoRoute,
   GamesLimboRoute: GamesLimboRoute,
+  GamesLuckyCardRoute: GamesLuckyCardRoute,
   GamesMinesRoute: GamesMinesRoute,
   GamesPlinkoRoute: GamesPlinkoRoute,
+  GamesScratchCardRoute: GamesScratchCardRoute,
+  GamesShellGameRoute: GamesShellGameRoute,
+  GamesTowerRoute: GamesTowerRoute,
   GamesWheelRoute: GamesWheelRoute,
   GamesIndexRoute: GamesIndexRoute,
   ApiPublicHooksVipDailyRoute: ApiPublicHooksVipDailyRoute,
