@@ -13,6 +13,7 @@ import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
 import { fairPlinko } from "@/lib/provablyFair";
 import { PlinkoBoard, type PlinkoBoardHandle } from "@/components/games/PlinkoBoard";
 import { isMuted, toggleMuted, sfxWin, sfxBust } from "@/lib/sound";
+import { recordMyBet } from "@/lib/liveFeed";
 
 export const Route = createFileRoute("/games/plinko")({
   head: () => ({ meta: [{ title: "Plinko — Asik Game" }, { name: "description", content: "Drop the ball, hit multipliers." }] }),
@@ -21,7 +22,13 @@ export const Route = createFileRoute("/games/plinko")({
 
 const ROWS = 10;
 const BUCKETS = 11;
-const MULTS = [8.9, 3, 1.4, 1.1, 1, 0.5, 1, 1.1, 1.4, 3, 8.9];
+
+type Risk = "low" | "medium" | "high";
+const MULT_TABLE: Record<Risk, number[]> = {
+  low:    [5.6, 2.1, 1.1, 1.0, 0.9, 0.5, 0.9, 1.0, 1.1, 2.1, 5.6],
+  medium: [8.9, 3.0, 1.4, 1.1, 1.0, 0.5, 1.0, 1.1, 1.4, 3.0, 8.9],
+  high:   [29,  4.0, 1.5, 0.3, 0.2, 0.2, 0.2, 0.3, 1.5, 4.0, 29],
+};
 
 function Plinko() {
   const { bet: placeBet, credit } = useDemoWallet();
