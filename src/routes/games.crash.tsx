@@ -63,6 +63,7 @@ function Crash() {
           setMsg(`🎉 অটো ক্যাশ @ ${cashoutAt}× · +${pnl}`);
           record({ pnl, multiplier: won / roundBet });
           pf.consume(`crash=${target}× cashout=${cashoutAt}×`);
+          recordMyBet({ game: "crash", bet: roundBet, multiplier: cashoutAt, payout: won });
           stop(); finish(pnl); return;
         }
         if (m >= target) {
@@ -70,6 +71,7 @@ function Crash() {
           setMsg(`💥 ক্র্যাশ @ ${target}× · -${roundBet}`);
           record({ pnl: -roundBet, multiplier: 0 });
           pf.consume(`crash=${target}× (bust)`);
+          recordMyBet({ game: "crash", bet: roundBet, multiplier: 0, payout: 0 });
           stop(); finish(-roundBet); return;
         }
         setMult(m); rafRef.current = requestAnimationFrame(tick);
