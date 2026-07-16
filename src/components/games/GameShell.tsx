@@ -94,7 +94,12 @@ export function GameShell({
               <Link to="/wallet" search={{ tab: "deposit" }} className="rounded-lg bg-[var(--neon-gold)] px-5 py-2 text-sm font-black text-[#050a06] hover:brightness-110">কয়েন কিনুন</Link>
             </div>
           ) : (
-            <GameConfigContext.Provider value={active}>{children}</GameConfigContext.Provider>
+            <GameConfigContext.Provider value={active}>
+              <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+                <div className="min-w-0">{children}</div>
+                <aside className="lg:sticky lg:top-4 lg:self-start"><LiveBetsFeed /></aside>
+              </div>
+            </GameConfigContext.Provider>
           )}
         </div>
       </section>
