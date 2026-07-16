@@ -84,11 +84,16 @@ function Mines() {
       record({ pnl: -bet, multiplier: 0 });
       pf.consume(`bust mines=${mines} picks=${revealed.size}`);
       recordMyBet({ game: "mines", bet, multiplier: 0, payout: 0 });
+      pushMultiplierHistory("mines", 0);
+      burstAtCell(i, { count: 40, kind: "smoke", color: "#ff4d4d", speed: 5 });
+      try { sfxBust(); } catch { /* noop */ }
       return;
     }
     const next = new Set(revealed);
     next.add(i);
     setRevealed(next);
+    burstAtCell(i, { count: 14, kind: "spark", color: "#00ff88", speed: 4 });
+    try { sfxPeg(0.6 + Math.min(next.size, 10) * 0.04); } catch { /* noop */ }
     if (next.size + mines === SIZE) {
       const finalMult = multiplier(next.size, mines, edge);
       const win = Math.floor(bet * finalMult);
@@ -97,6 +102,9 @@ function Mines() {
       record({ pnl: win - bet, multiplier: finalMult });
       pf.consume(`clear mines=${mines} mult=${finalMult}×`);
       recordMyBet({ game: "mines", bet, multiplier: finalMult, payout: win });
+      pushMultiplierHistory("mines", finalMult);
+      fxRef.current?.burst({ count: 80, kind: "confetti", speed: 9 });
+      try { sfxWin(finalMult); sfxCashout(); } catch { /* noop */ }
       setActive(false);
     }
   };
@@ -108,6 +116,9 @@ function Mines() {
     record({ pnl: potential - bet, multiplier: mult });
     pf.consume(`cashout mines=${mines} picks=${picks} mult=${mult}×`);
     recordMyBet({ game: "mines", bet, multiplier: mult, payout: potential });
+    pushMultiplierHistory("mines", mult);
+    fxRef.current?.burst({ count: 70, kind: "confetti", speed: 8 });
+    try { sfxWin(mult); sfxCashout(); } catch { /* noop */ }
     setActive(false);
   };
 
