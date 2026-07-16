@@ -53,6 +53,7 @@ function AdminPage() {
             { k: "txns", label: "Transactions" },
             { k: "users", label: "Users" },
             { k: "methods", label: "Payment Methods" },
+            { k: "games", label: "Games" },
           ].map((t) => (
             <button
               key={t.k}
@@ -67,6 +68,7 @@ function AdminPage() {
         {tab === "txns" && <AdminTxns />}
         {tab === "users" && <AdminUsers />}
         {tab === "methods" && <AdminMethods />}
+        {tab === "games" && <AdminGames />}
       </div>
     </SiteShell>
   );
