@@ -403,16 +403,10 @@ function ProvidersStrip() {
     <section className="bg-[#1a1a1a] py-8 sm:py-10">
       <div className="mx-auto max-w-[1440px] space-y-5 px-4 sm:px-6 lg:px-8">
         {rows.map((row, idx) => (
-          <div key={idx} className="group overflow-hidden">
-            <div
-              className="flex w-max items-center gap-10"
-              style={{
-                animation: `marquee-x ${40 + idx * 8}s linear infinite`,
-                animationDirection: idx % 2 === 1 ? "reverse" : "normal",
-              }}
-            >
-              {[...row, ...row].map((item, i) => (
-                <div key={`${item.name}-${i}`} className="flex h-14 shrink-0 items-center justify-center px-2">
+          <div key={idx} className="overflow-hidden">
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+              {row.map((item) => (
+                <div key={item.name} className="flex h-14 shrink-0 items-center justify-center px-2">
                   <img
                     src={item.logo}
                     alt={item.name}
