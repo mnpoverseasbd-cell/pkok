@@ -348,6 +348,13 @@ function AdminUsers() {
   const [users, setUsers] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showCreate, setShowCreate] = useState(false);
+  const [createForm, setCreateForm] = useState({ phone: "", password: "", initialBalance: "" });
+  const [creating, setCreating] = useState(false);
+
+  const doAdjust = useServerFn(adminAdjustBalance);
+  const doDelete = useServerFn(adminDeleteUser);
+  const doCreate = useServerFn(adminCreateUser);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -380,19 +387,48 @@ function AdminUsers() {
     const amt = Number(amtStr);
     if (!amt || amt <= 0) return toast.error("সঠিক পরিমাণ দিন");
     const note = prompt("Note (optional)") ?? "";
-    const { data: me } = await supabase.auth.getUser();
-    const { error } = await supabase.from("transactions").insert({
-      user_id: userId,
-      type: sign > 0 ? "bonus" : "withdraw",
-      status: "approved",
-      amount: amt,
-      admin_note: note || (sign > 0 ? "Admin credit" : "Admin debit"),
-      approved_by: me.user?.id,
-      approved_at: new Date().toISOString(),
-    });
-    if (error) return toast.error(error.message);
-    toast.success("ব্যালেন্স আপডেট হয়েছে");
-    load();
+    try {
+      await doAdjust({ data: { userId, amount: sign * amt, note: note || undefined } });
+      toast.success("ব্যালেন্স আপডেট হয়েছে");
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    }
+  }
+
+  async function removeUser(userId: string, name: string) {
+    if (!confirm(`"${name}" কে পুরোপুরি ডিলিট করবেন? এটা আর ফেরানো যাবে না।`)) return;
+    try {
+      await doDelete({ data: { userId } });
+      toast.success("User ডিলিট হয়েছে");
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    }
+  }
+
+  async function createUser() {
+    if (!/^01[3-9]\d{8}$/.test(createForm.phone)) return toast.error("সঠিক ফোন নাম্বার দিন");
+    if (createForm.password.length < 6) return toast.error("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের");
+    setCreating(true);
+    try {
+      const res = await doCreate({
+        data: {
+          phone: createForm.phone,
+          password: createForm.password,
+          initialBalance: createForm.initialBalance ? Number(createForm.initialBalance) : undefined,
+        },
+      });
+      if (!res.success) return toast.error("এই ফোন আগে থেকেই রেজিস্টার্ড");
+      toast.success("নতুন ইউজার তৈরি হয়েছে");
+      setCreateForm({ phone: "", password: "", initialBalance: "" });
+      setShowCreate(false);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    } finally {
+      setCreating(false);
+    }
   }
 
   async function toggleAdmin(userId: string, isAdmin: boolean) {
@@ -412,12 +448,31 @@ function AdminUsers() {
     <Panel
       title={`Users (${filtered.length})`}
       action={
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-          <Input placeholder="Search name / phone / email…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 w-72 border-slate-200 bg-slate-50 pl-8 text-xs" />
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+            <Input placeholder="Search name / phone / email…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 w-64 border-slate-200 bg-slate-50 pl-8 text-xs" />
+          </div>
+          <Button size="sm" onClick={() => setShowCreate((s) => !s)} className="h-9 bg-indigo-600 hover:bg-indigo-700 text-white gap-1">
+            <UserPlus className="h-3.5 w-3.5" /> New User
+          </Button>
         </div>
       }
     >
+      {showCreate && (
+        <div className="mb-4 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4">
+          <div className="mb-3 text-xs font-bold uppercase tracking-wider text-indigo-700">নতুন ইউজার তৈরি করুন</div>
+          <div className="grid gap-3 sm:grid-cols-4">
+            <Input placeholder="Phone (01XXXXXXXXX)" value={createForm.phone} onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })} className="border-slate-200 bg-white text-xs" />
+            <Input type="text" placeholder="Password (min 6)" value={createForm.password} onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })} className="border-slate-200 bg-white text-xs" />
+            <Input type="number" placeholder="Initial ৳ balance (optional)" value={createForm.initialBalance} onChange={(e) => setCreateForm({ ...createForm, initialBalance: e.target.value })} className="border-slate-200 bg-white text-xs" />
+            <div className="flex gap-2">
+              <Button size="sm" disabled={creating} onClick={createUser} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white">{creating ? "…" : "Create"}</Button>
+              <Button size="sm" variant="outline" onClick={() => setShowCreate(false)} className="border-slate-200">Cancel</Button>
+            </div>
+          </div>
+        </div>
+      )}
       {loading ? <div className="text-slate-500">Loading…</div> : (
         <div className="overflow-x-auto rounded-lg border border-slate-100">
           <Table>
@@ -456,11 +511,12 @@ function AdminUsers() {
                     <TableCell className="font-mono text-xs text-slate-500">{u.referral_code}</TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-1">
-                        <Button size="sm" onClick={() => adjust(u.id, 1)} className="h-7 bg-emerald-500 hover:bg-emerald-600 text-black"><Plus className="h-3 w-3" /></Button>
-                        <Button size="sm" onClick={() => adjust(u.id, -1)} variant="destructive" className="h-7"><Minus className="h-3 w-3" /></Button>
-                        <Button size="sm" variant="outline" onClick={() => toggleAdmin(u.id, isAdmin)} className="h-7 border-slate-200">
+                        <Button size="sm" onClick={() => adjust(u.id, 1)} className="h-7 bg-emerald-500 hover:bg-emerald-600 text-white" title="টাকা যোগ"><Plus className="h-3 w-3" /></Button>
+                        <Button size="sm" onClick={() => adjust(u.id, -1)} className="h-7 bg-amber-500 hover:bg-amber-600 text-white" title="টাকা কাটুন"><Minus className="h-3 w-3" /></Button>
+                        <Button size="sm" variant="outline" onClick={() => toggleAdmin(u.id, isAdmin)} className="h-7 border-slate-200" title={isAdmin ? "Remove admin" : "Make admin"}>
                           {isAdmin ? <ShieldOff className="h-3 w-3" /> : <ShieldCheck className="h-3 w-3" />}
                         </Button>
+                        <Button size="sm" onClick={() => removeUser(u.id, u.display_name || u.username || u.phone || "user")} className="h-7 bg-rose-500 hover:bg-rose-600 text-white" title="Delete"><Trash2 className="h-3 w-3" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -473,6 +529,7 @@ function AdminUsers() {
     </Panel>
   );
 }
+
 
 function AdminMethods() {
   const [rows, setRows] = useState<any[]>([]);
