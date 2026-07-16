@@ -105,6 +105,9 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          last_cashback_at: string | null
+          last_daily_bonus_at: string | null
+          last_weekly_bonus_at: string | null
           phone: string | null
           referral_code: string
           referred_by: string | null
@@ -119,6 +122,9 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          last_cashback_at?: string | null
+          last_daily_bonus_at?: string | null
+          last_weekly_bonus_at?: string | null
           phone?: string | null
           referral_code?: string
           referred_by?: string | null
@@ -133,6 +139,9 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          last_cashback_at?: string | null
+          last_daily_bonus_at?: string | null
+          last_weekly_bonus_at?: string | null
           phone?: string | null
           referral_code?: string
           referred_by?: string | null
@@ -295,6 +304,27 @@ export type Database = {
         Returns: boolean
       }
       recompute_vip_tier: { Args: { _user_id: string }; Returns: undefined }
+      run_daily_bonuses: {
+        Args: never
+        Returns: {
+          credited_users: number
+          total_amount: number
+        }[]
+      }
+      run_daily_cashback: {
+        Args: never
+        Returns: {
+          credited_users: number
+          total_amount: number
+        }[]
+      }
+      run_weekly_bonuses: {
+        Args: never
+        Returns: {
+          credited_users: number
+          total_amount: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
