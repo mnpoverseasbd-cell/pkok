@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, Fish } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
+import { ComingSoonBanner } from "@/components/landing/ComingSoonBanner";
 
 export const Route = createFileRoute("/fish")({
   head: () => ({
@@ -53,6 +54,13 @@ function FishPage() {
   return (
     <SiteShell>
       <h1 className="sr-only">ফিশিং গেমস</h1>
+      <div className="pt-4">
+        <ComingSoonBanner
+          title="ফিশিং গেমস শীঘ্রই চালু হচ্ছে"
+          message="JILI, FC, JDB, KA সহ ফিশিং provider এর real integration এখনো active নয়।"
+          providers={["JILI", "FC", "JDB", "KA"]}
+        />
+      </div>
       <section
         className="game-lobby FISH"
         aria-label="Fish providers"

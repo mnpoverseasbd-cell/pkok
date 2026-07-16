@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, Spade } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
+import { ComingSoonBanner } from "@/components/landing/ComingSoonBanner";
 
 export const Route = createFileRoute("/poker")({
   head: () => ({
@@ -42,6 +43,13 @@ function PokerPage() {
   return (
     <SiteShell>
       <h1 className="sr-only">পোকার ও PVP গেমস</h1>
+      <div className="pt-4">
+        <ComingSoonBanner
+          title="পোকার provider শীঘ্রই চালু হচ্ছে"
+          message="King's Poker, KINGMIDAS, Rich88 সহ PVP poker provider এর real integration এখনো active নয়।"
+          providers={["King's Poker", "KINGMIDAS", "Rich88", "RG Rich Game"]}
+        />
+      </div>
       <section
         className="game-lobby PVP"
         aria-label="PVP poker providers"

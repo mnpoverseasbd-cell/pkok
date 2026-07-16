@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, Trophy } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
+import { ComingSoonBanner } from "@/components/landing/ComingSoonBanner";
 
 export const Route = createFileRoute("/sports")({
   head: () => ({
@@ -45,6 +46,13 @@ function SportsPage() {
   return (
     <SiteShell>
       <h1 className="sr-only">স্পোর্টস বেটিং</h1>
+      <div className="pt-4">
+        <ComingSoonBanner
+          title="স্পোর্টস বুক শীঘ্রই চালু হচ্ছে"
+          message="BTi, FB, Saba, SBO সহ sports book provider এর real integration এখনো active নয়।"
+          providers={["BTi", "FB", "Saba", "SBO"]}
+        />
+      </div>
       <section
         className="game-lobby SPORT"
         aria-label="Sports providers"
