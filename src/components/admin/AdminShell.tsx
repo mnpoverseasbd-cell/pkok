@@ -26,6 +26,7 @@ const NAV = [
   { k: "methods", label: "Payments", icon: CreditCard, color: "from-amber-500 to-orange-500" },
   { k: "games", label: "Games", icon: Gamepad2, color: "from-emerald-500 to-teal-500" },
   { k: "vip", label: "VIP Tiers", icon: Crown, color: "from-yellow-500 to-amber-500" },
+  { k: "reports", label: "Reports", icon: BarChart3, color: "from-fuchsia-500 to-pink-600" },
   { k: "flags", label: "Feature Flags", icon: Flag, color: "from-cyan-500 to-sky-600" },
   { k: "audit", label: "Audit Logs", icon: ShieldCheck, color: "from-slate-600 to-slate-800" },
 ] as const;
