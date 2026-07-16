@@ -129,6 +129,7 @@ function Mines() {
         setMsg(`💥 বুম @ ${k} picks · -${roundBet}`);
         record({ pnl: -roundBet, multiplier: 0 });
         pf.consume(`auto bust mines=${mines} picks=${k}`);
+        recordMyBet({ game: "mines", bet: roundBet, multiplier: 0, payout: 0 });
         return { pnl: -roundBet };
       }
       picked.add(cell);
