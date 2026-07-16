@@ -81,6 +81,7 @@ function Mines() {
       setMsg(`🏆 ক্লিয়ার! +${win - bet}`);
       record({ pnl: win - bet, multiplier: finalMult });
       pf.consume(`clear mines=${mines} mult=${finalMult}×`);
+      recordMyBet({ game: "mines", bet, multiplier: finalMult, payout: win });
       setActive(false);
     }
   };
