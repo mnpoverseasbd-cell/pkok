@@ -156,9 +156,10 @@
 
 @utility bg-navbar {
   background:
-    linear-gradient(180deg, #14c85a 0%, #0eaa4a 55%, #0a8f3d 100%);
+    linear-gradient(180deg, #fff08a 0%, #ffdb4a 50%, #e8b21f 100%);
   box-shadow: inset 0 -1px 0 rgba(0,0,0,0.25), 0 6px 18px -8px rgba(0,0,0,0.55);
 }
+
 
 
 @utility bg-gold-button {
