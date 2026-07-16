@@ -100,7 +100,7 @@ export function GameShell({
                 <div className="min-w-0">{children}</div>
                 <aside className="flex flex-col gap-3 lg:sticky lg:top-4 lg:self-start">
                   <LiveBetsFeed />
-                  <BetHistoryPanel gameFilter={gameKey} />
+                  <BetHistoryPanel />
                 </aside>
               </div>
             </GameConfigContext.Provider>
