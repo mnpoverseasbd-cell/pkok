@@ -254,3 +254,57 @@ export const adminPreviewVipPayouts = createServerFn({ method: "POST" })
       },
     };
   });
+
+export const adminListAuditLogs = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        limit: z.number().int().min(1).max(500).default(100),
+        action: z.string().optional(),
+        actorId: z.string().uuid().optional(),
+        since: z.string().datetime().optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    let q = admin
+      .from("audit_logs")
+      .select("id, actor_id, actor_label, action, target_type, target_id, details, created_at")
+      .order("created_at", { ascending: false })
+      .limit(data.limit);
+    if (data.action) q = q.eq("action", data.action);
+    if (data.actorId) q = q.eq("actor_id", data.actorId);
+    if (data.since) q = q.gte("created_at", data.since);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return { rows: rows ?? [] };
+  });
+
+export const adminLogAction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        action: z.string().min(1).max(100),
+        targetType: z.string().max(50).optional(),
+        targetId: z.string().max(100).optional(),
+        details: z.record(z.string(), z.unknown()).optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    await writeAudit(
+      admin,
+      context.userId,
+      data.action,
+      data.targetType ?? null,
+      data.targetId ?? null,
+      data.details ?? {},
+    );
+    return { success: true as const };
+  });
