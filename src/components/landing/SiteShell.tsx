@@ -195,10 +195,26 @@ function TopBar() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const { t } = useLang();
   const { user, loading: authLoading } = useAuth();
   const { profile, refetch: refetchProfile } = useProfile(user?.id);
   const navigate = useNavigate();
+
+  async function handleRefresh() {
+    if (refreshing) return;
+    setRefreshing(true);
+    const started = Date.now();
+    try {
+      await refetchProfile();
+    } finally {
+      // keep spinner visible at least 400ms to avoid flicker
+      const elapsed = Date.now() - started;
+      if (elapsed < 400) await new Promise((r) => setTimeout(r, 400 - elapsed));
+      setRefreshing(false);
+    }
+  }
+
 
   async function handleSignOut() {
     await signOut();
