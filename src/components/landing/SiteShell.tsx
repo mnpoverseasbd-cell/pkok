@@ -196,7 +196,7 @@ function TopBar() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { t } = useLang();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { profile, refetch: refetchProfile } = useProfile(user?.id);
   const navigate = useNavigate();
 
@@ -239,7 +239,9 @@ function TopBar() {
           <LangSwitcher />
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {user ? (
+          {authLoading ? (
+            <div className="h-8 w-56 animate-pulse rounded-md bg-white/10" aria-hidden />
+          ) : user ? (
             <>
               <div className="flex items-center gap-1.5 rounded-full bg-black/40 px-2 py-1 text-white">
                 <CircleDollarSign className="h-4 w-4 text-[var(--neon-gold)]" />
