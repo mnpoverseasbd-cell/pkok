@@ -197,7 +197,7 @@ function TopBar() {
   const [submitting, setSubmitting] = useState(false);
   const { t } = useLang();
   const { user } = useAuth();
-  const { profile } = useProfile(user?.id);
+  const { profile, refetch: refetchProfile } = useProfile(user?.id);
   const navigate = useNavigate();
 
   async function handleSignOut() {
@@ -247,7 +247,7 @@ function TopBar() {
                 <button type="button" onClick={() => setShowPw((v) => !v)} className="text-white/70 hover:text-white">
                   {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 </button>
-                <button type="button" title="রিফ্রেশ" className="text-white/70 hover:text-white">
+                <button type="button" title="রিফ্রেশ" onClick={refetchProfile} className="text-white/70 hover:text-white">
                   <RefreshCw className="h-3.5 w-3.5" />
                 </button>
               </div>

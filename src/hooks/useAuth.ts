@@ -93,6 +93,17 @@ export function useProfile(userId: string | undefined) {
     };
   }, [userId, reloadKey]);
 
+  // Live-sync wallet balance from game hooks (see useDemoWallet broadcast).
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const next = (e as CustomEvent).detail;
+      if (typeof next !== "number" || !Number.isFinite(next)) return;
+      setProfile((p) => (p ? { ...p, wallet_balance: next } : p));
+    };
+    window.addEventListener("wallet:balance", handler);
+    return () => window.removeEventListener("wallet:balance", handler);
+  }, []);
+
   return { profile, loading, refetch: () => setReloadKey((k) => k + 1) };
 }
 
