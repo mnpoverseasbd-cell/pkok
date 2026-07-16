@@ -24,7 +24,6 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as LiveRouteImport } from './routes/live'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as HotRouteImport } from './routes/hot'
-import { Route as GamesRouteImport } from './routes/games'
 import { Route as FishingRouteImport } from './routes/fishing'
 import { Route as FishRouteImport } from './routes/fish'
 import { Route as FavoritesRouteImport } from './routes/favorites'
@@ -33,6 +32,7 @@ import { Route as DownloadRouteImport } from './routes/download'
 import { Route as CrashRouteImport } from './routes/crash'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GamesIndexRouteImport } from './routes/games.index'
 import { Route as GamesWheelRouteImport } from './routes/games.wheel'
 import { Route as GamesPlinkoRouteImport } from './routes/games.plinko'
 import { Route as GamesMinesRouteImport } from './routes/games.mines'
@@ -115,11 +115,6 @@ const HotRoute = HotRouteImport.update({
   path: '/hot',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GamesRoute = GamesRouteImport.update({
-  id: '/games',
-  path: '/games',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const FishingRoute = FishingRouteImport.update({
   id: '/fishing',
   path: '/fishing',
@@ -160,35 +155,40 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesIndexRoute = GamesIndexRouteImport.update({
+  id: '/games/',
+  path: '/games/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesWheelRoute = GamesWheelRouteImport.update({
-  id: '/wheel',
-  path: '/wheel',
-  getParentRoute: () => GamesRoute,
+  id: '/games/wheel',
+  path: '/games/wheel',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const GamesPlinkoRoute = GamesPlinkoRouteImport.update({
-  id: '/plinko',
-  path: '/plinko',
-  getParentRoute: () => GamesRoute,
+  id: '/games/plinko',
+  path: '/games/plinko',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const GamesMinesRoute = GamesMinesRouteImport.update({
-  id: '/mines',
-  path: '/mines',
-  getParentRoute: () => GamesRoute,
+  id: '/games/mines',
+  path: '/games/mines',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const GamesDiceRoute = GamesDiceRouteImport.update({
-  id: '/dice',
-  path: '/dice',
-  getParentRoute: () => GamesRoute,
+  id: '/games/dice',
+  path: '/games/dice',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const GamesCrashRoute = GamesCrashRouteImport.update({
-  id: '/crash',
-  path: '/crash',
-  getParentRoute: () => GamesRoute,
+  id: '/games/crash',
+  path: '/games/crash',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const GamesCoinflipRoute = GamesCoinflipRouteImport.update({
-  id: '/coinflip',
-  path: '/coinflip',
-  getParentRoute: () => GamesRoute,
+  id: '/games/coinflip',
+  path: '/games/coinflip',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -200,7 +200,6 @@ export interface FileRoutesByFullPath {
   '/favorites': typeof FavoritesRoute
   '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
-  '/games': typeof GamesRouteWithChildren
   '/hot': typeof HotRoute
   '/leaderboard': typeof LeaderboardRoute
   '/live': typeof LiveRoute
@@ -222,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/wheel': typeof GamesWheelRoute
+  '/games/': typeof GamesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -232,7 +232,6 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesRoute
   '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
-  '/games': typeof GamesRouteWithChildren
   '/hot': typeof HotRoute
   '/leaderboard': typeof LeaderboardRoute
   '/live': typeof LiveRoute
@@ -254,6 +253,7 @@ export interface FileRoutesByTo {
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/wheel': typeof GamesWheelRoute
+  '/games': typeof GamesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -265,7 +265,6 @@ export interface FileRoutesById {
   '/favorites': typeof FavoritesRoute
   '/fish': typeof FishRoute
   '/fishing': typeof FishingRoute
-  '/games': typeof GamesRouteWithChildren
   '/hot': typeof HotRoute
   '/leaderboard': typeof LeaderboardRoute
   '/live': typeof LiveRoute
@@ -287,6 +286,7 @@ export interface FileRoutesById {
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/wheel': typeof GamesWheelRoute
+  '/games/': typeof GamesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -299,7 +299,6 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/fish'
     | '/fishing'
-    | '/games'
     | '/hot'
     | '/leaderboard'
     | '/live'
@@ -321,6 +320,7 @@ export interface FileRouteTypes {
     | '/games/mines'
     | '/games/plinko'
     | '/games/wheel'
+    | '/games/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -331,7 +331,6 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/fish'
     | '/fishing'
-    | '/games'
     | '/hot'
     | '/leaderboard'
     | '/live'
@@ -353,6 +352,7 @@ export interface FileRouteTypes {
     | '/games/mines'
     | '/games/plinko'
     | '/games/wheel'
+    | '/games'
   id:
     | '__root__'
     | '/'
@@ -363,7 +363,6 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/fish'
     | '/fishing'
-    | '/games'
     | '/hot'
     | '/leaderboard'
     | '/live'
@@ -385,6 +384,7 @@ export interface FileRouteTypes {
     | '/games/mines'
     | '/games/plinko'
     | '/games/wheel'
+    | '/games/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -396,7 +396,6 @@ export interface RootRouteChildren {
   FavoritesRoute: typeof FavoritesRoute
   FishRoute: typeof FishRoute
   FishingRoute: typeof FishingRoute
-  GamesRoute: typeof GamesRouteWithChildren
   HotRoute: typeof HotRoute
   LeaderboardRoute: typeof LeaderboardRoute
   LiveRoute: typeof LiveRoute
@@ -412,6 +411,13 @@ export interface RootRouteChildren {
   TournamentsRoute: typeof TournamentsRoute
   VipRoute: typeof VipRoute
   WalletRoute: typeof WalletRoute
+  GamesCoinflipRoute: typeof GamesCoinflipRoute
+  GamesCrashRoute: typeof GamesCrashRoute
+  GamesDiceRoute: typeof GamesDiceRoute
+  GamesMinesRoute: typeof GamesMinesRoute
+  GamesPlinkoRoute: typeof GamesPlinkoRoute
+  GamesWheelRoute: typeof GamesWheelRoute
+  GamesIndexRoute: typeof GamesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -521,13 +527,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HotRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/games': {
-      id: '/games'
-      path: '/games'
-      fullPath: '/games'
-      preLoaderRoute: typeof GamesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/fishing': {
       id: '/fishing'
       path: '/fishing'
@@ -584,70 +583,57 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/': {
+      id: '/games/'
+      path: '/games'
+      fullPath: '/games/'
+      preLoaderRoute: typeof GamesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/wheel': {
       id: '/games/wheel'
-      path: '/wheel'
+      path: '/games/wheel'
       fullPath: '/games/wheel'
       preLoaderRoute: typeof GamesWheelRouteImport
-      parentRoute: typeof GamesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/games/plinko': {
       id: '/games/plinko'
-      path: '/plinko'
+      path: '/games/plinko'
       fullPath: '/games/plinko'
       preLoaderRoute: typeof GamesPlinkoRouteImport
-      parentRoute: typeof GamesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/games/mines': {
       id: '/games/mines'
-      path: '/mines'
+      path: '/games/mines'
       fullPath: '/games/mines'
       preLoaderRoute: typeof GamesMinesRouteImport
-      parentRoute: typeof GamesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/games/dice': {
       id: '/games/dice'
-      path: '/dice'
+      path: '/games/dice'
       fullPath: '/games/dice'
       preLoaderRoute: typeof GamesDiceRouteImport
-      parentRoute: typeof GamesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/games/crash': {
       id: '/games/crash'
-      path: '/crash'
+      path: '/games/crash'
       fullPath: '/games/crash'
       preLoaderRoute: typeof GamesCrashRouteImport
-      parentRoute: typeof GamesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/games/coinflip': {
       id: '/games/coinflip'
-      path: '/coinflip'
+      path: '/games/coinflip'
       fullPath: '/games/coinflip'
       preLoaderRoute: typeof GamesCoinflipRouteImport
-      parentRoute: typeof GamesRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface GamesRouteChildren {
-  GamesCoinflipRoute: typeof GamesCoinflipRoute
-  GamesCrashRoute: typeof GamesCrashRoute
-  GamesDiceRoute: typeof GamesDiceRoute
-  GamesMinesRoute: typeof GamesMinesRoute
-  GamesPlinkoRoute: typeof GamesPlinkoRoute
-  GamesWheelRoute: typeof GamesWheelRoute
-}
-
-const GamesRouteChildren: GamesRouteChildren = {
-  GamesCoinflipRoute: GamesCoinflipRoute,
-  GamesCrashRoute: GamesCrashRoute,
-  GamesDiceRoute: GamesDiceRoute,
-  GamesMinesRoute: GamesMinesRoute,
-  GamesPlinkoRoute: GamesPlinkoRoute,
-  GamesWheelRoute: GamesWheelRoute,
-}
-
-const GamesRouteWithChildren = GamesRoute._addFileChildren(GamesRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -658,7 +644,6 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritesRoute: FavoritesRoute,
   FishRoute: FishRoute,
   FishingRoute: FishingRoute,
-  GamesRoute: GamesRouteWithChildren,
   HotRoute: HotRoute,
   LeaderboardRoute: LeaderboardRoute,
   LiveRoute: LiveRoute,
@@ -674,6 +659,13 @@ const rootRouteChildren: RootRouteChildren = {
   TournamentsRoute: TournamentsRoute,
   VipRoute: VipRoute,
   WalletRoute: WalletRoute,
+  GamesCoinflipRoute: GamesCoinflipRoute,
+  GamesCrashRoute: GamesCrashRoute,
+  GamesDiceRoute: GamesDiceRoute,
+  GamesMinesRoute: GamesMinesRoute,
+  GamesPlinkoRoute: GamesPlinkoRoute,
+  GamesWheelRoute: GamesWheelRoute,
+  GamesIndexRoute: GamesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
