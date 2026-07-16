@@ -59,7 +59,7 @@ function Plinko() {
   };
 
   return (
-    <GameShell title="Plinko" emoji="🎯">
+    <GameShell title="Plinko" emoji="🎯" gameKey="plinko">
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="mx-auto w-full max-w-md flex-1">
