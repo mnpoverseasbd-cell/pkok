@@ -28,8 +28,12 @@ type OriginalGame = {
 };
 
 const myGames: OriginalGame[] = [
-  // Example placeholder — replace / extend as we build each game.
-  // { slug: "dice",  name: "Lucky Dice",  tagline: "Predict & Win", emoji: "🎲", gradient: "from-emerald-500 to-teal-700", status: "live", to: "/games/dice" },
+  { slug: "dice",     name: "Lucky Dice",        tagline: "Predict & Win",     emoji: "🎲", gradient: "from-emerald-500 to-teal-800",  status: "live", to: "/games/dice" },
+  { slug: "crash",    name: "Crash",             tagline: "Cash out in time",  emoji: "🚀", gradient: "from-indigo-600 to-purple-900", status: "live", to: "/games/crash" },
+  { slug: "mines",    name: "Mines",             tagline: "Dodge the bombs",   emoji: "💣", gradient: "from-slate-700 to-black",       status: "live", to: "/games/mines" },
+  { slug: "coinflip", name: "Coin Flip",         tagline: "Heads or Tails",    emoji: "🪙", gradient: "from-yellow-500 to-orange-700", status: "live", to: "/games/coinflip" },
+  { slug: "plinko",   name: "Plinko",            tagline: "Drop & multiply",   emoji: "🎯", gradient: "from-pink-500 to-red-800",      status: "live", to: "/games/plinko" },
+  { slug: "wheel",    name: "Wheel of Fortune",  tagline: "Spin to win",       emoji: "🎡", gradient: "from-fuchsia-500 to-rose-800",  status: "live", to: "/games/wheel" },
 ];
 
 function MyGamesPage() {
