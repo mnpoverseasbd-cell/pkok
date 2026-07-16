@@ -101,7 +101,7 @@ function CoinFlip() {
           ) : (
             <AutoBetPanel auto={auto} canStart={pf.ready} />
           )}
-          <ProvablyFairPanel pf={pf} />
+          <ProvablyFairPanel pf={pf} gameKey="coinflip" />
         </ControlsPanel>
       </GameFrame>
     </GameShell>

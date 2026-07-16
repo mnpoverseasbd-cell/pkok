@@ -119,7 +119,7 @@ function Plinko() {
             <AutoBetPanel auto={auto} canStart={pf.ready} />
           )}
           {msg && <div className="animate-fade-in text-center text-sm font-bold text-[var(--neon-gold)]">{msg}</div>}
-          <ProvablyFairPanel pf={pf} />
+          <ProvablyFairPanel pf={pf} gameKey="plinko" />
         </ControlsPanel>
       </GameFrame>
     </GameShell>

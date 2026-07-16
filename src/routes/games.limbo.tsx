@@ -119,7 +119,7 @@ function LimboGame() {
           ) : (
             <AutoBetPanel auto={auto} canStart={pf.ready} />
           )}
-          <ProvablyFairPanel pf={pf} />
+          <ProvablyFairPanel pf={pf} gameKey="limbo" />
         </ControlsPanel>
       </GameFrame>
     </GameShell>
