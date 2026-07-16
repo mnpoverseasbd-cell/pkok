@@ -1,6 +1,6 @@
 import { recordMyBet } from "@/lib/liveFeed";
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
@@ -11,6 +11,9 @@ import { useAutoBet } from "@/hooks/useAutoBet";
 import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
 import { fairDice } from "@/lib/provablyFair";
+import { ParticleLayer, type ParticleBurstHandle } from "@/components/games/fx/Particles";
+import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
+import { sfxWin, sfxBust, sfxPeg } from "@/lib/sound";
 
 export const Route = createFileRoute("/games/dice")({
   head: () => ({ meta: [{ title: "Lucky Dice — Asik Game" }, { name: "description", content: "Predict the roll, win multiplier." }] }),
