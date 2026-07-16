@@ -45,7 +45,9 @@ function MyGamesPage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return myGames;
-    return myGames.filter((g) => g.name.toLowerCase().includes(q) || g.slug.includes(q));
+    return myGames.filter(
+      (g) => g.name.toLowerCase().includes(q) || g.nameBn.includes(q) || g.slug.includes(q),
+    );
   }, [query]);
 
   return (
