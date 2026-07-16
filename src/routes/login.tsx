@@ -8,6 +8,8 @@ import { SiteShell } from "@/components/landing/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { phoneToEmail } from "@/lib/auth-utils";
 
+const loginSearchSchema = z.object({ redirect: z.string().optional() });
+
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
@@ -17,6 +19,7 @@ export const Route = createFileRoute("/login")({
       { property: "og:description", content: "অ্যাকাউন্টে প্রবেশ করুন এবং প্রিয় গেম উপভোগ করুন।" },
     ],
   }),
+  validateSearch: (s) => loginSearchSchema.parse(s),
   component: LoginPage,
 });
 
@@ -35,10 +38,27 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { redirect } = Route.useSearch();
+
+  async function resolveDestination(userId: string): Promise<string> {
+    if (redirect && redirect.startsWith("/")) return redirect;
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    return data ? "/admin" : "/";
+  }
 
   useEffect(() => {
-    if (!authLoading && user) navigate({ to: "/", replace: true });
-  }, [user, authLoading, navigate]);
+    if (authLoading || !user) return;
+    (async () => {
+      const dest = await resolveDestination(user.id);
+      navigate({ to: dest, replace: true });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, authLoading]);
 
 
   async function onSubmit(e: React.FormEvent) {
@@ -55,7 +75,7 @@ function LoginPage() {
     else email = `${id.toLowerCase()}@asikgame.app`;
 
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
       email,
       password: parsed.data.password,
     });
@@ -65,7 +85,9 @@ function LoginPage() {
       return;
     }
     toast.success("সফলভাবে লগইন হয়েছে");
-    navigate({ to: "/" });
+    const uid = authData.user?.id;
+    const dest = uid ? await resolveDestination(uid) : "/";
+    navigate({ to: dest, replace: true });
   }
 
   return (
