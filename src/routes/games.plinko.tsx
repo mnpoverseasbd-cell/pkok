@@ -146,12 +146,13 @@ function Plinko() {
             </button>
             <PlinkoBoard ref={boardRef} rows={ROWS} buckets={BUCKETS} onLand={onLand} />
             <ParticleLayer ref={fxRef} />
-            <div className="mt-3 grid grid-cols-11 gap-1">
+            <div className="mt-3 grid grid-cols-11 gap-1.5 px-1">
               {MULTS.map((m, i) => (
                 <div
                   key={i}
                   data-bucket={i}
-                  className={`rounded-md px-1 py-2 text-center text-[10px] font-black transition-all ${bucketColor(m, bucket === i)} ${bucket === i ? "animate-cash-pop" : ""}`}
+                  style={bucketStyle(i, bucket === i)}
+                  className={`grid h-9 place-items-center text-[10px] font-black tracking-tight transition-transform ${bucket === i ? "animate-cash-pop scale-110" : ""}`}
                 >
                   {m}×
                 </div>
