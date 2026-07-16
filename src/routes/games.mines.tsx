@@ -51,6 +51,18 @@ function Mines() {
   const MIN_BET = cfg?.min_bet ?? 10;
   const MAX_BET = cfg?.max_bet ?? 500;
   const clampBet = (n: number) => Math.max(MIN_BET, Math.min(MAX_BET, Math.round(n)));
+  const fxRef = useRef<ParticleBurstHandle>(null);
+  const boardWrapRef = useRef<HTMLDivElement>(null);
+
+  const burstAtCell = (i: number, opts: Parameters<NonNullable<ParticleBurstHandle["burst"]>>[0]) => {
+    const wrap = boardWrapRef.current; const fx = fxRef.current;
+    if (!wrap || !fx) return;
+    const cell = wrap.querySelector<HTMLElement>(`[data-cell="${i}"]`);
+    if (!cell) return fx.burst(opts);
+    const wr = wrap.getBoundingClientRect();
+    const cr = cell.getBoundingClientRect();
+    fx.burst({ ...opts, x: cr.left - wr.left + cr.width / 2, y: cr.top - wr.top + cr.height / 2 });
+  };
 
   const start = async () => {
     if (!pf.ready) return;
