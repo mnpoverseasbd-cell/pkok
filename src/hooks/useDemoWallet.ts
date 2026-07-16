@@ -4,7 +4,19 @@ import { supabase } from "@/integrations/supabase/client";
 /**
  * Coin wallet backed by profiles.wallet_balance in Supabase.
  * Requires the user to be logged in. Games check `ready` before allowing bets.
+ *
+ * NOTE: Every mount of this hook stays in sync via a shared window event
+ * ("wallet:balance"), so GameShell's coin counter reflects bets/wins
+ * placed by the game component without waiting for a manual refresh.
  */
+
+const EVT = "wallet:balance";
+
+function broadcast(next: number) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(EVT, { detail: next }));
+}
+
 export function useDemoWallet() {
   const [userId, setUserId] = useState<string | null>(null);
   const [balance, setBalance] = useState<number>(0);
@@ -22,7 +34,9 @@ export function useDemoWallet() {
       .eq("id", uid)
       .maybeSingle();
     const n = Number(data?.wallet_balance ?? 0);
-    setBalance(Number.isFinite(n) ? n : 0);
+    const safe = Number.isFinite(n) ? n : 0;
+    setBalance(safe);
+    broadcast(safe);
     setLoading(false);
   }, []);
 
@@ -50,6 +64,18 @@ export function useDemoWallet() {
     };
   }, [load]);
 
+  // Listen for balance updates from other mounts of this hook.
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const next = (e as CustomEvent).detail;
+      if (typeof next === "number" && Number.isFinite(next)) {
+        setBalance(next);
+      }
+    };
+    window.addEventListener(EVT, handler);
+    return () => window.removeEventListener(EVT, handler);
+  }, []);
+
   const persist = useCallback(async (uid: string, next: number) => {
     await supabase.from("profiles").update({ wallet_balance: next }).eq("id", uid);
   }, []);
@@ -61,6 +87,7 @@ export function useDemoWallet() {
       if (amount <= 0 || amount > cur) return false;
       const next = cur - amount;
       setBalance(next);
+      broadcast(next);
       void persist(userId, next);
       return true;
     },
@@ -72,6 +99,7 @@ export function useDemoWallet() {
       if (!userId || amount <= 0) return;
       const next = balanceRef.current + amount;
       setBalance(next);
+      broadcast(next);
       void persist(userId, next);
     },
     [userId, persist],
