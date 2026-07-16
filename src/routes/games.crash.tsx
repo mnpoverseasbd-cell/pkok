@@ -39,6 +39,7 @@ function Crash() {
   const rafRef = useRef<number | null>(null);
   const startRef = useRef(0);
   const targetRef = useRef(0);
+  const fxRef = useRef<ParticleBurstHandle>(null);
 
   const stop = () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); rafRef.current = null; };
   useEffect(() => () => stop(), []);
