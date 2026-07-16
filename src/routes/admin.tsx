@@ -763,7 +763,8 @@ function AdminVipTiers() {
   };
 
   return (
-    <Panel title="VIP Tier Configuration" hint="Deposit করা টাকার total এর ভিত্তিতে ইউজার এই tier-এ auto upgrade হবে।">
+    <Panel title="VIP Tier Configuration">
+      <div className="mb-4 text-xs text-slate-500">Deposit করা টাকার total এর ভিত্তিতে ইউজার এই tier-এ auto upgrade হবে।</div>
       {loading ? (
         <div className="p-6 text-center text-sm text-slate-400">Loading tiers…</div>
       ) : (
