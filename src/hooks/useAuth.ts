@@ -98,7 +98,7 @@ export function useProfile(userId: string | undefined) {
 
 export function useIsAdmin(userId: string | undefined) {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!userId) {
