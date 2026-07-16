@@ -197,12 +197,14 @@ export const adminRunVipPayouts = createServerFn({ method: "POST" })
     if (daily.error) throw new Error(`daily: ${daily.error.message}`);
     if (weekly.error) throw new Error(`weekly: ${weekly.error.message}`);
     if (cashback.error) throw new Error(`cashback: ${cashback.error.message}`);
-    return {
+    const result = {
       ran_at: new Date().toISOString(),
       daily: (daily.data as any)?.[0] ?? { credited_users: 0, total_amount: 0 },
       weekly: (weekly.data as any)?.[0] ?? { credited_users: 0, total_amount: 0 },
       cashback: (cashback.data as any)?.[0] ?? { credited_users: 0, total_amount: 0 },
     };
+    await writeAudit(admin, context.userId, "vip.payout.run", "cron", null, result);
+    return result;
   });
 
 export const adminPreviewVipPayouts = createServerFn({ method: "POST" })
