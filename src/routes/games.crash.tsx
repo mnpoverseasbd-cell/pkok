@@ -71,6 +71,9 @@ function Crash() {
           record({ pnl, multiplier: won / roundBet });
           pf.consume(`crash=${target}× cashout=${cashoutAt}×`);
           recordMyBet({ game: "crash", bet: roundBet, multiplier: cashoutAt, payout: won });
+          pushMultiplierHistory("crash", target);
+          fxRef.current?.burst({ count: 60, kind: "confetti", speed: 8 });
+          try { sfxCashout(); } catch { /* noop */ }
           stop(); finish(pnl); return;
         }
         if (m >= target) {
@@ -79,6 +82,9 @@ function Crash() {
           record({ pnl: -roundBet, multiplier: 0 });
           pf.consume(`crash=${target}× (bust)`);
           recordMyBet({ game: "crash", bet: roundBet, multiplier: 0, payout: 0 });
+          pushMultiplierHistory("crash", target);
+          fxRef.current?.burst({ count: 40, kind: "smoke", color: "#ff4d4d", speed: 5 });
+          try { sfxBust(); } catch { /* noop */ }
           stop(); finish(-roundBet); return;
         }
         setMult(m); rafRef.current = requestAnimationFrame(tick);
