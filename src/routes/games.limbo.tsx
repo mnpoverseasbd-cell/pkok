@@ -57,7 +57,7 @@ function LimboGame() {
   const win = result !== null && result >= target;
 
   return (
-    <GameShell title="Limbo" emoji="🚀">
+    <GameShell title="Limbo" emoji="🚀" gameKey="limbo">
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
