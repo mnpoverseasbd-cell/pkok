@@ -93,36 +93,55 @@ function MyGamesPage() {
 
 function GameCard({ g, index }: { g: OriginalGame; index: number }) {
   const inner = (
-    <div className="relative w-full overflow-hidden rounded-lg">
+    <div className="game-card__inner">
       <div
-        className={`aspect-[4/3] w-full bg-gradient-to-br ${g.gradient} flex items-center justify-center text-6xl transition-transform duration-500 group-hover:scale-110`}
+        className={`relative aspect-[4/3] w-full bg-gradient-to-br ${g.gradient} flex items-center justify-center`}
       >
-        <span aria-hidden>{g.emoji}</span>
+        {/* deep vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.55)_100%)]" />
+        {/* floating emoji */}
+        <span aria-hidden className="game-card__emoji relative z-[1] text-6xl drop-shadow-2xl">
+          {g.emoji}
+        </span>
+        {/* sparkles */}
+        <span className="game-card__spark" style={{ left: "12%", top: "18%", animationDelay: "0s" }} />
+        <span className="game-card__spark" style={{ left: "82%", top: "24%", animationDelay: "0.9s" }} />
+        <span className="game-card__spark" style={{ left: "22%", top: "72%", animationDelay: "1.6s" }} />
+        <span className="game-card__spark" style={{ left: "76%", top: "68%", animationDelay: "2.2s" }} />
+        {/* shine sweep */}
+        <div className="game-card__shine" />
+        {/* hover spotlight */}
+        <div className="game-card__spot" />
       </div>
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2 text-left">
-        <div className="text-sm font-bold text-white">{g.name}</div>
-        <div className="text-[10px] text-white/70">{g.tagline}</div>
+
+      {/* footer */}
+      <div className="absolute inset-x-0 bottom-0 z-[3] bg-gradient-to-t from-black/90 via-black/60 to-transparent p-2 text-left">
+        <div className="text-sm font-black tracking-wide text-white drop-shadow">{g.name}</div>
+        <div className="text-[10px] font-medium text-white/80">{g.tagline}</div>
       </div>
+
+      {/* LIVE / SOON badge */}
       <span
-        className={`absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black ring-1 ring-white/40 backdrop-blur ${
-          g.status === "live" ? "bg-red-600/90 text-white" : "bg-yellow-400/90 text-black"
+        className={`absolute left-2 top-2 z-[4] inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-black ring-1 backdrop-blur ${
+          g.status === "live"
+            ? "bg-red-600/95 text-white ring-white/50 shadow-[0_0_12px_rgba(255,60,60,0.7)]"
+            : "bg-yellow-400/95 text-black ring-white/50"
         }`}
       >
         {g.status === "live" ? (
           <>
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+            <span className="gc-live-dot" />
             LIVE
           </>
         ) : (
           "SOON"
         )}
       </span>
-      <div className="pointer-events-none absolute inset-0 rounded-lg ring-0 ring-[var(--neon-gold)] transition-all duration-300 group-hover:ring-2 group-hover:shadow-[0_10px_28px_rgba(255,215,80,0.35)]" />
     </div>
   );
 
-  const className = "lobby-item group animate-fade-in";
-  const style = { animationDelay: `${Math.min(index * 30, 600)}ms`, animationFillMode: "backwards" as const };
+  const className = "lobby-item game-card group animate-fade-in";
+  const style = { animationDelay: `${Math.min(index * 40, 600)}ms`, animationFillMode: "backwards" as const };
 
   if (g.status === "live" && g.to) {
     return (

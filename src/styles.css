@@ -470,3 +470,126 @@
   40%      { opacity: 1; transform: scale(1.2); }
   60%      { opacity: 0.7; transform: scale(1); }
 }
+
+/* ===== Game card live animations ===== */
+.game-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  isolation: isolate;
+  transform: translateZ(0);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease;
+}
+.game-card::before {
+  /* animated gradient glow ring */
+  content: "";
+  position: absolute; inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(from 0deg,
+    rgba(255,215,80,.9), rgba(255,80,180,.7), rgba(120,220,255,.8),
+    rgba(120,255,160,.8), rgba(255,215,80,.9));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: .55;
+  animation: gc-spin 6s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+.game-card:hover { transform: translateY(-6px) scale(1.02); }
+.game-card:hover::before { opacity: 1; }
+.game-card:hover { box-shadow: 0 20px 40px -12px rgba(255,215,80,.35), 0 0 30px rgba(255,80,180,.25); }
+@keyframes gc-spin { to { transform: rotate(360deg); } }
+
+.game-card__inner {
+  position: relative;
+  z-index: 1;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Shine sweep across the card */
+.game-card__shine {
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: gc-shine 3.6s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  z-index: 2;
+}
+@keyframes gc-shine {
+  0%   { transform: translateX(-120%); }
+  60%  { transform: translateX(120%); }
+  100% { transform: translateX(120%); }
+}
+
+/* Floating emoji */
+.game-card__emoji {
+  display: inline-block;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.5));
+  animation: gc-float 3.4s ease-in-out infinite;
+  transform-origin: center;
+}
+.game-card:hover .game-card__emoji {
+  animation: gc-float 1.6s ease-in-out infinite, gc-wiggle .8s ease-in-out infinite;
+}
+@keyframes gc-float {
+  0%,100% { transform: translateY(0) rotate(-2deg); }
+  50%     { transform: translateY(-8px) rotate(2deg); }
+}
+@keyframes gc-wiggle {
+  0%,100% { filter: drop-shadow(0 6px 14px rgba(255,215,80,.7)) brightness(1.1); }
+  50%     { filter: drop-shadow(0 10px 22px rgba(255,80,180,.7)) brightness(1.25); }
+}
+
+/* Sparkles */
+.game-card__spark {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: radial-gradient(circle, #fff 0%, rgba(255,255,255,0) 70%);
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.9));
+  opacity: 0;
+  animation: gc-spark 2.8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 3;
+}
+@keyframes gc-spark {
+  0%, 100% { opacity: 0; transform: scale(.4); }
+  40%      { opacity: 1; transform: scale(1.3); }
+  70%      { opacity: .6; transform: scale(.9); }
+}
+
+/* Radial hover spotlight */
+.game-card__spot {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 120%, rgba(255,255,255,.35), transparent 55%);
+  opacity: 0;
+  transition: opacity .4s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.game-card:hover .game-card__spot { opacity: 1; }
+
+/* LIVE dot pulse ring */
+.gc-live-dot {
+  position: relative;
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: #fff;
+}
+.gc-live-dot::after {
+  content: "";
+  position: absolute; inset: -3px;
+  border-radius: inherit;
+  border: 2px solid rgba(255,255,255,.9);
+  animation: gc-ping 1.4s cubic-bezier(0,0,.2,1) infinite;
+}
+@keyframes gc-ping {
+  0%   { transform: scale(.8); opacity: 1; }
+  80%,100% { transform: scale(2.2); opacity: 0; }
+}
+
