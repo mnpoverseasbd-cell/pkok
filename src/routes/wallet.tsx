@@ -74,6 +74,7 @@ function WalletPage() {
   const navigate = useNavigate();
   const search = useSearch({ from: "/wallet" });
   const tab: TabKey = search.tab ?? "deposit";
+  const [depositBump, setDepositBump] = useState(0);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
@@ -133,8 +134,13 @@ function WalletPage() {
 
         {tab === "deposit" && (
           <>
-            <QuickBuyCoins userId={user.id} balance={profile?.wallet_balance ?? 0} onCredited={refetch} />
-            <DepositForm userId={user.id} onCreated={refetch} />
+            <QuickBuyCoins
+              userId={user.id}
+              balance={profile?.wallet_balance ?? 0}
+              onCredited={() => { refetch(); setDepositBump((n) => n + 1); }}
+            />
+            <DepositForm userId={user.id} onCreated={() => { refetch(); setDepositBump((n) => n + 1); }} />
+            <DepositHistory userId={user.id} refreshKey={depositBump} />
           </>
         )}
         {tab === "withdraw" && (
@@ -197,8 +203,28 @@ function QuickBuyCoins({
       .from("profiles")
       .update({ wallet_balance: next })
       .eq("id", userId);
+    if (dbErr) {
+      setSubmitting(false);
+      await supabase.from("transactions").insert({
+        user_id: userId,
+        type: "deposit",
+        status: "rejected",
+        amount: amt,
+        txn_reference: "QUICKBUY",
+        admin_note: dbErr.message,
+      });
+      return toast.error(dbErr.message);
+    }
+    await supabase.from("transactions").insert({
+      user_id: userId,
+      type: "deposit",
+      status: "approved",
+      amount: amt,
+      txn_reference: "QUICKBUY",
+      user_note: "Instant coin top-up",
+      approved_at: new Date().toISOString(),
+    });
     setSubmitting(false);
-    if (dbErr) return toast.error(dbErr.message);
     toast.success(`+${amt.toLocaleString()} কয়েন যোগ হয়েছে`);
     setAmount("");
     onCredited();
@@ -359,6 +385,52 @@ function DepositForm({ userId, onCreated }: { userId: string; onCreated: () => v
         <Button disabled={submitting} onClick={submit} className="w-full bg-green-button font-bold text-[var(--background)]">
           {submitting ? "জমা হচ্ছে…" : "ডিপোজিট রিকোয়েস্ট"}
         </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function DepositHistory({ userId, refreshKey }: { userId: string; refreshKey: number }) {
+  const [rows, setRows] = useState<Txn[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    supabase
+      .from("transactions")
+      .select("id, type, status, amount, txn_reference, admin_note, created_at, approved_at")
+      .eq("user_id", userId)
+      .eq("type", "deposit")
+      .order("created_at", { ascending: false })
+      .limit(20)
+      .then(({ data }) => {
+        if (cancelled) return;
+        setRows((data as Txn[]) ?? []);
+        setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [userId, refreshKey]);
+
+  return (
+    <Card className="mt-4 border-white/10 bg-black/40">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-white">
+          <History className="h-5 w-5 text-[var(--neon-gold)]" /> ডিপোজিট হিস্টোরি
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="p-2 text-sm text-white/70">লোড হচ্ছে…</div>
+        ) : rows.length === 0 ? (
+          <div className="rounded-md border border-white/10 bg-black/40 p-6 text-center text-sm text-white/60">
+            এখনো কোনো ডিপোজিট নেই
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {rows.map((r) => <TxnRow key={r.id} r={r} />)}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
