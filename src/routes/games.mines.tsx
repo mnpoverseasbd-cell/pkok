@@ -204,7 +204,8 @@ function Mines() {
                 return (
                   <div
                     key={i}
-                    className="relative aspect-square rounded-xl border-2 border-[#00ff88] bg-gradient-to-br from-[#00ff88]/10 to-[#004d2a] shadow-[inset_0_0_20px_rgba(0,255,136,0.3),0_0_15px_rgba(0,255,136,0.25)] animate-fade-in"
+                    data-cell={i}
+                    className="relative aspect-square rounded-xl border-2 border-[#00ff88] bg-gradient-to-br from-[#00ff88]/10 to-[#004d2a] shadow-[inset_0_0_20px_rgba(0,255,136,0.3),0_0_15px_rgba(0,255,136,0.25)] animate-cash-pop"
                   >
                     <svg viewBox="0 0 24 24" className="absolute inset-0 m-auto h-1/2 w-1/2 text-[#00ff88] drop-shadow-[0_0_6px_rgba(0,255,136,0.8)]" fill="currentColor">
                       <path d="M12 2L4.5 9L12 22L19.5 9L12 2Z" />
@@ -217,7 +218,8 @@ function Mines() {
                 return (
                   <div
                     key={i}
-                    className={`relative aspect-square rounded-xl border-2 border-[#ff4444] bg-gradient-to-br from-[#ff4d4d]/10 to-[#4d0000] shadow-[inset_0_0_20px_rgba(255,68,68,0.3),0_0_15px_rgba(255,68,68,0.3)] ${dead === i ? "animate-[wiggle_0.4s_ease-in-out]" : ""}`}
+                    data-cell={i}
+                    className={`relative aspect-square rounded-xl border-2 border-[#ff4444] bg-gradient-to-br from-[#ff4d4d]/10 to-[#4d0000] shadow-[inset_0_0_20px_rgba(255,68,68,0.3),0_0_15px_rgba(255,68,68,0.3)] ${dead === i ? "animate-crash-shake" : "animate-fade-in"}`}
                   >
                     <svg viewBox="0 0 24 24" className="absolute inset-0 m-auto h-1/2 w-1/2 text-[#ff4444]" fill="currentColor">
                       <path d="M12 2L15 8H21L16 12L18 18L12 14L6 18L8 12L3 8H9L12 2Z" />
@@ -229,9 +231,10 @@ function Mines() {
               return (
                 <button
                   key={i}
+                  data-cell={i}
                   onClick={() => click(i)}
                   disabled={!active || mode === "auto"}
-                  className="group aspect-square rounded-xl border-b-4 border-black bg-gradient-to-br from-[#1b2b1d] to-[#0a120b] transition-all hover:from-[#243a26] hover:to-[#0d1610] hover:border-b-[6px] active:translate-y-1 active:border-b-0 disabled:cursor-default disabled:opacity-70 disabled:hover:from-[#1b2b1d] disabled:hover:to-[#0a120b] disabled:hover:border-b-4"
+                  className="group aspect-square rounded-xl border-b-4 border-black bg-gradient-to-br from-[#1b2b1d] to-[#0a120b] transition-all hover:from-[#243a26] hover:to-[#0d1610] hover:border-b-[6px] hover:shadow-[0_0_15px_rgba(0,255,136,0.25)] active:translate-y-1 active:border-b-0 disabled:cursor-default disabled:opacity-70 disabled:hover:from-[#1b2b1d] disabled:hover:to-[#0a120b] disabled:hover:border-b-4 disabled:hover:shadow-none"
                 >
                   <span className="block text-2xl font-bold text-[var(--neon-gold)] drop-shadow-[0_0_8px_rgba(255,215,0,0.5)] transition-transform group-hover:scale-110">?</span>
                 </button>
