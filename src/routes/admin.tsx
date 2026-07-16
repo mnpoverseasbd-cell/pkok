@@ -25,7 +25,7 @@ function AdminPage() {
   const { isAdmin, loading: roleLoading } = useIsAdmin(user?.id);
   const navigate = useNavigate();
   const search = useSearch({ from: "/admin" });
-  const tab = search.tab ?? "txns";
+  const tab = search.tab ?? "overview";
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
