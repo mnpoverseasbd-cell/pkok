@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { X, Clock, HelpCircle, Egg } from "lucide-react";
+import { X, Clock, HelpCircle, Egg, Crown, Gift, Play, Trophy } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const TOTAL_SECONDS = 24 * 60 * 60; // daily reset
