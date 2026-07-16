@@ -85,13 +85,20 @@ export function GoldenEggPopup() {
             <X className="h-5 w-5" />
           </button>
 
-          {/* Title */}
-          <h3 className="text-center font-display text-lg md:text-xl font-black text-[var(--neon-gold)] drop-shadow">
+          {/* Title with gift + play icons */}
+          <div className="flex items-center justify-center gap-2">
+            <Gift className="h-6 w-6 text-[#f5c542] drop-shadow" />
+            <button aria-label="play" className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-b from-[#ff8a5b] to-[#c94317] shadow-[0_2px_8px_rgba(201,67,23,0.6)]">
+              <Play className="h-3.5 w-3.5 fill-white text-white" />
+            </button>
+          </div>
+          <h3 className="mt-2 text-center font-display text-lg md:text-xl font-black text-[var(--neon-gold)] drop-shadow">
             প্রতিদিন লগইন করুন: গোল্ডেন এগ ভেঙে জিতুন
           </h3>
           <p className="mt-1 text-center font-display text-xl md:text-2xl font-black text-white">
             ৭,৭৭৭,৭৭৭ <span className="text-[var(--neon-gold)]">টাকা</span>
           </p>
+
 
           {/* Countdown */}
           <div className="mt-4 flex items-center justify-center gap-3 text-white">
