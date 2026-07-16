@@ -18,7 +18,7 @@ async function mutate(
     _amount: amount,
     _game_id: ref.gameId,
     _round_id: ref.roundId,
-    _note: ref.note ?? null,
+    _note: ref.note ?? undefined,
   });
   if (error) {
     if (/insufficient/i.test(error.message)) {
