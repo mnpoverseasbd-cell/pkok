@@ -16,6 +16,7 @@ const COLORS = ["#0f5a34", "#c81e5b", "#0f5a34", "#f1c40f", "#0f5a34", "#c81e5b"
 
 function Wheel() {
   const { bet: placeBet, credit } = useDemoWallet();
+  const { stats, record, reset: resetStats } = useGameStats("wheel");
   const [bet, setBet] = useState(50);
   const [spinning, setSpinning] = useState(false);
   const [angle, setAngle] = useState(0);
@@ -34,7 +35,9 @@ function Wheel() {
       const m = SEGMENTS[idx];
       const won = Math.floor(bet * m);
       if (won > 0) credit(won);
-      setMsg(m > 0 ? `🎉 ${m}× · +${won}` : `💥 Zero · -${bet}`);
+      const pnl = won - bet;
+      record({ pnl, multiplier: m });
+      setMsg(m > 0 ? `🎉 ${m}× · ${pnl >= 0 ? "+" : ""}${pnl}` : `💥 Zero · -${bet}`);
       setSpinning(false);
     }, 4200);
   };
