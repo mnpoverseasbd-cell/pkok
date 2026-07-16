@@ -1,10 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
+import { useProvablyFair } from "@/hooks/useProvablyFair";
+import { useAutoBet } from "@/hooks/useAutoBet";
+import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
+import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
+import { fairDice } from "@/lib/provablyFair";
 
 export const Route = createFileRoute("/games/dice")({
   head: () => ({ meta: [{ title: "Lucky Dice — Asik Game" }, { name: "description", content: "Predict the roll, win multiplier." }] }),
@@ -16,36 +21,46 @@ function DiceGame() {
   const { stats, record, reset: resetStats } = useGameStats("dice");
   const { data: cfg } = useGameConfig("dice");
   const edge = cfg?.house_edge ?? 0;
+  const pf = useProvablyFair("dice");
   const [bet, setBet] = useState(50);
   const [target, setTarget] = useState(50);
   const [rolling, setRolling] = useState(false);
   const [roll, setRoll] = useState<number | null>(null);
   const [msg, setMsg] = useState<string>("");
+  const [mode, setMode] = useState<"manual" | "auto">("manual");
 
   const winChance = target;
   const payout = winChance > 0 ? +(99 / winChance).toFixed(4) : 0;
 
-  const play = async () => {
-    if (rolling) return;
-    if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
+  const runRound = useCallback(async (roundBet: number) => {
+    if (!pf.ready) return { pnl: 0 };
+    if (!placeBet(roundBet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return { pnl: 0 }; }
     setRolling(true); setMsg("");
-    for (let i = 0; i < 12; i++) {
+    // quick shuffle animation
+    for (let i = 0; i < 6; i++) {
       setRoll(+(Math.random() * 100).toFixed(2));
       // eslint-disable-next-line no-await-in-loop
-      await new Promise(r => setTimeout(r, 60));
+      await new Promise(r => setTimeout(r, 45));
     }
-    const final = +(Math.random() * 100).toFixed(2);
+    const final = await fairDice(pf.serverSeed, pf.clientSeed, pf.nonce);
     setRoll(final);
+    let pnl: number;
     if (final < target) {
-      const won = Math.floor(bet * payout * (1 - edge)); credit(won);
-      setMsg(`🎉 জয় +${won - bet}`);
-      record({ pnl: won - bet, multiplier: won / bet });
+      const won = Math.floor(roundBet * payout * (1 - edge)); credit(won);
+      pnl = won - roundBet;
+      setMsg(`🎉 জয় +${pnl} · roll ${final}`);
+      record({ pnl, multiplier: won / roundBet });
     } else {
-      setMsg(`💥 হার -${bet}`);
-      record({ pnl: -bet, multiplier: 0 });
+      pnl = -roundBet;
+      setMsg(`💥 হার ${pnl} · roll ${final}`);
+      record({ pnl, multiplier: 0 });
     }
+    pf.consume(`roll=${final} target<${target}`);
     setRolling(false);
-  };
+    return { pnl };
+  }, [pf, placeBet, credit, edge, payout, target, record]);
+
+  const auto = useAutoBet({ runRound, baseBet: bet });
 
   const win = roll !== null && roll < target;
 
@@ -76,6 +91,7 @@ function DiceGame() {
           {msg && <div className="animate-fade-in text-lg font-black text-[var(--neon-gold)]">{msg}</div>}
         </div>
         <ControlsPanel>
+          <ModeTabs mode={mode} setMode={setMode} disabled={rolling || auto.running} />
           <MultDisplay
             label="পেআউট"
             value={`${payout.toFixed(2)}×`}
@@ -88,14 +104,19 @@ function DiceGame() {
             </div>
             <input
               type="range" min={2} max={98} value={target}
-              onChange={e => setTarget(Number(e.target.value))} disabled={rolling}
+              onChange={e => setTarget(Number(e.target.value))} disabled={rolling || auto.running}
               className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#112216] accent-[#00ff88] disabled:opacity-50"
             />
           </div>
-          <BetControls bet={bet} setBet={setBet} disabled={rolling} />
-          <PrimaryButton onClick={play} disabled={rolling}>
-            {rolling ? "রোলিং..." : `রোল · ${Math.floor(bet * payout)}`}
-          </PrimaryButton>
+          <BetControls bet={bet} setBet={setBet} disabled={rolling || auto.running} />
+          {mode === "manual" ? (
+            <PrimaryButton onClick={() => runRound(bet)} disabled={rolling}>
+              {rolling ? "রোলিং..." : `রোল · ${Math.floor(bet * payout)}`}
+            </PrimaryButton>
+          ) : (
+            <AutoBetPanel auto={auto} canStart={pf.ready} />
+          )}
+          <ProvablyFairPanel pf={pf} />
         </ControlsPanel>
       </GameFrame>
     </GameShell>
