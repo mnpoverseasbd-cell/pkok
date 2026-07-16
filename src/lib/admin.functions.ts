@@ -308,3 +308,68 @@ export const adminLogAction = createServerFn({ method: "POST" })
     );
     return { success: true as const };
   });
+
+export const adminListFeatureFlags = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    const { data, error } = await admin
+      .from("feature_flags")
+      .select("*")
+      .order("flag_key", { ascending: true });
+    if (error) throw new Error(error.message);
+    return { rows: data ?? [] };
+  });
+
+export const adminUpsertFeatureFlag = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        flag_key: z
+          .string()
+          .trim()
+          .min(2)
+          .max(80)
+          .regex(/^[a-z0-9_.-]+$/, "lowercase, digits, . _ - only"),
+        enabled: z.boolean(),
+        description: z.string().max(500).nullable().optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    const { data: row, error } = await admin
+      .from("feature_flags")
+      .upsert(
+        {
+          flag_key: data.flag_key,
+          enabled: data.enabled,
+          description: data.description ?? null,
+          metadata: data.metadata ?? {},
+        },
+        { onConflict: "flag_key" },
+      )
+      .select()
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    await writeAudit(admin, context.userId, "flag.upsert", "feature_flag", data.flag_key, {
+      enabled: data.enabled,
+    });
+    return { row };
+  });
+
+export const adminDeleteFeatureFlag = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ flag_key: z.string().min(1) }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    const { error } = await admin.from("feature_flags").delete().eq("flag_key", data.flag_key);
+    if (error) throw new Error(error.message);
+    await writeAudit(admin, context.userId, "flag.delete", "feature_flag", data.flag_key, {});
+    return { success: true as const };
+  });
