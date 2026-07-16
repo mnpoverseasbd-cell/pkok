@@ -77,6 +77,10 @@ function VipPage() {
       if (cancelled) return;
       const total = (data ?? []).reduce((a, r) => a + Number(r.amount ?? 0), 0);
       setLifetime(total);
+
+      // Auto-sync profile.vip_tier so it matches computed tier
+      const computed = computeTier(total).current.key;
+      supabase.from("profiles").update({ vip_tier: computed }).eq("id", user.id).then(() => {});
     })();
     return () => { cancelled = true; };
   }, [user]);
