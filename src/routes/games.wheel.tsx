@@ -102,7 +102,6 @@ function Wheel() {
 
   return (
     <GameShell title="Wheel of Fortune" emoji="🎡" gameKey="wheel">
-      <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="relative mx-auto flex flex-1 items-center justify-center py-6">
           <button
@@ -165,6 +164,7 @@ function Wheel() {
           <ProvablyFairPanel pf={pf} gameKey="wheel" />
         </ControlsPanel>
       </GameFrame>
+      <StatsBar stats={stats} onReset={resetStats} />
     </GameShell>
   );
 }

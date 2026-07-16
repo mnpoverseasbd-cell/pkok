@@ -93,10 +93,6 @@ function LimboGame() {
 
   return (
     <GameShell title="Limbo" emoji="🚀" gameKey="limbo">
-      <StatsBar stats={stats} onReset={resetStats} />
-      <div className="mb-3">
-        <MultiplierHistoryStrip gameKey="limbo" />
-      </div>
       <GameFrame>
         <div className={`relative flex flex-1 flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border bg-gradient-to-b from-[#0a120b] via-[#070f08] to-[#020604] p-6 min-h-[340px] transition-shadow duration-500 ${frameGlow}`}>
           <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,255,136,0.08),transparent_60%)]" />
@@ -156,6 +152,10 @@ function LimboGame() {
           <ProvablyFairPanel pf={pf} gameKey="limbo" />
         </ControlsPanel>
       </GameFrame>
+      <div className="mt-3">
+        <MultiplierHistoryStrip gameKey="limbo" />
+      </div>
+      <StatsBar stats={stats} onReset={resetStats} />
     </GameShell>
   );
 }

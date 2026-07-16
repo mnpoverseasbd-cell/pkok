@@ -83,10 +83,6 @@ function DiceGame() {
 
   return (
     <GameShell title="Lucky Dice" emoji="🎲" gameKey="dice">
-      <StatsBar stats={stats} onReset={resetStats} />
-      <div className="mb-3">
-        <MultiplierHistoryStrip gameKey="dice" />
-      </div>
       <GameFrame>
         <div className="relative flex flex-1 flex-col items-center justify-center gap-6 overflow-hidden rounded-2xl border border-[#1a3321] bg-gradient-to-b from-[#0a120b] via-[#070f08] to-[#020604] p-6 min-h-[340px]">
           <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,255,136,0.08),transparent_60%)]" />
@@ -155,6 +151,10 @@ function DiceGame() {
           <ProvablyFairPanel pf={pf} gameKey="dice" />
         </ControlsPanel>
       </GameFrame>
+      <div className="mt-3">
+        <MultiplierHistoryStrip gameKey="dice" />
+      </div>
+      <StatsBar stats={stats} onReset={resetStats} />
     </GameShell>
   );
 }

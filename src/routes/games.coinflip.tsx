@@ -106,26 +106,6 @@ function CoinFlip() {
 
   return (
     <GameShell title="Coin Flip" emoji="🪙" gameKey="coinflip">
-      <StatsBar stats={stats} onReset={resetStats} />
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <MultiplierHistoryStrip gameKey="coinflip" />
-        {sides.length > 0 && (
-          <div className="flex items-center gap-1 rounded-full border border-white/5 bg-black/30 px-2 py-1.5 no-scrollbar overflow-x-auto">
-            {sides.slice(0, 16).map((s, i) => (
-              <span
-                key={i}
-                className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black tabular-nums ring-1 ${
-                  s === "H"
-                    ? "bg-[var(--neon-gold)]/20 text-[var(--neon-gold)] ring-[var(--neon-gold)]/40"
-                    : "bg-[#4dc9ff]/15 text-[#4dc9ff] ring-[#4dc9ff]/30"
-                } ${i === 0 ? "scale-110" : ""}`}
-              >
-                {s}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
       <GameFrame>
         <div className={`relative flex flex-1 flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border bg-gradient-to-b from-[#0a120b] via-[#070f08] to-[#020604] p-6 min-h-[340px] transition-shadow duration-500 ${glow}`}>
           <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,215,0,0.08),transparent_65%)]" />
@@ -180,6 +160,26 @@ function CoinFlip() {
           <ProvablyFairPanel pf={pf} gameKey="coinflip" />
         </ControlsPanel>
       </GameFrame>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <MultiplierHistoryStrip gameKey="coinflip" />
+        {sides.length > 0 && (
+          <div className="flex items-center gap-1 rounded-full border border-white/5 bg-black/30 px-2 py-1.5 no-scrollbar overflow-x-auto">
+            {sides.slice(0, 16).map((s, i) => (
+              <span
+                key={i}
+                className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black tabular-nums ring-1 ${
+                  s === "H"
+                    ? "bg-[var(--neon-gold)]/20 text-[var(--neon-gold)] ring-[var(--neon-gold)]/40"
+                    : "bg-[#4dc9ff]/15 text-[#4dc9ff] ring-[#4dc9ff]/30"
+                } ${i === 0 ? "scale-110" : ""}`}
+              >
+                {s}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      <StatsBar stats={stats} onReset={resetStats} />
     </GameShell>
   );
 }
