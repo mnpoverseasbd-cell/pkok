@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, Gamepad2 } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
+import { ComingSoonBanner } from "@/components/landing/ComingSoonBanner";
 
 export const Route = createFileRoute("/slots")({
   head: () => ({
