@@ -280,19 +280,19 @@ function AdminTxns() {
     <Panel
       title="Transactions"
       action={
-        <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-black/40 p-1">
+        <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
           {(["pending", "approved", "rejected", "all"] as const).map((f) => (
-            <button key={f} onClick={() => setFilter(f)} className={`rounded-md px-3 py-1 text-[11px] font-bold uppercase transition ${filter === f ? "bg-[var(--neon-green)]/20 text-[var(--neon-green)]" : "text-white/50 hover:text-white"}`}>{f}</button>
+            <button key={f} onClick={() => setFilter(f)} className={`rounded-md px-3 py-1 text-[11px] font-bold uppercase transition ${filter === f ? "bg-emerald-100 text-emerald-600" : "text-slate-400 hover:text-slate-900"}`}>{f}</button>
           ))}
-          <button onClick={load} className="ml-1 rounded-md p-1.5 text-white/50 hover:text-white"><RefreshCw className="h-3.5 w-3.5" /></button>
+          <button onClick={load} className="ml-1 rounded-md p-1.5 text-slate-400 hover:text-slate-900"><RefreshCw className="h-3.5 w-3.5" /></button>
         </div>
       }
     >
-      {loading ? <div className="text-white/60">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-white/40">No transactions</div> : (
-        <div className="overflow-x-auto rounded-lg border border-white/5">
+      {loading ? <div className="text-slate-500">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-slate-400">No transactions</div> : (
+        <div className="overflow-x-auto rounded-lg border border-slate-100">
           <Table>
             <TableHeader>
-              <TableRow className="border-white/10 bg-black/40">
+              <TableRow className="border-slate-200 bg-slate-50">
                 <TableHead>User</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Amount</TableHead>
@@ -304,24 +304,24 @@ function AdminTxns() {
             </TableHeader>
             <TableBody>
               {rows.map((r) => (
-                <TableRow key={r.id} className="border-white/5 hover:bg-white/5">
+                <TableRow key={r.id} className="border-slate-100 hover:bg-slate-50">
                   <TableCell>
-                    <div className="font-bold text-white">{r.profiles?.display_name || r.profiles?.username || "—"}</div>
-                    <div className="text-[10px] text-white/40">{r.profiles?.phone || r.profiles?.email}</div>
+                    <div className="font-bold text-slate-900">{r.profiles?.display_name || r.profiles?.username || "—"}</div>
+                    <div className="text-[10px] text-slate-400">{r.profiles?.phone || r.profiles?.email}</div>
                   </TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center gap-1 text-xs font-bold capitalize ${r.type === "deposit" ? "text-emerald-300" : r.type === "withdraw" ? "text-red-300" : "text-yellow-300"}`}>
+                    <span className={`inline-flex items-center gap-1 text-xs font-bold capitalize ${r.type === "deposit" ? "text-emerald-600" : r.type === "withdraw" ? "text-rose-600" : "text-amber-600"}`}>
                       {r.type === "deposit" ? <ArrowDownRight className="h-3 w-3" /> : r.type === "withdraw" ? <ArrowUpRight className="h-3 w-3" /> : null}
                       {r.type}
                     </span>
                   </TableCell>
-                  <TableCell className="font-black text-[var(--neon-green)]">৳{Number(r.amount).toFixed(2)}</TableCell>
-                  <TableCell className="text-xs font-mono text-white/60">{r.txn_reference || r.sender_account || r.receiver_account || "—"}</TableCell>
+                  <TableCell className="font-black text-emerald-600">৳{Number(r.amount).toFixed(2)}</TableCell>
+                  <TableCell className="text-xs font-mono text-slate-500">{r.txn_reference || r.sender_account || r.receiver_account || "—"}</TableCell>
                   <TableCell><StatusPill status={r.status} /></TableCell>
-                  <TableCell className="text-xs text-white/50">{new Date(r.created_at).toLocaleString()}</TableCell>
+                  <TableCell className="text-xs text-slate-400">{new Date(r.created_at).toLocaleString()}</TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-1">
-                      <Button size="sm" variant="outline" onClick={() => setDetailId(r.id)} className="h-7 border-white/10"><Eye className="h-3 w-3" /></Button>
+                      <Button size="sm" variant="outline" onClick={() => setDetailId(r.id)} className="h-7 border-slate-200"><Eye className="h-3 w-3" /></Button>
                       {r.status === "pending" && (
                         <>
                           <Button size="sm" onClick={() => act(r.id, "approved")} className="h-7 bg-emerald-500 hover:bg-emerald-600 text-black"><CheckCircle2 className="h-3 w-3" /></Button>
@@ -399,16 +399,16 @@ function AdminUsers() {
       title={`Users (${filtered.length})`}
       action={
         <div className="relative">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/40" />
-          <Input placeholder="Search name / phone / email…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 w-72 border-white/10 bg-black/40 pl-8 text-xs" />
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+          <Input placeholder="Search name / phone / email…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 w-72 border-slate-200 bg-slate-50 pl-8 text-xs" />
         </div>
       }
     >
-      {loading ? <div className="text-white/60">Loading…</div> : (
-        <div className="overflow-x-auto rounded-lg border border-white/5">
+      {loading ? <div className="text-slate-500">Loading…</div> : (
+        <div className="overflow-x-auto rounded-lg border border-slate-100">
           <Table>
             <TableHeader>
-              <TableRow className="border-white/10 bg-black/40">
+              <TableRow className="border-slate-200 bg-slate-50">
                 <TableHead>User</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Balance</TableHead>
@@ -421,30 +421,30 @@ function AdminUsers() {
               {filtered.map((u) => {
                 const isAdmin = (u.user_roles ?? []).some((r: any) => r.role === "admin");
                 return (
-                  <TableRow key={u.id} className="border-white/5 hover:bg-white/5">
+                  <TableRow key={u.id} className="border-slate-100 hover:bg-slate-50">
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500/30 to-purple-500/30 text-xs font-black text-white">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500/30 to-purple-500/30 text-xs font-black text-slate-900">
                           {(u.display_name || u.username || "?")[0]?.toUpperCase()}
                         </div>
                         <div>
-                          <div className="flex items-center gap-1 font-bold text-white">
+                          <div className="flex items-center gap-1 font-bold text-slate-900">
                             {u.display_name || u.username || "—"}
                             {isAdmin && <ShieldCheck className="h-3 w-3 text-red-400" />}
                           </div>
-                          <div className="text-[10px] text-white/40">{u.email}</div>
+                          <div className="text-[10px] text-slate-400">{u.email}</div>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-xs text-white/70">{u.phone || "—"}</TableCell>
-                    <TableCell className="font-black text-[var(--neon-green)]">৳{Number(u.wallet_balance).toFixed(2)}</TableCell>
-                    <TableCell><span className="rounded-md bg-yellow-500/10 px-2 py-0.5 text-[10px] font-bold uppercase text-yellow-300">{u.vip_tier}</span></TableCell>
-                    <TableCell className="font-mono text-xs text-white/60">{u.referral_code}</TableCell>
+                    <TableCell className="text-xs text-slate-600">{u.phone || "—"}</TableCell>
+                    <TableCell className="font-black text-emerald-600">৳{Number(u.wallet_balance).toFixed(2)}</TableCell>
+                    <TableCell><span className="rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-600">{u.vip_tier}</span></TableCell>
+                    <TableCell className="font-mono text-xs text-slate-500">{u.referral_code}</TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-1">
                         <Button size="sm" onClick={() => adjust(u.id, 1)} className="h-7 bg-emerald-500 hover:bg-emerald-600 text-black"><Plus className="h-3 w-3" /></Button>
                         <Button size="sm" onClick={() => adjust(u.id, -1)} variant="destructive" className="h-7"><Minus className="h-3 w-3" /></Button>
-                        <Button size="sm" variant="outline" onClick={() => toggleAdmin(u.id, isAdmin)} className="h-7 border-white/10">
+                        <Button size="sm" variant="outline" onClick={() => toggleAdmin(u.id, isAdmin)} className="h-7 border-slate-200">
                           {isAdmin ? <ShieldOff className="h-3 w-3" /> : <ShieldCheck className="h-3 w-3" />}
                         </Button>
                       </div>
@@ -497,31 +497,31 @@ function AdminMethods() {
         <Panel title="New Payment Method">
           <div className="grid gap-3">
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Kind</label>
-              <select value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value as typeof form.kind })} className="mt-1 h-9 w-full rounded-md border border-white/10 bg-black/40 px-3 text-sm text-white">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Kind</label>
+              <select value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value as typeof form.kind })} className="mt-1 h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900">
                 {["bkash", "nagad", "rocket", "bank", "usdt", "other"].map((k) => <option key={k} value={k} className="bg-black">{k}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Label</label>
-              <Input placeholder="e.g. bKash Personal" value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} className="mt-1 border-white/10 bg-black/40" />
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Label</label>
+              <Input placeholder="e.g. bKash Personal" value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} className="mt-1 border-slate-200 bg-slate-50" />
             </div>
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Account Number</label>
-              <Input placeholder="017…" value={form.account_number} onChange={(e) => setForm({ ...form, account_number: e.target.value })} className="mt-1 border-white/10 bg-black/40" />
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Account Number</label>
+              <Input placeholder="017…" value={form.account_number} onChange={(e) => setForm({ ...form, account_number: e.target.value })} className="mt-1 border-slate-200 bg-slate-50" />
             </div>
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Instructions</label>
-              <Input placeholder="Send Money, then submit ref" value={form.instructions} onChange={(e) => setForm({ ...form, instructions: e.target.value })} className="mt-1 border-white/10 bg-black/40" />
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Instructions</label>
+              <Input placeholder="Send Money, then submit ref" value={form.instructions} onChange={(e) => setForm({ ...form, instructions: e.target.value })} className="mt-1 border-slate-200 bg-slate-50" />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Min Deposit</label>
-                <Input type="number" value={form.min_deposit} onChange={(e) => setForm({ ...form, min_deposit: Number(e.target.value) })} className="mt-1 border-white/10 bg-black/40" />
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Min Deposit</label>
+                <Input type="number" value={form.min_deposit} onChange={(e) => setForm({ ...form, min_deposit: Number(e.target.value) })} className="mt-1 border-slate-200 bg-slate-50" />
               </div>
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Min Withdraw</label>
-                <Input type="number" value={form.min_withdraw} onChange={(e) => setForm({ ...form, min_withdraw: Number(e.target.value) })} className="mt-1 border-white/10 bg-black/40" />
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Min Withdraw</label>
+                <Input type="number" value={form.min_withdraw} onChange={(e) => setForm({ ...form, min_withdraw: Number(e.target.value) })} className="mt-1 border-slate-200 bg-slate-50" />
               </div>
             </div>
             <Button onClick={add} className="mt-2 bg-emerald-500 hover:bg-emerald-600 text-black font-black">+ Add Method</Button>
@@ -530,21 +530,21 @@ function AdminMethods() {
       </div>
       <div className="lg:col-span-3">
         <Panel title="Active Methods">
-          {loading ? <div className="text-white/60">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-white/40">No methods yet</div> : (
+          {loading ? <div className="text-slate-500">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-slate-400">No methods yet</div> : (
             <div className="space-y-2">
               {rows.map((r) => (
-                <div key={r.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-black/30 p-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg text-[10px] font-black uppercase ${r.is_active ? "bg-emerald-500/20 text-emerald-300" : "bg-white/10 text-white/40"}`}>{r.kind.slice(0,4)}</div>
+                <div key={r.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg text-[10px] font-black uppercase ${r.is_active ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-400"}`}>{r.kind.slice(0,4)}</div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-bold text-white">{r.label}</div>
-                    <div className="text-xs font-mono text-white/50">{r.account_number}</div>
+                    <div className="font-bold text-slate-900">{r.label}</div>
+                    <div className="text-xs font-mono text-slate-400">{r.account_number}</div>
                   </div>
-                  <div className="text-[10px] text-white/50">
+                  <div className="text-[10px] text-slate-400">
                     <div>Min D: ৳{r.min_deposit}</div>
                     <div>Min W: ৳{r.min_withdraw}</div>
                   </div>
                   <div className="flex gap-1">
-                    <Button size="sm" variant="outline" onClick={() => toggleActive(r.id, r.is_active)} className="h-7 border-white/10 text-xs">{r.is_active ? "Disable" : "Enable"}</Button>
+                    <Button size="sm" variant="outline" onClick={() => toggleActive(r.id, r.is_active)} className="h-7 border-slate-200 text-xs">{r.is_active ? "Disable" : "Enable"}</Button>
                     <Button size="sm" variant="destructive" onClick={() => remove(r.id)} className="h-7 text-xs">Delete</Button>
                   </div>
                 </div>
@@ -603,39 +603,39 @@ function AdminGames() {
 
   return (
     <Panel title="Game Controls">
-      {loading ? <div className="text-white/60">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-white/40">No games configured</div> : (
+      {loading ? <div className="text-slate-500">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-slate-400">No games configured</div> : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {rows.map((r) => {
             const dirty = !!edits[r.id];
             return (
-              <div key={r.id} className="rounded-xl border border-white/10 bg-black/40 p-4">
+              <div key={r.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="text-base font-black text-white">{r.name}</div>
-                    <div className="mt-0.5 font-mono text-[10px] text-white/40">{r.game_key}</div>
+                    <div className="text-base font-black text-slate-900">{r.name}</div>
+                    <div className="mt-0.5 font-mono text-[10px] text-slate-400">{r.game_key}</div>
                   </div>
                   <button
                     onClick={() => toggleEnabled(r)}
-                    className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase ${r.is_enabled ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300" : "border-red-500/40 bg-red-500/15 text-red-300"}`}
+                    className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase ${r.is_enabled ? "border-emerald-300 bg-emerald-100 text-emerald-600" : "border-rose-300 bg-rose-100 text-rose-600"}`}
                   >
                     {r.is_enabled ? "● Enabled" : "○ Disabled"}
                   </button>
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-2">
                   <div>
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-white/50">Min Bet</label>
-                    <Input type="number" value={valOf(r, "min_bet")} onChange={(e) => setField(r.id, "min_bet", Number(e.target.value))} className="mt-1 h-8 border-white/10 bg-black/60 text-xs" />
+                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Min Bet</label>
+                    <Input type="number" value={valOf(r, "min_bet")} onChange={(e) => setField(r.id, "min_bet", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
                   </div>
                   <div>
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-white/50">Max Bet</label>
-                    <Input type="number" value={valOf(r, "max_bet")} onChange={(e) => setField(r.id, "max_bet", Number(e.target.value))} className="mt-1 h-8 border-white/10 bg-black/60 text-xs" />
+                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Max Bet</label>
+                    <Input type="number" value={valOf(r, "max_bet")} onChange={(e) => setField(r.id, "max_bet", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
                   </div>
                   <div>
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-white/50">Edge %</label>
-                    <Input type="number" step="0.1" value={Number(valOf(r, "house_edge")) * 100} onChange={(e) => setField(r.id, "house_edge", Number(e.target.value) / 100)} className="mt-1 h-8 border-white/10 bg-black/60 text-xs" />
+                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Edge %</label>
+                    <Input type="number" step="0.1" value={Number(valOf(r, "house_edge")) * 100} onChange={(e) => setField(r.id, "house_edge", Number(e.target.value) / 100)} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
                   </div>
                 </div>
-                <Button size="sm" onClick={() => save(r)} disabled={!dirty} className={`mt-3 w-full font-black ${dirty ? "bg-emerald-500 hover:bg-emerald-600 text-black" : "bg-white/5 text-white/30"}`}>
+                <Button size="sm" onClick={() => save(r)} disabled={!dirty} className={`mt-3 w-full font-black ${dirty ? "bg-emerald-500 hover:bg-emerald-600 text-black" : "bg-slate-50 text-slate-300"}`}>
                   {dirty ? "Save Changes" : "No Changes"}
                 </Button>
               </div>
