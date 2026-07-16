@@ -108,7 +108,7 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           const rows = 10;
           floats = await fairFloats(serverSeed, clientSeed, nonce, rows);
           const path = await fairPlinko(serverSeed, clientSeed, nonce, rows);
-          const bucket = path.reduce((a, b) => a + b, 0);
+          const bucket = path.reduce<number>((a, b) => a + b, 0);
           outcome = `Path = [${path.join(", ")}] → bucket ${bucket}`;
           extra = (
             <div className="mt-2 text-[10px] text-white/50">
