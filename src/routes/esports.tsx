@@ -126,7 +126,7 @@ function GameCard({ g, index }: { g: OriginalGame; index: number }) {
 
   if (g.status === "live" && g.to) {
     return (
-      <Link to={g.to} className={className} style={style} aria-label={g.name}>
+      <Link to={g.to as string} className={className} style={style} aria-label={g.name}>
         {inner}
       </Link>
     );
