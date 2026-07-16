@@ -1,3 +1,4 @@
+import { recordMyBet } from "@/lib/liveFeed";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
@@ -45,17 +46,21 @@ function DiceGame() {
     const final = await fairDice(pf.serverSeed, pf.clientSeed, pf.nonce);
     setRoll(final);
     let pnl: number;
+    let won = 0;
+    let mult = 0;
     if (final < target) {
-      const won = Math.floor(roundBet * payout * (1 - edge)); credit(won);
+      won = Math.floor(roundBet * payout * (1 - edge)); credit(won);
       pnl = won - roundBet;
+      mult = won / roundBet;
       setMsg(`🎉 জয় +${pnl} · roll ${final}`);
-      record({ pnl, multiplier: won / roundBet });
+      record({ pnl, multiplier: mult });
     } else {
       pnl = -roundBet;
       setMsg(`💥 হার ${pnl} · roll ${final}`);
       record({ pnl, multiplier: 0 });
     }
     pf.consume(`roll=${final} target<${target}`);
+    recordMyBet({ game: "dice", bet: roundBet, multiplier: mult, payout: won });
     setRolling(false);
     return { pnl };
   }, [pf, placeBet, credit, edge, payout, target, record]);

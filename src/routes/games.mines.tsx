@@ -1,3 +1,4 @@
+import { recordMyBet } from "@/lib/liveFeed";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { GameShell } from "@/components/games/GameShell";
@@ -67,6 +68,7 @@ function Mines() {
       setMsg(`💥 বুম! -${bet}`);
       record({ pnl: -bet, multiplier: 0 });
       pf.consume(`bust mines=${mines} picks=${revealed.size}`);
+      recordMyBet({ game: "mines", bet, multiplier: 0, payout: 0 });
       return;
     }
     const next = new Set(revealed);
@@ -79,6 +81,7 @@ function Mines() {
       setMsg(`🏆 ক্লিয়ার! +${win - bet}`);
       record({ pnl: win - bet, multiplier: finalMult });
       pf.consume(`clear mines=${mines} mult=${finalMult}×`);
+      recordMyBet({ game: "mines", bet, multiplier: finalMult, payout: win });
       setActive(false);
     }
   };
@@ -89,6 +92,7 @@ function Mines() {
     setMsg(`🎉 ক্যাশআউট +${potential - bet}`);
     record({ pnl: potential - bet, multiplier: mult });
     pf.consume(`cashout mines=${mines} picks=${picks} mult=${mult}×`);
+    recordMyBet({ game: "mines", bet, multiplier: mult, payout: potential });
     setActive(false);
   };
 
@@ -125,6 +129,7 @@ function Mines() {
         setMsg(`💥 বুম @ ${k} picks · -${roundBet}`);
         record({ pnl: -roundBet, multiplier: 0 });
         pf.consume(`auto bust mines=${mines} picks=${k}`);
+        recordMyBet({ game: "mines", bet: roundBet, multiplier: 0, payout: 0 });
         return { pnl: -roundBet };
       }
       picked.add(cell);
@@ -137,6 +142,7 @@ function Mines() {
     setMsg(`🎉 অটো ক্যাশ +${pnl} @ ${finalMult}×`);
     record({ pnl, multiplier: finalMult });
     pf.consume(`auto cashout mines=${mines} picks=${wantPicks} mult=${finalMult}×`);
+    recordMyBet({ game: "mines", bet: roundBet, multiplier: finalMult, payout: win });
     setActive(false);
     return { pnl };
   }, [pf, placeBet, credit, edge, mines, autoPicks, record]);

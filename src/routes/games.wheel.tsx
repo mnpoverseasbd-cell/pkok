@@ -1,3 +1,4 @@
+import { recordMyBet } from "@/lib/liveFeed";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
@@ -86,6 +87,7 @@ function Wheel() {
     if (m > 0) { sfxWin(m); setWinFlash(true); } else { sfxBust(); }
     setMsg(m > 0 ? `🎉 ${m}× · ${pnl >= 0 ? "+" : ""}${pnl}` : `💥 শূন্য · -${roundBet}`);
     pf.consume(`segment=${idx} mult=${m}×`);
+    recordMyBet({ game: "wheel", bet: roundBet, multiplier: m, payout: won });
     setSpinning(false);
     return { pnl };
   }, [pf, placeBet, credit, edge, record, angle, animateSpin]);

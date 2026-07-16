@@ -13,6 +13,7 @@ import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
 import { fairPlinko } from "@/lib/provablyFair";
 import { PlinkoBoard, type PlinkoBoardHandle } from "@/components/games/PlinkoBoard";
 import { isMuted, toggleMuted, sfxWin, sfxBust } from "@/lib/sound";
+import { recordMyBet } from "@/lib/liveFeed";
 
 export const Route = createFileRoute("/games/plinko")({
   head: () => ({ meta: [{ title: "Plinko — Asik Game" }, { name: "description", content: "Drop the ball, hit multipliers." }] }),
@@ -21,7 +22,13 @@ export const Route = createFileRoute("/games/plinko")({
 
 const ROWS = 10;
 const BUCKETS = 11;
-const MULTS = [8.9, 3, 1.4, 1.1, 1, 0.5, 1, 1.1, 1.4, 3, 8.9];
+
+type Risk = "low" | "medium" | "high";
+const MULT_TABLE: Record<Risk, number[]> = {
+  low:    [5.6, 2.1, 1.1, 1.0, 0.9, 0.5, 0.9, 1.0, 1.1, 2.1, 5.6],
+  medium: [8.9, 3.0, 1.4, 1.1, 1.0, 0.5, 1.0, 1.1, 1.4, 3.0, 8.9],
+  high:   [29,  4.0, 1.5, 0.3, 0.2, 0.2, 0.2, 0.3, 1.5, 4.0, 29],
+};
 
 function Plinko() {
   const { bet: placeBet, credit } = useDemoWallet();
@@ -30,6 +37,9 @@ function Plinko() {
   const edge = cfg?.house_edge ?? 0;
   const pf = useProvablyFair("plinko");
   const [bet, setBet] = useState(50);
+  const [risk, setRisk] = useState<Risk>("medium");
+  const MULTS = MULT_TABLE[risk];
+  const maxMult = Math.max(...MULTS);
   const [dropping, setDropping] = useState(false);
   const [bucket, setBucket] = useState<number | null>(null);
   const [msg, setMsg] = useState("");
@@ -64,10 +74,11 @@ function Plinko() {
     record({ pnl, multiplier: won / roundBet });
     if (m >= 2) sfxWin(m); else if (m < 1) sfxBust();
     setMsg(pnl >= 0 ? `🎯 ${m}× · +${pnl}` : `😅 ${m}× · ${pnl}`);
-    pf.consume(`bucket=${b} mult=${m}×`);
+    pf.consume(`bucket=${b} mult=${m}× risk=${risk}`);
+    recordMyBet({ game: "plinko", bet: roundBet, multiplier: m, payout: won });
     setDropping(false);
     return { pnl };
-  }, [pf, placeBet, credit, edge, record]);
+  }, [pf, placeBet, credit, edge, record, MULTS, risk]);
 
   const auto = useAutoBet({ runRound, baseBet: bet, delayMs: 500 });
 
@@ -103,10 +114,31 @@ function Plinko() {
         </div>
         <ControlsPanel>
           <ModeTabs mode={mode} setMode={setMode} disabled={dropping || auto.running} />
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Risk Level</span>
+            <div className="flex gap-1 rounded-lg bg-[#112216] p-1">
+              {(["low", "medium", "high"] as Risk[]).map((r) => (
+                <button
+                  key={r}
+                  disabled={dropping || auto.running}
+                  onClick={() => setRisk(r)}
+                  className={`flex-1 rounded-md px-2 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-40 ${
+                    risk === r
+                      ? r === "high" ? "bg-[#ff4444] text-white shadow-[0_0_10px_rgba(255,68,68,0.5)]"
+                        : r === "medium" ? "bg-[var(--neon-gold)] text-[#050a06]"
+                        : "bg-[#00ff88] text-[#050a06]"
+                      : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
           <MultDisplay
             label="শেষ ড্রপ"
             value={lastMult !== null ? `${lastMult}×` : "—"}
-            sub={<>সম্ভাব্য সর্বোচ্চ: <span className="text-[var(--neon-gold)]">{Math.floor(bet * 8.9)}</span></>}
+            sub={<>সম্ভাব্য সর্বোচ্চ: <span className="text-[var(--neon-gold)]">{Math.floor(bet * maxMult)}</span> ({maxMult}×)</>}
           />
           <BetControls bet={bet} setBet={setBet} disabled={dropping || auto.running} />
           {mode === "manual" ? (
