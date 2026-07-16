@@ -21,11 +21,11 @@ function randomMines(count: number): Set<number> {
   return s;
 }
 
-// Fair-ish multiplier: prod of (25-i)/(25-i-mines) with 3% edge
-function multiplier(picks: number, mines: number): number {
+// Fair-ish multiplier: prod of (25-i)/(25-i-mines) with configurable edge
+function multiplier(picks: number, mines: number, edge: number): number {
   let m = 1;
   for (let i = 0; i < picks; i++) m *= (SIZE - i) / (SIZE - i - mines);
-  return +(m * 0.97).toFixed(2);
+  return +(m * (1 - edge)).toFixed(2);
 }
 
 function Mines() {
