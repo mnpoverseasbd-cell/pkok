@@ -38,15 +38,18 @@ function DiceGame() {
     if (final < target) {
       const won = Math.floor(bet * payout);
       credit(won);
-      setMsg(`🎉 WIN +${won}`);
+      setMsg(`🎉 WIN +${won - bet}`);
+      record({ pnl: won - bet, multiplier: payout });
     } else {
       setMsg(`💥 LOSE -${bet}`);
+      record({ pnl: -bet, multiplier: 0 });
     }
     setRolling(false);
   };
 
   return (
     <GameShell title="Lucky Dice" emoji="🎲">
+      <StatsBar stats={stats} onReset={resetStats} />
       <div className="grid gap-4 rounded-xl bg-black/40 p-6 ring-1 ring-white/10 md:grid-cols-2">
         <div className="flex flex-col items-center justify-center gap-4">
           <div className={`grid h-40 w-40 place-items-center rounded-2xl bg-white text-6xl font-black text-black shadow-2xl ${rolling ? "animate-pulse" : ""}`}>
