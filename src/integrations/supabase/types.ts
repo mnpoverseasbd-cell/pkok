@@ -234,6 +234,54 @@ export type Database = {
         }
         Relationships: []
       }
+      vip_tier_configs: {
+        Row: {
+          cashback_pct: number
+          created_at: string
+          daily_bonus: number
+          id: string
+          max_deposit_amount: number
+          max_withdraw_amount: number
+          min_deposit_amount: number
+          min_deposit_total: number
+          min_withdraw_amount: number
+          sort_order: number
+          tier: string
+          updated_at: string
+          weekly_bonus: number
+        }
+        Insert: {
+          cashback_pct?: number
+          created_at?: string
+          daily_bonus?: number
+          id?: string
+          max_deposit_amount?: number
+          max_withdraw_amount?: number
+          min_deposit_amount?: number
+          min_deposit_total?: number
+          min_withdraw_amount?: number
+          sort_order?: number
+          tier: string
+          updated_at?: string
+          weekly_bonus?: number
+        }
+        Update: {
+          cashback_pct?: number
+          created_at?: string
+          daily_bonus?: number
+          id?: string
+          max_deposit_amount?: number
+          max_withdraw_amount?: number
+          min_deposit_amount?: number
+          min_deposit_total?: number
+          min_withdraw_amount?: number
+          sort_order?: number
+          tier?: string
+          updated_at?: string
+          weekly_bonus?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -246,6 +294,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      recompute_vip_tier: { Args: { _user_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
