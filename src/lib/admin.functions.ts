@@ -144,3 +144,24 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
     });
     return { success: true as const, balance: next };
   });
+
+export const adminRunVipPayouts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    const [daily, weekly, cashback] = await Promise.all([
+      admin.rpc("run_daily_bonuses"),
+      admin.rpc("run_weekly_bonuses"),
+      admin.rpc("run_daily_cashback"),
+    ]);
+    if (daily.error) throw new Error(`daily: ${daily.error.message}`);
+    if (weekly.error) throw new Error(`weekly: ${weekly.error.message}`);
+    if (cashback.error) throw new Error(`cashback: ${cashback.error.message}`);
+    return {
+      ran_at: new Date().toISOString(),
+      daily: (daily.data as any)?.[0] ?? { credited_users: 0, total_amount: 0 },
+      weekly: (weekly.data as any)?.[0] ?? { credited_users: 0, total_amount: 0 },
+      cashback: (cashback.data as any)?.[0] ?? { credited_users: 0, total_amount: 0 },
+    };
+  });

@@ -8,7 +8,7 @@ import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { adminAdjustBalance, adminCreateUser, adminDeleteUser } from "@/lib/admin.functions";
+import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts } from "@/lib/admin.functions";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus } from "lucide-react";
@@ -762,9 +762,40 @@ function AdminVipTiers() {
     diamond: "from-fuchsia-500 to-indigo-500",
   };
 
+  const runPayouts = useServerFn(adminRunVipPayouts);
+  const [running, setRunning] = useState(false);
+  const [lastRun, setLastRun] = useState<any>(null);
+
+  const triggerNow = async () => {
+    setRunning(true);
+    try {
+      const res: any = await runPayouts();
+      setLastRun(res);
+      const d = res.daily, w = res.weekly, c = res.cashback;
+      toast.success(`Payouts done — Daily: ${d.credited_users}u/৳${d.total_amount} • Weekly: ${w.credited_users}u/৳${w.total_amount} • Cashback: ${c.credited_users}u/৳${c.total_amount}`);
+    } catch (e: any) {
+      toast.error(e?.message || "Failed");
+    } finally {
+      setRunning(false);
+    }
+  };
+
   return (
     <Panel title="VIP Tier Configuration">
-      <div className="mb-4 text-xs text-slate-500">Deposit করা টাকার total এর ভিত্তিতে ইউজার এই tier-এ auto upgrade হবে।</div>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="text-xs text-slate-500">Deposit করা টাকার total এর ভিত্তিতে ইউজার এই tier-এ auto upgrade হবে।</div>
+        <div className="flex items-center gap-3">
+          {lastRun && (
+            <div className="text-[10px] font-semibold text-slate-500">
+              Last: D {lastRun.daily.credited_users}/৳{lastRun.daily.total_amount} • W {lastRun.weekly.credited_users}/৳{lastRun.weekly.total_amount} • C {lastRun.cashback.credited_users}/৳{lastRun.cashback.total_amount}
+            </div>
+          )}
+          <Button size="sm" onClick={triggerNow} disabled={running} className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-black hover:opacity-90">
+            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${running ? "animate-spin" : ""}`} />
+            {running ? "Running…" : "Run VIP Payouts Now"}
+          </Button>
+        </div>
+      </div>
       {loading ? (
         <div className="p-6 text-center text-sm text-slate-400">Loading tiers…</div>
       ) : (
