@@ -45,15 +45,15 @@ function Plinko() {
     const m = MULTS[b];
     const won = Math.floor(bet * m);
     if (won > 0) credit(won);
-    setMsg(m >= 1 ? `🎯 ${m}× · +${won}` : `😅 ${m}× · +${won}`);
+    const pnl = won - bet;
+    record({ pnl, multiplier: m });
+    setMsg(pnl >= 0 ? `🎯 ${m}× · ${pnl >= 0 ? "+" : ""}${pnl}` : `😅 ${m}× · ${pnl}`);
     setDropping(false);
   };
 
-  // ball column at each row
-  let col = 0;
-
   return (
     <GameShell title="Plinko" emoji="🎯">
+      <StatsBar stats={stats} onReset={resetStats} />
       <div className="grid gap-4 rounded-xl bg-black/40 p-6 ring-1 ring-white/10 md:grid-cols-[1fr_260px]">
         <div className="mx-auto w-full max-w-md">
           <div className="flex flex-col items-center gap-1 py-2">
