@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { ShieldCheck, RefreshCw, Copy, ChevronDown, ChevronUp, Check } from "lucide-react";
+import { ShieldCheck, RefreshCw, Copy, ChevronDown, ChevronUp, Check, Search } from "lucide-react";
 import type { useProvablyFair } from "@/hooks/useProvablyFair";
+import { VerifyBetModal, type VerifyGameKey } from "./VerifyBetModal";
 
 type Pf = ReturnType<typeof useProvablyFair>;
 
-export function ProvablyFairPanel({ pf }: { pf: Pf }) {
+export function ProvablyFairPanel({ pf, gameKey }: { pf: Pf; gameKey: VerifyGameKey }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [clientDraft, setClientDraft] = useState(pf.clientSeed);
   const [revealed, setRevealed] = useState<{ seed: string; hash: string } | null>(null);
+  const [verify, setVerify] = useState<null | { nonce: number; serverSeedHash?: string }>(null);
 
   const copy = async (label: string, value: string) => {
     try { await navigator.clipboard.writeText(value); setCopied(label); setTimeout(() => setCopied(null), 1200); } catch { /* ignore */ }
@@ -68,6 +70,12 @@ export function ProvablyFairPanel({ pf }: { pf: Pf }) {
             >
               <RefreshCw className="h-3 w-3" /> Rotate Server Seed
             </button>
+            <button
+              onClick={() => setVerify({ nonce: Math.max(0, pf.nonce - 1), serverSeedHash: pf.serverSeedHash })}
+              className="inline-flex items-center gap-1 rounded bg-[#1a3321] px-3 py-1.5 text-[11px] font-black text-white hover:bg-[#254a30]"
+            >
+              <Search className="h-3 w-3" /> Verify Bet
+            </button>
             <span className="text-[10px] text-white/40">Reveals current seed for verification.</span>
           </div>
 
@@ -89,6 +97,7 @@ export function ProvablyFairPanel({ pf }: { pf: Pf }) {
                       <th className="p-1.5 text-left font-bold">#</th>
                       <th className="p-1.5 text-left font-bold">Outcome</th>
                       <th className="p-1.5 text-left font-bold">Hash</th>
+                      <th className="p-1.5 text-right font-bold"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -97,6 +106,15 @@ export function ProvablyFairPanel({ pf }: { pf: Pf }) {
                         <td className="p-1.5 font-mono text-white/80">{b.nonce}</td>
                         <td className="p-1.5 text-white/80">{b.outcome}</td>
                         <td className="p-1.5 font-mono text-white/40">{b.serverSeedHash.slice(0, 10)}…</td>
+                        <td className="p-1.5 text-right">
+                          <button
+                            onClick={() => setVerify({ nonce: b.nonce, serverSeedHash: b.serverSeedHash })}
+                            className="inline-flex items-center gap-1 rounded bg-[#1a3321] px-2 py-0.5 text-[10px] font-black text-white hover:bg-[#254a30]"
+                            title="Verify this bet"
+                          >
+                            <Search className="h-2.5 w-2.5" /> Verify
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -106,6 +124,18 @@ export function ProvablyFairPanel({ pf }: { pf: Pf }) {
           )}
         </div>
       )}
+
+      <VerifyBetModal
+        open={!!verify}
+        onClose={() => setVerify(null)}
+        gameKey={gameKey}
+        prefill={verify ? {
+          serverSeed: verify.serverSeedHash === pf.serverSeedHash ? pf.serverSeed : "",
+          clientSeed: pf.clientSeed,
+          nonce: verify.nonce,
+          serverSeedHash: verify.serverSeedHash,
+        } : undefined}
+      />
     </div>
   );
 }
