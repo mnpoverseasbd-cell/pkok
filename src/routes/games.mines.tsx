@@ -43,7 +43,8 @@ function Mines() {
   const mult = useMemo(() => (picks > 0 ? multiplier(picks, mines, edge) : 1), [picks, mines, edge]);
   const nextMult = useMemo(() => multiplier(picks + 1, mines, edge), [picks, mines, edge]);
   const potential = Math.floor(bet * mult);
-
+  const MIN_BET = cfg?.min_bet ?? 10;
+  const MAX_BET = cfg?.max_bet ?? 500;
   const clampBet = (n: number) => Math.max(MIN_BET, Math.min(MAX_BET, Math.round(n)));
 
   const start = () => {
