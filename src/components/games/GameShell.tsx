@@ -40,7 +40,7 @@ export function GameShell({
             "radial-gradient(ellipse at 20% 10%, rgba(180,120,255,0.20), transparent 55%), radial-gradient(ellipse at 80% 90%, rgba(255,220,120,0.14), transparent 55%), linear-gradient(180deg, #0f5a34 0%, #0a4527 55%, #062e19 100%)",
         }}
       >
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 pb-4">
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 pb-4">
           <h1 className="flex items-center gap-2 text-xl font-black text-[var(--neon-gold)]">
             <span className="text-2xl" aria-hidden>{emoji}</span>
             {title}
@@ -69,7 +69,7 @@ export function GameShell({
             </Link>
           </div>
         </div>
-        <div className="mx-auto w-full max-w-5xl">
+        <div className="mx-auto w-full max-w-7xl">
           {maintenance ? (
             <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[var(--neon-gold)]/30 bg-black/50 p-10 text-center">
               <Wrench className="h-10 w-10 text-[var(--neon-gold)]" />
