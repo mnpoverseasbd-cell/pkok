@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameShell, BetControls } from "@/components/games/GameShell";
+import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
+import { useGameStats } from "@/hooks/useGameStats";
 
 export const Route = createFileRoute("/games/dice")({
   head: () => ({ meta: [{ title: "Lucky Dice — Asik Game" }, { name: "description", content: "Predict the roll, win multiplier." }] }),
@@ -10,6 +12,7 @@ export const Route = createFileRoute("/games/dice")({
 
 function DiceGame() {
   const { bet: placeBet, credit } = useDemoWallet();
+  const { stats, record, reset: resetStats } = useGameStats("dice");
   const [bet, setBet] = useState(50);
   const [target, setTarget] = useState(50); // roll under target wins
   const [rolling, setRolling] = useState(false);
