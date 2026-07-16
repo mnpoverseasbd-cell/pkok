@@ -8,6 +8,7 @@ import minesPoster from "@/assets/games/mines.jpg";
 import coinflipPoster from "@/assets/games/coinflip.jpg";
 import plinkoPoster from "@/assets/games/plinko.jpg";
 import wheelPoster from "@/assets/games/wheel.jpg";
+import limboPoster from "@/assets/games/limbo.jpg";
 
 export const Route = createFileRoute("/esports")({
   head: () => ({
