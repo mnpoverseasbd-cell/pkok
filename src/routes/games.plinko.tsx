@@ -114,10 +114,31 @@ function Plinko() {
         </div>
         <ControlsPanel>
           <ModeTabs mode={mode} setMode={setMode} disabled={dropping || auto.running} />
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Risk Level</span>
+            <div className="flex gap-1 rounded-lg bg-[#112216] p-1">
+              {(["low", "medium", "high"] as Risk[]).map((r) => (
+                <button
+                  key={r}
+                  disabled={dropping || auto.running}
+                  onClick={() => setRisk(r)}
+                  className={`flex-1 rounded-md px-2 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-40 ${
+                    risk === r
+                      ? r === "high" ? "bg-[#ff4444] text-white shadow-[0_0_10px_rgba(255,68,68,0.5)]"
+                        : r === "medium" ? "bg-[var(--neon-gold)] text-[#050a06]"
+                        : "bg-[#00ff88] text-[#050a06]"
+                      : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
           <MultDisplay
             label="শেষ ড্রপ"
             value={lastMult !== null ? `${lastMult}×` : "—"}
-            sub={<>সম্ভাব্য সর্বোচ্চ: <span className="text-[var(--neon-gold)]">{Math.floor(bet * 8.9)}</span></>}
+            sub={<>সম্ভাব্য সর্বোচ্চ: <span className="text-[var(--neon-gold)]">{Math.floor(bet * maxMult)}</span> ({maxMult}×)</>}
           />
           <BetControls bet={bet} setBet={setBet} disabled={dropping || auto.running} />
           {mode === "manual" ? (
