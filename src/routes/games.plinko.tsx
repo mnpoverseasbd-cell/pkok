@@ -101,11 +101,31 @@ function Plinko() {
 
   const auto = useAutoBet({ runRound, baseBet: bet, delayMs: 500 });
 
-  const bucketColor = (m: number, active: boolean) => {
-    if (active) return "bg-[var(--neon-gold)] text-[#050a06] shadow-[0_0_15px_var(--neon-gold)]";
-    if (m >= 3) return "bg-gradient-to-b from-[#ff4444] to-[#8b0000] text-white";
-    if (m >= 1.1) return "bg-gradient-to-b from-[#00ff88] to-[#004d2a] text-[#050a06]";
-    return "bg-[#112216] text-white/60 border border-[#1a3321]";
+  // Symmetric vibrant palette (edges hottest, center coolest) — casino pin style
+  const PIN_PALETTES = [
+    ["#ef4444", "#b91c1c"], // red
+    ["#f97316", "#c2410c"], // orange
+    ["#a855f7", "#7e22ce"], // purple
+    ["#3b82f6", "#1d4ed8"], // blue
+    ["#14b8a6", "#0f766e"], // teal
+    ["#94a3b8", "#64748b"], // slate (lowest center)
+    ["#14b8a6", "#0f766e"],
+    ["#3b82f6", "#1d4ed8"],
+    ["#a855f7", "#7e22ce"],
+    ["#f97316", "#c2410c"],
+    ["#ef4444", "#b91c1c"],
+  ];
+  const bucketStyle = (i: number, active: boolean): React.CSSProperties => {
+    const [c1, c2] = PIN_PALETTES[i] ?? ["#64748b", "#334155"];
+    return {
+      background: `linear-gradient(180deg, ${c1} 0%, ${c2} 100%)`,
+      color: "#fff",
+      clipPath: "polygon(50% 100%, 100% 60%, 100% 0, 0 0, 0 60%)",
+      boxShadow: active
+        ? `0 0 24px ${c1}, 0 0 8px #fff inset`
+        : `0 4px 10px -2px ${c2}80, 0 1px 0 rgba(255,255,255,0.35) inset`,
+      textShadow: "0 1px 2px rgba(0,0,0,0.45)",
+    };
   };
 
   return (
