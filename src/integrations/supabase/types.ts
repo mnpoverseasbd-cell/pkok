@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_label: string | null
+          created_at: string
+          details: Json
+          id: string
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_label?: string | null
+          created_at?: string
+          details?: Json
+          id?: string
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_label?: string | null
+          created_at?: string
+          details?: Json
+          id?: string
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       game_configs: {
         Row: {
           config: Json
@@ -330,6 +363,17 @@ export type Database = {
         }[]
       }
       recompute_vip_tier: { Args: { _user_id: string }; Returns: undefined }
+      record_audit: {
+        Args: {
+          _action: string
+          _actor_id: string
+          _actor_label: string
+          _details: Json
+          _target_id: string
+          _target_type: string
+        }
+        Returns: string
+      }
       run_daily_bonuses: {
         Args: never
         Returns: {

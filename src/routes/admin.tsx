@@ -8,14 +8,14 @@ import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts } from "@/lib/admin.functions";
+import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts, adminListAuditLogs, adminLogAction } from "@/lib/admin.functions";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 
 
-const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip"]).optional() });
+const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit"]).optional() });
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — PKOK" }, { name: "robots", content: "noindex" }] }),
@@ -30,6 +30,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   methods: { title: "Payment Methods", subtitle: "bKash, Nagad, Rocket ইত্যাদি কনফিগ করুন" },
   games: { title: "Game Controls", subtitle: "Bet limits এবং house edge টিউন করুন" },
   vip: { title: "VIP Tiers", subtitle: "Deposit threshold, cashback, bonus আর limits কনফিগ করুন" },
+  audit: { title: "Audit Logs", subtitle: "সমস্ত অ্যাডমিন অ্যাকশনের রেকর্ড" },
 };
 
 function AdminPage() {
@@ -80,6 +81,7 @@ function AdminPage() {
           <AdminVipHistory />
         </div>
       )}
+      {tab === "audit" && <AdminAuditLogs />}
     </AdminShell>
   );
 }
@@ -283,6 +285,7 @@ function AdminTxns() {
     const { error } = await supabase.from("transactions").update({ status, admin_note: note || null }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(status === "approved" ? "Approved ✓" : "Rejected");
+    adminLogAction({ data: { action: `txn.${status}`, targetType: "transaction", targetId: id, details: note ? { note } : {} } }).catch(() => {});
     load();
   }
 
@@ -443,10 +446,12 @@ function AdminUsers() {
       const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "admin");
       if (error) return toast.error(error.message);
       toast.success("Admin role সরানো হয়েছে");
+      adminLogAction({ data: { action: "role.revoke", targetType: "user", targetId: userId, details: { role: "admin" } } }).catch(() => {});
     } else {
       const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: "admin" });
       if (error) return toast.error(error.message);
       toast.success("Admin বানানো হয়েছে");
+      adminLogAction({ data: { action: "role.grant", targetType: "user", targetId: userId, details: { role: "admin" } } }).catch(() => {});
     }
     load();
   }
@@ -1129,5 +1134,121 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{label}</label>
       <div className="mt-1">{children}</div>
     </div>
+  );
+}
+
+function AdminAuditLogs() {
+  const listLogs = useServerFn(adminListAuditLogs);
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [actionFilter, setActionFilter] = useState<string>("");
+  const [limit, setLimit] = useState<number>(100);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await listLogs({ data: { limit, action: actionFilter || undefined } });
+      setRows(res.rows);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to load audit logs");
+    } finally {
+      setLoading(false);
+    }
+  }, [listLogs, limit, actionFilter]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const actionColor = (a: string) => {
+    if (a.startsWith("txn.approved")) return "bg-emerald-50 text-emerald-700 ring-emerald-200";
+    if (a.startsWith("txn.rejected")) return "bg-rose-50 text-rose-700 ring-rose-200";
+    if (a.startsWith("user.delete")) return "bg-rose-50 text-rose-700 ring-rose-200";
+    if (a.startsWith("user.create")) return "bg-indigo-50 text-indigo-700 ring-indigo-200";
+    if (a.startsWith("role.")) return "bg-violet-50 text-violet-700 ring-violet-200";
+    if (a.startsWith("wallet.")) return "bg-amber-50 text-amber-700 ring-amber-200";
+    if (a.startsWith("vip.")) return "bg-yellow-50 text-yellow-800 ring-yellow-200";
+    return "bg-slate-100 text-slate-700 ring-slate-200";
+  };
+
+  return (
+    <Panel
+      title={`Audit Logs (${rows.length})`}
+      action={
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            value={actionFilter}
+            onChange={(e) => setActionFilter(e.target.value)}
+            placeholder="Filter action (e.g. txn.approved)"
+            className="h-8 w-56 text-xs"
+          />
+          <select
+            value={limit}
+            onChange={(e) => setLimit(Number(e.target.value))}
+            className="h-8 rounded-md border border-slate-200 bg-white px-2 text-xs"
+          >
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+            <option value={250}>250</option>
+            <option value={500}>500</option>
+          </select>
+          <Button size="sm" variant="outline" onClick={load} disabled={loading} className="h-8">
+            <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} /> Refresh
+          </Button>
+        </div>
+      }
+    >
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-40">Time</TableHead>
+              <TableHead className="w-40">Actor</TableHead>
+              <TableHead className="w-48">Action</TableHead>
+              <TableHead className="w-56">Target</TableHead>
+              <TableHead>Details</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="py-8 text-center text-sm text-slate-500">
+                  {loading ? "Loading…" : "No audit entries yet"}
+                </TableCell>
+              </TableRow>
+            ) : (
+              rows.map((r) => (
+                <TableRow key={r.id}>
+                  <TableCell className="text-xs text-slate-600">
+                    {new Date(r.created_at).toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-xs font-medium text-slate-800">
+                    {r.actor_label || (r.actor_id ? r.actor_id.slice(0, 8) : "system")}
+                  </TableCell>
+                  <TableCell>
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ${actionColor(r.action)}`}>
+                      {r.action}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-xs text-slate-600">
+                    {r.target_type ? (
+                      <>
+                        <span className="text-slate-400">{r.target_type}:</span>{" "}
+                        <span className="font-mono">{r.target_id ? String(r.target_id).slice(0, 12) : "—"}</span>
+                      </>
+                    ) : (
+                      "—"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <pre className="max-w-md overflow-hidden truncate whitespace-pre-wrap break-all text-[10px] text-slate-500">
+                      {r.details && Object.keys(r.details).length ? JSON.stringify(r.details) : "—"}
+                    </pre>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </Panel>
   );
 }

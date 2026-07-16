@@ -33,6 +33,35 @@ function getAdminClient() {
   );
 }
 
+async function writeAudit(
+  admin: any,
+  actorId: string,
+  action: string,
+  targetType: string | null,
+  targetId: string | null,
+  details: Record<string, unknown> = {},
+) {
+  try {
+    const { data: prof } = await admin
+      .from("profiles")
+      .select("display_name, username, phone, email")
+      .eq("id", actorId)
+      .maybeSingle();
+    const label =
+      prof?.display_name || prof?.username || prof?.phone || prof?.email || actorId.slice(0, 8);
+    await admin.rpc("record_audit", {
+      _actor_id: actorId,
+      _actor_label: label,
+      _action: action,
+      _target_type: targetType,
+      _target_id: targetId,
+      _details: details,
+    });
+  } catch (e) {
+    console.error("[audit] failed", action, e);
+  }
+}
+
 export const adminDeleteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ userId: z.string().uuid() }).parse(input))
@@ -42,6 +71,7 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
     const admin = await getAdminClient();
     const { error } = await admin.auth.admin.deleteUser(data.userId);
     if (error) throw new Error(error.message);
+    await writeAudit(admin, context.userId, "user.delete", "user", data.userId, {});
     return { success: true as const };
   });
 
@@ -99,6 +129,10 @@ export const adminCreateUser = createServerFn({ method: "POST" })
         approved_at: new Date().toISOString(),
       });
     }
+    await writeAudit(admin, context.userId, "user.create", "user", created.user.id, {
+      phone: data.phone,
+      initialBalance: data.initialBalance ?? 0,
+    });
     return { success: true as const, userId: created.user.id };
   });
 
@@ -142,6 +176,11 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
       approved_by: context.userId,
       approved_at: new Date().toISOString(),
     });
+    await writeAudit(admin, context.userId, "wallet.adjust", "user", data.userId, {
+      delta: data.amount,
+      balance_after: next,
+      note: data.note ?? null,
+    });
     return { success: true as const, balance: next };
   });
 
@@ -158,12 +197,14 @@ export const adminRunVipPayouts = createServerFn({ method: "POST" })
     if (daily.error) throw new Error(`daily: ${daily.error.message}`);
     if (weekly.error) throw new Error(`weekly: ${weekly.error.message}`);
     if (cashback.error) throw new Error(`cashback: ${cashback.error.message}`);
-    return {
+    const result = {
       ran_at: new Date().toISOString(),
       daily: (daily.data as any)?.[0] ?? { credited_users: 0, total_amount: 0 },
       weekly: (weekly.data as any)?.[0] ?? { credited_users: 0, total_amount: 0 },
       cashback: (cashback.data as any)?.[0] ?? { credited_users: 0, total_amount: 0 },
     };
+    await writeAudit(admin, context.userId, "vip.payout.run", "cron", null, result);
+    return result;
   });
 
 export const adminPreviewVipPayouts = createServerFn({ method: "POST" })
@@ -212,4 +253,58 @@ export const adminPreviewVipPayouts = createServerFn({ method: "POST" })
         entries: decorate(cashbackRows),
       },
     };
+  });
+
+export const adminListAuditLogs = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        limit: z.number().int().min(1).max(500).default(100),
+        action: z.string().optional(),
+        actorId: z.string().uuid().optional(),
+        since: z.string().datetime().optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    let q = admin
+      .from("audit_logs")
+      .select("id, actor_id, actor_label, action, target_type, target_id, details, created_at")
+      .order("created_at", { ascending: false })
+      .limit(data.limit);
+    if (data.action) q = q.eq("action", data.action);
+    if (data.actorId) q = q.eq("actor_id", data.actorId);
+    if (data.since) q = q.gte("created_at", data.since);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return { rows: rows ?? [] };
+  });
+
+export const adminLogAction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        action: z.string().min(1).max(100),
+        targetType: z.string().max(50).optional(),
+        targetId: z.string().max(100).optional(),
+        details: z.record(z.string(), z.unknown()).optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    await writeAudit(
+      admin,
+      context.userId,
+      data.action,
+      data.targetType ?? null,
+      data.targetId ?? null,
+      data.details ?? {},
+    );
+    return { success: true as const };
   });
