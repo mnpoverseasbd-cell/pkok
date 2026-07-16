@@ -17,6 +17,8 @@ const COLORS = ["#0a120b", "#00884a", "#0a120b", "#00ff88", "#0a120b", "#00884a"
 function Wheel() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("wheel");
+  const { data: cfg } = useGameConfig("wheel");
+  const edge = cfg?.house_edge ?? 0;
   const [bet, setBet] = useState(50);
   const [spinning, setSpinning] = useState(false);
   const [angle, setAngle] = useState(0);
