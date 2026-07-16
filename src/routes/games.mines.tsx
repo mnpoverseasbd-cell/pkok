@@ -1,6 +1,6 @@
 import { recordMyBet } from "@/lib/liveFeed";
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { GameShell } from "@/components/games/GameShell";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
@@ -11,6 +11,9 @@ import { useAutoBet } from "@/hooks/useAutoBet";
 import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
 import { fairMines, fairFloats } from "@/lib/provablyFair";
+import { ParticleLayer, type ParticleBurstHandle } from "@/components/games/fx/Particles";
+import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
+import { sfxPeg, sfxWin, sfxBust, sfxCashout } from "@/lib/sound";
 
 export const Route = createFileRoute("/games/mines")({
   head: () => ({ meta: [{ title: "Mines — Asik Game" }, { name: "description", content: "Reveal gems, dodge mines." }] }),
