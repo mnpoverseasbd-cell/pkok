@@ -36,6 +36,8 @@ function Crash() {
   const stop = () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); rafRef.current = null; };
   useEffect(() => () => stop(), []);
 
+  const manualResolveRef = useRef<((r: { pnl: number }) => void) | null>(null);
+
   const runRound = useCallback((roundBet: number, cashoutAt?: number) => {
     return new Promise<{ pnl: number }>(async (resolve) => {
       if (!pf.ready) return resolve({ pnl: 0 });
@@ -77,9 +79,6 @@ function Crash() {
       manualResolveRef.current = finishR;
     });
   }, [pf, placeBet, credit, edge, record]);
-
-  // Manual cashout hook — the running promise's resolver
-  const manualResolveRef = useRef<((r: { pnl: number }) => void) | null>(null);
 
   const manualCashout = () => {
     if (state !== "flying") return;
