@@ -94,6 +94,7 @@ function Crash() {
     setMsg(`🎉 ক্যাশআউট @ ${cashMult}× · +${pnl}`);
     record({ pnl, multiplier: won / bet });
     pf.consume(`crash=${targetRef.current}× cashout=${cashMult}×`);
+    recordMyBet({ game: "crash", bet, multiplier: cashMult, payout: won });
     manualResolveRef.current?.({ pnl });
     manualResolveRef.current = null;
   };
