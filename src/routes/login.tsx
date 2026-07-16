@@ -8,6 +8,8 @@ import { SiteShell } from "@/components/landing/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { phoneToEmail } from "@/lib/auth-utils";
 
+const loginSearchSchema = z.object({ redirect: z.string().optional() });
+
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
@@ -17,6 +19,7 @@ export const Route = createFileRoute("/login")({
       { property: "og:description", content: "অ্যাকাউন্টে প্রবেশ করুন এবং প্রিয় গেম উপভোগ করুন।" },
     ],
   }),
+  validateSearch: (s) => loginSearchSchema.parse(s),
   component: LoginPage,
 });
 
