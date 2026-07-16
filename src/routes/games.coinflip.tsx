@@ -45,17 +45,19 @@ function CoinFlip() {
     const result: Side = isHeads ? "H" : "T";
     setFace(result);
     let pnl: number;
+    let won = 0, mult = 0;
     if (result === pick) {
-      const won = Math.floor(roundBet * 2 * (1 - edge)); credit(won);
-      pnl = won - roundBet;
+      won = Math.floor(roundBet * 2 * (1 - edge)); credit(won);
+      pnl = won - roundBet; mult = won / roundBet;
       setMsg(`🎉 জয় +${pnl} · ${result}`);
-      record({ pnl, multiplier: won / roundBet });
+      record({ pnl, multiplier: mult });
     } else {
       pnl = -roundBet;
       setMsg(`💥 হার ${pnl} · ${result}`);
       record({ pnl, multiplier: 0 });
     }
     pf.consume(`flip=${result} pick=${pick}`);
+    recordMyBet({ game: "coinflip", bet: roundBet, multiplier: mult, payout: won });
     setFlipping(false);
     return { pnl };
   }, [pf, placeBet, credit, edge, pick, record]);
