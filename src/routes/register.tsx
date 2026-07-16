@@ -125,6 +125,21 @@ function RegisterPage() {
                 </button>
               </div>
             </div>
+            <div>
+              <label className="mb-1 block text-xs font-bold text-foreground/85">রেফারেল কোড <span className="text-foreground/50">(ঐচ্ছিক)</span></label>
+              <div className="flex items-center gap-2 rounded-xl border border-[var(--neon-gold)]/40 bg-black/35 px-3 py-2.5">
+                <Gift className="h-4 w-4 text-[var(--neon-gold)]" />
+                <input
+                  type="text"
+                  value={refCode}
+                  onChange={(e) => setRefCode(e.target.value.trim())}
+                  placeholder="বন্ধুর রেফারেল কোড"
+                  className="w-full bg-transparent text-sm uppercase outline-none placeholder:text-foreground/40"
+                />
+              </div>
+            </div>
+
+
 
             <button
               type="submit"
