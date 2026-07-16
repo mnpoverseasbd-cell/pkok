@@ -10,7 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { createPhoneAccount } from "@/lib/auth.functions";
 import { phoneRegex } from "@/lib/auth-utils";
 
+const searchSchema = z.object({ ref: z.string().trim().min(1).max(64).optional() });
+
 export const Route = createFileRoute("/register")({
+  validateSearch: (s) => searchSchema.parse(s),
   head: () => ({
     meta: [
       { title: "রেজিস্টার — Asik Game" },
