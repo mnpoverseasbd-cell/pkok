@@ -45,7 +45,7 @@ export function GameShell({
 
   return (
     <SiteShell>
-      <section className="relative min-h-[600px] overflow-hidden px-4 py-6" style={{ background: SPACE_BG }}>
+      <section className="relative min-h-[600px] overflow-hidden px-4 pt-2 pb-6" style={{ background: SPACE_BG }}>
         {/* starfield sparkles */}
         <div className="pointer-events-none absolute inset-0 opacity-60"
           style={{
