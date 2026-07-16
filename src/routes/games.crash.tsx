@@ -46,6 +46,8 @@ function Crash() {
       startRef.current = performance.now();
       let resolved = false;
       const finish = (pnl: number) => { if (!resolved) { resolved = true; resolve({ pnl }); } };
+      const finishR = (r: { pnl: number }) => finish(r.pnl);
+
 
       const tick = (now: number) => {
         const t = (now - startRef.current) / 1000;
@@ -72,7 +74,7 @@ function Crash() {
       rafRef.current = requestAnimationFrame(tick);
 
       // Manual mode: expose cashout via ref pattern — see manual cashout below.
-      manualResolveRef.current = finish;
+      manualResolveRef.current = finishR;
     });
   }, [pf, placeBet, credit, edge, record]);
 
