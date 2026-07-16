@@ -85,6 +85,7 @@ function AdminPage() {
       )}
       {tab === "audit" && <AdminAuditLogs />}
       {tab === "flags" && <AdminFeatureFlags />}
+      {tab === "reports" && <AdminReports />}
     </AdminShell>
   );
 }
