@@ -12,8 +12,10 @@ import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
 import { fairPlinko } from "@/lib/provablyFair";
 import { PlinkoBoard, type PlinkoBoardHandle } from "@/components/games/PlinkoBoard";
-import { isMuted, toggleMuted, sfxWin, sfxBust } from "@/lib/sound";
+import { isMuted, toggleMuted, sfxWin, sfxBust, sfxDrop, sfxCashout } from "@/lib/sound";
 import { recordMyBet } from "@/lib/liveFeed";
+import { ParticleLayer, type ParticleBurstHandle } from "@/components/games/fx/Particles";
+import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
 
 export const Route = createFileRoute("/games/plinko")({
   head: () => ({ meta: [{ title: "Plinko — Asik Game" }, { name: "description", content: "Drop the ball, hit multipliers." }] }),
@@ -48,6 +50,8 @@ function Plinko() {
   const [muted, setMutedState] = useState(isMuted());
   const boardRef = useRef<PlinkoBoardHandle | null>(null);
   const landResolveRef = useRef<((b: number) => void) | null>(null);
+  const fxRef = useRef<ParticleBurstHandle>(null);
+  const bucketsWrapRef = useRef<HTMLDivElement>(null);
 
   const onLand = useCallback((b: number) => {
     landResolveRef.current?.(b);
@@ -58,6 +62,7 @@ function Plinko() {
     if (!pf.ready || !boardRef.current) return { pnl: 0 };
     if (!placeBet(roundBet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return { pnl: 0 }; }
     setDropping(true); setMsg(""); setBucket(null); setLastMult(null);
+    try { sfxDrop(); } catch { /* noop */ }
     const path = await fairPlinko(pf.serverSeed, pf.clientSeed, pf.nonce, ROWS);
     const targetBucket = Math.min(BUCKETS - 1, path.reduce<number>((a, b) => a + b, 0));
     const landed = await new Promise<number>((res) => {
@@ -72,7 +77,21 @@ function Plinko() {
     if (won > 0) credit(won);
     const pnl = won - roundBet;
     record({ pnl, multiplier: won / roundBet });
-    if (m >= 2) sfxWin(m); else if (m < 1) sfxBust();
+    pushMultiplierHistory("plinko", m);
+    // burst positioned above the landed bucket
+    const wrap = bucketsWrapRef.current;
+    const cell = wrap?.querySelector<HTMLElement>(`[data-bucket="${b}"]`);
+    if (wrap && cell && fxRef.current) {
+      const wr = wrap.getBoundingClientRect();
+      const cr = cell.getBoundingClientRect();
+      const x = cr.left - wr.left + cr.width / 2;
+      const y = cr.top - wr.top + cr.height / 2;
+      if (m >= 3) fxRef.current.burst({ x, y, count: 70, kind: "confetti", speed: 9 });
+      else if (m >= 1.1) fxRef.current.burst({ x, y, count: 30, kind: "spark", color: "#00ff88", speed: 6 });
+      else fxRef.current.burst({ x, y, count: 20, kind: "smoke", color: "#ff4d4d", speed: 4 });
+    }
+    if (m >= 2) { try { sfxWin(m); sfxCashout(); } catch { /* noop */ } }
+    else if (m < 1) { try { sfxBust(); } catch { /* noop */ } }
     setMsg(pnl >= 0 ? `🎯 ${m}× · +${pnl}` : `😅 ${m}× · ${pnl}`);
     pf.consume(`bucket=${b} mult=${m}× risk=${risk}`);
     recordMyBet({ game: "plinko", bet: roundBet, multiplier: m, payout: won });
@@ -92,9 +111,12 @@ function Plinko() {
   return (
     <GameShell title="Plinko" emoji="🎯" gameKey="plinko">
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mb-3">
+        <MultiplierHistoryStrip gameKey="plinko" />
+      </div>
       <GameFrame>
         <div className="mx-auto w-full max-w-md flex-1">
-          <div className="relative">
+          <div ref={bucketsWrapRef} className="relative">
             <button
               onClick={() => setMutedState(toggleMuted())}
               className="absolute right-2 top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-black/50 text-white/80 backdrop-blur hover:bg-black/70"
@@ -103,13 +125,18 @@ function Plinko() {
               {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             </button>
             <PlinkoBoard ref={boardRef} rows={ROWS} buckets={BUCKETS} onLand={onLand} />
-          </div>
-          <div className="mt-3 grid grid-cols-11 gap-1">
-            {MULTS.map((m, i) => (
-              <div key={i} className={`rounded-md px-1 py-2 text-center text-[10px] font-black transition-all ${bucketColor(m, bucket === i)}`}>
-                {m}×
-              </div>
-            ))}
+            <ParticleLayer ref={fxRef} />
+            <div className="mt-3 grid grid-cols-11 gap-1">
+              {MULTS.map((m, i) => (
+                <div
+                  key={i}
+                  data-bucket={i}
+                  className={`rounded-md px-1 py-2 text-center text-[10px] font-black transition-all ${bucketColor(m, bucket === i)} ${bucket === i ? "animate-cash-pop" : ""}`}
+                >
+                  {m}×
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <ControlsPanel>
