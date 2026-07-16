@@ -481,6 +481,16 @@ function AdminGames() {
   async function save(r: any) {
     const patch = edits[r.id];
     if (!patch) return toast.info("কোনো পরিবর্তন নেই");
+
+    const min = Number(patch.min_bet ?? r.min_bet);
+    const max = Number(patch.max_bet ?? r.max_bet);
+    const edge = Number(patch.house_edge ?? r.house_edge);
+
+    if (!Number.isFinite(min) || min < 0) return toast.error("Min Bet ০ বা তার বেশি হতে হবে");
+    if (!Number.isFinite(max) || max <= 0) return toast.error("Max Bet ০ এর বেশি হতে হবে");
+    if (min > max) return toast.error("Min Bet, Max Bet এর চেয়ে বড় হতে পারবে না");
+    if (!Number.isFinite(edge) || edge < 0 || edge > 1) return toast.error("House Edge ০ থেকে ১০০% এর মধ্যে হতে হবে");
+
     const { error } = await supabase.from("game_configs").update(patch).eq("id", r.id);
     if (error) return toast.error(error.message);
     toast.success(`${r.name} আপডেট হয়েছে`);
