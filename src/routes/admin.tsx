@@ -83,6 +83,7 @@ function AdminPage() {
         </div>
       )}
       {tab === "audit" && <AdminAuditLogs />}
+      {tab === "flags" && <AdminFeatureFlags />}
     </AdminShell>
   );
 }
