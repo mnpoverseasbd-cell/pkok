@@ -68,6 +68,7 @@ function Mines() {
       setMsg(`💥 বুম! -${bet}`);
       record({ pnl: -bet, multiplier: 0 });
       pf.consume(`bust mines=${mines} picks=${revealed.size}`);
+      recordMyBet({ game: "mines", bet, multiplier: 0, payout: 0 });
       return;
     }
     const next = new Set(revealed);
