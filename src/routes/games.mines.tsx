@@ -1,6 +1,6 @@
 import { recordMyBet } from "@/lib/liveFeed";
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { GameShell } from "@/components/games/GameShell";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
@@ -11,6 +11,9 @@ import { useAutoBet } from "@/hooks/useAutoBet";
 import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
 import { fairMines, fairFloats } from "@/lib/provablyFair";
+import { ParticleLayer, type ParticleBurstHandle } from "@/components/games/fx/Particles";
+import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
+import { sfxPeg, sfxWin, sfxBust, sfxCashout } from "@/lib/sound";
 
 export const Route = createFileRoute("/games/mines")({
   head: () => ({ meta: [{ title: "Mines — Asik Game" }, { name: "description", content: "Reveal gems, dodge mines." }] }),
@@ -48,6 +51,18 @@ function Mines() {
   const MIN_BET = cfg?.min_bet ?? 10;
   const MAX_BET = cfg?.max_bet ?? 500;
   const clampBet = (n: number) => Math.max(MIN_BET, Math.min(MAX_BET, Math.round(n)));
+  const fxRef = useRef<ParticleBurstHandle>(null);
+  const boardWrapRef = useRef<HTMLDivElement>(null);
+
+  const burstAtCell = (i: number, opts: Parameters<NonNullable<ParticleBurstHandle["burst"]>>[0]) => {
+    const wrap = boardWrapRef.current; const fx = fxRef.current;
+    if (!wrap || !fx) return;
+    const cell = wrap.querySelector<HTMLElement>(`[data-cell="${i}"]`);
+    if (!cell) return fx.burst(opts);
+    const wr = wrap.getBoundingClientRect();
+    const cr = cell.getBoundingClientRect();
+    fx.burst({ ...opts, x: cr.left - wr.left + cr.width / 2, y: cr.top - wr.top + cr.height / 2 });
+  };
 
   const start = async () => {
     if (!pf.ready) return;
@@ -69,11 +84,16 @@ function Mines() {
       record({ pnl: -bet, multiplier: 0 });
       pf.consume(`bust mines=${mines} picks=${revealed.size}`);
       recordMyBet({ game: "mines", bet, multiplier: 0, payout: 0 });
+      pushMultiplierHistory("mines", 0);
+      burstAtCell(i, { count: 40, kind: "smoke", color: "#ff4d4d", speed: 5 });
+      try { sfxBust(); } catch { /* noop */ }
       return;
     }
     const next = new Set(revealed);
     next.add(i);
     setRevealed(next);
+    burstAtCell(i, { count: 14, kind: "spark", color: "#00ff88", speed: 4 });
+    try { sfxPeg(0.6 + Math.min(next.size, 10) * 0.04); } catch { /* noop */ }
     if (next.size + mines === SIZE) {
       const finalMult = multiplier(next.size, mines, edge);
       const win = Math.floor(bet * finalMult);
@@ -82,6 +102,9 @@ function Mines() {
       record({ pnl: win - bet, multiplier: finalMult });
       pf.consume(`clear mines=${mines} mult=${finalMult}×`);
       recordMyBet({ game: "mines", bet, multiplier: finalMult, payout: win });
+      pushMultiplierHistory("mines", finalMult);
+      fxRef.current?.burst({ count: 80, kind: "confetti", speed: 9 });
+      try { sfxWin(finalMult); sfxCashout(); } catch { /* noop */ }
       setActive(false);
     }
   };
@@ -93,6 +116,9 @@ function Mines() {
     record({ pnl: potential - bet, multiplier: mult });
     pf.consume(`cashout mines=${mines} picks=${picks} mult=${mult}×`);
     recordMyBet({ game: "mines", bet, multiplier: mult, payout: potential });
+    pushMultiplierHistory("mines", mult);
+    fxRef.current?.burst({ count: 70, kind: "confetti", speed: 8 });
+    try { sfxWin(mult); sfxCashout(); } catch { /* noop */ }
     setActive(false);
   };
 
@@ -130,10 +156,15 @@ function Mines() {
         record({ pnl: -roundBet, multiplier: 0 });
         pf.consume(`auto bust mines=${mines} picks=${k}`);
         recordMyBet({ game: "mines", bet: roundBet, multiplier: 0, payout: 0 });
+        pushMultiplierHistory("mines", 0);
+        burstAtCell(cell, { count: 40, kind: "smoke", color: "#ff4d4d", speed: 5 });
+        try { sfxBust(); } catch { /* noop */ }
         return { pnl: -roundBet };
       }
       picked.add(cell);
       setRevealed(new Set(picked));
+      burstAtCell(cell, { count: 10, kind: "spark", color: "#00ff88", speed: 4 });
+      try { sfxPeg(0.5); } catch { /* noop */ }
     }
     const finalMult = multiplier(wantPicks, mines, edge);
     const win = Math.floor(roundBet * finalMult);
@@ -143,6 +174,9 @@ function Mines() {
     record({ pnl, multiplier: finalMult });
     pf.consume(`auto cashout mines=${mines} picks=${wantPicks} mult=${finalMult}×`);
     recordMyBet({ game: "mines", bet: roundBet, multiplier: finalMult, payout: win });
+    pushMultiplierHistory("mines", finalMult);
+    fxRef.current?.burst({ count: 70, kind: "confetti", speed: 8 });
+    try { sfxWin(finalMult); sfxCashout(); } catch { /* noop */ }
     setActive(false);
     return { pnl };
   }, [pf, placeBet, credit, edge, mines, autoPicks, record]);
@@ -152,11 +186,15 @@ function Mines() {
   return (
     <GameShell title="Mines" emoji="💣" gameKey="mines">
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3">
+        <MultiplierHistoryStrip gameKey="mines" />
+      </div>
 
       <div className="mt-3 flex flex-col gap-6 rounded-[2rem] border border-[#1a3321] bg-[#0d1a10] p-4 shadow-2xl shadow-black sm:p-6 lg:flex-row lg:p-8">
         {/* Game Board */}
         <div className="flex-1">
-          <div className="grid grid-cols-5 gap-2 sm:gap-3">
+          <div ref={boardWrapRef} className="relative grid grid-cols-5 gap-2 sm:gap-3">
+            <ParticleLayer ref={fxRef} />
             {Array.from({ length: SIZE }).map((_, i) => {
               const isRev = revealed.has(i);
               const isBombHere = board.has(i);
@@ -166,7 +204,8 @@ function Mines() {
                 return (
                   <div
                     key={i}
-                    className="relative aspect-square rounded-xl border-2 border-[#00ff88] bg-gradient-to-br from-[#00ff88]/10 to-[#004d2a] shadow-[inset_0_0_20px_rgba(0,255,136,0.3),0_0_15px_rgba(0,255,136,0.25)] animate-fade-in"
+                    data-cell={i}
+                    className="relative aspect-square rounded-xl border-2 border-[#00ff88] bg-gradient-to-br from-[#00ff88]/10 to-[#004d2a] shadow-[inset_0_0_20px_rgba(0,255,136,0.3),0_0_15px_rgba(0,255,136,0.25)] animate-cash-pop"
                   >
                     <svg viewBox="0 0 24 24" className="absolute inset-0 m-auto h-1/2 w-1/2 text-[#00ff88] drop-shadow-[0_0_6px_rgba(0,255,136,0.8)]" fill="currentColor">
                       <path d="M12 2L4.5 9L12 22L19.5 9L12 2Z" />
@@ -179,7 +218,8 @@ function Mines() {
                 return (
                   <div
                     key={i}
-                    className={`relative aspect-square rounded-xl border-2 border-[#ff4444] bg-gradient-to-br from-[#ff4d4d]/10 to-[#4d0000] shadow-[inset_0_0_20px_rgba(255,68,68,0.3),0_0_15px_rgba(255,68,68,0.3)] ${dead === i ? "animate-[wiggle_0.4s_ease-in-out]" : ""}`}
+                    data-cell={i}
+                    className={`relative aspect-square rounded-xl border-2 border-[#ff4444] bg-gradient-to-br from-[#ff4d4d]/10 to-[#4d0000] shadow-[inset_0_0_20px_rgba(255,68,68,0.3),0_0_15px_rgba(255,68,68,0.3)] ${dead === i ? "animate-crash-shake" : "animate-fade-in"}`}
                   >
                     <svg viewBox="0 0 24 24" className="absolute inset-0 m-auto h-1/2 w-1/2 text-[#ff4444]" fill="currentColor">
                       <path d="M12 2L15 8H21L16 12L18 18L12 14L6 18L8 12L3 8H9L12 2Z" />
@@ -191,9 +231,10 @@ function Mines() {
               return (
                 <button
                   key={i}
+                  data-cell={i}
                   onClick={() => click(i)}
                   disabled={!active || mode === "auto"}
-                  className="group aspect-square rounded-xl border-b-4 border-black bg-gradient-to-br from-[#1b2b1d] to-[#0a120b] transition-all hover:from-[#243a26] hover:to-[#0d1610] hover:border-b-[6px] active:translate-y-1 active:border-b-0 disabled:cursor-default disabled:opacity-70 disabled:hover:from-[#1b2b1d] disabled:hover:to-[#0a120b] disabled:hover:border-b-4"
+                  className="group aspect-square rounded-xl border-b-4 border-black bg-gradient-to-br from-[#1b2b1d] to-[#0a120b] transition-all hover:from-[#243a26] hover:to-[#0d1610] hover:border-b-[6px] hover:shadow-[0_0_15px_rgba(0,255,136,0.25)] active:translate-y-1 active:border-b-0 disabled:cursor-default disabled:opacity-70 disabled:hover:from-[#1b2b1d] disabled:hover:to-[#0a120b] disabled:hover:border-b-4 disabled:hover:shadow-none"
                 >
                   <span className="block text-2xl font-bold text-[var(--neon-gold)] drop-shadow-[0_0_8px_rgba(255,215,0,0.5)] transition-transform group-hover:scale-110">?</span>
                 </button>
