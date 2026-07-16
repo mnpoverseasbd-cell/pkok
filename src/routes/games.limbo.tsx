@@ -19,6 +19,8 @@ export const Route = createFileRoute("/games/limbo")({
 function LimboGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("limbo");
+  const { data: cfg } = useGameConfig("limbo");
+  const edge = cfg?.house_edge ?? 0;
   const [bet, setBet] = useState(50);
   const [target, setTarget] = useState(2.0);
   const [rolling, setRolling] = useState(false);
