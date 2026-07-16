@@ -73,9 +73,12 @@ export function GameShell({
 }
 
 export function BetControls({
-  bet, setBet, min = 10, max = 500, disabled,
+  bet, setBet, min, max, disabled,
 }: { bet: number; setBet: (n: number) => void; min?: number; max?: number; disabled?: boolean }) {
-  const set = (n: number) => setBet(Math.max(min, Math.min(max, Math.round(n))));
+  const cfg = useGameConfigCtx();
+  const lo = min ?? cfg.min_bet ?? 10;
+  const hi = max ?? cfg.max_bet ?? 500;
+  const set = (n: number) => setBet(Math.max(lo, Math.min(hi, Math.round(n))));
   return (
     <div className="flex flex-col gap-2">
       <label className="text-xs font-bold uppercase tracking-widest text-[#00ff88]">বাজি</label>
