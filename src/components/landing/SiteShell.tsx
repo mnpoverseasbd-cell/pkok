@@ -261,14 +261,24 @@ function TopBar() {
             <>
               <div className="flex items-center gap-1.5 rounded-full bg-black/40 px-2 py-1 text-white">
                 <CircleDollarSign className="h-4 w-4 text-[var(--neon-gold)]" />
-                <span className="font-bold">{showPw ? `৳ ${balance.toFixed(2)}` : "৳ ****"}</span>
+                <span className={`font-bold tabular-nums transition-opacity duration-200 ${refreshing ? "opacity-60" : "opacity-100"}`}>
+                  {showPw ? `৳ ${balance.toFixed(2)}` : "৳ ****"}
+                </span>
                 <button type="button" onClick={() => setShowPw((v) => !v)} className="text-white/70 hover:text-white">
                   {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 </button>
-                <button type="button" title="রিফ্রেশ" onClick={refetchProfile} className="text-white/70 hover:text-white">
-                  <RefreshCw className="h-3.5 w-3.5" />
+                <button
+                  type="button"
+                  title="রিফ্রেশ"
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  aria-busy={refreshing}
+                  className="text-white/70 hover:text-white disabled:opacity-70"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
                 </button>
               </div>
+
               <Link to="/wallet" search={{ tab: "deposit" }} className="rounded-md bg-green-button px-3 py-1.5 font-bold text-[var(--background)]">{t("deposit")}</Link>
               <Link to="/wallet" search={{ tab: "withdraw" }} className="rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">{t("withdraw")}</Link>
               <button type="button" title="ইনবক্স" className="relative grid h-8 w-8 place-items-center rounded-full bg-gold-button text-[var(--background)]">
