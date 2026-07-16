@@ -21,6 +21,8 @@ function nextCrash(): number {
 function Crash() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("crash");
+  const { data: cfg } = useGameConfig("crash");
+  const edge = cfg?.house_edge ?? 0;
   const [bet, setBet] = useState(50);
   const [state, setState] = useState<"idle" | "flying" | "crashed" | "cashed">("idle");
   const [mult, setMult] = useState(1.0);
