@@ -142,6 +142,7 @@ function Mines() {
     setMsg(`🎉 অটো ক্যাশ +${pnl} @ ${finalMult}×`);
     record({ pnl, multiplier: finalMult });
     pf.consume(`auto cashout mines=${mines} picks=${wantPicks} mult=${finalMult}×`);
+    recordMyBet({ game: "mines", bet: roundBet, multiplier: finalMult, payout: win });
     setActive(false);
     return { pnl };
   }, [pf, placeBet, credit, edge, mines, autoPicks, record]);
