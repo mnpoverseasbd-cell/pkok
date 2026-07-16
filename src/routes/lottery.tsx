@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, Ticket } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
+import { ComingSoonBanner } from "@/components/landing/ComingSoonBanner";
 import tcgImg from "@/assets/lott/tcg.jpg";
 import tcgseaImg from "@/assets/lott/tcgsea.jpg";
 import vrImg from "@/assets/lott/vr.jpg";
