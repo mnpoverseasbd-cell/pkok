@@ -36,15 +36,18 @@ function CoinFlip() {
     if (result === pick) {
       const won = bet * 2;
       credit(won);
-      setMsg(`🎉 WIN +${won}`);
+      setMsg(`🎉 WIN +${won - bet}`);
+      record({ pnl: won - bet, multiplier: 2 });
     } else {
       setMsg(`💥 LOSE -${bet}`);
+      record({ pnl: -bet, multiplier: 0 });
     }
     setFlipping(false);
   };
 
   return (
     <GameShell title="Coin Flip" emoji="🪙">
+      <StatsBar stats={stats} onReset={resetStats} />
       <div className="grid gap-4 rounded-xl bg-black/40 p-6 ring-1 ring-white/10 md:grid-cols-2">
         <div className="flex flex-col items-center justify-center gap-4">
           <div
