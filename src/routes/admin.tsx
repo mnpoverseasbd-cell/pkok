@@ -285,6 +285,7 @@ function AdminTxns() {
     const { error } = await supabase.from("transactions").update({ status, admin_note: note || null }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(status === "approved" ? "Approved ✓" : "Rejected");
+    adminLogAction({ data: { action: `txn.${status}`, targetType: "transaction", targetId: id, details: note ? { note } : {} } }).catch(() => {});
     load();
   }
 
