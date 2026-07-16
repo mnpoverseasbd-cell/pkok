@@ -1,10 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
+import { useProvablyFair } from "@/hooks/useProvablyFair";
+import { useAutoBet } from "@/hooks/useAutoBet";
+import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
+import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
+import { fairPlinko } from "@/lib/provablyFair";
 
 export const Route = createFileRoute("/games/plinko")({
   head: () => ({ meta: [{ title: "Plinko — Asik Game" }, { name: "description", content: "Drop the ball, hit multipliers." }] }),
@@ -20,36 +25,43 @@ function Plinko() {
   const { stats, record, reset: resetStats } = useGameStats("plinko");
   const { data: cfg } = useGameConfig("plinko");
   const edge = cfg?.house_edge ?? 0;
+  const pf = useProvablyFair("plinko");
   const [bet, setBet] = useState(50);
   const [dropping, setDropping] = useState(false);
   const [path, setPath] = useState<number[]>([]);
   const [bucket, setBucket] = useState<number | null>(null);
   const [msg, setMsg] = useState("");
   const [lastMult, setLastMult] = useState<number | null>(null);
+  const [mode, setMode] = useState<"manual" | "auto">("manual");
 
-  const drop = async () => {
-    if (dropping) return;
-    if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
+  const runRound = useCallback(async (roundBet: number) => {
+    if (!pf.ready) return { pnl: 0 };
+    if (!placeBet(roundBet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return { pnl: 0 }; }
     setDropping(true); setMsg(""); setBucket(null); setLastMult(null);
-    const p: number[] = []; let col = 0;
+    const steps = await fairPlinko(pf.serverSeed, pf.clientSeed, pf.nonce, ROWS);
+    const p: number[] = [];
+    let col = 0;
     for (let r = 0; r < ROWS; r++) {
-      const step = Math.random() < 0.5 ? 0 : 1;
-      p.push(step); col += step;
+      p.push(steps[r]); col += steps[r];
       setPath([...p]);
       // eslint-disable-next-line no-await-in-loop
-      await new Promise(res => setTimeout(res, 140));
+      await new Promise(res => setTimeout(res, 100));
     }
     const b = Math.min(BUCKETS - 1, Math.max(0, col));
     setBucket(b);
     const m = MULTS[b];
     setLastMult(m);
-    const won = Math.floor(bet * m * (1 - edge));
+    const won = Math.floor(roundBet * m * (1 - edge));
     if (won > 0) credit(won);
-    const pnl = won - bet;
-    record({ pnl, multiplier: won / bet });
+    const pnl = won - roundBet;
+    record({ pnl, multiplier: won / roundBet });
     setMsg(pnl >= 0 ? `🎯 ${m}× · +${pnl}` : `😅 ${m}× · ${pnl}`);
+    pf.consume(`bucket=${b} mult=${m}×`);
     setDropping(false);
-  };
+    return { pnl };
+  }, [pf, placeBet, credit, edge, record]);
+
+  const auto = useAutoBet({ runRound, baseBet: bet, delayMs: 300 });
 
   const bucketColor = (m: number, active: boolean) => {
     if (active) return "bg-[var(--neon-gold)] text-[#050a06] shadow-[0_0_15px_var(--neon-gold)]";
@@ -92,16 +104,22 @@ function Plinko() {
           </div>
         </div>
         <ControlsPanel>
+          <ModeTabs mode={mode} setMode={setMode} disabled={dropping || auto.running} />
           <MultDisplay
             label="শেষ ড্রপ"
             value={lastMult !== null ? `${lastMult}×` : "—"}
             sub={<>সম্ভাব্য সর্বোচ্চ: <span className="text-[var(--neon-gold)]">{Math.floor(bet * 8.9)}</span></>}
           />
-          <BetControls bet={bet} setBet={setBet} disabled={dropping} />
-          <PrimaryButton onClick={drop} disabled={dropping}>
-            {dropping ? "ড্রপিং..." : `ড্রপ · ${bet}`}
-          </PrimaryButton>
+          <BetControls bet={bet} setBet={setBet} disabled={dropping || auto.running} />
+          {mode === "manual" ? (
+            <PrimaryButton onClick={() => runRound(bet)} disabled={dropping}>
+              {dropping ? "ড্রপিং..." : `ড্রপ · ${bet}`}
+            </PrimaryButton>
+          ) : (
+            <AutoBetPanel auto={auto} canStart={pf.ready} />
+          )}
           {msg && <div className="animate-fade-in text-center text-sm font-bold text-[var(--neon-gold)]">{msg}</div>}
+          <ProvablyFairPanel pf={pf} />
         </ControlsPanel>
       </GameFrame>
     </GameShell>

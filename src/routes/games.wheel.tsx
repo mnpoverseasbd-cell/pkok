@@ -1,10 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
+import { useProvablyFair } from "@/hooks/useProvablyFair";
+import { useAutoBet } from "@/hooks/useAutoBet";
+import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
+import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
+import { fairWheel } from "@/lib/provablyFair";
 
 export const Route = createFileRoute("/games/wheel")({
   head: () => ({ meta: [{ title: "Wheel of Fortune — Asik Game" }, { name: "description", content: "Spin the wheel." }] }),
@@ -19,31 +24,39 @@ function Wheel() {
   const { stats, record, reset: resetStats } = useGameStats("wheel");
   const { data: cfg } = useGameConfig("wheel");
   const edge = cfg?.house_edge ?? 0;
+  const pf = useProvablyFair("wheel");
   const [bet, setBet] = useState(50);
   const [spinning, setSpinning] = useState(false);
   const [angle, setAngle] = useState(0);
   const [msg, setMsg] = useState("");
   const [lastMult, setLastMult] = useState<number | null>(null);
+  const [mode, setMode] = useState<"manual" | "auto">("manual");
 
-  const spin = () => {
-    if (spinning) return;
-    if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
-    const idx = Math.floor(Math.random() * SEGMENTS.length);
+  const runRound = useCallback(async (roundBet: number) => {
+    if (!pf.ready) return { pnl: 0 };
+    if (!placeBet(roundBet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return { pnl: 0 }; }
+    const idx = await fairWheel(pf.serverSeed, pf.clientSeed, pf.nonce, SEGMENTS.length);
     const segAngle = 360 / SEGMENTS.length;
-    const target = 360 * 6 + (360 - idx * segAngle - segAngle / 2);
+    // Add fresh full rotations each spin so consecutive same-index results still animate
+    setAngle((prev) => {
+      const base = prev - (prev % 360);
+      return base + 360 * 6 + (360 - idx * segAngle - segAngle / 2);
+    });
     setSpinning(true); setMsg(""); setLastMult(null);
-    setAngle(target);
-    setTimeout(() => {
-      const m = SEGMENTS[idx];
-      setLastMult(m);
-      const won = Math.floor(bet * m * (1 - edge));
-      if (won > 0) credit(won);
-      const pnl = won - bet;
-      record({ pnl, multiplier: won / bet });
-      setMsg(m > 0 ? `🎉 ${m}× · ${pnl >= 0 ? "+" : ""}${pnl}` : `💥 শূন্য · -${bet}`);
-      setSpinning(false);
-    }, 4200);
-  };
+    await new Promise<void>((r) => setTimeout(r, 4200));
+    const m = SEGMENTS[idx];
+    setLastMult(m);
+    const won = Math.floor(roundBet * m * (1 - edge));
+    if (won > 0) credit(won);
+    const pnl = won - roundBet;
+    record({ pnl, multiplier: won / roundBet });
+    setMsg(m > 0 ? `🎉 ${m}× · ${pnl >= 0 ? "+" : ""}${pnl}` : `💥 শূন্য · -${roundBet}`);
+    pf.consume(`segment=${idx} mult=${m}×`);
+    setSpinning(false);
+    return { pnl };
+  }, [pf, placeBet, credit, edge, record]);
+
+  const auto = useAutoBet({ runRound, baseBet: bet, delayMs: 500 });
 
   const seg = 360 / SEGMENTS.length;
   const gradient = SEGMENTS.map((_, i) => {
@@ -81,16 +94,22 @@ function Wheel() {
           </div>
         </div>
         <ControlsPanel>
+          <ModeTabs mode={mode} setMode={setMode} disabled={spinning || auto.running} />
           <MultDisplay
             label="শেষ স্পিন"
             value={lastMult !== null ? `${lastMult}×` : "—"}
             sub="সেগমেন্ট: 0× · 1.2× · 1.5× · 2× · 5× · 10×"
           />
-          <BetControls bet={bet} setBet={setBet} disabled={spinning} />
-          <PrimaryButton onClick={spin} disabled={spinning}>
-            {spinning ? "স্পিনিং..." : `স্পিন · ${bet}`}
-          </PrimaryButton>
+          <BetControls bet={bet} setBet={setBet} disabled={spinning || auto.running} />
+          {mode === "manual" ? (
+            <PrimaryButton onClick={() => runRound(bet)} disabled={spinning}>
+              {spinning ? "স্পিনিং..." : `স্পিন · ${bet}`}
+            </PrimaryButton>
+          ) : (
+            <AutoBetPanel auto={auto} canStart={pf.ready} />
+          )}
           {msg && <div className="animate-fade-in text-center text-sm font-bold text-[var(--neon-gold)]">{msg}</div>}
+          <ProvablyFairPanel pf={pf} />
         </ControlsPanel>
       </GameFrame>
     </GameShell>
