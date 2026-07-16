@@ -58,11 +58,11 @@ function Crash() {
   const cashout = () => {
     if (state !== "flying") return;
     stop();
-    const won = Math.floor(bet * mult); credit(won);
+    const won = Math.floor(bet * mult * (1 - edge)); credit(won);
     setState("cashed");
     setMsg(`🎉 ক্যাশআউট @ ${mult}× · +${won - bet}`);
     setCrashAt(targetRef.current);
-    record({ pnl: won - bet, multiplier: mult });
+    record({ pnl: won - bet, multiplier: won / bet });
   };
 
   const reset = () => { setState("idle"); setMsg(""); setMult(1.0); setCrashAt(null); };
