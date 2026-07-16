@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { Coins, RefreshCw, Wrench } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Coins, RefreshCw, Wrench, LogIn, ShoppingCart } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import {
@@ -22,10 +23,12 @@ export function GameShell({
   gameKey?: string;
   children: ReactNode;
 }) {
-  const { balance, reset } = useDemoWallet();
+  const { balance, refresh, userId, loading } = useDemoWallet();
   const { data: cfg, isLoading } = useGameConfig(gameKey ?? "");
   const active = gameKey ? cfg ?? DEFAULT_GAME_CONFIG : DEFAULT_GAME_CONFIG;
-  const disabled = !!gameKey && !isLoading && cfg && !cfg.is_enabled;
+  const maintenance = !!gameKey && !isLoading && cfg && !cfg.is_enabled;
+  const notLoggedIn = !loading && !userId;
+  const noCoins = !loading && !!userId && balance <= 0;
 
   return (
     <SiteShell>
@@ -47,21 +50,47 @@ export function GameShell({
               <span className="text-sm font-bold text-white">{balance.toLocaleString()}</span>
               <span className="text-[10px] text-white/60">coins</span>
             </div>
-            <button
-              onClick={reset}
-              className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1.5 text-xs text-white ring-1 ring-white/20 hover:bg-white/20"
-              title="Reset to 1000"
+            {userId && (
+              <button
+                onClick={refresh}
+                className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1.5 text-xs text-white ring-1 ring-white/20 hover:bg-white/20"
+                title="Refresh balance"
+              >
+                <RefreshCw className="h-3 w-3" /> রিফ্রেশ
+              </button>
+            )}
+            <Link
+              to="/wallet"
+              search={{ tab: "deposit" }}
+              className="inline-flex items-center gap-1 rounded-lg bg-[var(--neon-gold)] px-3 py-1.5 text-xs font-bold text-[#050a06] hover:brightness-110"
             >
-              <RefreshCw className="h-3 w-3" /> Reset
-            </button>
+              <ShoppingCart className="h-3 w-3" /> কয়েন কিনুন
+            </Link>
           </div>
         </div>
         <div className="mx-auto w-full max-w-5xl">
-          {disabled ? (
+          {maintenance ? (
             <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[var(--neon-gold)]/30 bg-black/50 p-10 text-center">
               <Wrench className="h-10 w-10 text-[var(--neon-gold)]" />
               <div className="text-2xl font-black text-[var(--neon-gold)]">Under Maintenance</div>
               <p className="text-sm text-white/70">এই গেমটি এখন বন্ধ আছে। অ্যাডমিন খুব শীঘ্রই চালু করবেন।</p>
+            </div>
+          ) : notLoggedIn ? (
+            <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[var(--neon-gold)]/30 bg-black/50 p-10 text-center">
+              <LogIn className="h-10 w-10 text-[var(--neon-gold)]" />
+              <div className="text-2xl font-black text-[var(--neon-gold)]">লগইন প্রয়োজন</div>
+              <p className="text-sm text-white/70">গেম খেলতে হলে অ্যাকাউন্টে লগইন করুন।</p>
+              <div className="flex gap-2">
+                <Link to="/login" className="rounded-lg bg-[#00ff88] px-5 py-2 text-sm font-black text-[#050a06] hover:bg-[#00e07a]">লগইন</Link>
+                <Link to="/register" className="rounded-lg bg-white/10 px-5 py-2 text-sm font-black text-white ring-1 ring-white/20 hover:bg-white/20">রেজিস্টার</Link>
+              </div>
+            </div>
+          ) : noCoins ? (
+            <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[var(--neon-gold)]/30 bg-black/50 p-10 text-center">
+              <Coins className="h-10 w-10 text-[var(--neon-gold)]" />
+              <div className="text-2xl font-black text-[var(--neon-gold)]">কয়েন নেই</div>
+              <p className="text-sm text-white/70">খেলতে হলে আগে কয়েন কিনতে হবে।</p>
+              <Link to="/wallet" search={{ tab: "deposit" }} className="rounded-lg bg-[var(--neon-gold)] px-5 py-2 text-sm font-black text-[#050a06] hover:brightness-110">কয়েন কিনুন</Link>
             </div>
           ) : (
             <GameConfigContext.Provider value={active}>{children}</GameConfigContext.Provider>
