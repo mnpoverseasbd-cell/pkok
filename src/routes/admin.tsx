@@ -74,6 +74,7 @@ function AdminPage() {
       {tab === "users" && <AdminUsers />}
       {tab === "methods" && <AdminMethods />}
       {tab === "games" && <AdminGames />}
+      {tab === "vip" && <AdminVipTiers />}
     </AdminShell>
   );
 }
