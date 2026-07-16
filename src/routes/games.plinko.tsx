@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
@@ -10,6 +11,8 @@ import { useAutoBet } from "@/hooks/useAutoBet";
 import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
 import { fairPlinko } from "@/lib/provablyFair";
+import { PlinkoBoard, type PlinkoBoardHandle } from "@/components/games/PlinkoBoard";
+import { isMuted, toggleMuted, sfxWin, sfxBust } from "@/lib/sound";
 
 export const Route = createFileRoute("/games/plinko")({
   head: () => ({ meta: [{ title: "Plinko — Asik Game" }, { name: "description", content: "Drop the ball, hit multipliers." }] }),
@@ -28,26 +31,30 @@ function Plinko() {
   const pf = useProvablyFair("plinko");
   const [bet, setBet] = useState(50);
   const [dropping, setDropping] = useState(false);
-  const [path, setPath] = useState<number[]>([]);
   const [bucket, setBucket] = useState<number | null>(null);
   const [msg, setMsg] = useState("");
   const [lastMult, setLastMult] = useState<number | null>(null);
   const [mode, setMode] = useState<"manual" | "auto">("manual");
+  const [muted, setMutedState] = useState(isMuted());
+  const boardRef = useRef<PlinkoBoardHandle | null>(null);
+  const landResolveRef = useRef<((b: number) => void) | null>(null);
+
+  const onLand = useCallback((b: number) => {
+    landResolveRef.current?.(b);
+    landResolveRef.current = null;
+  }, []);
 
   const runRound = useCallback(async (roundBet: number) => {
-    if (!pf.ready) return { pnl: 0 };
+    if (!pf.ready || !boardRef.current) return { pnl: 0 };
     if (!placeBet(roundBet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return { pnl: 0 }; }
     setDropping(true); setMsg(""); setBucket(null); setLastMult(null);
-    const steps = await fairPlinko(pf.serverSeed, pf.clientSeed, pf.nonce, ROWS);
-    const p: number[] = [];
-    let col = 0;
-    for (let r = 0; r < ROWS; r++) {
-      p.push(steps[r]); col += steps[r];
-      setPath([...p]);
-      // eslint-disable-next-line no-await-in-loop
-      await new Promise(res => setTimeout(res, 100));
-    }
-    const b = Math.min(BUCKETS - 1, Math.max(0, col));
+    const path = await fairPlinko(pf.serverSeed, pf.clientSeed, pf.nonce, ROWS);
+    const targetBucket = Math.min(BUCKETS - 1, path.reduce<number>((a, b) => a + b, 0));
+    const landed = await new Promise<number>((res) => {
+      landResolveRef.current = res;
+      boardRef.current!.drop(path, targetBucket);
+    });
+    const b = landed; // physics-driven, PF-steered
     setBucket(b);
     const m = MULTS[b];
     setLastMult(m);
@@ -55,13 +62,14 @@ function Plinko() {
     if (won > 0) credit(won);
     const pnl = won - roundBet;
     record({ pnl, multiplier: won / roundBet });
+    if (m >= 2) sfxWin(m); else if (m < 1) sfxBust();
     setMsg(pnl >= 0 ? `🎯 ${m}× · +${pnl}` : `😅 ${m}× · ${pnl}`);
     pf.consume(`bucket=${b} mult=${m}×`);
     setDropping(false);
     return { pnl };
   }, [pf, placeBet, credit, edge, record]);
 
-  const auto = useAutoBet({ runRound, baseBet: bet, delayMs: 300 });
+  const auto = useAutoBet({ runRound, baseBet: bet, delayMs: 500 });
 
   const bucketColor = (m: number, active: boolean) => {
     if (active) return "bg-[var(--neon-gold)] text-[#050a06] shadow-[0_0_15px_var(--neon-gold)]";
@@ -75,25 +83,15 @@ function Plinko() {
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="mx-auto w-full max-w-md flex-1">
-          <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-[#1a3321] bg-[#0a120b] p-4">
-            {Array.from({ length: ROWS }).map((_, r) => {
-              const pegs = r + 2;
-              const activeCol = path.slice(0, r + 1).reduce((a, b) => a + b, 0);
-              return (
-                <div key={r} className="flex gap-2">
-                  {Array.from({ length: pegs }).map((_, c) => {
-                    const isBall = path.length > r && c === activeCol;
-                    return (
-                      <div key={c} className={`h-3 w-3 rounded-full transition-all ${
-                        isBall
-                          ? "bg-[var(--neon-gold)] ring-2 ring-yellow-200 shadow-[0_0_10px_var(--neon-gold)] scale-125"
-                          : "bg-[#254a30]"
-                      }`} />
-                    );
-                  })}
-                </div>
-              );
-            })}
+          <div className="relative">
+            <button
+              onClick={() => setMutedState(toggleMuted())}
+              className="absolute right-2 top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-black/50 text-white/80 backdrop-blur hover:bg-black/70"
+              title={muted ? "Unmute" : "Mute"}
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
+            <PlinkoBoard ref={boardRef} rows={ROWS} buckets={BUCKETS} onLand={onLand} />
           </div>
           <div className="mt-3 grid grid-cols-11 gap-1">
             {MULTS.map((m, i) => (
