@@ -31,6 +31,8 @@ function multiplier(picks: number, mines: number, edge: number): number {
 function Mines() {
   const { bet: placeBet, credit, balance } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("mines");
+  const { data: cfg } = useGameConfig("mines");
+  const edge = cfg?.house_edge ?? 0.03;
   const [bet, setBet] = useState(50);
   const [mines, setMines] = useState(3);
   const [active, setActive] = useState(false);
@@ -40,8 +42,8 @@ function Mines() {
   const [msg, setMsg] = useState("");
 
   const picks = revealed.size;
-  const mult = useMemo(() => (picks > 0 ? multiplier(picks, mines) : 1), [picks, mines]);
-  const nextMult = useMemo(() => multiplier(picks + 1, mines), [picks, mines]);
+  const mult = useMemo(() => (picks > 0 ? multiplier(picks, mines, edge) : 1), [picks, mines, edge]);
+  const nextMult = useMemo(() => multiplier(picks + 1, mines, edge), [picks, mines, edge]);
   const potential = Math.floor(bet * mult);
 
   const clampBet = (n: number) => Math.max(MIN_BET, Math.min(MAX_BET, Math.round(n)));
