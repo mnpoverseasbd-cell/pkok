@@ -41,6 +41,7 @@ import { Route as GamesLimboRouteImport } from './routes/games.limbo'
 import { Route as GamesDiceRouteImport } from './routes/games.dice'
 import { Route as GamesCrashRouteImport } from './routes/games.crash'
 import { Route as GamesCoinflipRouteImport } from './routes/games.coinflip'
+import { Route as ApiPublicHooksVipDailyRouteImport } from './routes/api/public/hooks/vip-daily'
 
 const WalletRoute = WalletRouteImport.update({
   id: '/wallet',
@@ -202,6 +203,11 @@ const GamesCoinflipRoute = GamesCoinflipRouteImport.update({
   path: '/games/coinflip',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksVipDailyRoute = ApiPublicHooksVipDailyRouteImport.update({
+  id: '/api/public/hooks/vip-daily',
+  path: '/api/public/hooks/vip-daily',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games/': typeof GamesIndexRoute
+  '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -270,6 +277,7 @@ export interface FileRoutesByTo {
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games': typeof GamesIndexRoute
+  '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -305,6 +313,7 @@ export interface FileRoutesById {
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games/': typeof GamesIndexRoute
+  '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -341,6 +350,7 @@ export interface FileRouteTypes {
     | '/games/plinko'
     | '/games/wheel'
     | '/games/'
+    | '/api/public/hooks/vip-daily'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -375,6 +385,7 @@ export interface FileRouteTypes {
     | '/games/plinko'
     | '/games/wheel'
     | '/games'
+    | '/api/public/hooks/vip-daily'
   id:
     | '__root__'
     | '/'
@@ -409,6 +420,7 @@ export interface FileRouteTypes {
     | '/games/plinko'
     | '/games/wheel'
     | '/games/'
+    | '/api/public/hooks/vip-daily'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -444,6 +456,7 @@ export interface RootRouteChildren {
   GamesPlinkoRoute: typeof GamesPlinkoRoute
   GamesWheelRoute: typeof GamesWheelRoute
   GamesIndexRoute: typeof GamesIndexRoute
+  ApiPublicHooksVipDailyRoute: typeof ApiPublicHooksVipDailyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -672,6 +685,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesCoinflipRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/vip-daily': {
+      id: '/api/public/hooks/vip-daily'
+      path: '/api/public/hooks/vip-daily'
+      fullPath: '/api/public/hooks/vip-daily'
+      preLoaderRoute: typeof ApiPublicHooksVipDailyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -708,6 +728,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesPlinkoRoute: GamesPlinkoRoute,
   GamesWheelRoute: GamesWheelRoute,
   GamesIndexRoute: GamesIndexRoute,
+  ApiPublicHooksVipDailyRoute: ApiPublicHooksVipDailyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
