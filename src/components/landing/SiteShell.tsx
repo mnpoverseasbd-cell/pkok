@@ -395,29 +395,25 @@ const providerLogos = [
 function ProvidersStrip() {
   return (
     <section className="bg-[#1a1a1a] py-6 sm:py-8">
-      <div className="mx-auto max-w-[1440px] px-0">
-        <div className="group overflow-hidden">
-          <div
-            className="flex w-max items-center gap-8 sm:gap-10"
-            style={{ animation: "marquee-x 90s linear infinite" }}
-          >
-            {[...providerLogos, ...providerLogos].map((item, i) => (
-              <div key={`${item.name}-${i}`} className="flex h-8 shrink-0 items-center justify-center px-1">
-                <img
-                  src={item.logo}
-                  alt={item.name}
-                  loading="lazy"
-                  className="max-h-7 max-w-none object-contain opacity-90 transition duration-200 hover:scale-110 hover:opacity-100"
-                  style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.4))" }}
-                />
-              </div>
-            ))}
-          </div>
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-4 gap-x-4 gap-y-5 sm:grid-cols-6 sm:gap-x-6 md:grid-cols-8 lg:grid-cols-10">
+          {providerLogos.map((item, i) => (
+            <div key={`${item.name}-${i}`} className="flex h-10 items-center justify-center">
+              <img
+                src={item.logo}
+                alt={item.name}
+                loading="lazy"
+                className="max-h-8 max-w-full object-contain opacity-90 transition duration-200 hover:scale-110 hover:opacity-100"
+                style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.4))" }}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </section>
   );
 }
+
 
 
 
