@@ -32,6 +32,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   vip: { title: "VIP Tiers", subtitle: "Deposit threshold, cashback, bonus আর limits কনফিগ করুন" },
   audit: { title: "Audit Logs", subtitle: "সমস্ত অ্যাডমিন অ্যাকশনের রেকর্ড" },
   flags: { title: "Feature Flags", subtitle: "রানটাইম ফিচার টগল করুন কোড ডিপ্লয় ছাড়াই" },
+  reports: { title: "Reports", subtitle: "রেভিনিউ, GGR, top players — read-only analytics" },
 };
 
 function AdminPage() {
