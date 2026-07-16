@@ -1,18 +1,32 @@
 import { ReactNode } from "react";
-import { Coins, RefreshCw } from "lucide-react";
+import { Coins, RefreshCw, Wrench } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
+import {
+  DEFAULT_GAME_CONFIG,
+  GameConfigContext,
+  useGameConfig,
+  useGameConfigCtx,
+} from "@/hooks/useGameConfig";
+
+export { useGameConfigCtx };
 
 export function GameShell({
   title,
   emoji,
+  gameKey,
   children,
 }: {
   title: string;
   emoji: string;
+  gameKey?: string;
   children: ReactNode;
 }) {
   const { balance, reset } = useDemoWallet();
+  const { data: cfg, isLoading } = useGameConfig(gameKey ?? "");
+  const active = gameKey ? cfg ?? DEFAULT_GAME_CONFIG : DEFAULT_GAME_CONFIG;
+  const disabled = !!gameKey && !isLoading && cfg && !cfg.is_enabled;
+
   return (
     <SiteShell>
       <section
@@ -42,7 +56,17 @@ export function GameShell({
             </button>
           </div>
         </div>
-        <div className="mx-auto w-full max-w-5xl">{children}</div>
+        <div className="mx-auto w-full max-w-5xl">
+          {disabled ? (
+            <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[var(--neon-gold)]/30 bg-black/50 p-10 text-center">
+              <Wrench className="h-10 w-10 text-[var(--neon-gold)]" />
+              <div className="text-2xl font-black text-[var(--neon-gold)]">Under Maintenance</div>
+              <p className="text-sm text-white/70">এই গেমটি এখন বন্ধ আছে। অ্যাডমিন খুব শীঘ্রই চালু করবেন।</p>
+            </div>
+          ) : (
+            <GameConfigContext.Provider value={active}>{children}</GameConfigContext.Provider>
+          )}
+        </div>
       </section>
     </SiteShell>
   );
