@@ -4,6 +4,7 @@ import { Coins, RefreshCw, Wrench, LogIn, ShoppingCart } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { LiveBetsFeed } from "@/components/games/LiveBetsFeed";
+import { BetHistoryPanel } from "@/components/games/BetHistoryPanel";
 import {
   DEFAULT_GAME_CONFIG,
   GameConfigContext,
@@ -97,7 +98,10 @@ export function GameShell({
             <GameConfigContext.Provider value={active}>
               <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
                 <div className="min-w-0">{children}</div>
-                <aside className="lg:sticky lg:top-4 lg:self-start"><LiveBetsFeed /></aside>
+                <aside className="flex flex-col gap-3 lg:sticky lg:top-4 lg:self-start">
+                  <LiveBetsFeed />
+                  <BetHistoryPanel />
+                </aside>
               </div>
             </GameConfigContext.Provider>
           )}
