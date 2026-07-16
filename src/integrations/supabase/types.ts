@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      game_configs: {
+        Row: {
+          config: Json
+          created_at: string
+          game_key: string
+          house_edge: number
+          id: string
+          is_enabled: boolean
+          max_bet: number
+          min_bet: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          game_key: string
+          house_edge?: number
+          id?: string
+          is_enabled?: boolean
+          max_bet?: number
+          min_bet?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          game_key?: string
+          house_edge?: number
+          id?: string
+          is_enabled?: boolean
+          max_bet?: number
+          min_bet?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payment_methods: {
         Row: {
           account_number: string
