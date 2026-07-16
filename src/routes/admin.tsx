@@ -81,6 +81,7 @@ function AdminPage() {
           <AdminVipHistory />
         </div>
       )}
+      {tab === "audit" && <AdminAuditLogs />}
     </AdminShell>
   );
 }
