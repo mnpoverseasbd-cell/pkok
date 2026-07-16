@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { GameShell, BetControls } from "@/components/games/GameShell";
+import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
+import { useGameStats } from "@/hooks/useGameStats";
 
 export const Route = createFileRoute("/games/crash")({
   head: () => ({ meta: [{ title: "Crash — Asik Game" }, { name: "description", content: "Cash out before the crash." }] }),
