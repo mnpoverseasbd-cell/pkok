@@ -59,14 +59,20 @@ export function GoldenEggPopup() {
         className="relative w-full max-w-[560px] my-4 animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Red banner "পুরস্কার" */}
+        {/* Red banner "পুরস্কার" with crown */}
         <div className="relative z-10 mx-auto -mb-4 w-[220px]">
+          <Crown
+            className="absolute left-1/2 -top-5 h-8 w-8 -translate-x-1/2 text-[#f5c542] drop-shadow-[0_2px_6px_rgba(245,197,66,0.7)]"
+            fill="#f5c542"
+            strokeWidth={1.2}
+          />
           <div className="relative rounded-md bg-gradient-to-b from-[#e94560] to-[#a3122c] px-6 py-2 text-center shadow-[0_6px_20px_rgba(233,69,96,0.5)] border border-[#ffb3c1]/40">
             <span className="font-display text-lg font-black tracking-wide text-white drop-shadow">পুরস্কার</span>
           </div>
           <div className="absolute -left-3 top-1/2 h-4 w-4 -translate-y-1/2 rotate-45 bg-[#7a0a20]" />
           <div className="absolute -right-3 top-1/2 h-4 w-4 -translate-y-1/2 rotate-45 bg-[#7a0a20]" />
         </div>
+
 
         {/* Card */}
         <div className="relative overflow-hidden rounded-2xl border border-[var(--neon-gold)]/40 bg-gradient-to-b from-[#0f2a1a] via-[#0b1f14] to-[#081510] p-5 pt-8 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.7)]">
