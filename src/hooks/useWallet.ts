@@ -16,3 +16,27 @@ export function useWalletHistory(userId: string | undefined, limit = 50) {
     enabled: !!userId,
   });
 }
+
+export function useBetHistory(userId: string | undefined, limit = 50) {
+  return useQuery({
+    queryKey: ["wallet", "bets", userId, limit],
+    queryFn: () => walletService.historyByType(userId!, ["bet"], limit),
+    enabled: !!userId,
+  });
+}
+
+export function useWinHistory(userId: string | undefined, limit = 50) {
+  return useQuery({
+    queryKey: ["wallet", "wins", userId, limit],
+    queryFn: () => walletService.historyByType(userId!, ["win"], limit),
+    enabled: !!userId,
+  });
+}
+
+export function useRefundHistory(userId: string | undefined, limit = 50) {
+  return useQuery({
+    queryKey: ["wallet", "refunds", userId, limit],
+    queryFn: () => walletService.historyByType(userId!, ["refund"], limit),
+    enabled: !!userId,
+  });
+}
