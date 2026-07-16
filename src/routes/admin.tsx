@@ -1,15 +1,15 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useIsAdmin } from "@/hooks/useAuth";
-import { SiteShell } from "@/components/landing/SiteShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, LayoutDashboard, Users as UsersIcon, Wallet, TrendingUp, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 
 const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games"]).optional() });
@@ -19,6 +19,14 @@ export const Route = createFileRoute("/admin")({
   validateSearch: (s) => searchSchema.parse(s),
   component: AdminPage,
 });
+
+const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
+  overview: { title: "Dashboard Overview", subtitle: "রিয়েল-টাইম প্ল্যাটফর্ম মেট্রিক্স" },
+  txns: { title: "Transactions", subtitle: "Deposit / Withdraw approvals" },
+  users: { title: "Users", subtitle: "সমস্ত রেজিস্টার্ড অ্যাকাউন্ট ম্যানেজ করুন" },
+  methods: { title: "Payment Methods", subtitle: "bKash, Nagad, Rocket ইত্যাদি কনফিগ করুন" },
+  games: { title: "Game Controls", subtitle: "Bet limits এবং house edge টিউন করুন" },
+};
 
 function AdminPage() {
   const { user, loading } = useAuth();
@@ -31,150 +39,169 @@ function AdminPage() {
     if (!loading && !user) navigate({ to: "/login", search: { redirect: "/admin" } as any });
   }, [loading, user, navigate]);
 
-  if (loading || roleLoading) return <SiteShell><div className="p-16 text-center text-white/70">Loading…</div></SiteShell>;
+  if (loading || roleLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0d14] text-white/70">
+        <div className="flex items-center gap-3 text-sm"><RefreshCw className="h-4 w-4 animate-spin" /> Loading admin…</div>
+      </div>
+    );
+  }
   if (!isAdmin) {
     return (
-      <SiteShell>
-        <div className="mx-auto max-w-md p-16 text-center">
-          <h1 className="text-2xl font-black text-white">Access Denied</h1>
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0d14] px-4">
+        <div className="max-w-md rounded-2xl border border-red-500/30 bg-black/60 p-8 text-center">
+          <ShieldOff className="mx-auto h-10 w-10 text-red-400" />
+          <h1 className="mt-3 text-2xl font-black text-white">Access Denied</h1>
           <p className="mt-2 text-sm text-white/70">শুধুমাত্র অ্যাডমিন এই পেজ দেখতে পারবেন।</p>
         </div>
-      </SiteShell>
+      </div>
     );
   }
 
+  const meta = TAB_TITLES[tab] ?? TAB_TITLES.overview;
+
   return (
-    <SiteShell>
-      <div className="mx-auto max-w-6xl px-3 py-6 sm:px-4">
-        <h1 className="mb-3 text-2xl font-black text-white">Admin Dashboard</h1>
-        <div className="mb-4 flex gap-2 rounded-lg border border-white/10 bg-black/40 p-1 overflow-x-auto">
-          {[
-            { k: "overview", label: "Overview" },
-            { k: "txns", label: "Transactions" },
-            { k: "users", label: "Users" },
-            { k: "methods", label: "Payment Methods" },
-            { k: "games", label: "Games" },
-          ].map((t) => (
-            <button
-              key={t.k}
-              onClick={() => navigate({ to: "/admin", search: { tab: t.k as any } })}
-              className={`flex-1 min-w-[110px] rounded-md px-3 py-2 text-sm font-bold ${tab === t.k ? "bg-[var(--neon-green)]/20 text-[var(--neon-green)]" : "text-white/70 hover:text-white"}`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-        {tab === "overview" && <AdminOverview />}
-        {tab === "txns" && <AdminTxns />}
-        {tab === "users" && <AdminUsers />}
-        {tab === "methods" && <AdminMethods />}
-        {tab === "games" && <AdminGames />}
+    <AdminShell title={meta.title} subtitle={meta.subtitle}>
+      {tab === "overview" && <AdminOverview />}
+      {tab === "txns" && <AdminTxns />}
+      {tab === "users" && <AdminUsers />}
+      {tab === "methods" && <AdminMethods />}
+      {tab === "games" && <AdminGames />}
+    </AdminShell>
+  );
+}
+
+function StatCard({ label, value, hint, icon: Icon, tone = "cyan", urgent }: any) {
+  const tones: Record<string, string> = {
+    cyan: "from-cyan-500/20 to-cyan-500/0 text-cyan-300 border-cyan-500/20",
+    orange: "from-orange-500/20 to-orange-500/0 text-orange-300 border-orange-500/20",
+    green: "from-emerald-500/20 to-emerald-500/0 text-emerald-300 border-emerald-500/20",
+    gold: "from-yellow-500/20 to-yellow-500/0 text-yellow-300 border-yellow-500/20",
+    red: "from-red-500/20 to-red-500/0 text-red-300 border-red-500/20",
+  };
+  return (
+    <div className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${tones[tone]} p-5 ${urgent ? "ring-2 ring-orange-500/60 animate-pulse" : ""}`}>
+      <div className="flex items-start justify-between">
+        <div className="text-[11px] font-bold uppercase tracking-widest text-white/60">{label}</div>
+        <div className="rounded-lg bg-white/5 p-2"><Icon className="h-4 w-4" /></div>
       </div>
-    </SiteShell>
+      <div className="mt-3 text-3xl font-black text-white">{value}</div>
+      {hint && <div className="mt-1 text-[11px] text-white/50">{hint}</div>}
+    </div>
   );
 }
 
 function AdminOverview() {
-  const [stats, setStats] = useState<{
-    userCount: number;
-    pendingCount: number;
-    totalBalance: number;
-    depositsToday: number;
-    withdrawsToday: number;
-    depositsAllTime: number;
-    withdrawsAllTime: number;
-    loading: boolean;
-  }>({ userCount: 0, pendingCount: 0, totalBalance: 0, depositsToday: 0, withdrawsToday: 0, depositsAllTime: 0, withdrawsAllTime: 0, loading: true });
+  const [stats, setStats] = useState<any>({ loading: true });
 
-  useEffect(() => {
-    (async () => {
-      const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
-      const iso = startOfDay.toISOString();
-
-      const [users, pending, balances, depToday, wdToday, depAll, wdAll] = await Promise.all([
-        supabase.from("profiles").select("id", { count: "exact", head: true }),
-        supabase.from("transactions").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("profiles").select("wallet_balance"),
-        supabase.from("transactions").select("amount").eq("type", "deposit").eq("status", "approved").gte("created_at", iso),
-        supabase.from("transactions").select("amount").eq("type", "withdraw").eq("status", "approved").gte("created_at", iso),
-        supabase.from("transactions").select("amount").eq("type", "deposit").eq("status", "approved"),
-        supabase.from("transactions").select("amount").eq("type", "withdraw").eq("status", "approved"),
-      ]);
-
-      const sum = (rows: any[] | null | undefined) =>
-        (rows ?? []).reduce((a, r) => a + Number(r.amount ?? r.wallet_balance ?? 0), 0);
-
-      setStats({
-        userCount: users.count ?? 0,
-        pendingCount: pending.count ?? 0,
-        totalBalance: sum(balances.data),
-        depositsToday: sum(depToday.data),
-        withdrawsToday: sum(wdToday.data),
-        depositsAllTime: sum(depAll.data),
-        withdrawsAllTime: sum(wdAll.data),
-        loading: false,
-      });
-    })();
+  const load = useCallback(async () => {
+    setStats((s: any) => ({ ...s, loading: true }));
+    const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
+    const iso = startOfDay.toISOString();
+    const [users, pending, balances, depToday, wdToday, depAll, wdAll, recent] = await Promise.all([
+      supabase.from("profiles").select("id", { count: "exact", head: true }),
+      supabase.from("transactions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("profiles").select("wallet_balance"),
+      supabase.from("transactions").select("amount").eq("type", "deposit").eq("status", "approved").gte("created_at", iso),
+      supabase.from("transactions").select("amount").eq("type", "withdraw").eq("status", "approved").gte("created_at", iso),
+      supabase.from("transactions").select("amount").eq("type", "deposit").eq("status", "approved"),
+      supabase.from("transactions").select("amount").eq("type", "withdraw").eq("status", "approved"),
+      supabase.from("transactions").select("id, type, status, amount, created_at, profiles!transactions_user_id_fkey(display_name, username, phone)").order("created_at", { ascending: false }).limit(6),
+    ]);
+    const sum = (rows: any[] | null | undefined) => (rows ?? []).reduce((a, r) => a + Number(r.amount ?? r.wallet_balance ?? 0), 0);
+    setStats({
+      userCount: users.count ?? 0,
+      pendingCount: pending.count ?? 0,
+      totalBalance: sum(balances.data),
+      depositsToday: sum(depToday.data),
+      withdrawsToday: sum(wdToday.data),
+      depositsAllTime: sum(depAll.data),
+      withdrawsAllTime: sum(wdAll.data),
+      recent: recent.data ?? [],
+      loading: false,
+    });
   }, []);
+  useEffect(() => { load(); }, [load]);
 
-  if (stats.loading) return <div className="text-white/70">Loading stats…</div>;
+  if (stats.loading) return <div className="flex items-center gap-2 text-white/60"><RefreshCw className="h-4 w-4 animate-spin" /> Loading stats…</div>;
 
   const revenue = stats.depositsAllTime - stats.withdrawsAllTime;
   const netToday = stats.depositsToday - stats.withdrawsToday;
 
-  const cards = [
-    { label: "মোট User", value: stats.userCount.toLocaleString(), icon: UsersIcon, color: "text-cyan-400", hint: "Registered profiles" },
-    { label: "Pending Requests", value: stats.pendingCount.toLocaleString(), icon: Clock, color: "text-orange-400", hint: "Awaiting approval", urgent: stats.pendingCount > 0 },
-    { label: "মোট User Balance", value: `৳${stats.totalBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: Wallet, color: "text-[var(--neon-green)]", hint: "Sum of all wallets" },
-    { label: "Net Revenue", value: `৳${revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: TrendingUp, color: revenue >= 0 ? "text-[var(--neon-gold)]" : "text-red-400", hint: "Deposits − Withdraws (all time)" },
-  ];
-
   return (
-    <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map((c) => (
-          <Card key={c.label} className={`border-white/10 bg-black/40 ${c.urgent ? "ring-2 ring-orange-500/50 animate-pulse" : ""}`}>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="text-xs font-bold uppercase tracking-wide text-white/60">{c.label}</div>
-                <c.icon className={`h-4 w-4 ${c.color}`} />
-              </div>
-              <div className={`mt-2 text-2xl font-black ${c.color}`}>{c.value}</div>
-              <div className="mt-1 text-[10px] text-white/50">{c.hint}</div>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard label="Total Users" value={stats.userCount.toLocaleString()} hint="Registered profiles" icon={UsersIcon} tone="cyan" />
+        <StatCard label="Pending Requests" value={stats.pendingCount.toLocaleString()} hint="Awaiting approval" icon={Clock} tone="orange" urgent={stats.pendingCount > 0} />
+        <StatCard label="User Balance" value={`৳${stats.totalBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} hint="Sum of all wallets" icon={Wallet} tone="green" />
+        <StatCard label="Net Revenue" value={`৳${revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} hint="Deposits − Withdraws" icon={TrendingUp} tone={revenue >= 0 ? "gold" : "red"} />
       </div>
 
-      <Card className="border-white/10 bg-black/40">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
-            <LayoutDashboard className="h-4 w-4 text-[var(--neon-gold)]" />
-            আজকের কার্যক্রম
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2 rounded-2xl border border-white/10 bg-[#0d1119] p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-widest text-white/50">Today</div>
+              <div className="text-lg font-black text-white">আজকের কার্যক্রম</div>
+            </div>
+            <button onClick={load} className="rounded-md border border-white/10 p-2 text-white/60 hover:text-white"><RefreshCw className="h-3.5 w-3.5" /></button>
+          </div>
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-lg border border-[var(--neon-green)]/30 bg-black/30 p-4">
-              <div className="text-xs font-bold text-white/60">আজ Deposit</div>
-              <div className="mt-1 text-xl font-black text-[var(--neon-green)]">৳{stats.depositsToday.toLocaleString()}</div>
+            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase text-white/60"><ArrowDownRight className="h-3 w-3 text-emerald-400" /> Deposit</div>
+              <div className="mt-2 text-2xl font-black text-emerald-300">৳{stats.depositsToday.toLocaleString()}</div>
             </div>
-            <div className="rounded-lg border border-red-500/30 bg-black/30 p-4">
-              <div className="text-xs font-bold text-white/60">আজ Withdraw</div>
-              <div className="mt-1 text-xl font-black text-red-400">৳{stats.withdrawsToday.toLocaleString()}</div>
+            <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase text-white/60"><ArrowUpRight className="h-3 w-3 text-red-400" /> Withdraw</div>
+              <div className="mt-2 text-2xl font-black text-red-300">৳{stats.withdrawsToday.toLocaleString()}</div>
             </div>
-            <div className="rounded-lg border border-[var(--neon-gold)]/30 bg-black/30 p-4">
-              <div className="text-xs font-bold text-white/60">আজ Net</div>
-              <div className={`mt-1 text-xl font-black ${netToday >= 0 ? "text-[var(--neon-gold)]" : "text-red-400"}`}>
-                ৳{netToday.toLocaleString()}
-              </div>
+            <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4">
+              <div className="text-[11px] font-bold uppercase text-white/60">Net</div>
+              <div className={`mt-2 text-2xl font-black ${netToday >= 0 ? "text-yellow-300" : "text-red-300"}`}>৳{netToday.toLocaleString()}</div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-[#0d1119] p-5">
+          <div className="mb-3 text-[11px] font-bold uppercase tracking-widest text-white/50">Recent Activity</div>
+          <div className="space-y-2">
+            {stats.recent.length === 0 && <div className="text-xs text-white/40">No activity yet</div>}
+            {stats.recent.map((r: any) => (
+              <div key={r.id} className="flex items-center gap-2 rounded-lg border border-white/5 bg-black/30 px-3 py-2">
+                <div className={`h-2 w-2 rounded-full ${r.status === "approved" ? "bg-emerald-400" : r.status === "pending" ? "bg-orange-400" : "bg-red-400"}`} />
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-xs font-bold text-white">{r.profiles?.display_name || r.profiles?.username || r.profiles?.phone || "User"}</div>
+                  <div className="text-[10px] text-white/40 capitalize">{r.type} · {r.status}</div>
+                </div>
+                <div className="text-xs font-black text-[var(--neon-green)]">৳{Number(r.amount).toFixed(0)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
+}
+
+function Panel({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-[#0d1119] overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
+        <div className="text-sm font-black uppercase tracking-wider text-white">{title}</div>
+        {action}
+      </div>
+      <div className="p-5">{children}</div>
+    </div>
+  );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const map: Record<string, string> = {
+    pending: "bg-orange-500/15 text-orange-300 border-orange-500/30",
+    approved: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+    rejected: "bg-red-500/15 text-red-300 border-red-500/30",
+  };
+  return <span className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase ${map[status] ?? "bg-white/10 text-white/70 border-white/20"}`}>{status}</span>;
 }
 
 function AdminTxns() {
@@ -193,7 +220,6 @@ function AdminTxns() {
     if (filter !== "all") q = q.eq("status", filter);
     const { data, error } = await q;
     if (error) {
-      // fallback without profile join
       const { data: d2 } = await supabase.from("transactions").select("*").order("created_at", { ascending: false }).limit(100);
       setRows(d2 ?? []);
     } else setRows(data ?? []);
@@ -211,62 +237,67 @@ function AdminTxns() {
   }
 
   return (
-    <Card className="border-white/10 bg-black/40">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-white">Transactions</CardTitle>
-        <div className="flex gap-1">
+    <Panel
+      title="Transactions"
+      action={
+        <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-black/40 p-1">
           {(["pending", "approved", "rejected", "all"] as const).map((f) => (
-            <button key={f} onClick={() => setFilter(f)} className={`rounded-md px-2 py-1 text-xs font-bold ${filter === f ? "bg-[var(--neon-gold)]/20 text-[var(--neon-gold)]" : "text-white/60"}`}>{f}</button>
+            <button key={f} onClick={() => setFilter(f)} className={`rounded-md px-3 py-1 text-[11px] font-bold uppercase transition ${filter === f ? "bg-[var(--neon-green)]/20 text-[var(--neon-green)]" : "text-white/50 hover:text-white"}`}>{f}</button>
           ))}
+          <button onClick={load} className="ml-1 rounded-md p-1.5 text-white/50 hover:text-white"><RefreshCw className="h-3.5 w-3.5" /></button>
         </div>
-      </CardHeader>
-      <CardContent>
-        {loading ? <div className="text-white/70">Loading…</div> : rows.length === 0 ? <div className="text-white/60">No transactions</div> : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Ref</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead></TableHead>
+      }
+    >
+      {loading ? <div className="text-white/60">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-white/40">No transactions</div> : (
+        <div className="overflow-x-auto rounded-lg border border-white/5">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-white/10 bg-black/40">
+                <TableHead>User</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Reference</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((r) => (
+                <TableRow key={r.id} className="border-white/5 hover:bg-white/5">
+                  <TableCell>
+                    <div className="font-bold text-white">{r.profiles?.display_name || r.profiles?.username || "—"}</div>
+                    <div className="text-[10px] text-white/40">{r.profiles?.phone || r.profiles?.email}</div>
+                  </TableCell>
+                  <TableCell>
+                    <span className={`inline-flex items-center gap-1 text-xs font-bold capitalize ${r.type === "deposit" ? "text-emerald-300" : r.type === "withdraw" ? "text-red-300" : "text-yellow-300"}`}>
+                      {r.type === "deposit" ? <ArrowDownRight className="h-3 w-3" /> : r.type === "withdraw" ? <ArrowUpRight className="h-3 w-3" /> : null}
+                      {r.type}
+                    </span>
+                  </TableCell>
+                  <TableCell className="font-black text-[var(--neon-green)]">৳{Number(r.amount).toFixed(2)}</TableCell>
+                  <TableCell className="text-xs font-mono text-white/60">{r.txn_reference || r.sender_account || r.receiver_account || "—"}</TableCell>
+                  <TableCell><StatusPill status={r.status} /></TableCell>
+                  <TableCell className="text-xs text-white/50">{new Date(r.created_at).toLocaleString()}</TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-1">
+                      <Button size="sm" variant="outline" onClick={() => setDetailId(r.id)} className="h-7 border-white/10"><Eye className="h-3 w-3" /></Button>
+                      {r.status === "pending" && (
+                        <>
+                          <Button size="sm" onClick={() => act(r.id, "approved")} className="h-7 bg-emerald-500 hover:bg-emerald-600 text-black"><CheckCircle2 className="h-3 w-3" /></Button>
+                          <Button size="sm" variant="destructive" onClick={() => act(r.id, "rejected")} className="h-7"><XCircle className="h-3 w-3" /></Button>
+                        </>
+                      )}
+                    </div>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((r) => (
-                  <TableRow key={r.id}>
-                    <TableCell className="text-white/90">
-                      <div className="font-bold">{r.profiles?.display_name || r.profiles?.username || "—"}</div>
-                      <div className="text-[10px] text-white/50">{r.profiles?.phone || r.profiles?.email}</div>
-                    </TableCell>
-                    <TableCell className="capitalize text-white/80">{r.type}</TableCell>
-                    <TableCell className="font-bold text-[var(--neon-green)]">৳{Number(r.amount).toFixed(2)}</TableCell>
-                    <TableCell className="text-white/70 text-xs">{r.txn_reference || r.sender_account || r.receiver_account || "—"}</TableCell>
-                    <TableCell className="text-xs capitalize text-white/70">{r.status}</TableCell>
-                    <TableCell className="text-xs text-white/60">{new Date(r.created_at).toLocaleString()}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button size="sm" variant="outline" onClick={() => setDetailId(r.id)} className="h-7"><Eye className="h-3 w-3" /></Button>
-                        {r.status === "pending" && (
-                          <>
-                            <Button size="sm" onClick={() => act(r.id, "approved")} className="h-7 bg-green-button text-[var(--background)]"><CheckCircle2 className="h-3 w-3" /></Button>
-                            <Button size="sm" variant="destructive" onClick={() => act(r.id, "rejected")} className="h-7"><XCircle className="h-3 w-3" /></Button>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </CardContent>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
       <TxnDetailsDialog txnId={detailId} open={!!detailId} onOpenChange={(v) => !v && setDetailId(null)} showUser />
-    </Card>
+    </Panel>
   );
 }
 
@@ -277,18 +308,17 @@ function AdminUsers() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    let q = supabase.from("profiles").select("id, display_name, username, email, phone, wallet_balance, vip_tier, referral_code, created_at, user_roles(role)").order("created_at", { ascending: false }).limit(200);
-    const { data } = await q;
+    const { data } = await supabase.from("profiles").select("id, display_name, username, email, phone, wallet_balance, vip_tier, referral_code, created_at, user_roles(role)").order("created_at", { ascending: false }).limit(200);
     setUsers(data ?? []);
     setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
 
-  const filtered = users.filter((u) => {
+  const filtered = useMemo(() => users.filter((u) => {
     if (!search) return true;
     const q = search.toLowerCase();
     return [u.display_name, u.username, u.email, u.phone, u.referral_code].some((v) => v?.toLowerCase().includes(q));
-  });
+  }), [users, search]);
 
   async function adjust(userId: string, sign: 1 | -1) {
     const amtStr = prompt(sign > 0 ? "কত টাকা যোগ করবেন?" : "কত টাকা কাটবেন?");
@@ -325,56 +355,68 @@ function AdminUsers() {
   }
 
   return (
-    <Card className="border-white/10 bg-black/40">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-white">Users</CardTitle>
-        <Input placeholder="Search name / phone / email / ref…" value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs" />
-      </CardHeader>
-      <CardContent>
-        {loading ? <div className="text-white/70">Loading…</div> : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Balance</TableHead>
-                  <TableHead>VIP</TableHead>
-                  <TableHead>Ref</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.map((u) => {
-                  const isAdmin = (u.user_roles ?? []).some((r: any) => r.role === "admin");
-                  return (
-                    <TableRow key={u.id}>
-                      <TableCell className="text-white/90">
-                        <div className="font-bold">{u.display_name || u.username || "—"} {isAdmin && <ShieldCheck className="inline h-3 w-3 text-red-400" />}</div>
-                        <div className="text-[10px] text-white/50">{u.email}</div>
-                      </TableCell>
-                      <TableCell className="text-white/70 text-xs">{u.phone || "—"}</TableCell>
-                      <TableCell className="font-bold text-[var(--neon-green)]">৳{Number(u.wallet_balance).toFixed(2)}</TableCell>
-                      <TableCell className="text-xs capitalize text-[var(--neon-gold)]">{u.vip_tier}</TableCell>
-                      <TableCell className="font-mono text-xs text-white/70">{u.referral_code}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          <Button size="sm" onClick={() => adjust(u.id, 1)} className="h-7 bg-green-button text-[var(--background)]"><Plus className="h-3 w-3" /></Button>
-                          <Button size="sm" onClick={() => adjust(u.id, -1)} variant="destructive" className="h-7"><Minus className="h-3 w-3" /></Button>
-                          <Button size="sm" variant="outline" onClick={() => toggleAdmin(u.id, isAdmin)} className="h-7">
-                            {isAdmin ? <ShieldOff className="h-3 w-3" /> : <ShieldCheck className="h-3 w-3" />}
-                          </Button>
+    <Panel
+      title={`Users (${filtered.length})`}
+      action={
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/40" />
+          <Input placeholder="Search name / phone / email…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 w-72 border-white/10 bg-black/40 pl-8 text-xs" />
+        </div>
+      }
+    >
+      {loading ? <div className="text-white/60">Loading…</div> : (
+        <div className="overflow-x-auto rounded-lg border border-white/5">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-white/10 bg-black/40">
+                <TableHead>User</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Balance</TableHead>
+                <TableHead>VIP</TableHead>
+                <TableHead>Referral</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((u) => {
+                const isAdmin = (u.user_roles ?? []).some((r: any) => r.role === "admin");
+                return (
+                  <TableRow key={u.id} className="border-white/5 hover:bg-white/5">
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500/30 to-purple-500/30 text-xs font-black text-white">
+                          {(u.display_name || u.username || "?")[0]?.toUpperCase()}
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+                        <div>
+                          <div className="flex items-center gap-1 font-bold text-white">
+                            {u.display_name || u.username || "—"}
+                            {isAdmin && <ShieldCheck className="h-3 w-3 text-red-400" />}
+                          </div>
+                          <div className="text-[10px] text-white/40">{u.email}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs text-white/70">{u.phone || "—"}</TableCell>
+                    <TableCell className="font-black text-[var(--neon-green)]">৳{Number(u.wallet_balance).toFixed(2)}</TableCell>
+                    <TableCell><span className="rounded-md bg-yellow-500/10 px-2 py-0.5 text-[10px] font-bold uppercase text-yellow-300">{u.vip_tier}</span></TableCell>
+                    <TableCell className="font-mono text-xs text-white/60">{u.referral_code}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-1">
+                        <Button size="sm" onClick={() => adjust(u.id, 1)} className="h-7 bg-emerald-500 hover:bg-emerald-600 text-black"><Plus className="h-3 w-3" /></Button>
+                        <Button size="sm" onClick={() => adjust(u.id, -1)} variant="destructive" className="h-7"><Minus className="h-3 w-3" /></Button>
+                        <Button size="sm" variant="outline" onClick={() => toggleAdmin(u.id, isAdmin)} className="h-7 border-white/10">
+                          {isAdmin ? <ShieldOff className="h-3 w-3" /> : <ShieldCheck className="h-3 w-3" />}
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </Panel>
   );
 }
 
@@ -410,49 +452,67 @@ function AdminMethods() {
   }
 
   return (
-    <div className="space-y-4">
-      <Card className="border-white/10 bg-black/40">
-        <CardHeader><CardTitle className="text-white">নতুন পেমেন্ট মেথড</CardTitle></CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-2">
-          <select value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value as typeof form.kind })} className="h-9 rounded-md border border-input bg-transparent px-3 text-sm text-white">
-            {["bkash", "nagad", "rocket", "bank", "usdt", "other"].map((k) => <option key={k} value={k} className="bg-black">{k}</option>)}
-          </select>
-          <Input placeholder="Label (e.g. bKash Personal)" value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} />
-          <Input placeholder="Account Number" value={form.account_number} onChange={(e) => setForm({ ...form, account_number: e.target.value })} />
-          <Input placeholder="Instructions" value={form.instructions} onChange={(e) => setForm({ ...form, instructions: e.target.value })} />
-          <Input type="number" placeholder="Min Deposit" value={form.min_deposit} onChange={(e) => setForm({ ...form, min_deposit: Number(e.target.value) })} />
-          <Input type="number" placeholder="Min Withdraw" value={form.min_withdraw} onChange={(e) => setForm({ ...form, min_withdraw: Number(e.target.value) })} />
-          <Button onClick={add} className="sm:col-span-2 bg-green-button text-[var(--background)] font-bold">Add</Button>
-        </CardContent>
-      </Card>
-
-      <Card className="border-white/10 bg-black/40">
-        <CardHeader><CardTitle className="text-white">বর্তমান মেথড</CardTitle></CardHeader>
-        <CardContent>
-          {loading ? <div className="text-white/70">Loading…</div> : (
-            <Table>
-              <TableHeader><TableRow><TableHead>Kind</TableHead><TableHead>Label</TableHead><TableHead>Account</TableHead><TableHead>Min D/W</TableHead><TableHead>Active</TableHead><TableHead></TableHead></TableRow></TableHeader>
-              <TableBody>
-                {rows.map((r) => (
-                  <TableRow key={r.id}>
-                    <TableCell className="uppercase text-white/80">{r.kind}</TableCell>
-                    <TableCell className="text-white font-bold">{r.label}</TableCell>
-                    <TableCell className="font-mono text-white/70">{r.account_number}</TableCell>
-                    <TableCell className="text-xs text-white/70">৳{r.min_deposit} / ৳{r.min_withdraw}</TableCell>
-                    <TableCell><span className={r.is_active ? "text-[var(--neon-green)]" : "text-white/40"}>{r.is_active ? "ON" : "OFF"}</span></TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button size="sm" variant="outline" onClick={() => toggleActive(r.id, r.is_active)} className="h-7 text-xs">Toggle</Button>
-                        <Button size="sm" variant="destructive" onClick={() => remove(r.id)} className="h-7 text-xs">Del</Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+    <div className="grid gap-4 lg:grid-cols-5">
+      <div className="lg:col-span-2">
+        <Panel title="New Payment Method">
+          <div className="grid gap-3">
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Kind</label>
+              <select value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value as typeof form.kind })} className="mt-1 h-9 w-full rounded-md border border-white/10 bg-black/40 px-3 text-sm text-white">
+                {["bkash", "nagad", "rocket", "bank", "usdt", "other"].map((k) => <option key={k} value={k} className="bg-black">{k}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Label</label>
+              <Input placeholder="e.g. bKash Personal" value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} className="mt-1 border-white/10 bg-black/40" />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Account Number</label>
+              <Input placeholder="017…" value={form.account_number} onChange={(e) => setForm({ ...form, account_number: e.target.value })} className="mt-1 border-white/10 bg-black/40" />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Instructions</label>
+              <Input placeholder="Send Money, then submit ref" value={form.instructions} onChange={(e) => setForm({ ...form, instructions: e.target.value })} className="mt-1 border-white/10 bg-black/40" />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Min Deposit</label>
+                <Input type="number" value={form.min_deposit} onChange={(e) => setForm({ ...form, min_deposit: Number(e.target.value) })} className="mt-1 border-white/10 bg-black/40" />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">Min Withdraw</label>
+                <Input type="number" value={form.min_withdraw} onChange={(e) => setForm({ ...form, min_withdraw: Number(e.target.value) })} className="mt-1 border-white/10 bg-black/40" />
+              </div>
+            </div>
+            <Button onClick={add} className="mt-2 bg-emerald-500 hover:bg-emerald-600 text-black font-black">+ Add Method</Button>
+          </div>
+        </Panel>
+      </div>
+      <div className="lg:col-span-3">
+        <Panel title="Active Methods">
+          {loading ? <div className="text-white/60">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-white/40">No methods yet</div> : (
+            <div className="space-y-2">
+              {rows.map((r) => (
+                <div key={r.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-black/30 p-3">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg text-[10px] font-black uppercase ${r.is_active ? "bg-emerald-500/20 text-emerald-300" : "bg-white/10 text-white/40"}`}>{r.kind.slice(0,4)}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-white">{r.label}</div>
+                    <div className="text-xs font-mono text-white/50">{r.account_number}</div>
+                  </div>
+                  <div className="text-[10px] text-white/50">
+                    <div>Min D: ৳{r.min_deposit}</div>
+                    <div>Min W: ৳{r.min_withdraw}</div>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button size="sm" variant="outline" onClick={() => toggleActive(r.id, r.is_active)} className="h-7 border-white/10 text-xs">{r.is_active ? "Disable" : "Enable"}</Button>
+                    <Button size="sm" variant="destructive" onClick={() => remove(r.id)} className="h-7 text-xs">Delete</Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </Panel>
+      </div>
     </div>
   );
 }
@@ -481,16 +541,13 @@ function AdminGames() {
   async function save(r: any) {
     const patch = edits[r.id];
     if (!patch) return toast.info("কোনো পরিবর্তন নেই");
-
     const min = Number(patch.min_bet ?? r.min_bet);
     const max = Number(patch.max_bet ?? r.max_bet);
     const edge = Number(patch.house_edge ?? r.house_edge);
-
     if (!Number.isFinite(min) || min < 0) return toast.error("Min Bet ০ বা তার বেশি হতে হবে");
     if (!Number.isFinite(max) || max <= 0) return toast.error("Max Bet ০ এর বেশি হতে হবে");
     if (min > max) return toast.error("Min Bet, Max Bet এর চেয়ে বড় হতে পারবে না");
     if (!Number.isFinite(edge) || edge < 0 || edge > 1) return toast.error("House Edge ০ থেকে ১০০% এর মধ্যে হতে হবে");
-
     const { error } = await supabase.from("game_configs").update(patch).eq("id", r.id);
     if (error) return toast.error(error.message);
     toast.success(`${r.name} আপডেট হয়েছে`);
@@ -505,83 +562,47 @@ function AdminGames() {
   }
 
   return (
-    <Card className="border-white/10 bg-black/40">
-      <CardHeader>
-        <CardTitle className="text-white">Game Controls</CardTitle>
-        <p className="text-xs text-white/60 mt-1">প্রতিটা গেম on/off করুন, bet limits এবং house edge সেট করুন।</p>
-      </CardHeader>
-      <CardContent>
-        {loading ? <div className="text-white/70">Loading…</div> : rows.length === 0 ? <div className="text-white/60">No games configured</div> : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Game</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Min Bet</TableHead>
-                  <TableHead>Max Bet</TableHead>
-                  <TableHead>House Edge (%)</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((r) => (
-                  <TableRow key={r.id}>
-                    <TableCell className="text-white font-bold">
-                      {r.name}
-                      <div className="text-[10px] font-mono text-white/40">{r.game_key}</div>
-                    </TableCell>
-                    <TableCell>
-                      <button
-                        onClick={() => toggleEnabled(r)}
-                        className={`rounded-md px-3 py-1 text-xs font-bold ${r.is_enabled ? "bg-[var(--neon-green)]/20 text-[var(--neon-green)]" : "bg-red-500/20 text-red-400"}`}
-                      >
-                        {r.is_enabled ? "ON" : "OFF"}
-                      </button>
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        value={valOf(r, "min_bet")}
-                        onChange={(e) => setField(r.id, "min_bet", Number(e.target.value))}
-                        className="h-8 w-24"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        value={valOf(r, "max_bet")}
-                        onChange={(e) => setField(r.id, "max_bet", Number(e.target.value))}
-                        className="h-8 w-28"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        value={Number(valOf(r, "house_edge")) * 100}
-                        onChange={(e) => setField(r.id, "house_edge", Number(e.target.value) / 100)}
-                        className="h-8 w-20"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        size="sm"
-                        onClick={() => save(r)}
-                        disabled={!edits[r.id]}
-                        className="h-7 bg-green-button text-[var(--background)] font-bold disabled:opacity-40"
-                      >
-                        Save
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <Panel title="Game Controls">
+      {loading ? <div className="text-white/60">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-white/40">No games configured</div> : (
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {rows.map((r) => {
+            const dirty = !!edits[r.id];
+            return (
+              <div key={r.id} className="rounded-xl border border-white/10 bg-black/40 p-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="text-base font-black text-white">{r.name}</div>
+                    <div className="mt-0.5 font-mono text-[10px] text-white/40">{r.game_key}</div>
+                  </div>
+                  <button
+                    onClick={() => toggleEnabled(r)}
+                    className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase ${r.is_enabled ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300" : "border-red-500/40 bg-red-500/15 text-red-300"}`}
+                  >
+                    {r.is_enabled ? "● Enabled" : "○ Disabled"}
+                  </button>
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="text-[9px] font-bold uppercase tracking-wider text-white/50">Min Bet</label>
+                    <Input type="number" value={valOf(r, "min_bet")} onChange={(e) => setField(r.id, "min_bet", Number(e.target.value))} className="mt-1 h-8 border-white/10 bg-black/60 text-xs" />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold uppercase tracking-wider text-white/50">Max Bet</label>
+                    <Input type="number" value={valOf(r, "max_bet")} onChange={(e) => setField(r.id, "max_bet", Number(e.target.value))} className="mt-1 h-8 border-white/10 bg-black/60 text-xs" />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold uppercase tracking-wider text-white/50">Edge %</label>
+                    <Input type="number" step="0.1" value={Number(valOf(r, "house_edge")) * 100} onChange={(e) => setField(r.id, "house_edge", Number(e.target.value) / 100)} className="mt-1 h-8 border-white/10 bg-black/60 text-xs" />
+                  </div>
+                </div>
+                <Button size="sm" onClick={() => save(r)} disabled={!dirty} className={`mt-3 w-full font-black ${dirty ? "bg-emerald-500 hover:bg-emerald-600 text-black" : "bg-white/5 text-white/30"}`}>
+                  {dirty ? "Save Changes" : "No Changes"}
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </Panel>
   );
 }
-
