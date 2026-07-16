@@ -51,6 +51,7 @@ function Wheel() {
 
   return (
     <GameShell title="Wheel of Fortune" emoji="🎡">
+      <StatsBar stats={stats} onReset={resetStats} />
       <div className="grid gap-4 rounded-xl bg-black/40 p-6 ring-1 ring-white/10 md:grid-cols-[1fr_280px]">
         <div className="relative mx-auto flex h-80 w-80 items-center justify-center">
           <div
