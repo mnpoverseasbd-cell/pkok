@@ -130,10 +130,6 @@ function Plinko() {
 
   return (
     <GameShell title="Plinko" emoji="🎯" gameKey="plinko">
-      <StatsBar stats={stats} onReset={resetStats} />
-      <div className="mb-3">
-        <MultiplierHistoryStrip gameKey="plinko" />
-      </div>
       <GameFrame>
         <div className="mx-auto w-full max-w-md flex-1">
           <div ref={bucketsWrapRef} className="relative">
@@ -200,6 +196,10 @@ function Plinko() {
           <ProvablyFairPanel pf={pf} gameKey="plinko" />
         </ControlsPanel>
       </GameFrame>
+      <div className="mt-3">
+        <MultiplierHistoryStrip gameKey="plinko" />
+      </div>
+      <StatsBar stats={stats} onReset={resetStats} />
     </GameShell>
   );
 }

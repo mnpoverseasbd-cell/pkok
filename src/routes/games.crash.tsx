@@ -133,14 +133,6 @@ function Crash() {
 
   return (
     <GameShell title="Crash" emoji="🚀" gameKey="crash">
-      <StatsBar stats={stats} onReset={resetStats} />
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <MultiplierHistoryStrip gameKey="crash" />
-        <div className={`hidden items-center gap-2 rounded-full border border-white/5 bg-black/30 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] sm:inline-flex ${statusColor}`}>
-          <span className={`h-2 w-2 rounded-full ${isFlying ? "bg-[#00ff88] animate-pulse" : state === "crashed" ? "bg-[#ff4d4d]" : state === "cashed" ? "bg-[#ffd166]" : "bg-white/40"}`} />
-          {isFlying ? "in flight" : state === "crashed" ? "busted" : state === "cashed" ? "cashed out" : "ready"}
-        </div>
-      </div>
       <GameFrame>
         <div className={`relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border bg-gradient-to-b from-[#0a120b] via-[#070f08] to-[#020604] p-6 min-h-[320px] transition-shadow duration-500 ${frameGlow}`}>
           <CrashChart multiplier={mult} active={isFlying} state={state} />
@@ -197,6 +189,14 @@ function Crash() {
           <ProvablyFairPanel pf={pf} gameKey="crash" />
         </ControlsPanel>
       </GameFrame>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <MultiplierHistoryStrip gameKey="crash" />
+        <div className={`hidden items-center gap-2 rounded-full border border-white/5 bg-black/30 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] sm:inline-flex ${statusColor}`}>
+          <span className={`h-2 w-2 rounded-full ${isFlying ? "bg-[#00ff88] animate-pulse" : state === "crashed" ? "bg-[#ff4d4d]" : state === "cashed" ? "bg-[#ffd166]" : "bg-white/40"}`} />
+          {isFlying ? "in flight" : state === "crashed" ? "busted" : state === "cashed" ? "cashed out" : "ready"}
+        </div>
+      </div>
+      <StatsBar stats={stats} onReset={resetStats} />
     </GameShell>
   );
 }
