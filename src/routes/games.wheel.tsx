@@ -52,7 +52,7 @@ function Wheel() {
   }).join(", ");
 
   return (
-    <GameShell title="Wheel of Fortune" emoji="🎡">
+    <GameShell title="Wheel of Fortune" emoji="🎡" gameKey="wheel">
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="relative mx-auto flex flex-1 items-center justify-center py-6">
