@@ -12,8 +12,6 @@ export const Route = createFileRoute("/games/mines")({
 });
 
 const SIZE = 25;
-const MIN_BET = 10;
-const MAX_BET = 500;
 
 function randomMines(count: number): Set<number> {
   const s = new Set<number>();
