@@ -446,10 +446,12 @@ function AdminUsers() {
       const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "admin");
       if (error) return toast.error(error.message);
       toast.success("Admin role সরানো হয়েছে");
+      adminLogAction({ data: { action: "role.revoke", targetType: "user", targetId: userId, details: { role: "admin" } } }).catch(() => {});
     } else {
       const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: "admin" });
       if (error) return toast.error(error.message);
       toast.success("Admin বানানো হয়েছে");
+      adminLogAction({ data: { action: "role.grant", targetType: "user", targetId: userId, details: { role: "admin" } } }).catch(() => {});
     }
     load();
   }
