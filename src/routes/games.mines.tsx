@@ -70,7 +70,7 @@ function Mines() {
     next.add(i);
     setRevealed(next);
     if (next.size + mines === SIZE) {
-      const finalMult = multiplier(next.size, mines);
+      const finalMult = multiplier(next.size, mines, edge);
       const win = Math.floor(bet * finalMult);
       credit(win);
       setMsg(`🏆 ক্লিয়ার! +${win - bet}`);
