@@ -8,14 +8,14 @@ import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts, adminListAuditLogs, adminLogAction, adminListFeatureFlags, adminUpsertFeatureFlag, adminDeleteFeatureFlag } from "@/lib/admin.functions";
+import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts, adminListAuditLogs, adminLogAction, adminListFeatureFlags, adminUpsertFeatureFlag, adminDeleteFeatureFlag, adminReports } from "@/lib/admin.functions";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag } from "lucide-react";
+import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag, BarChart3 } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 
 
-const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit", "flags"]).optional() });
+const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit", "flags", "reports"]).optional() });
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — PKOK" }, { name: "robots", content: "noindex" }] }),
@@ -32,6 +32,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   vip: { title: "VIP Tiers", subtitle: "Deposit threshold, cashback, bonus আর limits কনফিগ করুন" },
   audit: { title: "Audit Logs", subtitle: "সমস্ত অ্যাডমিন অ্যাকশনের রেকর্ড" },
   flags: { title: "Feature Flags", subtitle: "রানটাইম ফিচার টগল করুন কোড ডিপ্লয় ছাড়াই" },
+  reports: { title: "Reports", subtitle: "রেভিনিউ, GGR, top players — read-only analytics" },
 };
 
 function AdminPage() {
@@ -84,6 +85,7 @@ function AdminPage() {
       )}
       {tab === "audit" && <AdminAuditLogs />}
       {tab === "flags" && <AdminFeatureFlags />}
+      {tab === "reports" && <AdminReports />}
     </AdminShell>
   );
 }
@@ -1403,5 +1405,163 @@ function AdminFeatureFlags() {
         </div>
       </Panel>
     </div>
+  );
+}
+
+function AdminReports() {
+  const run = useServerFn(adminReports);
+  const [days, setDays] = useState(30);
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await run({ data: { days } });
+      setData(res);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to load reports");
+    } finally {
+      setLoading(false);
+    }
+  }, [run, days]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const maxDeposit = useMemo(() => {
+    if (!data?.series?.length) return 1;
+    return Math.max(1, ...data.series.map((s: any) => Math.max(s.deposits, s.withdrawals, s.bets, s.wins)));
+  }, [data]);
+
+  const fmt = (n: number) => `৳ ${Math.round(n).toLocaleString("en-BD")}`;
+
+  return (
+    <div className="space-y-4">
+      <Panel
+        title="Time Window"
+        action={
+          <div className="flex items-center gap-2">
+            <select
+              value={days}
+              onChange={(e) => setDays(Number(e.target.value))}
+              className="h-8 rounded-md border border-slate-200 bg-white px-2 text-xs"
+            >
+              {[7, 14, 30, 60, 90].map((d) => (
+                <option key={d} value={d}>{d} days</option>
+              ))}
+            </select>
+            <Button size="sm" variant="outline" onClick={load} disabled={loading} className="h-8">
+              <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} /> Refresh
+            </Button>
+          </div>
+        }
+      >
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+          <ReportStat label="Deposits" value={fmt(data?.totals?.deposits ?? 0)} tone="emerald" />
+          <ReportStat label="Withdrawals" value={fmt(data?.totals?.withdrawals ?? 0)} tone="rose" />
+          <ReportStat label="Bets" value={fmt(data?.totals?.bets ?? 0)} tone="indigo" />
+          <ReportStat label="Wins" value={fmt(data?.totals?.wins ?? 0)} tone="amber" />
+          <ReportStat label="GGR" value={fmt(data?.totals?.ggr ?? 0)} tone="fuchsia" />
+          <ReportStat label="New Users" value={String(data?.totals?.new_users ?? 0)} tone="cyan" />
+        </div>
+      </Panel>
+
+      <Panel title="Daily Series">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Day</TableHead>
+                <TableHead className="text-right">Deposits</TableHead>
+                <TableHead className="text-right">Withdrawals</TableHead>
+                <TableHead className="text-right">Bets</TableHead>
+                <TableHead className="text-right">Wins</TableHead>
+                <TableHead className="text-right">GGR</TableHead>
+                <TableHead className="text-right">New Users</TableHead>
+                <TableHead className="w-40">Volume</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(data?.series ?? []).slice().reverse().map((d: any) => (
+                <TableRow key={d.day}>
+                  <TableCell className="text-xs font-medium">{d.day}</TableCell>
+                  <TableCell className="text-right text-xs text-emerald-700">{fmt(d.deposits)}</TableCell>
+                  <TableCell className="text-right text-xs text-rose-700">{fmt(d.withdrawals)}</TableCell>
+                  <TableCell className="text-right text-xs text-indigo-700">{fmt(d.bets)}</TableCell>
+                  <TableCell className="text-right text-xs text-amber-700">{fmt(d.wins)}</TableCell>
+                  <TableCell className={`text-right text-xs font-semibold ${d.ggr >= 0 ? "text-emerald-700" : "text-rose-700"}`}>{fmt(d.ggr)}</TableCell>
+                  <TableCell className="text-right text-xs">{d.new_users}</TableCell>
+                  <TableCell>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                      <div className="h-full bg-gradient-to-r from-indigo-500 to-fuchsia-500" style={{ width: `${Math.min(100, (Math.max(d.deposits, d.bets) / maxDeposit) * 100)}%` }} />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {(!data?.series?.length) && (
+                <TableRow>
+                  <TableCell colSpan={8} className="py-6 text-center text-sm text-slate-500">
+                    {loading ? "Loading…" : "No activity in this window"}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </Panel>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Panel title="Top Depositors">
+          <TopTable rows={data?.top_depositors ?? []} loading={loading} label="Deposited" />
+        </Panel>
+        <Panel title="Top Wagerers">
+          <TopTable rows={data?.top_wagerers ?? []} loading={loading} label="Wagered" />
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+function ReportStat({ label, value, tone }: { label: string; value: string; tone: string }) {
+  const tones: Record<string, string> = {
+    emerald: "from-emerald-500 to-teal-500",
+    rose: "from-rose-500 to-pink-500",
+    indigo: "from-indigo-500 to-blue-500",
+    amber: "from-amber-500 to-orange-500",
+    fuchsia: "from-fuchsia-500 to-pink-600",
+    cyan: "from-cyan-500 to-sky-500",
+  };
+  return (
+    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</div>
+      <div className={`mt-1 bg-gradient-to-r ${tones[tone] ?? tones.indigo} bg-clip-text text-lg font-black text-transparent`}>{value}</div>
+    </div>
+  );
+}
+
+function TopTable({ rows, loading, label }: { rows: { display: string; amount: number; user_id: string }[]; loading: boolean; label: string }) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-8">#</TableHead>
+          <TableHead>User</TableHead>
+          <TableHead className="text-right">{label}</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.length === 0 ? (
+          <TableRow><TableCell colSpan={3} className="py-6 text-center text-xs text-slate-500">{loading ? "Loading…" : "No data"}</TableCell></TableRow>
+        ) : (
+          rows.map((r, i) => (
+            <TableRow key={r.user_id}>
+              <TableCell className="text-xs font-bold text-slate-400">{i + 1}</TableCell>
+              <TableCell className="text-xs font-medium">{r.display}</TableCell>
+              <TableCell className="text-right text-xs font-black text-emerald-700">৳ {Math.round(r.amount).toLocaleString("en-BD")}</TableCell>
+            </TableRow>
+          ))
+        )}
+      </TableBody>
+    </Table>
   );
 }

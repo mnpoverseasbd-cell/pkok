@@ -373,3 +373,113 @@ export const adminDeleteFeatureFlag = createServerFn({ method: "POST" })
     await writeAudit(admin, context.userId, "flag.delete", "feature_flag", data.flag_key, {});
     return { success: true as const };
   });
+
+export const adminReports = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({ days: z.number().int().min(1).max(90).default(30) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    const since = new Date(Date.now() - data.days * 86400_000).toISOString();
+
+    const [txnsRes, usersRes, wagerRes] = await Promise.all([
+      admin
+        .from("transactions")
+        .select("type, status, amount, approved_at, created_at, user_id")
+        .gte("created_at", since)
+        .limit(10000),
+      admin.from("profiles").select("id, created_at").gte("created_at", since).limit(10000),
+      admin
+        .from("transactions")
+        .select("user_id, type, amount")
+        .in("type", ["deposit", "bet", "win"])
+        .eq("status", "approved")
+        .gte("approved_at", since)
+        .limit(10000),
+    ]);
+    if (txnsRes.error) throw new Error(txnsRes.error.message);
+    if (usersRes.error) throw new Error(usersRes.error.message);
+    if (wagerRes.error) throw new Error(wagerRes.error.message);
+
+    const txns = txnsRes.data ?? [];
+    const newUsers = usersRes.data ?? [];
+    const wager = wagerRes.data ?? [];
+
+    // Daily buckets
+    const dayKey = (iso: string) => iso.slice(0, 10);
+    const days: Record<
+      string,
+      { day: string; deposits: number; withdrawals: number; bets: number; wins: number; new_users: number; ggr: number }
+    > = {};
+    for (let i = 0; i < data.days; i++) {
+      const d = new Date(Date.now() - i * 86400_000).toISOString().slice(0, 10);
+      days[d] = { day: d, deposits: 0, withdrawals: 0, bets: 0, wins: 0, new_users: 0, ggr: 0 };
+    }
+    for (const t of txns) {
+      if (t.status !== "approved") continue;
+      const k = dayKey(t.approved_at || t.created_at);
+      const row = days[k];
+      if (!row) continue;
+      const amt = Number(t.amount || 0);
+      if (t.type === "deposit") row.deposits += amt;
+      else if (t.type === "withdraw") row.withdrawals += amt;
+      else if (t.type === "bet") row.bets += amt;
+      else if (t.type === "win") row.wins += amt;
+    }
+    for (const u of newUsers) {
+      const k = dayKey(u.created_at);
+      if (days[k]) days[k].new_users += 1;
+    }
+    Object.values(days).forEach((d) => (d.ggr = d.bets - d.wins));
+    const series = Object.values(days).sort((a, b) => (a.day < b.day ? -1 : 1));
+
+    // Totals
+    const totals = series.reduce(
+      (acc, d) => ({
+        deposits: acc.deposits + d.deposits,
+        withdrawals: acc.withdrawals + d.withdrawals,
+        bets: acc.bets + d.bets,
+        wins: acc.wins + d.wins,
+        new_users: acc.new_users + d.new_users,
+        ggr: acc.ggr + d.ggr,
+      }),
+      { deposits: 0, withdrawals: 0, bets: 0, wins: 0, new_users: 0, ggr: 0 },
+    );
+
+    // Top depositors
+    const depByUser = new Map<string, number>();
+    for (const t of txns) {
+      if (t.type === "deposit" && t.status === "approved") {
+        depByUser.set(t.user_id, (depByUser.get(t.user_id) ?? 0) + Number(t.amount || 0));
+      }
+    }
+    const topIds = [...depByUser.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const wagerByUser = new Map<string, number>();
+    for (const w of wager) {
+      if (w.type === "bet") wagerByUser.set(w.user_id, (wagerByUser.get(w.user_id) ?? 0) + Number(w.amount || 0));
+    }
+    const topWagerIds = [...wagerByUser.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+    const allIds = Array.from(new Set([...topIds.map(([id]) => id), ...topWagerIds.map(([id]) => id)]));
+    let nameMap: Record<string, string> = {};
+    if (allIds.length) {
+      const { data: profs } = await admin
+        .from("profiles")
+        .select("id, display_name, username, phone")
+        .in("id", allIds);
+      (profs ?? []).forEach((p: any) => {
+        nameMap[p.id] = p.display_name || p.username || p.phone || p.id.slice(0, 8);
+      });
+    }
+
+    return {
+      generated_at: new Date().toISOString(),
+      window_days: data.days,
+      totals,
+      series,
+      top_depositors: topIds.map(([id, amt]) => ({ user_id: id, display: nameMap[id] || id.slice(0, 8), amount: amt })),
+      top_wagerers: topWagerIds.map(([id, amt]) => ({ user_id: id, display: nameMap[id] || id.slice(0, 8), amount: amt })),
+    };
+  });
