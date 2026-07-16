@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { GamesCategoryPage } from "@/components/landing/GamesCategoryPage";
 
-export const Route = createFileRoute("/games")({
+export const Route = createFileRoute("/games/")({
   head: () => ({
     meta: [
       { title: "হট গেমস — Asik Game" },
