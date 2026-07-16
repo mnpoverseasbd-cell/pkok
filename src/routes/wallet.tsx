@@ -74,6 +74,7 @@ function WalletPage() {
   const navigate = useNavigate();
   const search = useSearch({ from: "/wallet" });
   const tab: TabKey = search.tab ?? "deposit";
+  const [depositBump, setDepositBump] = useState(0);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
@@ -133,8 +134,13 @@ function WalletPage() {
 
         {tab === "deposit" && (
           <>
-            <QuickBuyCoins userId={user.id} balance={profile?.wallet_balance ?? 0} onCredited={refetch} />
-            <DepositForm userId={user.id} onCreated={refetch} />
+            <QuickBuyCoins
+              userId={user.id}
+              balance={profile?.wallet_balance ?? 0}
+              onCredited={() => { refetch(); setDepositBump((n) => n + 1); }}
+            />
+            <DepositForm userId={user.id} onCreated={() => { refetch(); setDepositBump((n) => n + 1); }} />
+            <DepositHistory userId={user.id} refreshKey={depositBump} />
           </>
         )}
         {tab === "withdraw" && (
@@ -197,8 +203,28 @@ function QuickBuyCoins({
       .from("profiles")
       .update({ wallet_balance: next })
       .eq("id", userId);
+    if (dbErr) {
+      setSubmitting(false);
+      await supabase.from("transactions").insert({
+        user_id: userId,
+        type: "deposit",
+        status: "rejected",
+        amount: amt,
+        txn_reference: "QUICKBUY",
+        admin_note: dbErr.message,
+      });
+      return toast.error(dbErr.message);
+    }
+    await supabase.from("transactions").insert({
+      user_id: userId,
+      type: "deposit",
+      status: "approved",
+      amount: amt,
+      txn_reference: "QUICKBUY",
+      user_note: "Instant coin top-up",
+      approved_at: new Date().toISOString(),
+    });
     setSubmitting(false);
-    if (dbErr) return toast.error(dbErr.message);
     toast.success(`+${amt.toLocaleString()} কয়েন যোগ হয়েছে`);
     setAmount("");
     onCredited();
