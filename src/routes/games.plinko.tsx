@@ -12,8 +12,10 @@ import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
 import { fairPlinko } from "@/lib/provablyFair";
 import { PlinkoBoard, type PlinkoBoardHandle } from "@/components/games/PlinkoBoard";
-import { isMuted, toggleMuted, sfxWin, sfxBust } from "@/lib/sound";
+import { isMuted, toggleMuted, sfxWin, sfxBust, sfxDrop, sfxCashout } from "@/lib/sound";
 import { recordMyBet } from "@/lib/liveFeed";
+import { ParticleLayer, type ParticleBurstHandle } from "@/components/games/fx/Particles";
+import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
 
 export const Route = createFileRoute("/games/plinko")({
   head: () => ({ meta: [{ title: "Plinko — Asik Game" }, { name: "description", content: "Drop the ball, hit multipliers." }] }),
