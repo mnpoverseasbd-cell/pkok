@@ -270,11 +270,16 @@ function DepositForm({ userId, onCreated }: { userId: string; onCreated: () => v
     if (!methodId && methods[0]) setMethodId(methods[0].id);
   }, [methods, methodId]);
 
+  const MAX_DEPOSIT = 1_000_000;
+
   async function submit() {
     const amt = Number(amount);
     if (!methodId || !selected) return toast.error("পেমেন্ট মেথড বাছাই করুন");
-    if (!amt || amt < selected.min_deposit)
-      return toast.error(`সর্বনিম্ন ৳${selected.min_deposit}`);
+    if (!Number.isFinite(amt) || amt <= 0) return toast.error("সঠিক পরিমাণ দিন");
+    if (amt < selected.min_deposit)
+      return toast.error(`ন্যূনতম ৳${selected.min_deposit.toLocaleString()}`);
+    if (amt > MAX_DEPOSIT)
+      return toast.error(`সর্বোচ্চ ৳${MAX_DEPOSIT.toLocaleString()} এক বারে`);
     if (!sender.trim()) return toast.error("আপনার একাউন্ট নম্বর দিন");
     if (!txnRef.trim()) return toast.error("Transaction ID দিন");
     const parsed = depositSchema.safeParse({ amount: amt, sender, txnRef, note });
