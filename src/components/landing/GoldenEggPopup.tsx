@@ -172,6 +172,26 @@ export function GoldenEggPopup() {
             </div>
             <div className="mt-1 text-right text-xs text-white/60">0.00%</div>
           </div>
+
+          {/* Recent winners */}
+          <div className="mt-4 rounded-xl border border-[var(--neon-gold)]/30 bg-black/50 p-2">
+            <ul className="divide-y divide-white/5">
+              {[
+                { u: "18******1", a: "1.70" },
+                { u: "17******1", a: "1.70" },
+                { u: "19******0", a: "1.70" },
+              ].map((w) => (
+                <li key={w.u} className="flex items-center justify-between px-2 py-1.5 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="h-4 w-4 text-[#f5c542]" />
+                    <span className="text-white/85">{w.u}</span>
+                  </div>
+                  <span className="font-semibold text-[var(--neon-gold)]">৳ {w.a}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
         </div>
       </div>
     </div>
