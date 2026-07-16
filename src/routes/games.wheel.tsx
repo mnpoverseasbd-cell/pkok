@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameShell, BetControls } from "@/components/games/GameShell";
+import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
+import { useGameStats } from "@/hooks/useGameStats";
 
 export const Route = createFileRoute("/games/wheel")({
   head: () => ({ meta: [{ title: "Wheel of Fortune — Asik Game" }, { name: "description", content: "Spin the wheel." }] }),
