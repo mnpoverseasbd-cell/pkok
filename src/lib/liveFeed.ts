@@ -75,7 +75,7 @@ export function subscribeLiveBets(cb: (f: LiveBet[]) => void) {
   return () => { listeners.delete(cb); };
 }
 
-/** Convenience: record a real bet from a game. */
+/** Convenience: record a real bet from a game. Also persists to bet history. */
 export function recordMyBet(input: { user?: string; game: string; bet: number; multiplier: number; payout: number }) {
   pushLiveBet({
     id: `me-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -87,4 +87,8 @@ export function recordMyBet(input: { user?: string; game: string; bet: number; m
     payout: input.payout,
     isMe: true,
   });
+  // Fire-and-forget: persist to per-user history (localStorage).
+  import("./betHistory").then(({ addBetHistory }) => {
+    addBetHistory({ game: input.game, bet: input.bet, multiplier: input.multiplier, payout: input.payout });
+  }).catch(() => { /* ignore */ });
 }
