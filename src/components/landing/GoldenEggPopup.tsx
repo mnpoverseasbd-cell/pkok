@@ -56,7 +56,7 @@ export function GoldenEggPopup() {
       onClick={close}
     >
       <div
-        className="relative w-full max-w-[560px] my-4 animate-scale-in"
+        className="relative my-4 w-full max-w-[380px] animate-scale-in sm:max-w-[560px]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Red banner "পুরস্কার" with crown */}
