@@ -15,7 +15,7 @@ import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users 
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 
 
-const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games"]).optional() });
+const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip"]).optional() });
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — PKOK" }, { name: "robots", content: "noindex" }] }),
@@ -29,6 +29,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   users: { title: "Users", subtitle: "সমস্ত রেজিস্টার্ড অ্যাকাউন্ট ম্যানেজ করুন" },
   methods: { title: "Payment Methods", subtitle: "bKash, Nagad, Rocket ইত্যাদি কনফিগ করুন" },
   games: { title: "Game Controls", subtitle: "Bet limits এবং house edge টিউন করুন" },
+  vip: { title: "VIP Tiers", subtitle: "Deposit threshold, cashback, bonus আর limits কনফিগ করুন" },
 };
 
 function AdminPage() {
@@ -73,6 +74,7 @@ function AdminPage() {
       {tab === "users" && <AdminUsers />}
       {tab === "methods" && <AdminMethods />}
       {tab === "games" && <AdminGames />}
+      {tab === "vip" && <AdminVipTiers />}
     </AdminShell>
   );
 }
@@ -715,5 +717,115 @@ function AdminGames() {
         </div>
       )}
     </Panel>
+  );
+}
+
+function AdminVipTiers() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [dirty, setDirty] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("vip_tier_configs").select("*").order("sort_order");
+    if (error) toast.error(error.message);
+    setRows(data ?? []);
+    setDirty({});
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const setField = (id: string, key: string, value: number) => {
+    setDirty((d) => ({ ...d, [id]: { ...(d[id] ?? {}), [key]: value } }));
+  };
+  const valOf = (r: any, key: string) => dirty[r.id]?.[key] ?? r[key];
+  const isDirty = (id: string) => !!dirty[id];
+
+  const save = async (r: any) => {
+    if (!isDirty(r.id)) return;
+    setSaving(r.id);
+    const patch = dirty[r.id];
+    const { error } = await supabase.from("vip_tier_configs").update(patch).eq("id", r.id);
+    setSaving(null);
+    if (error) return toast.error(error.message);
+    toast.success(`${r.tier.toUpperCase()} tier updated`);
+    load();
+  };
+
+  const tierColor: Record<string, string> = {
+    bronze: "from-amber-700 to-amber-500",
+    silver: "from-slate-400 to-slate-300",
+    gold: "from-yellow-500 to-amber-400",
+    platinum: "from-cyan-400 to-blue-400",
+    diamond: "from-fuchsia-500 to-indigo-500",
+  };
+
+  return (
+    <Panel title="VIP Tier Configuration">
+      <div className="mb-4 text-xs text-slate-500">Deposit করা টাকার total এর ভিত্তিতে ইউজার এই tier-এ auto upgrade হবে।</div>
+      {loading ? (
+        <div className="p-6 text-center text-sm text-slate-400">Loading tiers…</div>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {rows.map((r) => {
+            const d = isDirty(r.id);
+            const color = tierColor[r.tier] ?? "from-slate-500 to-slate-400";
+            return (
+              <div key={r.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`inline-flex items-center gap-2 rounded-xl bg-gradient-to-br ${color} px-4 py-2 text-white shadow-md`}>
+                    <ShieldCheck className="h-4 w-4" />
+                    <span className="text-sm font-black uppercase tracking-widest">{r.tier}</span>
+                  </div>
+                  {d && <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500">Unsaved</span>}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Min Total Deposit (৳)">
+                    <Input type="number" value={valOf(r, "min_deposit_total")} onChange={(e) => setField(r.id, "min_deposit_total", Number(e.target.value))} className="h-9 border-slate-200 bg-white text-xs" />
+                  </Field>
+                  <Field label="Cashback %">
+                    <Input type="number" step="0.1" value={valOf(r, "cashback_pct")} onChange={(e) => setField(r.id, "cashback_pct", Number(e.target.value))} className="h-9 border-slate-200 bg-white text-xs" />
+                  </Field>
+                  <Field label="Daily Bonus (৳)">
+                    <Input type="number" value={valOf(r, "daily_bonus")} onChange={(e) => setField(r.id, "daily_bonus", Number(e.target.value))} className="h-9 border-slate-200 bg-white text-xs" />
+                  </Field>
+                  <Field label="Weekly Bonus (৳)">
+                    <Input type="number" value={valOf(r, "weekly_bonus")} onChange={(e) => setField(r.id, "weekly_bonus", Number(e.target.value))} className="h-9 border-slate-200 bg-white text-xs" />
+                  </Field>
+                  <Field label="Min Deposit (৳)">
+                    <Input type="number" value={valOf(r, "min_deposit_amount")} onChange={(e) => setField(r.id, "min_deposit_amount", Number(e.target.value))} className="h-9 border-slate-200 bg-white text-xs" />
+                  </Field>
+                  <Field label="Max Deposit (৳)">
+                    <Input type="number" value={valOf(r, "max_deposit_amount")} onChange={(e) => setField(r.id, "max_deposit_amount", Number(e.target.value))} className="h-9 border-slate-200 bg-white text-xs" />
+                  </Field>
+                  <Field label="Min Withdraw (৳)">
+                    <Input type="number" value={valOf(r, "min_withdraw_amount")} onChange={(e) => setField(r.id, "min_withdraw_amount", Number(e.target.value))} className="h-9 border-slate-200 bg-white text-xs" />
+                  </Field>
+                  <Field label="Max Withdraw (৳)">
+                    <Input type="number" value={valOf(r, "max_withdraw_amount")} onChange={(e) => setField(r.id, "max_withdraw_amount", Number(e.target.value))} className="h-9 border-slate-200 bg-white text-xs" />
+                  </Field>
+                </div>
+
+                <Button size="sm" onClick={() => save(r)} disabled={!d || saving === r.id} className={`mt-4 w-full font-black ${d ? "bg-emerald-500 hover:bg-emerald-600 text-white" : "bg-slate-50 text-slate-300"}`}>
+                  {saving === r.id ? "Saving…" : d ? "Save Changes" : "No Changes"}
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </Panel>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{label}</label>
+      <div className="mt-1">{children}</div>
+    </div>
   );
 }

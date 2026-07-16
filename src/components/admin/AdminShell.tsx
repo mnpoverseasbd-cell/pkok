@@ -12,6 +12,7 @@ import {
   Menu,
   Bell,
   Search,
+  Crown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,6 +23,7 @@ const NAV = [
   { k: "users", label: "Users", icon: UsersIcon, color: "from-violet-500 to-purple-500" },
   { k: "methods", label: "Payments", icon: CreditCard, color: "from-amber-500 to-orange-500" },
   { k: "games", label: "Games", icon: Gamepad2, color: "from-emerald-500 to-teal-500" },
+  { k: "vip", label: "VIP Tiers", icon: Crown, color: "from-yellow-500 to-amber-500" },
 ] as const;
 
 export function AdminShell({
