@@ -857,6 +857,196 @@ function AdminVipTiers() {
   );
 }
 
+type VipRun = {
+  key: string;
+  runAt: string;
+  category: "daily" | "weekly" | "cashback";
+  users: number;
+  total: number;
+  entries: { user_id: string; amount: number; approved_at: string; admin_note: string | null; display: string }[];
+};
+
+function categorize(note: string | null): VipRun["category"] | null {
+  if (!note) return null;
+  const n = note.toLowerCase();
+  if (n.includes("vip daily bonus")) return "daily";
+  if (n.includes("vip weekly bonus")) return "weekly";
+  if (n.includes("vip cashback")) return "cashback";
+  return null;
+}
+
+function AdminVipHistory() {
+  const [runs, setRuns] = useState<VipRun[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  const [days, setDays] = useState(14);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const since = new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
+    const { data: txns, error } = await supabase
+      .from("transactions")
+      .select("user_id, amount, approved_at, admin_note, type")
+      .in("type", ["bonus", "cashback"])
+      .eq("status", "approved")
+      .gte("approved_at", since)
+      .order("approved_at", { ascending: false })
+      .limit(1000);
+    if (error) {
+      toast.error(error.message);
+      setLoading(false);
+      return;
+    }
+    const filtered = (txns ?? []).filter((t) => categorize(t.admin_note));
+    const userIds = Array.from(new Set(filtered.map((t) => t.user_id)));
+    let nameMap = new Map<string, string>();
+    if (userIds.length) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("id, display_name, username, phone")
+        .in("id", userIds);
+      (profs ?? []).forEach((p: any) =>
+        nameMap.set(p.id, p.display_name || p.username || p.phone || p.id.slice(0, 8)),
+      );
+    }
+    const bucket = new Map<string, VipRun>();
+    for (const t of filtered) {
+      const cat = categorize(t.admin_note)!;
+      const date = (t.approved_at ?? "").slice(0, 10);
+      const key = `${date}::${cat}`;
+      let r = bucket.get(key);
+      if (!r) {
+        r = { key, runAt: t.approved_at!, category: cat, users: 0, total: 0, entries: [] };
+        bucket.set(key, r);
+      }
+      r.entries.push({
+        user_id: t.user_id,
+        amount: Number(t.amount),
+        approved_at: t.approved_at!,
+        admin_note: t.admin_note,
+        display: nameMap.get(t.user_id) || t.user_id.slice(0, 8),
+      });
+      r.total += Number(t.amount);
+      if (t.approved_at! > r.runAt) r.runAt = t.approved_at!;
+    }
+    bucket.forEach((r) => (r.users = new Set(r.entries.map((e) => e.user_id)).size));
+    setRuns(Array.from(bucket.values()).sort((a, b) => (a.runAt < b.runAt ? 1 : -1)));
+    setLoading(false);
+  }, [days]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const catColor: Record<VipRun["category"], string> = {
+    daily: "from-emerald-500 to-teal-500",
+    weekly: "from-indigo-500 to-blue-500",
+    cashback: "from-amber-500 to-orange-500",
+  };
+
+  return (
+    <Panel
+      title="VIP Payout History"
+      action={
+        <div className="flex items-center gap-2">
+          <select
+            value={days}
+            onChange={(e) => setDays(Number(e.target.value))}
+            className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700"
+          >
+            <option value={7}>Last 7 days</option>
+            <option value={14}>Last 14 days</option>
+            <option value={30}>Last 30 days</option>
+            <option value={90}>Last 90 days</option>
+          </select>
+          <Button size="sm" variant="outline" onClick={load} className="h-8">
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+        </div>
+      }
+    >
+      {loading ? (
+        <div className="p-6 text-center text-sm text-slate-400">Loading history…</div>
+      ) : runs.length === 0 ? (
+        <div className="p-8 text-center text-sm text-slate-400">
+          No VIP payouts in the selected period. Run the cron manually from the VIP Tier panel to test.
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {runs.map((r) => {
+            const isOpen = openKey === r.key;
+            return (
+              <div key={r.key} className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                <button
+                  onClick={() => setOpenKey(isOpen ? null : r.key)}
+                  className="flex w-full items-center gap-3 px-4 py-3 hover:bg-slate-50 transition text-left"
+                >
+                  <span
+                    className={`inline-flex rounded-lg bg-gradient-to-br ${catColor[r.category]} px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-sm`}
+                  >
+                    {r.category}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-bold text-slate-800">
+                      {new Date(r.runAt).toLocaleString()}
+                    </div>
+                    <div className="text-[11px] text-slate-500">
+                      {r.users} user{r.users === 1 ? "" : "s"} credited
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-black text-emerald-600">
+                      ৳{r.total.toLocaleString()}
+                    </div>
+                    <div className="text-[10px] uppercase tracking-widest text-slate-400">total</div>
+                  </div>
+                  <span className="ml-2 text-slate-400 text-xs">{isOpen ? "▲" : "▼"}</span>
+                </button>
+                {isOpen && (
+                  <div className="border-t border-slate-100 bg-slate-50/60 p-3">
+                    <div className="max-h-72 overflow-y-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-[10px]">User</TableHead>
+                            <TableHead className="text-[10px]">Note</TableHead>
+                            <TableHead className="text-[10px]">Time</TableHead>
+                            <TableHead className="text-[10px] text-right">Amount</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {r.entries
+                            .sort((a, b) => (a.approved_at < b.approved_at ? 1 : -1))
+                            .map((e, i) => (
+                              <TableRow key={i}>
+                                <TableCell className="text-xs font-semibold text-slate-700">
+                                  {e.display}
+                                </TableCell>
+                                <TableCell className="text-[11px] text-slate-500">
+                                  {e.admin_note}
+                                </TableCell>
+                                <TableCell className="text-[11px] text-slate-500">
+                                  {new Date(e.approved_at).toLocaleTimeString()}
+                                </TableCell>
+                                <TableCell className="text-right text-xs font-black text-emerald-600">
+                                  ৳{e.amount.toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </Panel>
+  );
+}
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
