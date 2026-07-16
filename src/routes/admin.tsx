@@ -348,8 +348,19 @@ function AdminUsers() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase.from("profiles").select("id, display_name, username, email, phone, wallet_balance, vip_tier, referral_code, created_at, user_roles(role)").order("created_at", { ascending: false }).limit(200);
-    setUsers(data ?? []);
+    const [{ data: profs, error: pErr }, { data: roles, error: rErr }] = await Promise.all([
+      supabase.from("profiles").select("id, display_name, username, email, phone, wallet_balance, vip_tier, referral_code, created_at").order("created_at", { ascending: false }).limit(200),
+      supabase.from("user_roles").select("user_id, role"),
+    ]);
+    if (pErr) toast.error(pErr.message);
+    if (rErr) console.error("[admin/users] roles error:", rErr);
+    const roleMap = new Map<string, string[]>();
+    (roles ?? []).forEach((r: any) => {
+      const arr = roleMap.get(r.user_id) ?? [];
+      arr.push(r.role);
+      roleMap.set(r.user_id, arr);
+    });
+    setUsers((profs ?? []).map((p: any) => ({ ...p, user_roles: (roleMap.get(p.id) ?? []).map((role) => ({ role })) })));
     setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
