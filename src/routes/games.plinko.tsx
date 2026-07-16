@@ -74,10 +74,11 @@ function Plinko() {
     record({ pnl, multiplier: won / roundBet });
     if (m >= 2) sfxWin(m); else if (m < 1) sfxBust();
     setMsg(pnl >= 0 ? `🎯 ${m}× · +${pnl}` : `😅 ${m}× · ${pnl}`);
-    pf.consume(`bucket=${b} mult=${m}×`);
+    pf.consume(`bucket=${b} mult=${m}× risk=${risk}`);
+    recordMyBet({ game: "plinko", bet: roundBet, multiplier: m, payout: won });
     setDropping(false);
     return { pnl };
-  }, [pf, placeBet, credit, edge, record]);
+  }, [pf, placeBet, credit, edge, record, MULTS, risk]);
 
   const auto = useAutoBet({ runRound, baseBet: bet, delayMs: 500 });
 
