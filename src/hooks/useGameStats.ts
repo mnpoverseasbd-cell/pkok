@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 
-export type GameId = "dice" | "crash" | "mines" | "coinflip" | "plinko" | "wheel" | "limbo";
+export type GameId =
+  | "dice" | "crash" | "mines" | "coinflip" | "plinko" | "wheel" | "limbo"
+  | "chicken-road" | "tower" | "lucky-card" | "shell-game" | "scratch-card" | "keno" | "hi-lo" | "color-prediction";
 
 export type GameStats = {
   wins: number;
