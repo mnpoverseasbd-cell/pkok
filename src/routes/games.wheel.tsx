@@ -36,10 +36,10 @@ function Wheel() {
     setTimeout(() => {
       const m = SEGMENTS[idx];
       setLastMult(m);
-      const won = Math.floor(bet * m);
+      const won = Math.floor(bet * m * (1 - edge));
       if (won > 0) credit(won);
       const pnl = won - bet;
-      record({ pnl, multiplier: m });
+      record({ pnl, multiplier: won / bet });
       setMsg(m > 0 ? `🎉 ${m}× · ${pnl >= 0 ? "+" : ""}${pnl}` : `💥 শূন্য · -${bet}`);
       setSpinning(false);
     }, 4200);
