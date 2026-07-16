@@ -36,6 +36,7 @@ import { Route as GamesIndexRouteImport } from './routes/games.index'
 import { Route as GamesWheelRouteImport } from './routes/games.wheel'
 import { Route as GamesPlinkoRouteImport } from './routes/games.plinko'
 import { Route as GamesMinesRouteImport } from './routes/games.mines'
+import { Route as GamesLimboRouteImport } from './routes/games.limbo'
 import { Route as GamesDiceRouteImport } from './routes/games.dice'
 import { Route as GamesCrashRouteImport } from './routes/games.crash'
 import { Route as GamesCoinflipRouteImport } from './routes/games.coinflip'
@@ -175,6 +176,11 @@ const GamesMinesRoute = GamesMinesRouteImport.update({
   path: '/games/mines',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesLimboRoute = GamesLimboRouteImport.update({
+  id: '/games/limbo',
+  path: '/games/limbo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesDiceRoute = GamesDiceRouteImport.update({
   id: '/games/dice',
   path: '/games/dice',
@@ -218,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
+  '/games/limbo': typeof GamesLimboRoute
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/wheel': typeof GamesWheelRoute
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
+  '/games/limbo': typeof GamesLimboRoute
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/wheel': typeof GamesWheelRoute
@@ -283,6 +291,7 @@ export interface FileRoutesById {
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
+  '/games/limbo': typeof GamesLimboRoute
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/wheel': typeof GamesWheelRoute
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/games/coinflip'
     | '/games/crash'
     | '/games/dice'
+    | '/games/limbo'
     | '/games/mines'
     | '/games/plinko'
     | '/games/wheel'
@@ -349,6 +359,7 @@ export interface FileRouteTypes {
     | '/games/coinflip'
     | '/games/crash'
     | '/games/dice'
+    | '/games/limbo'
     | '/games/mines'
     | '/games/plinko'
     | '/games/wheel'
@@ -381,6 +392,7 @@ export interface FileRouteTypes {
     | '/games/coinflip'
     | '/games/crash'
     | '/games/dice'
+    | '/games/limbo'
     | '/games/mines'
     | '/games/plinko'
     | '/games/wheel'
@@ -414,6 +426,7 @@ export interface RootRouteChildren {
   GamesCoinflipRoute: typeof GamesCoinflipRoute
   GamesCrashRoute: typeof GamesCrashRoute
   GamesDiceRoute: typeof GamesDiceRoute
+  GamesLimboRoute: typeof GamesLimboRoute
   GamesMinesRoute: typeof GamesMinesRoute
   GamesPlinkoRoute: typeof GamesPlinkoRoute
   GamesWheelRoute: typeof GamesWheelRoute
@@ -611,6 +624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesMinesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/limbo': {
+      id: '/games/limbo'
+      path: '/games/limbo'
+      fullPath: '/games/limbo'
+      preLoaderRoute: typeof GamesLimboRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/dice': {
       id: '/games/dice'
       path: '/games/dice'
@@ -662,6 +682,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesCoinflipRoute: GamesCoinflipRoute,
   GamesCrashRoute: GamesCrashRoute,
   GamesDiceRoute: GamesDiceRoute,
+  GamesLimboRoute: GamesLimboRoute,
   GamesMinesRoute: GamesMinesRoute,
   GamesPlinkoRoute: GamesPlinkoRoute,
   GamesWheelRoute: GamesWheelRoute,
@@ -670,13 +691,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

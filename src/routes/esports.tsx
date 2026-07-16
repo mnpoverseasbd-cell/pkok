@@ -8,6 +8,7 @@ import minesPoster from "@/assets/games/mines.jpg";
 import coinflipPoster from "@/assets/games/coinflip.jpg";
 import plinkoPoster from "@/assets/games/plinko.jpg";
 import wheelPoster from "@/assets/games/wheel.jpg";
+import limboPoster from "@/assets/games/limbo.jpg";
 
 export const Route = createFileRoute("/esports")({
   head: () => ({
@@ -38,6 +39,7 @@ const myGames: OriginalGame[] = [
   { slug: "coinflip", name: "Coin Flip",        nameBn: "কয়েন ফ্লিপ",       provider: "ASIK", poster: coinflipPoster, status: "live", to: "/games/coinflip" },
   { slug: "plinko",   name: "Plinko",           nameBn: "প্লিঙ্কো",         provider: "ASIK", poster: plinkoPoster,   status: "live", to: "/games/plinko" },
   { slug: "wheel",    name: "Wheel of Fortune", nameBn: "হুইল অফ ফরচুন",   provider: "ASIK", poster: wheelPoster,    status: "live", to: "/games/wheel" },
+  { slug: "limbo",    name: "Limbo",            nameBn: "লিম্বো",           provider: "ASIK", poster: limboPoster,    status: "live", to: "/games/limbo" },
 ];
 
 function MyGamesPage() {
