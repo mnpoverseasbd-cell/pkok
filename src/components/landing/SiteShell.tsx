@@ -393,32 +393,27 @@ const providerLogos = [
 ];
 
 function ProvidersStrip() {
-  // Split into 3 rows for tri-directional marquee like PKOK
-  const rows = [
-    providerLogos.filter((_, i) => i % 3 === 0),
-    providerLogos.filter((_, i) => i % 3 === 1),
-    providerLogos.filter((_, i) => i % 3 === 2),
-  ];
   return (
-    <section className="bg-[#1a1a1a] py-8 sm:py-10">
-      <div className="mx-auto max-w-[1440px] space-y-5 px-4 sm:px-6 lg:px-8">
-        {rows.map((row, idx) => (
-          <div key={idx} className="overflow-hidden">
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-x-8">
-              {row.map((item) => (
-                <div key={item.name} className="flex h-8 shrink-0 items-center justify-center px-1">
-                  <img
-                    src={item.logo}
-                    alt={item.name}
-                    loading="lazy"
-                    className="max-h-7 max-w-none object-contain opacity-90 transition duration-200 hover:scale-110 hover:opacity-100"
-                    style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.4))" }}
-                  />
-                </div>
-              ))}
-            </div>
+    <section className="bg-[#1a1a1a] py-6 sm:py-8">
+      <div className="mx-auto max-w-[1440px] px-0">
+        <div className="group overflow-hidden">
+          <div
+            className="flex w-max items-center gap-8 sm:gap-10"
+            style={{ animation: "marquee-x 90s linear infinite" }}
+          >
+            {[...providerLogos, ...providerLogos].map((item, i) => (
+              <div key={`${item.name}-${i}`} className="flex h-8 shrink-0 items-center justify-center px-1">
+                <img
+                  src={item.logo}
+                  alt={item.name}
+                  loading="lazy"
+                  className="max-h-7 max-w-none object-contain opacity-90 transition duration-200 hover:scale-110 hover:opacity-100"
+                  style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.4))" }}
+                />
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );
