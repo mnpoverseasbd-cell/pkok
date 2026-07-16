@@ -1,7 +1,7 @@
 import { recordMyBet } from "@/lib/liveFeed";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
+import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton } from "@/components/games/GameShell";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
@@ -11,6 +11,12 @@ import { useAutoBet } from "@/hooks/useAutoBet";
 import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { AutoBetPanel, ModeTabs } from "@/components/games/AutoBetPanel";
 import { fairCrash } from "@/lib/provablyFair";
+import { CrashChart } from "@/components/games/fx/CrashChart";
+import { ParticleLayer, type ParticleBurstHandle } from "@/components/games/fx/Particles";
+import { MultiplierHUD } from "@/components/games/hud/MultiplierHUD";
+import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
+import { sfxCashout, sfxBust } from "@/lib/sound";
+import { Rocket } from "lucide-react";
 
 export const Route = createFileRoute("/games/crash")({
   head: () => ({ meta: [{ title: "Crash — Asik Game" }, { name: "description", content: "Cash out before the crash." }] }),
