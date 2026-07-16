@@ -8,14 +8,14 @@ import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts, adminListAuditLogs, adminLogAction } from "@/lib/admin.functions";
+import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts, adminListAuditLogs, adminLogAction, adminListFeatureFlags, adminUpsertFeatureFlag, adminDeleteFeatureFlag } from "@/lib/admin.functions";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus } from "lucide-react";
+import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 
 
-const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit"]).optional() });
+const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit", "flags"]).optional() });
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — PKOK" }, { name: "robots", content: "noindex" }] }),
