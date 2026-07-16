@@ -92,6 +92,7 @@ function Mines() {
     setMsg(`🎉 ক্যাশআউট +${potential - bet}`);
     record({ pnl: potential - bet, multiplier: mult });
     pf.consume(`cashout mines=${mines} picks=${picks} mult=${mult}×`);
+    recordMyBet({ game: "mines", bet, multiplier: mult, payout: potential });
     setActive(false);
   };
 
