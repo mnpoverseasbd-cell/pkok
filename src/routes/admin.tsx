@@ -30,6 +30,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   methods: { title: "Payment Methods", subtitle: "bKash, Nagad, Rocket ইত্যাদি কনফিগ করুন" },
   games: { title: "Game Controls", subtitle: "Bet limits এবং house edge টিউন করুন" },
   vip: { title: "VIP Tiers", subtitle: "Deposit threshold, cashback, bonus আর limits কনফিগ করুন" },
+  audit: { title: "Audit Logs", subtitle: "সমস্ত অ্যাডমিন অ্যাকশনের রেকর্ড" },
 };
 
 function AdminPage() {
