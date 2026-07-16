@@ -456,3 +456,122 @@ function AdminMethods() {
     </div>
   );
 }
+
+function AdminGames() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [edits, setEdits] = useState<Record<string, any>>({});
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("game_configs").select("*").order("name");
+    setRows(data ?? []);
+    setEdits({});
+    setLoading(false);
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  function setField(id: string, field: string, value: any) {
+    setEdits((prev) => ({ ...prev, [id]: { ...(prev[id] ?? {}), [field]: value } }));
+  }
+  function valOf(r: any, field: string) {
+    return edits[r.id]?.[field] ?? r[field];
+  }
+
+  async function save(r: any) {
+    const patch = edits[r.id];
+    if (!patch) return toast.info("কোনো পরিবর্তন নেই");
+    const { error } = await supabase.from("game_configs").update(patch).eq("id", r.id);
+    if (error) return toast.error(error.message);
+    toast.success(`${r.name} আপডেট হয়েছে`);
+    load();
+  }
+
+  async function toggleEnabled(r: any) {
+    const { error } = await supabase.from("game_configs").update({ is_enabled: !r.is_enabled }).eq("id", r.id);
+    if (error) return toast.error(error.message);
+    toast.success(`${r.name} ${!r.is_enabled ? "ON" : "OFF"}`);
+    load();
+  }
+
+  return (
+    <Card className="border-white/10 bg-black/40">
+      <CardHeader>
+        <CardTitle className="text-white">Game Controls</CardTitle>
+        <p className="text-xs text-white/60 mt-1">প্রতিটা গেম on/off করুন, bet limits এবং house edge সেট করুন।</p>
+      </CardHeader>
+      <CardContent>
+        {loading ? <div className="text-white/70">Loading…</div> : rows.length === 0 ? <div className="text-white/60">No games configured</div> : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Game</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Min Bet</TableHead>
+                  <TableHead>Max Bet</TableHead>
+                  <TableHead>House Edge (%)</TableHead>
+                  <TableHead></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((r) => (
+                  <TableRow key={r.id}>
+                    <TableCell className="text-white font-bold">
+                      {r.name}
+                      <div className="text-[10px] font-mono text-white/40">{r.game_key}</div>
+                    </TableCell>
+                    <TableCell>
+                      <button
+                        onClick={() => toggleEnabled(r)}
+                        className={`rounded-md px-3 py-1 text-xs font-bold ${r.is_enabled ? "bg-[var(--neon-green)]/20 text-[var(--neon-green)]" : "bg-red-500/20 text-red-400"}`}
+                      >
+                        {r.is_enabled ? "ON" : "OFF"}
+                      </button>
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        value={valOf(r, "min_bet")}
+                        onChange={(e) => setField(r.id, "min_bet", Number(e.target.value))}
+                        className="h-8 w-24"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        value={valOf(r, "max_bet")}
+                        onChange={(e) => setField(r.id, "max_bet", Number(e.target.value))}
+                        className="h-8 w-28"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={Number(valOf(r, "house_edge")) * 100}
+                        onChange={(e) => setField(r.id, "house_edge", Number(e.target.value) / 100)}
+                        className="h-8 w-20"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="sm"
+                        onClick={() => save(r)}
+                        disabled={!edits[r.id]}
+                        className="h-7 bg-green-button text-[var(--background)] font-bold disabled:opacity-40"
+                      >
+                        Save
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
