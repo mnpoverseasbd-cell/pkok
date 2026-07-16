@@ -47,7 +47,7 @@ function CoinFlip() {
   };
 
   return (
-    <GameShell title="Coin Flip" emoji="🪙">
+    <GameShell title="Coin Flip" emoji="🪙" gameKey="coinflip">
       <StatsBar stats={stats} onReset={resetStats} />
       <GameFrame>
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
