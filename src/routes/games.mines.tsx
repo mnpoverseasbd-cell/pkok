@@ -199,10 +199,6 @@ function Mines() {
               const isRev = revealed.has(i);
               const isBombHere = board.has(i);
               const showBomb = dead === i || (!active && isBombHere && dead !== null);
-            {Array.from({ length: SIZE }).map((_, i) => {
-              const isRev = revealed.has(i);
-              const isBombHere = board.has(i);
-              const showBomb = dead === i || (!active && isBombHere && dead !== null);
 
               if (isRev) {
                 return (
