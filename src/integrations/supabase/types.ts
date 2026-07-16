@@ -299,7 +299,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       txn_status: "pending" | "approved" | "rejected" | "cancelled"
-      txn_type: "deposit" | "withdraw" | "bonus"
+      txn_type: "deposit" | "withdraw" | "bonus" | "cashback"
       vip_tier: "bronze" | "silver" | "gold" | "platinum" | "diamond"
     }
     CompositeTypes: {
@@ -430,7 +430,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       txn_status: ["pending", "approved", "rejected", "cancelled"],
-      txn_type: ["deposit", "withdraw", "bonus"],
+      txn_type: ["deposit", "withdraw", "bonus", "cashback"],
       vip_tier: ["bronze", "silver", "gold", "platinum", "diamond"],
     },
   },
