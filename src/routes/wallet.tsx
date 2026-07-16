@@ -390,6 +390,52 @@ function DepositForm({ userId, onCreated }: { userId: string; onCreated: () => v
   );
 }
 
+function DepositHistory({ userId, refreshKey }: { userId: string; refreshKey: number }) {
+  const [rows, setRows] = useState<Txn[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    supabase
+      .from("transactions")
+      .select("id, type, status, amount, txn_reference, admin_note, created_at, approved_at")
+      .eq("user_id", userId)
+      .eq("type", "deposit")
+      .order("created_at", { ascending: false })
+      .limit(20)
+      .then(({ data }) => {
+        if (cancelled) return;
+        setRows((data as Txn[]) ?? []);
+        setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [userId, refreshKey]);
+
+  return (
+    <Card className="mt-4 border-white/10 bg-black/40">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-white">
+          <History className="h-5 w-5 text-[var(--neon-gold)]" /> ডিপোজিট হিস্টোরি
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="p-2 text-sm text-white/70">লোড হচ্ছে…</div>
+        ) : rows.length === 0 ? (
+          <div className="rounded-md border border-white/10 bg-black/40 p-6 text-center text-sm text-white/60">
+            এখনো কোনো ডিপোজিট নেই
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {rows.map((r) => <TxnRow key={r.id} r={r} />)}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function WithdrawForm({ userId, balance, onCreated }: { userId: string; balance: number; onCreated: () => void }) {
   const methods = useMethods().filter((m) => m.supports_withdraw);
   const [methodId, setMethodId] = useState<string>("");
