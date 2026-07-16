@@ -41,22 +41,25 @@ function AdminPage() {
 
   if (loading || roleLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0d14] text-white/70">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500">
         <div className="flex items-center gap-3 text-sm"><RefreshCw className="h-4 w-4 animate-spin" /> Loading admin…</div>
       </div>
     );
   }
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0d14] px-4">
-        <div className="max-w-md rounded-2xl border border-red-500/30 bg-black/60 p-8 text-center">
-          <ShieldOff className="mx-auto h-10 w-10 text-red-400" />
-          <h1 className="mt-3 text-2xl font-black text-white">Access Denied</h1>
-          <p className="mt-2 text-sm text-white/70">শুধুমাত্র অ্যাডমিন এই পেজ দেখতে পারবেন।</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+        <div className="max-w-md rounded-3xl border border-rose-100 bg-white p-10 text-center shadow-xl shadow-rose-500/5">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/30">
+            <ShieldOff className="h-7 w-7" />
+          </div>
+          <h1 className="mt-4 text-2xl font-black text-slate-900">Access Denied</h1>
+          <p className="mt-2 text-sm text-slate-500">শুধুমাত্র অ্যাডমিন এই পেজ দেখতে পারবেন।</p>
         </div>
       </div>
     );
   }
+
 
   const meta = TAB_TITLES[tab] ?? TAB_TITLES.overview;
 
