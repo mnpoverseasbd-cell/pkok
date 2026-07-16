@@ -37,6 +37,9 @@ function Plinko() {
   const edge = cfg?.house_edge ?? 0;
   const pf = useProvablyFair("plinko");
   const [bet, setBet] = useState(50);
+  const [risk, setRisk] = useState<Risk>("medium");
+  const MULTS = MULT_TABLE[risk];
+  const maxMult = Math.max(...MULTS);
   const [dropping, setDropping] = useState(false);
   const [bucket, setBucket] = useState<number | null>(null);
   const [msg, setMsg] = useState("");
