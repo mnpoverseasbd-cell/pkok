@@ -68,7 +68,12 @@ function RecentPage() {
                 game={g}
                 isFav={isFav(g.id)}
                 onToggleFav={() => { toggleFav(g.id); }}
-                onPlay={() => { addRecent(g.id); toast.info(`${g.name} — লঞ্চ শুরু হচ্ছে…`); }}
+                onPlay={() => {
+                  addRecent(g.id);
+                  const to = internalGameRoute(g.id);
+                  if (to) navigate({ to: to as never });
+                  else toast.info(`${g.name} — লঞ্চ শুরু হচ্ছে…`);
+                }}
               />
             ))}
           </div>
