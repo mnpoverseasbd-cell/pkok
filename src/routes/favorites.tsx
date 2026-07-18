@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { toast } from "sonner";
 import { Heart, HeartOff } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { GameCardMini } from "@/components/GameCardMini";
 import { catalogService } from "@/services";
+import { internalGameRoute } from "@/internal-games/registry";
 import { useLocalGameList, FAVORITES_KEY } from "@/hooks/useLocalGameList";
 
 export const Route = createFileRoute("/favorites")({
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/favorites")({
 });
 
 function FavoritesPage() {
+  const navigate = useNavigate();
   const { ids, remove, clear } = useLocalGameList(FAVORITES_KEY);
   const games = useMemo(() => {
     const all = catalogService.all();
@@ -64,7 +66,11 @@ function FavoritesPage() {
                 key={g.id}
                 game={g}
                 onRemove={() => { remove(g.id); toast.success("সরানো হয়েছে"); }}
-                onPlay={() => toast.info(`${g.name} — লঞ্চ শুরু হচ্ছে…`)}
+                onPlay={() => {
+                  const to = internalGameRoute(g.id);
+                  if (to) navigate({ to: to as never });
+                  else toast.info(`${g.name} — এই গেম শীঘ্রই আসছে`);
+                }}
               />
             ))}
           </div>
