@@ -82,13 +82,51 @@ export const lib: Record<CategoryId, { title: string; image: string; provider: s
   ],
 };
 
+// Maps our public CategoryId to the internal catalog GameCategory when they diverge.
+const CATEGORY_MAP: Partial<Record<CategoryId, GameCategory>> = {
+  slots: "slots", live: "live", fishing: "fishing", sports: "sports",
+  crash: "crash", poker: "poker", lottery: "lottery",
+};
+
+type Tile = { title: string; image: string; provider: string; tag?: string; to?: string };
+
 export function GamesCategoryPage({ category, title, subtitle }: { category: CategoryId; title: string; subtitle: string }) {
   const [provider, setProvider] = useState("সব");
   const [q, setQ] = useState("");
 
-  let games = lib[category] ?? [];
+  const catalogTiles = useMemo<Tile[]>(() => {
+    const src = category === "hot"
+      ? [...catalogService.featured(), ...catalogService.all().filter((g) => g.tags.includes("hot") || g.tags.includes("new"))]
+      : (CATEGORY_MAP[category] ? catalogService.byCategory(CATEGORY_MAP[category]!) : []);
+    const seen = new Set<string>();
+    return src.filter((g) => (seen.has(g.id) ? false : (seen.add(g.id), true))).map((g) => ({
+      title: g.name,
+      image: g.image,
+      provider: g.providerId === "internal" ? "Asik" : g.providerId,
+      tag: g.tags.includes("new") ? "NEW" : g.featured ? "HOT" : undefined,
+      to: internalGameRoute(g.id),
+    }));
+  }, [category]);
+
+  const baseTiles: Tile[] = lib[category] ?? [];
+  // Merge without duplicating by title.
+  const merged: Tile[] = useMemo(() => {
+    const seen = new Set(baseTiles.map((t) => t.title.toLowerCase()));
+    return [...baseTiles, ...catalogTiles.filter((t) => !seen.has(t.title.toLowerCase()))];
+  }, [baseTiles, catalogTiles]);
+
+  let games = merged;
   if (provider !== "সব") games = games.filter((g) => g.provider === provider);
-  if (q.trim()) games = games.filter((g) => g.title.toLowerCase().includes(q.toLowerCase()));
+  if (q.trim()) {
+    // Search extends beyond the current category into the whole catalog.
+    const inCat = games.filter((g) => g.title.toLowerCase().includes(q.toLowerCase()));
+    const extra: Tile[] = catalogService.search(q).map((g) => ({
+      title: g.name, image: g.image, provider: g.providerId === "internal" ? "Asik" : g.providerId,
+      tag: g.tags.includes("new") ? "NEW" : undefined, to: internalGameRoute(g.id),
+    }));
+    const seen = new Set(inCat.map((g) => g.title.toLowerCase()));
+    games = [...inCat, ...extra.filter((g) => !seen.has(g.title.toLowerCase()))];
+  }
 
   return (
     <SiteShell>
@@ -133,16 +171,22 @@ export function GamesCategoryPage({ category, title, subtitle }: { category: Cat
           <div className="rounded-2xl inset-panel p-10 text-center text-foreground/70">কোনো গেম খুঁজে পাওয়া যায়নি।</div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
-            {games.map((g, i) => (
-              <div key={`${g.title}-${i}`} className="game-frame group relative overflow-hidden rounded-2xl p-1.5 transition hover:-translate-y-1">
-                {g.tag && <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[10px] font-black ${g.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>{g.tag}</span>}
-                <img src={g.image} alt={g.title} loading="lazy" className="aspect-[0.82/1] w-full rounded-xl object-cover transition-transform group-hover:scale-105" />
-                <div className="px-1 pb-1 pt-2">
-                  <div className="truncate text-xs font-bold text-white sm:text-sm">{g.title}</div>
-                  <div className="truncate text-[10px] text-foreground/60">{g.provider}</div>
-                </div>
-              </div>
-            ))}
+            {games.map((g, i) => {
+              const inner = (
+                <>
+                  {g.tag && <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[10px] font-black ${g.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>{g.tag}</span>}
+                  <img src={g.image} alt={g.title} loading="lazy" className="aspect-[0.82/1] w-full rounded-xl object-cover transition-transform group-hover:scale-105" />
+                  <div className="px-1 pb-1 pt-2">
+                    <div className="truncate text-xs font-bold text-white sm:text-sm">{g.title}</div>
+                    <div className="truncate text-[10px] text-foreground/60">{g.provider}</div>
+                  </div>
+                </>
+              );
+              const cls = "game-frame group relative overflow-hidden rounded-2xl p-1.5 transition hover:-translate-y-1 block";
+              return g.to
+                ? <Link key={`${g.title}-${i}`} to={g.to} className={cls}>{inner}</Link>
+                : <div key={`${g.title}-${i}`} className={cls}>{inner}</div>;
+            })}
           </div>
         )}
       </section>
