@@ -19,6 +19,7 @@ export const Route = createFileRoute("/recently-played")({
 });
 
 function RecentPage() {
+  const navigate = useNavigate();
   const { ids, clear, add: addRecent } = useLocalGameList(RECENT_KEY, 30);
   const { has: isFav, toggle: toggleFav } = useLocalGameList(FAVORITES_KEY);
   const games = useMemo(() => {
