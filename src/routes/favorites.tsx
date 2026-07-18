@@ -19,6 +19,7 @@ export const Route = createFileRoute("/favorites")({
 });
 
 function FavoritesPage() {
+  const navigate = useNavigate();
   const { ids, remove, clear } = useLocalGameList(FAVORITES_KEY);
   const games = useMemo(() => {
     const all = catalogService.all();
