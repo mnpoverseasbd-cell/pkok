@@ -66,7 +66,11 @@ function FavoritesPage() {
                 key={g.id}
                 game={g}
                 onRemove={() => { remove(g.id); toast.success("সরানো হয়েছে"); }}
-                onPlay={() => toast.info(`${g.name} — লঞ্চ শুরু হচ্ছে…`)}
+                onPlay={() => {
+                  const to = internalGameRoute(g.id);
+                  if (to) navigate({ to: to as never });
+                  else toast.info(`${g.name} — এই গেম শীঘ্রই আসছে`);
+                }}
               />
             ))}
           </div>
