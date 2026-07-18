@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { toast } from "sonner";
 import { Clock, History } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { GameCardMini } from "@/components/GameCardMini";
 import { catalogService } from "@/services";
+import { internalGameRoute } from "@/internal-games/registry";
 import { useLocalGameList, RECENT_KEY, FAVORITES_KEY } from "@/hooks/useLocalGameList";
 
 export const Route = createFileRoute("/recently-played")({
