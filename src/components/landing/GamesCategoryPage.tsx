@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Filter, Flame, Search } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/landing/SiteShell";
+import { catalogService } from "@/services";
+import { internalGameRoute } from "@/internal-games/registry";
+import type { GameCategory } from "@/core/constants";
 import g1 from "@/assets/game-slot1.jpg";
 import g2 from "@/assets/game-roulette.jpg";
 import g3 from "@/assets/game-crash.jpg";
