@@ -384,6 +384,39 @@ export async function fairSicBo(
   return { d1, d2, d3, sum, isTriple, tripleFace, size, parity };
 }
 
+/**
+ * Roulette (European single-zero, 0..36).
+ * Red pockets by tradition:
+ *   1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36
+ * Zero is green.
+ */
+export const ROULETTE_RED = new Set([
+  1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36,
+]);
+
+export async function fairRoulette(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<{
+  pocket: number;
+  color: "RED" | "BLACK" | "GREEN";
+  parity: "ODD" | "EVEN" | null;
+  size: "LOW" | "HIGH" | null;   // 1-18 / 19-36
+  dozen: 1 | 2 | 3 | null;       // 1-12 / 13-24 / 25-36
+  column: 1 | 2 | 3 | null;      // by (n-1)%3
+}> {
+  const [f] = await fairFloats(serverSeed, clientSeed, nonce, 1);
+  const pocket = Math.floor(f * 37); // 0..36
+  const color: "RED" | "BLACK" | "GREEN" =
+    pocket === 0 ? "GREEN" : ROULETTE_RED.has(pocket) ? "RED" : "BLACK";
+  const parity = pocket === 0 ? null : pocket % 2 === 0 ? "EVEN" : "ODD";
+  const size = pocket === 0 ? null : pocket <= 18 ? "LOW" : "HIGH";
+  const dozen = pocket === 0 ? null : (Math.ceil(pocket / 12) as 1 | 2 | 3);
+  const column = pocket === 0 ? null : (((pocket - 1) % 3) + 1) as 1 | 2 | 3;
+  return { pocket, color, parity, size, dozen, column };
+}
+
 
 // ---- Seed generation ---------------------------------------------------------
 
