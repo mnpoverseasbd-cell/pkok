@@ -351,6 +351,104 @@ export type Database = {
           },
         ]
       }
+      tournament_entries: {
+        Row: {
+          final_rank: number | null
+          id: string
+          joined_at: string
+          prize_awarded: number
+          total_bets: number
+          total_wager: number
+          tournament_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          final_rank?: number | null
+          id?: string
+          joined_at?: string
+          prize_awarded?: number
+          total_bets?: number
+          total_wager?: number
+          tournament_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          final_rank?: number | null
+          id?: string
+          joined_at?: string
+          prize_awarded?: number
+          total_bets?: number
+          total_wager?: number
+          tournament_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_entries_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournaments: {
+        Row: {
+          capacity: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          ends_at: string
+          finalized_at: string | null
+          game_id: string | null
+          id: string
+          is_active: boolean
+          min_bet: number
+          name: string
+          prize_distribution: Json
+          prize_pool: number
+          starts_at: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at: string
+          finalized_at?: string | null
+          game_id?: string | null
+          id?: string
+          is_active?: boolean
+          min_bet?: number
+          name: string
+          prize_distribution?: Json
+          prize_pool?: number
+          starts_at: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string
+          finalized_at?: string | null
+          game_id?: string | null
+          id?: string
+          is_active?: boolean
+          min_bet?: number
+          name?: string
+          prize_distribution?: Json
+          prize_pool?: number
+          starts_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           admin_note: string | null
@@ -555,6 +653,37 @@ export type Database = {
           wagering_required: number
         }[]
       }
+      finalize_tournament: {
+        Args: { _tournament_id: string }
+        Returns: {
+          paid_users: number
+          total_paid: number
+        }[]
+      }
+      get_tournament_leaderboard: {
+        Args: { _limit?: number; _tournament_id: string }
+        Returns: {
+          display_name: string
+          prize: number
+          rank: number
+          total_bets: number
+          total_wager: number
+          user_id: string
+          username: string
+        }[]
+      }
+      get_wager_leaderboard: {
+        Args: { _limit?: number; _period: string }
+        Returns: {
+          display_name: string
+          rank: number
+          total_bets: number
+          total_wager: number
+          user_id: string
+          username: string
+          vip_tier: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -562,6 +691,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      join_tournament: { Args: { _tournament_id: string }; Returns: string }
       preview_daily_bonuses: {
         Args: never
         Returns: {
