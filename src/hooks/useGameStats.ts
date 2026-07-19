@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 export type GameId =
   | "dice" | "crash" | "mines" | "coinflip" | "plinko" | "wheel" | "limbo"
   | "chicken-road" | "tower" | "lucky-card" | "shell-game" | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
-  | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat";
+  | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat" | "sic-bo";
 
 export type GameStats = {
   wins: number;
