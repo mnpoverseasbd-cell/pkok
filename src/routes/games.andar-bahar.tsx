@@ -308,5 +308,3 @@ function Pile({
   );
 }
 
-// Silence unused var warnings for optional effects
-void useEffect;
