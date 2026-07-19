@@ -15,13 +15,15 @@ import {
   fairDragonTiger,
   fairTeenPatti,
   fairSevenUpDown,
+  fairBaccarat,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
   | "dice" | "limbo" | "crash" | "coinflip" | "wheel" | "plinko" | "mines"
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
-  | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down";
+  | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat";
+
 
 export type VerifyPrefill = {
   serverSeed?: string;
