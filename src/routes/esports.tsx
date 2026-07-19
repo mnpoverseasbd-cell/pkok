@@ -56,6 +56,7 @@ const myGames: OriginalGame[] = [
   { slug: "hi-lo",            name: "Hi-Lo",             nameBn: "হাই-লো",            provider: "ASIK", poster: imgPoker,       status: "live", to: "/games/hi-lo" },
   { slug: "color-prediction", name: "Color Prediction",  nameBn: "কালার প্রেডিকশন",   provider: "ASIK", poster: imgRoulette,    status: "live", to: "/games/color-prediction" },
   { slug: "andar-bahar",      name: "Andar Bahar",       nameBn: "আন্দর বাহার",       provider: "ASIK", poster: imgBaccarat,    status: "live", to: "/games/andar-bahar" },
+  { slug: "dragon-tiger",     name: "Dragon Tiger",      nameBn: "ড্রাগন টাইগার",     provider: "ASIK", poster: imgPoker,       status: "live", to: "/games/dragon-tiger" },
 ];
 
 function MyGamesPage() {

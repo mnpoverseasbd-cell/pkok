@@ -12,13 +12,14 @@ import {
   fairPlinko,
   fairMines,
   fairAndarBahar,
+  fairDragonTiger,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
   | "dice" | "limbo" | "crash" | "coinflip" | "wheel" | "plinko" | "mines"
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
-  | "andar-bahar";
+  | "andar-bahar" | "dragon-tiger";
 
 export type VerifyPrefill = {
   serverSeed?: string;
@@ -184,6 +185,16 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           const SUITS = ["♠","♥","♦","♣"];
           const card = (c: number) => `${RANKS[c % 13]}${SUITS[Math.floor(c / 13)]}`;
           outcome = `Joker=${card(r.joker)} · Winner=${r.winner === "A" ? "Andar" : "Bahar"} · Cards drawn=${r.cardsDrawn}`;
+          break;
+        }
+        case "dragon-tiger": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 52);
+          const r = await fairDragonTiger(serverSeed, clientSeed, nonce);
+          const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+          const SUITS = ["♠","♥","♦","♣"];
+          const card = (c: number) => `${RANKS[c % 13]}${SUITS[Math.floor(c / 13)]}`;
+          const w = r.winner === "TIE" ? "Tie" : r.winner === "D" ? "Dragon" : "Tiger";
+          outcome = `Dragon=${card(r.dragon)} · Tiger=${card(r.tiger)} · Winner=${w}`;
           break;
         }
       }
