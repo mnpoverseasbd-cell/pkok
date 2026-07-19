@@ -131,6 +131,7 @@ function KenoGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="keno" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="keno" /></div>
     </GameShell>
   );
 }
