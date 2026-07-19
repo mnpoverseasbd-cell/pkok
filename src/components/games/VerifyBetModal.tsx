@@ -271,6 +271,9 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+      }
+
+
 
 
       setResult({
