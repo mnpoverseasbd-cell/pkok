@@ -85,9 +85,10 @@ function ScratchCardGame() {
         recordMyBet({ game: "scratch-card", bet, multiplier: 0, payout: 0 });
         try { sfxBust(); } catch {}
       }
+      pf.consume(`grid → ${mult > 0 ? `${mult}×` : "no match"}`);
       setBusy(false);
     }
-  }, [cells, revealed, bet, edge, credit, record]);
+  }, [cells, revealed, bet, edge, credit, record, pf]);
 
   return (
     <GameShell title="Scratch Card" emoji="🎟️" gameKey="scratch-card">
