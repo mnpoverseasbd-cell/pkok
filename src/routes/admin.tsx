@@ -2107,3 +2107,148 @@ function TournamentEditor({ value, onCancel, onSave }: { value: Partial<Tourney>
     </div>
   );
 }
+
+// ============ Admin Notifications ============
+import { adminBroadcast, adminListNotifications, adminDeleteNotification } from "@/lib/notifications.functions";
+
+function AdminNotifications() {
+  const list = useServerFn(adminListNotifications);
+  const send = useServerFn(adminBroadcast);
+  const del = useServerFn(adminDeleteNotification);
+
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [link, setLink] = useState("");
+  const [category, setCategory] = useState("system");
+  const [sending, setSending] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { notifications } = await list();
+      setRows(notifications);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "লোড ব্যর্থ");
+    } finally {
+      setLoading(false);
+    }
+  }, [list]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function handleSend() {
+    if (!title.trim()) return toast.error("Title দিন");
+    setSending(true);
+    try {
+      await send({ data: { title, body: body || null, link: link || null, category } });
+      toast.success("📢 ব্রডকাস্ট পাঠানো হয়েছে");
+      setTitle(""); setBody(""); setLink("");
+      load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "ব্যর্থ");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm("ডিলিট করবেন?")) return;
+    try {
+      await del({ data: { id } });
+      setRows((prev) => prev.filter((r) => r.id !== id));
+      toast.success("ডিলিট হয়েছে");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "ব্যর্থ");
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center gap-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-pink-600 text-white shadow-md">
+            <Bell className="h-4 w-4" />
+          </div>
+          <div>
+            <div className="text-base font-black text-slate-900">Broadcast পাঠান</div>
+            <div className="text-xs text-slate-500">সব ইউজারের নোটিফিকেশনে পাঠানো হবে</div>
+          </div>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          <Input placeholder="Title (e.g. 🎉 নতুন প্রোমো লাইভ)" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <select value={category} onChange={(e) => setCategory(e.target.value)} className="h-10 rounded-md border border-slate-200 px-3 text-sm">
+            <option value="system">System</option>
+            <option value="bonus">Bonus / Promo</option>
+            <option value="vip">VIP</option>
+            <option value="wallet">Wallet</option>
+          </select>
+          <Input placeholder="Link (optional, e.g. /promotions)" value={link} onChange={(e) => setLink(e.target.value)} className="md:col-span-2" />
+          <textarea
+            placeholder="Body message (optional)"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={3}
+            className="md:col-span-2 rounded-md border border-slate-200 px-3 py-2 text-sm"
+          />
+        </div>
+        <div className="mt-4 flex justify-end">
+          <Button onClick={handleSend} disabled={sending} className="bg-gradient-to-r from-fuchsia-500 to-pink-600 text-white">
+            {sending ? "পাঠাচ্ছি…" : "📢 Broadcast পাঠান"}
+          </Button>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <div className="text-sm font-black text-slate-900">সাম্প্রতিক নোটিফিকেশন ({rows.length})</div>
+          <Button size="sm" variant="outline" onClick={load}><RefreshCw className="h-3 w-3 mr-1" /> Refresh</Button>
+        </div>
+        <div className="max-h-[500px] overflow-auto">
+          {loading ? (
+            <div className="p-8 text-center text-sm text-slate-400">লোড হচ্ছে…</div>
+          ) : rows.length === 0 ? (
+            <div className="p-8 text-center text-sm text-slate-400">এখনো কোনো নোটিফিকেশন নেই</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>When</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((r) => (
+                  <TableRow key={r.id}>
+                    <TableCell>
+                      {r.is_broadcast ? (
+                        <span className="rounded-full bg-fuchsia-100 px-2 py-0.5 text-[10px] font-bold text-fuchsia-700">📢 Broadcast</span>
+                      ) : (
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">Personal</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="max-w-[400px]">
+                      <div className="text-sm font-bold text-slate-900">{r.title}</div>
+                      {r.body && <div className="text-xs text-slate-500 truncate">{r.body}</div>}
+                    </TableCell>
+                    <TableCell><span className="text-xs font-semibold uppercase text-slate-600">{r.category}</span></TableCell>
+                    <TableCell className="text-xs text-slate-500">{new Date(r.created_at).toLocaleString()}</TableCell>
+                    <TableCell className="text-right">
+                      <Button size="sm" variant="outline" onClick={() => handleDelete(r.id)}>
+                        <Trash2 className="h-3 w-3 text-rose-500" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
