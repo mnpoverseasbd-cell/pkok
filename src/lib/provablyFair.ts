@@ -350,8 +350,39 @@ export async function fairBaccarat(
 }
 
 
-
-
+/**
+ * Sic Bo: roll 3 dice (1..6 each). Sum in 3..18.
+ * Common bets:
+ *  - Small (sum 4..10, NOT triple) → 1.95×
+ *  - Big   (sum 11..17, NOT triple) → 1.95×
+ *  - Odd   (odd sum, NOT triple)    → 1.95×
+ *  - Even  (even sum, NOT triple)   → 1.95×
+ *  - Any Triple (all 3 dice equal)  → 8×  (higher variance)
+ *  - Specific Triple 1..6           → 150× (rarer)
+ */
+export async function fairSicBo(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<{
+  d1: number; d2: number; d3: number;
+  sum: number;
+  isTriple: boolean;
+  tripleFace: number | null;
+  size: "SMALL" | "BIG" | null; // null on triple
+  parity: "ODD" | "EVEN" | null; // null on triple
+}> {
+  const [f1, f2, f3] = await fairFloats(serverSeed, clientSeed, nonce, 3);
+  const d1 = 1 + Math.floor(f1 * 6);
+  const d2 = 1 + Math.floor(f2 * 6);
+  const d3 = 1 + Math.floor(f3 * 6);
+  const sum = d1 + d2 + d3;
+  const isTriple = d1 === d2 && d2 === d3;
+  const tripleFace = isTriple ? d1 : null;
+  const size = isTriple ? null : sum >= 11 ? "BIG" : "SMALL";
+  const parity = isTriple ? null : sum % 2 === 0 ? "EVEN" : "ODD";
+  return { d1, d2, d3, sum, isTriple, tripleFace, size, parity };
+}
 
 
 // ---- Seed generation ---------------------------------------------------------
