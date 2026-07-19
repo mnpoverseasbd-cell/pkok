@@ -58,6 +58,7 @@ import { Route as GamesChickenRoadRouteImport } from './routes/games.chicken-roa
 import { Route as GamesBlackjackRouteImport } from './routes/games.blackjack'
 import { Route as GamesBaccaratRouteImport } from './routes/games.baccarat'
 import { Route as GamesAndarBaharRouteImport } from './routes/games.andar-bahar'
+import { Route as Games32CardsRouteImport } from './routes/games.32-cards'
 import { Route as ApiPublicHooksVipDailyRouteImport } from './routes/api/public/hooks/vip-daily'
 
 const WalletRoute = WalletRouteImport.update({
@@ -305,6 +306,11 @@ const GamesAndarBaharRoute = GamesAndarBaharRouteImport.update({
   path: '/games/andar-bahar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Games32CardsRoute = Games32CardsRouteImport.update({
+  id: '/games/32-cards',
+  path: '/games/32-cards',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksVipDailyRoute = ApiPublicHooksVipDailyRouteImport.update({
   id: '/api/public/hooks/vip-daily',
   path: '/api/public/hooks/vip-daily',
@@ -337,6 +343,7 @@ export interface FileRoutesByFullPath {
   '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
+  '/games/32-cards': typeof Games32CardsRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/baccarat': typeof GamesBaccaratRoute
   '/games/blackjack': typeof GamesBlackjackRoute
@@ -389,6 +396,7 @@ export interface FileRoutesByTo {
   '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
+  '/games/32-cards': typeof Games32CardsRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/baccarat': typeof GamesBaccaratRoute
   '/games/blackjack': typeof GamesBlackjackRoute
@@ -442,6 +450,7 @@ export interface FileRoutesById {
   '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
+  '/games/32-cards': typeof Games32CardsRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/baccarat': typeof GamesBaccaratRoute
   '/games/blackjack': typeof GamesBlackjackRoute
@@ -496,6 +505,7 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/vip'
     | '/wallet'
+    | '/games/32-cards'
     | '/games/andar-bahar'
     | '/games/baccarat'
     | '/games/blackjack'
@@ -548,6 +558,7 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/vip'
     | '/wallet'
+    | '/games/32-cards'
     | '/games/andar-bahar'
     | '/games/baccarat'
     | '/games/blackjack'
@@ -600,6 +611,7 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/vip'
     | '/wallet'
+    | '/games/32-cards'
     | '/games/andar-bahar'
     | '/games/baccarat'
     | '/games/blackjack'
@@ -653,6 +665,7 @@ export interface RootRouteChildren {
   TournamentsRoute: typeof TournamentsRoute
   VipRoute: typeof VipRoute
   WalletRoute: typeof WalletRoute
+  Games32CardsRoute: typeof Games32CardsRoute
   GamesAndarBaharRoute: typeof GamesAndarBaharRoute
   GamesBaccaratRoute: typeof GamesBaccaratRoute
   GamesBlackjackRoute: typeof GamesBlackjackRoute
@@ -1025,6 +1038,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesAndarBaharRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/32-cards': {
+      id: '/games/32-cards'
+      path: '/games/32-cards'
+      fullPath: '/games/32-cards'
+      preLoaderRoute: typeof Games32CardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/vip-daily': {
       id: '/api/public/hooks/vip-daily'
       path: '/api/public/hooks/vip-daily'
@@ -1061,6 +1081,7 @@ const rootRouteChildren: RootRouteChildren = {
   TournamentsRoute: TournamentsRoute,
   VipRoute: VipRoute,
   WalletRoute: WalletRoute,
+  Games32CardsRoute: Games32CardsRoute,
   GamesAndarBaharRoute: GamesAndarBaharRoute,
   GamesBaccaratRoute: GamesBaccaratRoute,
   GamesBlackjackRoute: GamesBlackjackRoute,
