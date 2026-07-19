@@ -42,6 +42,7 @@ import { Route as GamesSicBoRouteImport } from './routes/games.sic-bo'
 import { Route as GamesShellGameRouteImport } from './routes/games.shell-game'
 import { Route as GamesSevenUpDownRouteImport } from './routes/games.seven-up-down'
 import { Route as GamesScratchCardRouteImport } from './routes/games.scratch-card'
+import { Route as GamesRouletteRouteImport } from './routes/games.roulette'
 import { Route as GamesPlinkoRouteImport } from './routes/games.plinko'
 import { Route as GamesMinesRouteImport } from './routes/games.mines'
 import { Route as GamesLuckyCardRouteImport } from './routes/games.lucky-card'
@@ -223,6 +224,11 @@ const GamesScratchCardRoute = GamesScratchCardRouteImport.update({
   path: '/games/scratch-card',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesRouletteRoute = GamesRouletteRouteImport.update({
+  id: '/games/roulette',
+  path: '/games/roulette',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesPlinkoRoute = GamesPlinkoRouteImport.update({
   id: '/games/plinko',
   path: '/games/plinko',
@@ -339,6 +345,7 @@ export interface FileRoutesByFullPath {
   '/games/lucky-card': typeof GamesLuckyCardRoute
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
+  '/games/roulette': typeof GamesRouletteRoute
   '/games/scratch-card': typeof GamesScratchCardRoute
   '/games/seven-up-down': typeof GamesSevenUpDownRoute
   '/games/shell-game': typeof GamesShellGameRoute
@@ -389,6 +396,7 @@ export interface FileRoutesByTo {
   '/games/lucky-card': typeof GamesLuckyCardRoute
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
+  '/games/roulette': typeof GamesRouletteRoute
   '/games/scratch-card': typeof GamesScratchCardRoute
   '/games/seven-up-down': typeof GamesSevenUpDownRoute
   '/games/shell-game': typeof GamesShellGameRoute
@@ -440,6 +448,7 @@ export interface FileRoutesById {
   '/games/lucky-card': typeof GamesLuckyCardRoute
   '/games/mines': typeof GamesMinesRoute
   '/games/plinko': typeof GamesPlinkoRoute
+  '/games/roulette': typeof GamesRouletteRoute
   '/games/scratch-card': typeof GamesScratchCardRoute
   '/games/seven-up-down': typeof GamesSevenUpDownRoute
   '/games/shell-game': typeof GamesShellGameRoute
@@ -492,6 +501,7 @@ export interface FileRouteTypes {
     | '/games/lucky-card'
     | '/games/mines'
     | '/games/plinko'
+    | '/games/roulette'
     | '/games/scratch-card'
     | '/games/seven-up-down'
     | '/games/shell-game'
@@ -542,6 +552,7 @@ export interface FileRouteTypes {
     | '/games/lucky-card'
     | '/games/mines'
     | '/games/plinko'
+    | '/games/roulette'
     | '/games/scratch-card'
     | '/games/seven-up-down'
     | '/games/shell-game'
@@ -592,6 +603,7 @@ export interface FileRouteTypes {
     | '/games/lucky-card'
     | '/games/mines'
     | '/games/plinko'
+    | '/games/roulette'
     | '/games/scratch-card'
     | '/games/seven-up-down'
     | '/games/shell-game'
@@ -643,6 +655,7 @@ export interface RootRouteChildren {
   GamesLuckyCardRoute: typeof GamesLuckyCardRoute
   GamesMinesRoute: typeof GamesMinesRoute
   GamesPlinkoRoute: typeof GamesPlinkoRoute
+  GamesRouletteRoute: typeof GamesRouletteRoute
   GamesScratchCardRoute: typeof GamesScratchCardRoute
   GamesSevenUpDownRoute: typeof GamesSevenUpDownRoute
   GamesShellGameRoute: typeof GamesShellGameRoute
@@ -887,6 +900,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesScratchCardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/roulette': {
+      id: '/games/roulette'
+      path: '/games/roulette'
+      fullPath: '/games/roulette'
+      preLoaderRoute: typeof GamesRouletteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/plinko': {
       id: '/games/plinko'
       path: '/games/plinko'
@@ -1035,6 +1055,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesLuckyCardRoute: GamesLuckyCardRoute,
   GamesMinesRoute: GamesMinesRoute,
   GamesPlinkoRoute: GamesPlinkoRoute,
+  GamesRouletteRoute: GamesRouletteRoute,
   GamesScratchCardRoute: GamesScratchCardRoute,
   GamesSevenUpDownRoute: GamesSevenUpDownRoute,
   GamesShellGameRoute: GamesShellGameRoute,
