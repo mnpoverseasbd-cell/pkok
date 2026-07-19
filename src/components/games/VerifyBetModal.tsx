@@ -17,6 +17,7 @@ import {
   fairSevenUpDown,
   fairBaccarat,
   fairSicBo,
+  fairRoulette,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -24,7 +25,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo";
+  | "sic-bo" | "roulette";
 
 
 export type VerifyPrefill = {
@@ -234,6 +235,12 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           const r = await fairSicBo(serverSeed, clientSeed, nonce);
           const label = r.isTriple ? `Triple ${r.tripleFace}` : `${r.size} · ${r.parity}`;
           outcome = `Dice = [${r.d1}, ${r.d2}, ${r.d3}] · Sum = ${r.sum} · ${label}`;
+          break;
+        }
+        case "roulette": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
+          const r = await fairRoulette(serverSeed, clientSeed, nonce);
+          outcome = `Pocket = ${r.pocket} · ${r.color}${r.pocket === 0 ? "" : ` · ${r.parity} · ${r.size} · Dozen ${r.dozen}`}`;
           break;
         }
       }
