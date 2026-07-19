@@ -40,6 +40,7 @@ function KenoGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("keno");
   const { data: cfg } = useGameConfig("keno");
+  const pf = useProvablyFair("keno");
   const edge = cfg?.house_edge ?? 0.05;
   const [bet, setBet] = useState(50);
   const [picks, setPicks] = useState<Set<number>>(new Set());
@@ -62,12 +63,12 @@ function KenoGame() {
     if (picks.size === 0) { setMsg("অন্তত ১টি সংখ্যা বাছুন"); return; }
     if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
     setBusy(true); setMsg(""); setDraws(new Set());
+    const floats = await fairFloats(pf.serverSeed, pf.clientSeed, pf.nonce, DRAWS);
     const remaining = Array.from({ length: POOL }, (_, i) => i + 1);
     const drawn = new Set<number>();
     for (let i = 0; i < DRAWS; i++) {
-      const idx = Math.floor(Math.random() * remaining.length);
+      const idx = Math.floor(floats[i] * remaining.length);
       drawn.add(remaining[idx]); remaining.splice(idx, 1);
-      // reveal incrementally
       // eslint-disable-next-line no-await-in-loop
       await new Promise((r) => setTimeout(r, 80));
       setDraws(new Set(drawn));
@@ -92,8 +93,9 @@ function KenoGame() {
       recordMyBet({ game: "keno", bet, multiplier: 0, payout: 0 });
       try { sfxBust(); } catch {}
     }
+    pf.consume(`hits=${hits}/${picks.size} · ${mult}×`);
     setBusy(false);
-  }, [busy, picks, bet, edge, placeBet, credit, record]);
+  }, [busy, picks, bet, edge, placeBet, credit, record, pf]);
 
   return (
     <GameShell title="Keno" emoji="🎱" gameKey="keno">
