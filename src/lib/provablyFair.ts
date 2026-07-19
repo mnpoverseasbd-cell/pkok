@@ -118,6 +118,51 @@ export async function fairMines(
   return arr.slice(0, count).sort((a, b) => a - b);
 }
 
+/**
+ * Andar Bahar: shuffle a 52-card deck, first card is the Joker (revealed).
+ * Deal alternately Bahar → Andar until a card matches the Joker's rank.
+ * Returns the joker index, the two piles built up to (and including) the match,
+ * and the winning side.
+ * Card encoding: 0..51 where rank = card % 13, suit = Math.floor(card / 13).
+ */
+export async function fairAndarBahar(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<{
+  joker: number;
+  andar: number[];
+  bahar: number[];
+  winner: "A" | "B";
+  cardsDrawn: number;
+}> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 52);
+  const deck = Array.from({ length: 52 }, (_, i) => i);
+  for (let i = 51; i > 0; i--) {
+    const j = Math.floor(floats[i] * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  const joker = deck[0];
+  const jokerRank = joker % 13;
+  const andar: number[] = [];
+  const bahar: number[] = [];
+  let winner: "A" | "B" = "B";
+  let pos = 1;
+  let drawn = 0;
+  while (pos < 52) {
+    const cb = deck[pos++];
+    bahar.push(cb);
+    drawn++;
+    if (cb % 13 === jokerRank) { winner = "B"; break; }
+    if (pos >= 52) break;
+    const ca = deck[pos++];
+    andar.push(ca);
+    drawn++;
+    if (ca % 13 === jokerRank) { winner = "A"; break; }
+  }
+  return { joker, andar, bahar, winner, cardsDrawn: drawn };
+}
+
 // ---- Seed generation ---------------------------------------------------------
 
 export function randomSeed(bytes: number = 32): string {
