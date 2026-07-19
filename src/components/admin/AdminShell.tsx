@@ -30,6 +30,7 @@ const NAV = [
   { k: "vip", label: "VIP Tiers", icon: Crown, color: "from-yellow-500 to-amber-500" },
   { k: "promos", label: "Promotions", icon: Gift, color: "from-rose-500 to-pink-600" },
   { k: "tournaments", label: "Tournaments", icon: Trophy, color: "from-fuchsia-500 to-violet-600" },
+  { k: "notifs", label: "Notifications", icon: Bell, color: "from-rose-500 to-pink-600" },
   { k: "reports", label: "Reports", icon: BarChart3, color: "from-fuchsia-500 to-pink-600" },
   { k: "flags", label: "Feature Flags", icon: Flag, color: "from-cyan-500 to-sky-600" },
   { k: "audit", label: "Audit Logs", icon: ShieldCheck, color: "from-slate-600 to-slate-800" },
