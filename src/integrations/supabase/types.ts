@@ -116,6 +116,71 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_reads: {
+        Row: {
+          notification_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          notification_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          notification_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_reads_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          category: string
+          created_at: string
+          id: string
+          is_broadcast: boolean
+          link: string | null
+          metadata: Json
+          read_at: string | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          body?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          is_broadcast?: boolean
+          link?: string | null
+          metadata?: Json
+          read_at?: string | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          body?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          is_broadcast?: boolean
+          link?: string | null
+          metadata?: Json
+          read_at?: string | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       payment_methods: {
         Row: {
           account_number: string
@@ -672,6 +737,7 @@ export type Database = {
           username: string
         }[]
       }
+      get_unread_notification_count: { Args: never; Returns: number }
       get_wager_leaderboard: {
         Args: { _limit?: number; _period: string }
         Returns: {
@@ -692,6 +758,22 @@ export type Database = {
         Returns: boolean
       }
       join_tournament: { Args: { _tournament_id: string }; Returns: string }
+      list_my_notifications: {
+        Args: { _limit?: number }
+        Returns: {
+          body: string
+          category: string
+          created_at: string
+          id: string
+          is_broadcast: boolean
+          is_read: boolean
+          link: string
+          metadata: Json
+          title: string
+        }[]
+      }
+      mark_all_notifications_read: { Args: never; Returns: undefined }
+      mark_notification_read: { Args: { _id: string }; Returns: undefined }
       preview_daily_bonuses: {
         Args: never
         Returns: {

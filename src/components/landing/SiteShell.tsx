@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Bell, ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, LogOut, Mail, MessageCircle, Radio, RefreshCw, Smartphone, Spade, Ticket, Trophy, User as UserIcon } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 import { toast } from "sonner";
 import { useAuth, useProfile, signOut } from "@/hooks/useAuth";
 import type { ComponentType, ReactNode } from "react";
@@ -281,10 +282,7 @@ function TopBar() {
 
               <Link to="/wallet" search={{ tab: "deposit" }} className="rounded-md bg-green-button px-3 py-1.5 font-bold text-[var(--background)]">{t("deposit")}</Link>
               <Link to="/wallet" search={{ tab: "withdraw" }} className="rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">{t("withdraw")}</Link>
-              <button type="button" title="ইনবক্স" className="relative grid h-8 w-8 place-items-center rounded-full bg-gold-button text-[var(--background)]">
-                <Mail className="h-4 w-4" />
-                <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--neon-pink)] px-1 text-[10px] font-bold text-white">5</span>
-              </button>
+              {user?.id && <NotificationBell userId={user.id} />}
               <ProfileMenu displayName={displayName} onSignOut={handleSignOut} />
               <button
                 onClick={handleSignOut}
