@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { GameShell, BetControls, GameFrame, ControlsPanel, PrimaryButton, MultDisplay } from "@/components/games/GameShell";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
+import { useProvablyFair } from "@/hooks/useProvablyFair";
+import { fairFloats } from "@/lib/provablyFair";
+import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
 import { recordMyBet } from "@/lib/liveFeed";
 import { sfxWin, sfxBust, sfxPeg } from "@/lib/sound";
