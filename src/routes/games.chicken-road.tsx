@@ -111,6 +111,7 @@ function ChickenRoadGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="chicken-road" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="chicken-road" /></div>
     </GameShell>
   );
 }
