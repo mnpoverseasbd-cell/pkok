@@ -144,6 +144,7 @@ function TowerGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="tower" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="tower" /></div>
     </GameShell>
   );
 }
