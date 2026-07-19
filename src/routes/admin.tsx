@@ -34,6 +34,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   flags: { title: "Feature Flags", subtitle: "রানটাইম ফিচার টগল করুন কোড ডিপ্লয় ছাড়াই" },
   reports: { title: "Reports", subtitle: "রেভিনিউ, GGR, top players — read-only analytics" },
   promos: { title: "Promotions", subtitle: "Deposit bonus, promo codes, wagering rules" },
+  tournaments: { title: "Tournaments", subtitle: "প্রাইজ পুল টুর্নামেন্ট তৈরি ও ফিনালাইজ করুন" },
 };
 
 function AdminPage() {
