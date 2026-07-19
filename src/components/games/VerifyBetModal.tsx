@@ -22,6 +22,10 @@ import {
   bjTotal,
   fair32Cards,
   t32CardLabel,
+  fairVideoPokerDeck,
+  evaluateVideoPokerHand,
+  VP_LABEL,
+  VP_PAYOUTS,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
