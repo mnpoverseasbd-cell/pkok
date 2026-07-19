@@ -45,6 +45,7 @@ import { Route as GamesLuckyCardRouteImport } from './routes/games.lucky-card'
 import { Route as GamesLimboRouteImport } from './routes/games.limbo'
 import { Route as GamesKenoRouteImport } from './routes/games.keno'
 import { Route as GamesHiLoRouteImport } from './routes/games.hi-lo'
+import { Route as GamesDragonTigerRouteImport } from './routes/games.dragon-tiger'
 import { Route as GamesDiceRouteImport } from './routes/games.dice'
 import { Route as GamesCrashRouteImport } from './routes/games.crash'
 import { Route as GamesColorPredictionRouteImport } from './routes/games.color-prediction'
@@ -233,6 +234,11 @@ const GamesHiLoRoute = GamesHiLoRouteImport.update({
   path: '/games/hi-lo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesDragonTigerRoute = GamesDragonTigerRouteImport.update({
+  id: '/games/dragon-tiger',
+  path: '/games/dragon-tiger',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesDiceRoute = GamesDiceRouteImport.update({
   id: '/games/dice',
   path: '/games/dice',
@@ -301,6 +307,7 @@ export interface FileRoutesByFullPath {
   '/games/color-prediction': typeof GamesColorPredictionRoute
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
+  '/games/dragon-tiger': typeof GamesDragonTigerRoute
   '/games/hi-lo': typeof GamesHiLoRoute
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
@@ -346,6 +353,7 @@ export interface FileRoutesByTo {
   '/games/color-prediction': typeof GamesColorPredictionRoute
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
+  '/games/dragon-tiger': typeof GamesDragonTigerRoute
   '/games/hi-lo': typeof GamesHiLoRoute
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
@@ -392,6 +400,7 @@ export interface FileRoutesById {
   '/games/color-prediction': typeof GamesColorPredictionRoute
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
+  '/games/dragon-tiger': typeof GamesDragonTigerRoute
   '/games/hi-lo': typeof GamesHiLoRoute
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
@@ -439,6 +448,7 @@ export interface FileRouteTypes {
     | '/games/color-prediction'
     | '/games/crash'
     | '/games/dice'
+    | '/games/dragon-tiger'
     | '/games/hi-lo'
     | '/games/keno'
     | '/games/limbo'
@@ -484,6 +494,7 @@ export interface FileRouteTypes {
     | '/games/color-prediction'
     | '/games/crash'
     | '/games/dice'
+    | '/games/dragon-tiger'
     | '/games/hi-lo'
     | '/games/keno'
     | '/games/limbo'
@@ -529,6 +540,7 @@ export interface FileRouteTypes {
     | '/games/color-prediction'
     | '/games/crash'
     | '/games/dice'
+    | '/games/dragon-tiger'
     | '/games/hi-lo'
     | '/games/keno'
     | '/games/limbo'
@@ -575,6 +587,7 @@ export interface RootRouteChildren {
   GamesColorPredictionRoute: typeof GamesColorPredictionRoute
   GamesCrashRoute: typeof GamesCrashRoute
   GamesDiceRoute: typeof GamesDiceRoute
+  GamesDragonTigerRoute: typeof GamesDragonTigerRoute
   GamesHiLoRoute: typeof GamesHiLoRoute
   GamesKenoRoute: typeof GamesKenoRoute
   GamesLimboRoute: typeof GamesLimboRoute
@@ -843,6 +856,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesHiLoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/dragon-tiger': {
+      id: '/games/dragon-tiger'
+      path: '/games/dragon-tiger'
+      fullPath: '/games/dragon-tiger'
+      preLoaderRoute: typeof GamesDragonTigerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/dice': {
       id: '/games/dice'
       path: '/games/dice'
@@ -927,6 +947,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesColorPredictionRoute: GamesColorPredictionRoute,
   GamesCrashRoute: GamesCrashRoute,
   GamesDiceRoute: GamesDiceRoute,
+  GamesDragonTigerRoute: GamesDragonTigerRoute,
   GamesHiLoRoute: GamesHiLoRoute,
   GamesKenoRoute: GamesKenoRoute,
   GamesLimboRoute: GamesLimboRoute,
