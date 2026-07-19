@@ -15,7 +15,7 @@ import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users 
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 
 
-const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit", "flags", "reports"]).optional() });
+const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit", "flags", "reports", "promos"]).optional() });
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — PKOK" }, { name: "robots", content: "noindex" }] }),
@@ -33,6 +33,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   audit: { title: "Audit Logs", subtitle: "সমস্ত অ্যাডমিন অ্যাকশনের রেকর্ড" },
   flags: { title: "Feature Flags", subtitle: "রানটাইম ফিচার টগল করুন কোড ডিপ্লয় ছাড়াই" },
   reports: { title: "Reports", subtitle: "রেভিনিউ, GGR, top players — read-only analytics" },
+  promos: { title: "Promotions", subtitle: "Deposit bonus, promo codes, wagering rules" },
 };
 
 function AdminPage() {
@@ -86,6 +87,7 @@ function AdminPage() {
       {tab === "audit" && <AdminAuditLogs />}
       {tab === "flags" && <AdminFeatureFlags />}
       {tab === "reports" && <AdminReports />}
+      {tab === "promos" && <AdminPromotions />}
     </AdminShell>
   );
 }
@@ -1563,5 +1565,262 @@ function TopTable({ rows, loading, label }: { rows: { display: string; amount: n
         )}
       </TableBody>
     </Table>
+  );
+}
+
+// ================= PROMOTIONS =================
+type PromoRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  code: string | null;
+  type: "deposit_bonus" | "free_credit" | "cashback";
+  bonus_pct: number;
+  bonus_fixed: number;
+  min_deposit: number;
+  max_bonus: number;
+  wagering_multiplier: number;
+  max_uses_total: number | null;
+  max_uses_per_user: number;
+  valid_from: string | null;
+  valid_until: string | null;
+  is_active: boolean;
+  created_at: string;
+};
+
+const emptyPromo: Partial<PromoRow> = {
+  name: "",
+  description: "",
+  code: "",
+  type: "deposit_bonus",
+  bonus_pct: 100,
+  bonus_fixed: 0,
+  min_deposit: 500,
+  max_bonus: 5000,
+  wagering_multiplier: 20,
+  max_uses_total: null,
+  max_uses_per_user: 1,
+  is_active: true,
+};
+
+function AdminPromotions() {
+  const [rows, setRows] = useState<PromoRow[]>([]);
+  const [claims, setClaims] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<Partial<PromoRow> | null>(null);
+
+
+
+  // Load using dynamic import so we don't add a top-level import earlier
+  const load = useCallback(async () => {
+    setLoading(true);
+    const [{ data: p }, { data: c }] = await Promise.all([
+      supabase.from("promotions").select("*").order("created_at", { ascending: false }),
+      supabase
+        .from("user_promotions")
+        .select("id,user_id,promotion_id,granted_amount,wagering_required,wagering_progress,status,created_at,promotions(name,code,type)")
+        .order("created_at", { ascending: false })
+        .limit(100),
+    ]);
+    setRows((p ?? []) as any);
+    setClaims((c ?? []) as any);
+    setLoading(false);
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const save = async (payload: Partial<PromoRow>) => {
+    try {
+      const mod = await import("@/lib/promotions.functions");
+      await mod.adminUpsertPromotion({ data: payload as any });
+      toast.success("Promotion saved");
+      setEditing(null);
+      load();
+    } catch (e: any) {
+      toast.error(e.message || "Save failed");
+    }
+  };
+  const remove = async (id: string) => {
+    if (!confirm("Delete this promotion?")) return;
+    try {
+      const mod = await import("@/lib/promotions.functions");
+      await mod.adminDeletePromotion({ data: { id } });
+      toast.success("Deleted");
+      load();
+    } catch (e: any) {
+      toast.error(e.message || "Delete failed");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-sm text-slate-500">
+            {loading ? "Loading…" : `${rows.length} promotion${rows.length === 1 ? "" : "s"}`}
+          </div>
+        </div>
+        <Button onClick={() => setEditing({ ...emptyPromo })} className="bg-gradient-to-r from-rose-500 to-pink-600 text-white">
+          <Plus className="mr-1 h-4 w-4" /> New Promotion
+        </Button>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Code</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead className="text-right">Bonus</TableHead>
+              <TableHead className="text-right">Min Dep</TableHead>
+              <TableHead className="text-right">Wager ×</TableHead>
+              <TableHead>Uses</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.length === 0 && !loading && (
+              <TableRow><TableCell colSpan={9} className="text-center text-sm text-slate-400 py-10">কোনো প্রোমো নেই</TableCell></TableRow>
+            )}
+            {rows.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell className="font-semibold">{r.name}</TableCell>
+                <TableCell><code className="text-xs bg-slate-100 rounded px-1.5 py-0.5">{r.code || "—"}</code></TableCell>
+                <TableCell><span className="text-xs font-bold uppercase text-slate-600">{r.type.replace("_", " ")}</span></TableCell>
+                <TableCell className="text-right text-xs">{r.type === "free_credit" ? `৳${r.bonus_fixed}` : `${r.bonus_pct}%`}{r.max_bonus > 0 && r.type !== "free_credit" ? ` (max ৳${r.max_bonus})` : ""}</TableCell>
+                <TableCell className="text-right text-xs">৳{r.min_deposit}</TableCell>
+                <TableCell className="text-right text-xs">{r.wagering_multiplier}×</TableCell>
+                <TableCell className="text-xs text-slate-500">{r.max_uses_total ?? "∞"} / user {r.max_uses_per_user}</TableCell>
+                <TableCell>
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${r.is_active ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
+                    {r.is_active ? "ACTIVE" : "OFF"}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right space-x-1">
+                  <Button size="sm" variant="ghost" onClick={() => setEditing(r)}>Edit</Button>
+                  <Button size="sm" variant="ghost" onClick={() => remove(r.id)} className="text-rose-600">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {editing && <PromoEditor value={editing} onCancel={() => setEditing(null)} onSave={save} />}
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-sm font-black text-slate-800">Recent Claims</h3>
+          <span className="text-xs text-slate-500">{claims.length} recent</span>
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>When</TableHead>
+                <TableHead>User</TableHead>
+                <TableHead>Promo</TableHead>
+                <TableHead className="text-right">Granted</TableHead>
+                <TableHead className="text-right">Wagering</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {claims.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-xs text-slate-400 py-6">No claims yet</TableCell></TableRow>}
+              {claims.map((c) => (
+                <TableRow key={c.id}>
+                  <TableCell className="text-xs text-slate-500">{new Date(c.created_at).toLocaleString()}</TableCell>
+                  <TableCell className="text-xs font-mono">{String(c.user_id).slice(0, 8)}</TableCell>
+                  <TableCell className="text-xs">{c.promotions?.name} {c.promotions?.code && <code className="ml-1 text-[10px] text-slate-400">{c.promotions.code}</code>}</TableCell>
+                  <TableCell className="text-right text-xs font-bold">৳{Number(c.granted_amount).toLocaleString("en-BD")}</TableCell>
+                  <TableCell className="text-right text-xs">{Number(c.wagering_progress).toFixed(0)} / {Number(c.wagering_required).toFixed(0)}</TableCell>
+                  <TableCell><span className={`text-[10px] font-bold uppercase ${c.status === "completed" ? "text-emerald-600" : c.status === "active" ? "text-blue-600" : "text-slate-400"}`}>{c.status}</span></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PromoEditor({ value, onCancel, onSave }: { value: Partial<PromoRow>; onCancel: () => void; onSave: (v: Partial<PromoRow>) => void }) {
+  const [f, setF] = useState<Partial<PromoRow>>(value);
+  const set = (k: keyof PromoRow, v: any) => setF((p) => ({ ...p, [k]: v }));
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 overflow-y-auto">
+      <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl my-8">
+        <h3 className="text-lg font-black text-slate-900">{f.id ? "Edit Promotion" : "New Promotion"}</h3>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <label className="col-span-2 text-xs font-bold text-slate-600">
+            Name
+            <Input value={f.name ?? ""} onChange={(e) => set("name", e.target.value)} />
+          </label>
+          <label className="col-span-2 text-xs font-bold text-slate-600">
+            Description
+            <Input value={f.description ?? ""} onChange={(e) => set("description", e.target.value)} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Type
+            <select
+              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+              value={f.type ?? "deposit_bonus"}
+              onChange={(e) => set("type", e.target.value)}
+            >
+              <option value="deposit_bonus">Deposit Bonus</option>
+              <option value="free_credit">Free Credit</option>
+              <option value="cashback">Cashback</option>
+            </select>
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Promo Code (optional)
+            <Input value={f.code ?? ""} onChange={(e) => set("code", e.target.value.toUpperCase())} placeholder="WELCOME100" />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Bonus %
+            <Input type="number" value={f.bonus_pct ?? 0} onChange={(e) => set("bonus_pct", Number(e.target.value))} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Fixed Amount (৳)
+            <Input type="number" value={f.bonus_fixed ?? 0} onChange={(e) => set("bonus_fixed", Number(e.target.value))} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Min Deposit (৳)
+            <Input type="number" value={f.min_deposit ?? 0} onChange={(e) => set("min_deposit", Number(e.target.value))} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Max Bonus (৳, 0 = no cap)
+            <Input type="number" value={f.max_bonus ?? 0} onChange={(e) => set("max_bonus", Number(e.target.value))} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Wagering ×
+            <Input type="number" value={f.wagering_multiplier ?? 0} onChange={(e) => set("wagering_multiplier", Number(e.target.value))} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Max Uses Total (blank = ∞)
+            <Input type="number" value={f.max_uses_total ?? ""} onChange={(e) => set("max_uses_total", e.target.value ? Number(e.target.value) : null)} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Max Uses Per User
+            <Input type="number" value={f.max_uses_per_user ?? 1} onChange={(e) => set("max_uses_per_user", Number(e.target.value))} />
+          </label>
+          <label className="col-span-2 flex items-center gap-2 text-xs font-bold text-slate-600">
+            <input type="checkbox" checked={f.is_active ?? true} onChange={(e) => set("is_active", e.target.checked)} />
+            Active
+          </label>
+        </div>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="outline" onClick={onCancel}>Cancel</Button>
+          <Button onClick={() => onSave(f)} className="bg-gradient-to-r from-rose-500 to-pink-600 text-white">
+            Save
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
