@@ -1826,3 +1826,282 @@ function PromoEditor({ value, onCancel, onSave }: { value: Partial<PromoRow>; on
     </div>
   );
 }
+
+// ============ Tournaments ============
+type Tourney = {
+  id: string;
+  name: string;
+  description: string | null;
+  game_id: string | null;
+  starts_at: string;
+  ends_at: string;
+  prize_pool: number;
+  prize_distribution: number[];
+  min_bet: number;
+  capacity: number | null;
+  is_active: boolean;
+  finalized_at: string | null;
+  created_at: string;
+};
+
+const emptyTourney: Partial<Tourney> = {
+  name: "",
+  description: "",
+  game_id: null,
+  starts_at: new Date().toISOString().slice(0, 16),
+  ends_at: new Date(Date.now() + 7 * 86400_000).toISOString().slice(0, 16),
+  prize_pool: 10000,
+  prize_distribution: [50, 30, 20],
+  min_bet: 10,
+  capacity: null,
+  is_active: true,
+};
+
+function AdminTournaments() {
+  const [rows, setRows] = useState<Tourney[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<Partial<Tourney> | null>(null);
+  const [finalizing, setFinalizing] = useState<string | null>(null);
+  const [entriesFor, setEntriesFor] = useState<string | null>(null);
+  const [entries, setEntries] = useState<any[]>([]);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("tournaments").select("*").order("starts_at", { ascending: false });
+    setRows((data ?? []) as any);
+    setLoading(false);
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const save = async (payload: Partial<Tourney>) => {
+    try {
+      const mod = await import("@/lib/tournaments.functions");
+      await mod.adminUpsertTournament({
+        data: {
+          ...(payload as any),
+          starts_at: new Date(payload.starts_at as string).toISOString(),
+          ends_at: new Date(payload.ends_at as string).toISOString(),
+          prize_pool: Number(payload.prize_pool ?? 0),
+          min_bet: Number(payload.min_bet ?? 0),
+          prize_distribution: (payload.prize_distribution ?? []).map(Number),
+        },
+      });
+      toast.success("Tournament saved");
+      setEditing(null);
+      load();
+    } catch (e: any) {
+      toast.error(e.message || "Save failed");
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Delete this tournament? Entries will be removed too.")) return;
+    try {
+      const mod = await import("@/lib/tournaments.functions");
+      await mod.adminDeleteTournament({ data: { id } });
+      toast.success("Deleted");
+      load();
+    } catch (e: any) {
+      toast.error(e.message || "Delete failed");
+    }
+  };
+
+  const finalize = async (t: Tourney) => {
+    if (!confirm(`Finalize "${t.name}"? Prizes will be credited to top ranks and the tournament will close.`)) return;
+    setFinalizing(t.id);
+    try {
+      const mod = await import("@/lib/tournaments.functions");
+      const r = await mod.adminFinalizeTournament({ data: { id: t.id } });
+      toast.success(`Paid ৳${r.totalPaid.toLocaleString("en-BD")} to ${r.paidUsers} winner(s)`);
+      load();
+    } catch (e: any) {
+      toast.error(e.message || "Finalize failed");
+    } finally {
+      setFinalizing(null);
+    }
+  };
+
+  const openEntries = async (t: Tourney) => {
+    setEntriesFor(t.id);
+    try {
+      const mod = await import("@/lib/tournaments.functions");
+      const r = await mod.getTournamentLeaderboard({ data: { tournamentId: t.id, limit: 100 } });
+      setEntries(r.rows as any);
+    } catch { setEntries([]); }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-slate-500">{loading ? "Loading…" : `${rows.length} tournament${rows.length === 1 ? "" : "s"}`}</div>
+        <Button onClick={() => setEditing({ ...emptyTourney })} className="bg-gradient-to-r from-fuchsia-500 to-violet-600 text-white">
+          <Plus className="mr-1 h-4 w-4" /> New Tournament
+        </Button>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Game</TableHead>
+              <TableHead>Window</TableHead>
+              <TableHead className="text-right">Prize Pool</TableHead>
+              <TableHead>Distribution</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.length === 0 && !loading && (
+              <TableRow><TableCell colSpan={7} className="text-center text-sm text-slate-400 py-10">কোনো টুর্নামেন্ট নেই</TableCell></TableRow>
+            )}
+            {rows.map((r) => {
+              const now = Date.now();
+              const s = new Date(r.starts_at).getTime();
+              const e = new Date(r.ends_at).getTime();
+              const status = r.finalized_at ? "finalized" : !r.is_active ? "off" : now > e ? "ended" : now < s ? "upcoming" : "live";
+              const badgeColor: Record<string, string> = {
+                live: "bg-emerald-50 text-emerald-700",
+                upcoming: "bg-blue-50 text-blue-700",
+                ended: "bg-amber-50 text-amber-700",
+                finalized: "bg-slate-100 text-slate-500",
+                off: "bg-slate-100 text-slate-500",
+              };
+              return (
+                <TableRow key={r.id}>
+                  <TableCell>
+                    <div className="font-semibold text-slate-800">{r.name}</div>
+                    {r.description && <div className="text-[11px] text-slate-400 line-clamp-1">{r.description}</div>}
+                  </TableCell>
+                  <TableCell className="text-xs">{r.game_id ?? <span className="text-slate-400">সব</span>}</TableCell>
+                  <TableCell className="text-[11px] text-slate-500">
+                    {new Date(r.starts_at).toLocaleString()}<br />→ {new Date(r.ends_at).toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-right font-black text-fuchsia-600">৳{Number(r.prize_pool).toLocaleString("en-BD")}</TableCell>
+                  <TableCell className="text-[11px] text-slate-600">{(r.prize_distribution ?? []).join("/")}%</TableCell>
+                  <TableCell>
+                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${badgeColor[status]}`}>{status}</span>
+                  </TableCell>
+                  <TableCell className="text-right space-x-1">
+                    <Button size="sm" variant="ghost" onClick={() => openEntries(r)}>Entries</Button>
+                    <Button size="sm" variant="ghost" onClick={() => setEditing(r)}>Edit</Button>
+                    {status !== "finalized" && (status === "ended" || status === "live") && (
+                      <Button size="sm" variant="ghost" onClick={() => finalize(r)} disabled={finalizing === r.id} className="text-emerald-600">
+                        {finalizing === r.id ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : "Finalize"}
+                      </Button>
+                    )}
+                    <Button size="sm" variant="ghost" onClick={() => remove(r.id)} className="text-rose-600">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+
+      {editing && <TournamentEditor value={editing} onCancel={() => setEditing(null)} onSave={save} />}
+
+      {entriesFor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 overflow-y-auto" onClick={() => setEntriesFor(null)}>
+          <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-black text-slate-900 mb-3">Live Leaderboard</h3>
+            {entries.length === 0 ? (
+              <p className="text-center text-sm text-slate-400 py-6">এখনও কোনো এনট্রি নেই।</p>
+            ) : (
+              <Table>
+                <TableHeader><TableRow><TableHead>Rank</TableHead><TableHead>User</TableHead><TableHead className="text-right">Wager</TableHead><TableHead className="text-right">Bets</TableHead><TableHead className="text-right">Prize</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {entries.map((r: any) => (
+                    <TableRow key={r.user_id}>
+                      <TableCell className="font-bold">#{r.rank}</TableCell>
+                      <TableCell className="text-xs">{r.display_name ?? r.username ?? String(r.user_id).slice(0,8)}</TableCell>
+                      <TableCell className="text-right text-xs">৳{Number(r.total_wager).toLocaleString("en-BD")}</TableCell>
+                      <TableCell className="text-right text-xs">{r.total_bets}</TableCell>
+                      <TableCell className="text-right text-xs font-bold text-emerald-600">{r.prize > 0 ? `৳${Number(r.prize).toLocaleString("en-BD")}` : "—"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+            <div className="mt-4 flex justify-end"><Button variant="outline" onClick={() => setEntriesFor(null)}>Close</Button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TournamentEditor({ value, onCancel, onSave }: { value: Partial<Tourney>; onCancel: () => void; onSave: (v: Partial<Tourney>) => void }) {
+  const [f, setF] = useState<Partial<Tourney>>({
+    ...value,
+    starts_at: value.starts_at ? new Date(value.starts_at).toISOString().slice(0, 16) : "",
+    ends_at: value.ends_at ? new Date(value.ends_at).toISOString().slice(0, 16) : "",
+    prize_distribution: value.prize_distribution ?? [50, 30, 20],
+  });
+  const set = (k: keyof Tourney, v: any) => setF((p) => ({ ...p, [k]: v }));
+  const distStr = (f.prize_distribution ?? []).join(",");
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 overflow-y-auto">
+      <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl my-8">
+        <h3 className="text-lg font-black text-slate-900">{f.id ? "Edit Tournament" : "New Tournament"}</h3>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <label className="col-span-2 text-xs font-bold text-slate-600">
+            Name
+            <Input value={f.name ?? ""} onChange={(e) => set("name", e.target.value)} />
+          </label>
+          <label className="col-span-2 text-xs font-bold text-slate-600">
+            Description
+            <Input value={f.description ?? ""} onChange={(e) => set("description", e.target.value)} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Game ID (blank = সব গেম)
+            <Input value={f.game_id ?? ""} onChange={(e) => set("game_id", e.target.value.trim() || null)} placeholder="crash, mines, plinko…" />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Min Bet (৳)
+            <Input type="number" value={f.min_bet ?? 0} onChange={(e) => set("min_bet", Number(e.target.value))} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Starts At
+            <Input type="datetime-local" value={f.starts_at as string} onChange={(e) => set("starts_at", e.target.value)} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Ends At
+            <Input type="datetime-local" value={f.ends_at as string} onChange={(e) => set("ends_at", e.target.value)} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Prize Pool (৳)
+            <Input type="number" value={f.prize_pool ?? 0} onChange={(e) => set("prize_pool", Number(e.target.value))} />
+          </label>
+          <label className="text-xs font-bold text-slate-600">
+            Capacity (blank = ∞)
+            <Input type="number" value={f.capacity ?? ""} onChange={(e) => set("capacity", e.target.value ? Number(e.target.value) : null)} />
+          </label>
+          <label className="col-span-2 text-xs font-bold text-slate-600">
+            Prize Distribution % (কমা দিয়ে, sum = 100)
+            <Input
+              value={distStr}
+              onChange={(e) => set("prize_distribution", e.target.value.split(",").map((v) => Number(v.trim())).filter((n) => !isNaN(n)))}
+              placeholder="50, 30, 20"
+            />
+            <span className="mt-1 block text-[10px] text-slate-400">
+              Sum: {(f.prize_distribution ?? []).reduce((a, b) => a + Number(b || 0), 0)}%
+            </span>
+          </label>
+          <label className="col-span-2 flex items-center gap-2 text-xs font-bold text-slate-600">
+            <input type="checkbox" checked={f.is_active ?? true} onChange={(e) => set("is_active", e.target.checked)} />
+            Active
+          </label>
+        </div>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="outline" onClick={onCancel}>Cancel</Button>
+          <Button onClick={() => onSave(f)} className="bg-gradient-to-r from-fuchsia-500 to-violet-600 text-white">Save</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
