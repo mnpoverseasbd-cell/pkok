@@ -58,6 +58,7 @@ const myGames: OriginalGame[] = [
   { slug: "andar-bahar",      name: "Andar Bahar",       nameBn: "আন্দর বাহার",       provider: "ASIK", poster: imgBaccarat,    status: "live", to: "/games/andar-bahar" },
   { slug: "dragon-tiger",     name: "Dragon Tiger",      nameBn: "ড্রাগন টাইগার",     provider: "ASIK", poster: imgPoker,       status: "live", to: "/games/dragon-tiger" },
   { slug: "teen-patti",       name: "Teen Patti",        nameBn: "তিন পাত্তি",         provider: "ASIK", poster: imgPoker,       status: "live", to: "/games/teen-patti" },
+  { slug: "seven-up-down",    name: "7 Up 7 Down",       nameBn: "৭ আপ ৭ ডাউন",       provider: "ASIK", poster: dicePoster,     status: "live", to: "/games/seven-up-down" },
 ];
 
 function MyGamesPage() {

@@ -258,6 +258,23 @@ export async function fairTeenPatti(
   };
 }
 
+/**
+ * 7 Up 7 Down: roll two dice (1..6 each). Sum in 2..12.
+ * <7 = Down, =7 = Lucky Seven, >7 = Up.
+ */
+export async function fairSevenUpDown(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<{ d1: number; d2: number; sum: number; result: "UP" | "DOWN" | "SEVEN" }> {
+  const [f1, f2] = await fairFloats(serverSeed, clientSeed, nonce, 2);
+  const d1 = 1 + Math.floor(f1 * 6);
+  const d2 = 1 + Math.floor(f2 * 6);
+  const sum = d1 + d2;
+  const result: "UP" | "DOWN" | "SEVEN" = sum === 7 ? "SEVEN" : sum > 7 ? "UP" : "DOWN";
+  return { d1, d2, sum, result };
+}
+
 
 
 

@@ -14,13 +14,14 @@ import {
   fairAndarBahar,
   fairDragonTiger,
   fairTeenPatti,
+  fairSevenUpDown,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
   | "dice" | "limbo" | "crash" | "coinflip" | "wheel" | "plinko" | "mines"
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
-  | "andar-bahar" | "dragon-tiger" | "teen-patti";
+  | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down";
 
 export type VerifyPrefill = {
   serverSeed?: string;
@@ -206,6 +207,12 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           const card = (c: number) => `${RANKS[c % 13]}${SUITS[Math.floor(c / 13)]}`;
           const w = r.winner === "TIE" ? "Tie" : r.winner === "P" ? "Player" : "Dealer";
           outcome = `Player=[${r.player.map(card).join(" ")}] (${r.playerCategory}) · Dealer=[${r.dealer.map(card).join(" ")}] (${r.dealerCategory}) · Winner=${w}`;
+          break;
+        }
+        case "seven-up-down": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 2);
+          const r = await fairSevenUpDown(serverSeed, clientSeed, nonce);
+          outcome = `Dice = [${r.d1}, ${r.d2}] · Sum = ${r.sum} · Result = ${r.result === "SEVEN" ? "Lucky 7" : r.result === "UP" ? "Up (>7)" : "Down (<7)"}`;
           break;
         }
       }
