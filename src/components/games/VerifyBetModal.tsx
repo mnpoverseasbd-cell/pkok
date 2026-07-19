@@ -258,7 +258,19 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           outcome = `Deal order: P=[${initP.map(card).join(" ")}] (${bjTotal(initP).total}) · D=[${initD.map(card).join(" ")}?] (upcard ${bjTotal([initD[0]]).total}) · Next cards: ${deck.slice(4, 10).map(card).join(" ")}...`;
           break;
         }
-      }
+        case "32-cards": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 32);
+          const r = await fair32Cards(serverSeed, clientSeed, nonce);
+          const label = (p: "A"|"B"|"C"|"D") => ({A:"Player 8",B:"Player 9",C:"Player 10",D:"Player 11"}[p]);
+          const w = r.winner === "TIE" ? "Tie (House wins)" : label(r.winner);
+          outcome = `Totals: P8=${r.totals.A} · P9=${r.totals.B} · P10=${r.totals.C} · P11=${r.totals.D} · Winner=${w}`;
+          extra = (
+            <div className="mt-2 text-[10px] text-white/50">
+              First 4 cards dealt: {r.deck.slice(0, 4).map(t32CardLabel).join(" · ")}
+            </div>
+          );
+          break;
+        }
 
 
       setResult({
