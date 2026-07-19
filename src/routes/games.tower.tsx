@@ -28,6 +28,7 @@ function TowerGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("tower");
   const { data: cfg } = useGameConfig("tower");
+  const pf = useProvablyFair("tower");
   const edge = cfg?.house_edge ?? 0.03;
   const [bet, setBet] = useState(50);
   const [floor, setFloor] = useState(0);
@@ -42,13 +43,13 @@ function TowerGame() {
   );
   const nextMult = +((1 / SURVIVE) ** (floor + 1) * (1 - edge)).toFixed(3);
 
-  const start = useCallback(() => {
+  const start = useCallback(async () => {
     if (active) return;
     if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
-    const st: number[] = [];
-    for (let i = 0; i < FLOORS; i++) st.push(Math.floor(Math.random() * TILES));
+    const floats = await fairFloats(pf.serverSeed, pf.clientSeed, pf.nonce, FLOORS);
+    const st: number[] = floats.map((f) => Math.floor(f * TILES));
     setSafeTiles(st); setFloor(0); setReveals([]); setActive(true); setMsg("");
-  }, [active, bet, placeBet]);
+  }, [active, bet, placeBet, pf.serverSeed, pf.clientSeed, pf.nonce]);
 
   const pick = useCallback((tile: number) => {
     if (!active) return;
@@ -65,6 +66,7 @@ function TowerGame() {
         record({ pnl, multiplier: nextMult });
         pushMultiplierHistory("tower", nextMult);
         recordMyBet({ game: "tower", bet, multiplier: nextMult, payout: win });
+        pf.consume(`top · ${nextMult}×`);
         try { sfxWin(nextMult); } catch {}
       } else {
         setFloor(nextFloor);
@@ -76,9 +78,10 @@ function TowerGame() {
       record({ pnl, multiplier: 0 });
       pushMultiplierHistory("tower", 0);
       recordMyBet({ game: "tower", bet, multiplier: 0, payout: 0 });
+      pf.consume(`bust @ floor ${floor}`);
       try { sfxBust(); } catch {}
     }
-  }, [active, safeTiles, floor, bet, nextMult, credit, record]);
+  }, [active, safeTiles, floor, bet, nextMult, credit, record, pf]);
 
   const cashout = useCallback(() => {
     if (!active || floor === 0) return;
@@ -90,8 +93,9 @@ function TowerGame() {
     record({ pnl, multiplier: mult });
     pushMultiplierHistory("tower", mult);
     recordMyBet({ game: "tower", bet, multiplier: mult, payout: win });
+    pf.consume(`cashout @ floor ${floor} · ${mult}×`);
     try { sfxWin(mult); } catch {}
-  }, [active, floor, bet, mult, credit, record]);
+  }, [active, floor, bet, mult, credit, record, pf]);
 
   return (
     <GameShell title="Tower · Royal Step" emoji="🗼" gameKey="tower">
