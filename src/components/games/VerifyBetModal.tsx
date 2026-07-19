@@ -229,6 +229,13 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           outcome = `Player=[${r.player.map(card).join(" ")}]=${r.playerTotal} · Banker=[${r.banker.map(card).join(" ")}]=${r.bankerTotal} · Winner=${w}${r.isNatural ? " (Natural)" : ""}`;
           break;
         }
+        case "sic-bo": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 3);
+          const r = await fairSicBo(serverSeed, clientSeed, nonce);
+          const label = r.isTriple ? `Triple ${r.tripleFace}` : `${r.size} · ${r.parity}`;
+          outcome = `Dice = [${r.d1}, ${r.d2}, ${r.d3}] · Sum = ${r.sum} · ${label}`;
+          break;
+        }
       }
 
 
