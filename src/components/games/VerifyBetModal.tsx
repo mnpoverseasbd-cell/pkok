@@ -294,6 +294,21 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "slots": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 15);
+          const r = await fairSlots(serverSeed, clientSeed, nonce);
+          const rowStr = (row: number) => r.grid[row].map((s) => SLOT_SYMBOLS[s]).join(" ");
+          const winStr = r.wins.length
+            ? r.wins.map((w) => `L${w.line}: ${w.count}× ${SLOT_SYMBOLS[w.symbol]} = ${w.payout}×`).join(" · ")
+            : "No winning line";
+          outcome = `Grid:\n  ${rowStr(0)}\n  ${rowStr(1)}\n  ${rowStr(2)}\n${winStr} · Total = ${r.totalMultiplier.toFixed(2)}× (÷10 paylines)`;
+          extra = (
+            <div className="mt-2 text-[10px] text-white/50">
+              15 floats → symbol per cell via weighted CDF [30, 25, 18, 14, 9, 4]. Lines pay left-to-right, 3+ in a row.
+            </div>
+          );
+          break;
+        }
       }
 
 
