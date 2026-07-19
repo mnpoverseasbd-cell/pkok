@@ -37,6 +37,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesIndexRouteImport } from './routes/games.index'
 import { Route as GamesWheelRouteImport } from './routes/games.wheel'
 import { Route as GamesTowerRouteImport } from './routes/games.tower'
+import { Route as GamesTeenPattiRouteImport } from './routes/games.teen-patti'
 import { Route as GamesShellGameRouteImport } from './routes/games.shell-game'
 import { Route as GamesScratchCardRouteImport } from './routes/games.scratch-card'
 import { Route as GamesPlinkoRouteImport } from './routes/games.plinko'
@@ -194,6 +195,11 @@ const GamesTowerRoute = GamesTowerRouteImport.update({
   path: '/games/tower',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesTeenPattiRoute = GamesTeenPattiRouteImport.update({
+  id: '/games/teen-patti',
+  path: '/games/teen-patti',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesShellGameRoute = GamesShellGameRouteImport.update({
   id: '/games/shell-game',
   path: '/games/shell-game',
@@ -316,6 +322,7 @@ export interface FileRoutesByFullPath {
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/scratch-card': typeof GamesScratchCardRoute
   '/games/shell-game': typeof GamesShellGameRoute
+  '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games/': typeof GamesIndexRoute
@@ -362,6 +369,7 @@ export interface FileRoutesByTo {
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/scratch-card': typeof GamesScratchCardRoute
   '/games/shell-game': typeof GamesShellGameRoute
+  '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games': typeof GamesIndexRoute
@@ -409,6 +417,7 @@ export interface FileRoutesById {
   '/games/plinko': typeof GamesPlinkoRoute
   '/games/scratch-card': typeof GamesScratchCardRoute
   '/games/shell-game': typeof GamesShellGameRoute
+  '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games/': typeof GamesIndexRoute
@@ -457,6 +466,7 @@ export interface FileRouteTypes {
     | '/games/plinko'
     | '/games/scratch-card'
     | '/games/shell-game'
+    | '/games/teen-patti'
     | '/games/tower'
     | '/games/wheel'
     | '/games/'
@@ -503,6 +513,7 @@ export interface FileRouteTypes {
     | '/games/plinko'
     | '/games/scratch-card'
     | '/games/shell-game'
+    | '/games/teen-patti'
     | '/games/tower'
     | '/games/wheel'
     | '/games'
@@ -549,6 +560,7 @@ export interface FileRouteTypes {
     | '/games/plinko'
     | '/games/scratch-card'
     | '/games/shell-game'
+    | '/games/teen-patti'
     | '/games/tower'
     | '/games/wheel'
     | '/games/'
@@ -596,6 +608,7 @@ export interface RootRouteChildren {
   GamesPlinkoRoute: typeof GamesPlinkoRoute
   GamesScratchCardRoute: typeof GamesScratchCardRoute
   GamesShellGameRoute: typeof GamesShellGameRoute
+  GamesTeenPattiRoute: typeof GamesTeenPattiRoute
   GamesTowerRoute: typeof GamesTowerRoute
   GamesWheelRoute: typeof GamesWheelRoute
   GamesIndexRoute: typeof GamesIndexRoute
@@ -800,6 +813,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesTowerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/teen-patti': {
+      id: '/games/teen-patti'
+      path: '/games/teen-patti'
+      fullPath: '/games/teen-patti'
+      preLoaderRoute: typeof GamesTeenPattiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/shell-game': {
       id: '/games/shell-game'
       path: '/games/shell-game'
@@ -956,6 +976,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesPlinkoRoute: GamesPlinkoRoute,
   GamesScratchCardRoute: GamesScratchCardRoute,
   GamesShellGameRoute: GamesShellGameRoute,
+  GamesTeenPattiRoute: GamesTeenPattiRoute,
   GamesTowerRoute: GamesTowerRoute,
   GamesWheelRoute: GamesWheelRoute,
   GamesIndexRoute: GamesIndexRoute,
