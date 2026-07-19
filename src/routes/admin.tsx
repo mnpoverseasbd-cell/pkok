@@ -15,7 +15,7 @@ import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users 
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 
 
-const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit", "flags", "reports", "promos", "tournaments"]).optional() });
+const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit", "flags", "reports", "promos", "tournaments", "notifs"]).optional() });
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — PKOK" }, { name: "robots", content: "noindex" }] }),
@@ -35,6 +35,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   reports: { title: "Reports", subtitle: "রেভিনিউ, GGR, top players — read-only analytics" },
   promos: { title: "Promotions", subtitle: "Deposit bonus, promo codes, wagering rules" },
   tournaments: { title: "Tournaments", subtitle: "প্রাইজ পুল টুর্নামেন্ট তৈরি ও ফিনালাইজ করুন" },
+  notifs: { title: "Notifications", subtitle: "ব্রডকাস্ট মেসেজ পাঠান ও ম্যানেজ করুন" },
 };
 
 function AdminPage() {
@@ -90,6 +91,7 @@ function AdminPage() {
       {tab === "reports" && <AdminReports />}
       {tab === "promos" && <AdminPromotions />}
       {tab === "tournaments" && <AdminTournaments />}
+      {tab === "notifs" && <AdminNotifications />}
     </AdminShell>
   );
 }
