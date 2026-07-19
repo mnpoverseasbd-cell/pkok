@@ -99,6 +99,7 @@ function ColorPredictionGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="color-prediction" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="color-prediction" /></div>
     </GameShell>
   );
 }
