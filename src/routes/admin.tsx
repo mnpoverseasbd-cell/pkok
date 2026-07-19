@@ -33,6 +33,7 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
   audit: { title: "Audit Logs", subtitle: "সমস্ত অ্যাডমিন অ্যাকশনের রেকর্ড" },
   flags: { title: "Feature Flags", subtitle: "রানটাইম ফিচার টগল করুন কোড ডিপ্লয় ছাড়াই" },
   reports: { title: "Reports", subtitle: "রেভিনিউ, GGR, top players — read-only analytics" },
+  promos: { title: "Promotions", subtitle: "Deposit bonus, promo codes, wagering rules" },
 };
 
 function AdminPage() {
