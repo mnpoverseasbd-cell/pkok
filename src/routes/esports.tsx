@@ -9,6 +9,13 @@ import coinflipPoster from "@/assets/games/coinflip.jpg";
 import plinkoPoster from "@/assets/games/plinko.jpg";
 import wheelPoster from "@/assets/games/wheel.jpg";
 import limboPoster from "@/assets/games/limbo.jpg";
+import imgAviator from "@/assets/game-aviator.jpg";
+import imgPharaoh from "@/assets/game-pharaoh.jpg";
+import imgPoker from "@/assets/game-poker.jpg";
+import imgBaccarat from "@/assets/game-baccarat.jpg";
+import imgCandy from "@/assets/game-candy.jpg";
+import imgSlot1 from "@/assets/game-slot1.jpg";
+import imgRoulette from "@/assets/game-roulette.jpg";
 
 export const Route = createFileRoute("/esports")({
   head: () => ({
@@ -33,13 +40,21 @@ type OriginalGame = {
 };
 
 const myGames: OriginalGame[] = [
-  { slug: "dice",     name: "Lucky Dice",       nameBn: "লাকি ডাইস",       provider: "ASIK", poster: dicePoster,     status: "live", to: "/games/dice" },
-  { slug: "crash",    name: "Crash",            nameBn: "ক্র্যাশ",          provider: "ASIK", poster: crashPoster,    status: "live", to: "/games/crash" },
-  { slug: "mines",    name: "Mines",            nameBn: "মাইনস",           provider: "ASIK", poster: minesPoster,    status: "live", to: "/games/mines" },
-  { slug: "coinflip", name: "Coin Flip",        nameBn: "কয়েন ফ্লিপ",       provider: "ASIK", poster: coinflipPoster, status: "live", to: "/games/coinflip" },
-  { slug: "plinko",   name: "Plinko",           nameBn: "প্লিঙ্কো",         provider: "ASIK", poster: plinkoPoster,   status: "live", to: "/games/plinko" },
-  { slug: "wheel",    name: "Wheel of Fortune", nameBn: "হুইল অফ ফরচুন",   provider: "ASIK", poster: wheelPoster,    status: "live", to: "/games/wheel" },
-  { slug: "limbo",    name: "Limbo",            nameBn: "লিম্বো",           provider: "ASIK", poster: limboPoster,    status: "live", to: "/games/limbo" },
+  { slug: "dice",             name: "Lucky Dice",        nameBn: "লাকি ডাইস",         provider: "ASIK", poster: dicePoster,     status: "live", to: "/games/dice" },
+  { slug: "crash",            name: "Crash",             nameBn: "ক্র্যাশ",            provider: "ASIK", poster: crashPoster,    status: "live", to: "/games/crash" },
+  { slug: "mines",            name: "Mines",             nameBn: "মাইনস",             provider: "ASIK", poster: minesPoster,    status: "live", to: "/games/mines" },
+  { slug: "coinflip",         name: "Coin Flip",         nameBn: "কয়েন ফ্লিপ",         provider: "ASIK", poster: coinflipPoster, status: "live", to: "/games/coinflip" },
+  { slug: "plinko",           name: "Plinko",            nameBn: "প্লিঙ্কো",           provider: "ASIK", poster: plinkoPoster,   status: "live", to: "/games/plinko" },
+  { slug: "wheel",            name: "Wheel of Fortune",  nameBn: "হুইল অফ ফরচুন",     provider: "ASIK", poster: wheelPoster,    status: "live", to: "/games/wheel" },
+  { slug: "limbo",            name: "Limbo",             nameBn: "লিম্বো",             provider: "ASIK", poster: limboPoster,    status: "live", to: "/games/limbo" },
+  { slug: "chicken-road",     name: "Chicken Road",      nameBn: "চিকেন রোড",         provider: "ASIK", poster: imgAviator,     status: "live", to: "/games/chicken-road" },
+  { slug: "tower",            name: "Tower — Royal Step",nameBn: "টাওয়ার",            provider: "ASIK", poster: imgPharaoh,     status: "live", to: "/games/tower" },
+  { slug: "lucky-card",       name: "Lucky Card",        nameBn: "লাকি কার্ড",         provider: "ASIK", poster: imgPoker,       status: "live", to: "/games/lucky-card" },
+  { slug: "shell-game",       name: "Shell Game",        nameBn: "শেল গেম",           provider: "ASIK", poster: imgBaccarat,    status: "live", to: "/games/shell-game" },
+  { slug: "scratch-card",     name: "Scratch Card",      nameBn: "স্ক্র্যাচ কার্ড",     provider: "ASIK", poster: imgCandy,       status: "live", to: "/games/scratch-card" },
+  { slug: "keno",             name: "Keno",              nameBn: "কেনো",              provider: "ASIK", poster: imgSlot1,       status: "live", to: "/games/keno" },
+  { slug: "hi-lo",            name: "Hi-Lo",             nameBn: "হাই-লো",            provider: "ASIK", poster: imgPoker,       status: "live", to: "/games/hi-lo" },
+  { slug: "color-prediction", name: "Color Prediction",  nameBn: "কালার প্রেডিকশন",   provider: "ASIK", poster: imgRoulette,    status: "live", to: "/games/color-prediction" },
 ];
 
 function MyGamesPage() {
