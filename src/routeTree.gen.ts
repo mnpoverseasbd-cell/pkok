@@ -38,6 +38,7 @@ import { Route as GamesIndexRouteImport } from './routes/games.index'
 import { Route as GamesWheelRouteImport } from './routes/games.wheel'
 import { Route as GamesTowerRouteImport } from './routes/games.tower'
 import { Route as GamesTeenPattiRouteImport } from './routes/games.teen-patti'
+import { Route as GamesSicBoRouteImport } from './routes/games.sic-bo'
 import { Route as GamesShellGameRouteImport } from './routes/games.shell-game'
 import { Route as GamesSevenUpDownRouteImport } from './routes/games.seven-up-down'
 import { Route as GamesScratchCardRouteImport } from './routes/games.scratch-card'
@@ -202,6 +203,11 @@ const GamesTeenPattiRoute = GamesTeenPattiRouteImport.update({
   path: '/games/teen-patti',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesSicBoRoute = GamesSicBoRouteImport.update({
+  id: '/games/sic-bo',
+  path: '/games/sic-bo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesShellGameRoute = GamesShellGameRouteImport.update({
   id: '/games/shell-game',
   path: '/games/shell-game',
@@ -336,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/games/scratch-card': typeof GamesScratchCardRoute
   '/games/seven-up-down': typeof GamesSevenUpDownRoute
   '/games/shell-game': typeof GamesShellGameRoute
+  '/games/sic-bo': typeof GamesSicBoRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/wheel': typeof GamesWheelRoute
@@ -385,6 +392,7 @@ export interface FileRoutesByTo {
   '/games/scratch-card': typeof GamesScratchCardRoute
   '/games/seven-up-down': typeof GamesSevenUpDownRoute
   '/games/shell-game': typeof GamesShellGameRoute
+  '/games/sic-bo': typeof GamesSicBoRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/wheel': typeof GamesWheelRoute
@@ -435,6 +443,7 @@ export interface FileRoutesById {
   '/games/scratch-card': typeof GamesScratchCardRoute
   '/games/seven-up-down': typeof GamesSevenUpDownRoute
   '/games/shell-game': typeof GamesShellGameRoute
+  '/games/sic-bo': typeof GamesSicBoRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/wheel': typeof GamesWheelRoute
@@ -486,6 +495,7 @@ export interface FileRouteTypes {
     | '/games/scratch-card'
     | '/games/seven-up-down'
     | '/games/shell-game'
+    | '/games/sic-bo'
     | '/games/teen-patti'
     | '/games/tower'
     | '/games/wheel'
@@ -535,6 +545,7 @@ export interface FileRouteTypes {
     | '/games/scratch-card'
     | '/games/seven-up-down'
     | '/games/shell-game'
+    | '/games/sic-bo'
     | '/games/teen-patti'
     | '/games/tower'
     | '/games/wheel'
@@ -584,6 +595,7 @@ export interface FileRouteTypes {
     | '/games/scratch-card'
     | '/games/seven-up-down'
     | '/games/shell-game'
+    | '/games/sic-bo'
     | '/games/teen-patti'
     | '/games/tower'
     | '/games/wheel'
@@ -634,6 +646,7 @@ export interface RootRouteChildren {
   GamesScratchCardRoute: typeof GamesScratchCardRoute
   GamesSevenUpDownRoute: typeof GamesSevenUpDownRoute
   GamesShellGameRoute: typeof GamesShellGameRoute
+  GamesSicBoRoute: typeof GamesSicBoRoute
   GamesTeenPattiRoute: typeof GamesTeenPattiRoute
   GamesTowerRoute: typeof GamesTowerRoute
   GamesWheelRoute: typeof GamesWheelRoute
@@ -846,6 +859,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesTeenPattiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/sic-bo': {
+      id: '/games/sic-bo'
+      path: '/games/sic-bo'
+      fullPath: '/games/sic-bo'
+      preLoaderRoute: typeof GamesSicBoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/shell-game': {
       id: '/games/shell-game'
       path: '/games/shell-game'
@@ -1018,6 +1038,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesScratchCardRoute: GamesScratchCardRoute,
   GamesSevenUpDownRoute: GamesSevenUpDownRoute,
   GamesShellGameRoute: GamesShellGameRoute,
+  GamesSicBoRoute: GamesSicBoRoute,
   GamesTeenPattiRoute: GamesTeenPattiRoute,
   GamesTowerRoute: GamesTowerRoute,
   GamesWheelRoute: GamesWheelRoute,
