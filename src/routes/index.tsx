@@ -191,17 +191,62 @@ const popupImagesUser = [
 function Index() {
   return (
     <SiteShell>
-      <PromoPopup />
-      <HeroBanner />
-      <TickerBar />
-      <HotGamesSection />
-      <JackpotSection />
-      <MainCategoryCards />
-      <AppSection />
-      <ServiceStats />
-      <FeatureList />
-      
+      <CosmicBackdrop />
+      <div className="relative z-10">
+        <PromoPopup />
+        <HeroBanner />
+        <TickerBar />
+        <HotGamesSection />
+        <JackpotSection />
+        <MainCategoryCards />
+        <AppSection />
+        <ServiceStats />
+        <FeatureList />
+      </div>
     </SiteShell>
+  );
+}
+
+function CosmicBackdrop() {
+  const stars = Array.from({ length: 60 }, (_, i) => {
+    const seed = i * 9973;
+    return {
+      x: (seed % 100),
+      y: ((seed * 7) % 100),
+      s: ((seed * 3) % 3) + 1,
+      o: 0.2 + ((seed % 7) / 12),
+    };
+  });
+  return (
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0520] via-[#0d0830]/60 to-transparent" />
+      <div
+        className="absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(139,92,246,0.18), transparent 70%)" }}
+      />
+      <div
+        className="absolute top-1/3 -right-32 h-[600px] w-[600px] rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(236,72,153,0.14), transparent 70%)" }}
+      />
+      <div
+        className="absolute bottom-0 left-0 h-[500px] w-[500px] rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12), transparent 70%)" }}
+      />
+      {stars.map((s, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full bg-white"
+          style={{
+            left: `${s.x}%`,
+            top: `${s.y}%`,
+            width: `${s.s}px`,
+            height: `${s.s}px`,
+            opacity: s.o,
+            boxShadow: "0 0 6px rgba(255,255,255,0.5)",
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -550,12 +595,12 @@ function HotGamesSection() {
 
   return (
     <section className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 sm:py-9 lg:px-8 lg:py-10">
-      <div className="rounded-2xl inset-panel p-4 sm:p-5 lg:p-6">
+      <div className="relative overflow-hidden rounded-3xl border border-violet-400/30 bg-gradient-to-br from-[#12082d]/80 via-[#1a0d3d]/60 to-[#0a0520]/80 p-4 shadow-[0_0_60px_-20px_rgba(139,92,246,0.6)] backdrop-blur sm:p-5 lg:p-6">
         <div className="mb-4 flex items-center justify-between gap-2 sm:mb-5">
-          <div className="flex items-center gap-2 text-xl font-black text-[var(--neon-gold)] sm:text-2xl lg:text-[26px]">
-            <Flame className="h-6 w-6 sm:h-7 sm:w-7" /> {t("hotGames")}
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/15 to-orange-500/10 px-4 py-1.5 text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 sm:text-xl lg:text-2xl">
+            <Flame className="h-5 w-5 text-amber-300 sm:h-6 sm:w-6" /> {t("hotGames")}
           </div>
-          <button className="rounded-full bg-green-button px-5 py-2 text-base font-black text-[var(--background)] sm:px-7 sm:py-2.5 sm:text-lg">{t("more")}</button>
+          <button className="rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-5 py-2 text-sm font-black text-black shadow-[0_0_20px_-5px_rgba(16,185,129,0.7)] hover:from-emerald-300 hover:to-teal-400 sm:px-7 sm:py-2.5 sm:text-base">{t("more")}</button>
         </div>
 
 
@@ -620,23 +665,24 @@ function JackpotSection() {
     <section className="mx-auto max-w-[1440px] px-4 pb-8 sm:px-6 sm:pb-10 lg:px-8 lg:pb-12">
       <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:gap-6">
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl"><Gift className="h-5 w-5 sm:h-6 sm:w-6" /> {t("promo")}</div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-fuchsia-400/40 bg-gradient-to-r from-fuchsia-500/15 to-pink-500/10 px-4 py-1.5 text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-200 to-pink-200 sm:text-xl lg:text-2xl"><Gift className="h-5 w-5 text-fuchsia-300 sm:h-6 sm:w-6" /> {t("promo")}</div>
           {promoCards.map((card) => (
-            <div key={card.titleKey} className="overflow-hidden rounded-xl border border-[var(--neon-green)]/45 bg-black/35">
+            <div key={card.titleKey} className="overflow-hidden rounded-2xl border border-violet-400/30 bg-black/40 shadow-[0_0_30px_-15px_rgba(139,92,246,0.6)] transition hover:border-violet-400/60 hover:shadow-[0_0_40px_-10px_rgba(139,92,246,0.7)]">
               <img src={card.image} alt={t(card.titleKey)} width={1024} height={512} loading="lazy" className="block w-full" />
             </div>
           ))}
         </div>
 
 
-        <div className="overflow-hidden rounded-2xl border border-[var(--neon-green)]/45 bg-[radial-gradient(ellipse_at_top,rgba(22,80,54,0.6),rgba(4,18,12,0.95))] p-3 text-center">
+        <div className="relative overflow-hidden rounded-3xl border border-violet-400/40 bg-gradient-to-br from-[#1a0b3d] via-[#2d1465] to-[#0b1a4a] p-3 text-center shadow-[0_0_60px_-15px_rgba(139,92,246,0.7)]">
+          <div className="pointer-events-none absolute -top-20 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(245,158,11,0.3), transparent 70%)" }} />
           <img
             src={jackpotHero}
             alt="Jackpots"
             width={1024}
             height={768}
             loading="lazy"
-            className="mx-auto -mb-2 w-full max-w-[440px] object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.55)]"
+            className="relative mx-auto -mb-2 w-full max-w-[440px] object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.55)]"
           />
           <JackpotCounter />
         </div>
@@ -663,20 +709,20 @@ function LatestWinners() {
   const loop = [...winners, ...winners];
   return (
     <div>
-      <div className="mb-4 flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl"><Trophy className="h-5 w-5 sm:h-6 sm:w-6" /> {t("latestWinners")}</div>
-      <div className="relative h-[400px] overflow-hidden rounded-xl border border-[var(--neon-green)]/40 bg-black/35 p-3">
+      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-gradient-to-r from-emerald-500/15 to-teal-500/10 px-4 py-1.5 text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-teal-200 sm:text-xl lg:text-2xl"><Trophy className="h-5 w-5 text-emerald-300 sm:h-6 sm:w-6" /> {t("latestWinners")}</div>
+      <div className="relative h-[400px] overflow-hidden rounded-2xl border border-violet-400/30 bg-gradient-to-b from-[#12082d]/70 to-black/50 p-3 shadow-[0_0_40px_-15px_rgba(139,92,246,0.6)] backdrop-blur">
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-black/70 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-black/70 to-transparent" />
         <div className="flex flex-col gap-2 animate-marquee-y">
           {loop.map((entry, i) => (
-            <div key={`${entry.name}-${i}`} className="flex shrink-0 items-center gap-3 rounded-lg border border-[var(--neon-green)]/30 bg-black/55 p-2.5">
-              <img src={entry.image} alt="" loading="lazy" decoding="async" className="h-11 w-11 shrink-0 rounded-md object-cover" />
+            <div key={`${entry.name}-${i}`} className="flex shrink-0 items-center gap-3 rounded-xl border border-violet-400/20 bg-gradient-to-r from-white/[0.04] to-black/40 p-2.5 backdrop-blur transition hover:border-emerald-400/40">
+              <img src={entry.image} alt="" loading="lazy" decoding="async" className="h-11 w-11 shrink-0 rounded-lg object-cover ring-1 ring-white/10" />
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-semibold text-white">{entry.name}</div>
-                <div className="truncate text-xs text-foreground/65">{t("justWonIn")} <span className="text-[var(--neon-gold)]">{entry.game}</span></div>
+                <div className="truncate text-xs text-foreground/65">{t("justWonIn")} <span className="text-fuchsia-300">{entry.game}</span></div>
               </div>
-              <div className="shrink-0 text-base font-black text-[var(--neon-gold)]">{entry.amount}</div>
+              <div className="shrink-0 text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200">{entry.amount}</div>
             </div>
           ))}
 
@@ -758,7 +804,7 @@ function AppSection() {
   const { t } = useLang();
   return (
     <section className="mx-auto max-w-[1440px] px-4 pb-10 sm:px-6 sm:pb-12 lg:px-8 lg:pb-14">
-      <div className="grid items-center gap-8 rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-6 sm:p-8 lg:grid-cols-[1.1fr_1fr] lg:p-10">
+      <div className="relative grid items-center gap-8 overflow-hidden rounded-3xl border border-violet-400/30 bg-gradient-to-br from-[#12082d]/80 via-[#1a0d3d]/70 to-[#0a0520]/80 p-6 shadow-[0_0_60px_-20px_rgba(139,92,246,0.6)] backdrop-blur sm:p-8 lg:grid-cols-[1.1fr_1fr] lg:p-10">
 
         <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-2xl sm:min-h-[380px] lg:min-h-[440px]">
           <img
@@ -806,18 +852,18 @@ function ServiceStats() {
   return (
     <section className="mx-auto max-w-[1440px] px-4 pb-6 pt-4 sm:px-6 sm:pb-8 lg:px-8">
       <div className="mb-5 flex justify-center sm:mb-6">
-        <div className="rounded-xl bg-green-button px-12 py-3 text-xl font-black text-[var(--background)] shadow-lg sm:text-2xl">
+        <div className="rounded-full border border-violet-400/40 bg-gradient-to-r from-violet-500/20 via-fuchsia-500/15 to-pink-500/20 px-8 py-2.5 text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-100 via-fuchsia-100 to-pink-100 shadow-[0_0_30px_-10px_rgba(139,92,246,0.7)] sm:px-12 sm:text-2xl">
           {t("serviceQualityTitle")}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {statCards.map((item) => (
-          <div key={item.labelKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 px-4 py-5 text-center sm:px-5 sm:py-6">
+          <div key={item.labelKey} className="relative overflow-hidden rounded-2xl border border-violet-400/30 bg-gradient-to-br from-[#12082d]/80 to-black/60 px-4 py-5 text-center shadow-[0_0_30px_-15px_rgba(139,92,246,0.5)] backdrop-blur transition hover:border-fuchsia-400/50 hover:shadow-[0_0_30px_-8px_rgba(217,70,239,0.5)] sm:px-5 sm:py-6">
             <div className="flex items-baseline justify-center">
-              <span className="text-5xl font-black text-[var(--neon-gold)] leading-none sm:text-6xl lg:text-7xl">{item.value}</span>
-              {item.unit && <span className="ml-1 text-lg font-bold text-[var(--neon-gold)] sm:text-2xl">{item.unit}</span>}
+              <span className="text-5xl font-black leading-none text-transparent bg-clip-text bg-gradient-to-br from-amber-200 via-yellow-100 to-amber-300 sm:text-6xl lg:text-7xl">{item.value}</span>
+              {item.unit && <span className="ml-1 text-lg font-bold text-amber-300 sm:text-2xl">{item.unit}</span>}
             </div>
-            <div className="mx-auto mt-4 w-full rounded-full bg-green-button px-3 py-1.5 text-sm font-black text-[var(--background)] sm:text-base">
+            <div className="mx-auto mt-4 w-full rounded-full border border-emerald-400/40 bg-emerald-500/15 px-3 py-1.5 text-sm font-black text-emerald-200 sm:text-base">
               {t(item.labelKey)}
             </div>
 
@@ -834,11 +880,13 @@ function FeatureList() {
   return (
     <section className="mx-auto max-w-[1440px] space-y-3.5 px-4 pb-10 sm:px-6 sm:pb-12 lg:px-8">
       {featureCards.map((card) => (
-        <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 p-4 sm:p-5">
+        <div key={card.titleKey} className="rounded-2xl border border-violet-400/25 bg-gradient-to-r from-[#12082d]/60 via-black/50 to-[#0a0520]/60 p-4 shadow-[0_0_30px_-20px_rgba(139,92,246,0.5)] backdrop-blur transition hover:border-fuchsia-400/40 sm:p-5">
           <div className="flex items-center gap-4 sm:gap-5">
-            <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16" />
+            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-500/15 to-fuchsia-500/10 sm:h-16 sm:w-16">
+              <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-10 w-10 object-contain sm:h-12 sm:w-12" />
+            </div>
             <div className="min-w-0">
-              <h3 className="text-lg font-black text-[var(--neon-gold)] sm:text-xl">{t(card.titleKey)}</h3>
+              <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-100 sm:text-xl">{t(card.titleKey)}</h3>
               <p className="mt-1 text-sm leading-6 text-foreground/80 sm:text-base sm:leading-7">{t(card.bodyKey)}</p>
 
             </div>
