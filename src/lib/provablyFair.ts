@@ -513,6 +513,85 @@ export async function fair32Cards(
 }
 
 
+/**
+ * Video Poker — Jacks or Better (9/6 full pay).
+ * Uses the same shuffled 52-card deck as blackjack. First 5 cards = initial
+ * hand. The next 5 cards (indices 5..9) are the ordered replacement pool used
+ * for any discarded slots (in ascending slot order).
+ */
+export async function fairVideoPokerDeck(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<number[]> {
+  return fairBlackjackDeck(serverSeed, clientSeed, nonce);
+}
+
+export type VPRank =
+  | "ROYAL_FLUSH" | "STRAIGHT_FLUSH" | "FOUR_KIND" | "FULL_HOUSE"
+  | "FLUSH" | "STRAIGHT" | "THREE_KIND" | "TWO_PAIR" | "JACKS_BETTER" | "NONE";
+
+export const VP_PAYOUTS: Record<VPRank, number> = {
+  ROYAL_FLUSH: 800,
+  STRAIGHT_FLUSH: 50,
+  FOUR_KIND: 25,
+  FULL_HOUSE: 9,
+  FLUSH: 6,
+  STRAIGHT: 4,
+  THREE_KIND: 3,
+  TWO_PAIR: 2,
+  JACKS_BETTER: 1,
+  NONE: 0,
+};
+
+export const VP_LABEL: Record<VPRank, string> = {
+  ROYAL_FLUSH: "Royal Flush",
+  STRAIGHT_FLUSH: "Straight Flush",
+  FOUR_KIND: "Four of a Kind",
+  FULL_HOUSE: "Full House",
+  FLUSH: "Flush",
+  STRAIGHT: "Straight",
+  THREE_KIND: "Three of a Kind",
+  TWO_PAIR: "Two Pair",
+  JACKS_BETTER: "Jacks or Better",
+  NONE: "No Win",
+};
+
+export function evaluateVideoPokerHand(cards: number[]): VPRank {
+  if (cards.length !== 5) return "NONE";
+  const ranks = cards.map((c) => c % 13); // 0=A,1=2..9=10,10=J,11=Q,12=K
+  const suits = cards.map((c) => Math.floor(c / 13));
+  const counts = new Map<number, number>();
+  for (const r of ranks) counts.set(r, (counts.get(r) ?? 0) + 1);
+  const countVals = [...counts.values()].sort((a, b) => b - a);
+  const isFlush = suits.every((s) => s === suits[0]);
+
+  const orderHigh = ranks.map((r) => (r === 0 ? 14 : r + 1)).sort((a, b) => a - b);
+  const orderLow = ranks.map((r) => (r === 0 ? 1 : r + 1)).sort((a, b) => a - b);
+  const isSeq = (arr: number[]) => new Set(arr).size === 5 && arr[4] - arr[0] === 4;
+  const isStraight = isSeq(orderHigh) || isSeq(orderLow);
+  const isRoyal = isFlush && isSeq(orderHigh) && orderHigh[0] === 10;
+
+  if (isRoyal) return "ROYAL_FLUSH";
+  if (isFlush && isStraight) return "STRAIGHT_FLUSH";
+  if (countVals[0] === 4) return "FOUR_KIND";
+  if (countVals[0] === 3 && countVals[1] === 2) return "FULL_HOUSE";
+  if (isFlush) return "FLUSH";
+  if (isStraight) return "STRAIGHT";
+  if (countVals[0] === 3) return "THREE_KIND";
+  if (countVals[0] === 2 && countVals[1] === 2) return "TWO_PAIR";
+  if (countVals[0] === 2) {
+    for (const [r, c] of counts.entries()) {
+      if (c === 2 && (r === 0 || r >= 10)) return "JACKS_BETTER";
+    }
+  }
+  return "NONE";
+}
+
+
+
+
+
 
 
 // ---- Seed generation ---------------------------------------------------------

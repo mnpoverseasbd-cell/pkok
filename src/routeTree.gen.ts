@@ -36,6 +36,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesIndexRouteImport } from './routes/games.index'
 import { Route as GamesWheelRouteImport } from './routes/games.wheel'
+import { Route as GamesVideoPokerRouteImport } from './routes/games.video-poker'
 import { Route as GamesTowerRouteImport } from './routes/games.tower'
 import { Route as GamesTeenPattiRouteImport } from './routes/games.teen-patti'
 import { Route as GamesSicBoRouteImport } from './routes/games.sic-bo'
@@ -194,6 +195,11 @@ const GamesIndexRoute = GamesIndexRouteImport.update({
 const GamesWheelRoute = GamesWheelRouteImport.update({
   id: '/games/wheel',
   path: '/games/wheel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesVideoPokerRoute = GamesVideoPokerRouteImport.update({
+  id: '/games/video-poker',
+  path: '/games/video-poker',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesTowerRoute = GamesTowerRouteImport.update({
@@ -366,6 +372,7 @@ export interface FileRoutesByFullPath {
   '/games/sic-bo': typeof GamesSicBoRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
+  '/games/video-poker': typeof GamesVideoPokerRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games/': typeof GamesIndexRoute
   '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
@@ -419,6 +426,7 @@ export interface FileRoutesByTo {
   '/games/sic-bo': typeof GamesSicBoRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
+  '/games/video-poker': typeof GamesVideoPokerRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games': typeof GamesIndexRoute
   '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
@@ -473,6 +481,7 @@ export interface FileRoutesById {
   '/games/sic-bo': typeof GamesSicBoRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
+  '/games/video-poker': typeof GamesVideoPokerRoute
   '/games/wheel': typeof GamesWheelRoute
   '/games/': typeof GamesIndexRoute
   '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
@@ -528,6 +537,7 @@ export interface FileRouteTypes {
     | '/games/sic-bo'
     | '/games/teen-patti'
     | '/games/tower'
+    | '/games/video-poker'
     | '/games/wheel'
     | '/games/'
     | '/api/public/hooks/vip-daily'
@@ -581,6 +591,7 @@ export interface FileRouteTypes {
     | '/games/sic-bo'
     | '/games/teen-patti'
     | '/games/tower'
+    | '/games/video-poker'
     | '/games/wheel'
     | '/games'
     | '/api/public/hooks/vip-daily'
@@ -634,6 +645,7 @@ export interface FileRouteTypes {
     | '/games/sic-bo'
     | '/games/teen-patti'
     | '/games/tower'
+    | '/games/video-poker'
     | '/games/wheel'
     | '/games/'
     | '/api/public/hooks/vip-daily'
@@ -688,6 +700,7 @@ export interface RootRouteChildren {
   GamesSicBoRoute: typeof GamesSicBoRoute
   GamesTeenPattiRoute: typeof GamesTeenPattiRoute
   GamesTowerRoute: typeof GamesTowerRoute
+  GamesVideoPokerRoute: typeof GamesVideoPokerRoute
   GamesWheelRoute: typeof GamesWheelRoute
   GamesIndexRoute: typeof GamesIndexRoute
   ApiPublicHooksVipDailyRoute: typeof ApiPublicHooksVipDailyRoute
@@ -882,6 +895,13 @@ declare module '@tanstack/react-router' {
       path: '/games/wheel'
       fullPath: '/games/wheel'
       preLoaderRoute: typeof GamesWheelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/video-poker': {
+      id: '/games/video-poker'
+      path: '/games/video-poker'
+      fullPath: '/games/video-poker'
+      preLoaderRoute: typeof GamesVideoPokerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/tower': {
@@ -1104,6 +1124,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesSicBoRoute: GamesSicBoRoute,
   GamesTeenPattiRoute: GamesTeenPattiRoute,
   GamesTowerRoute: GamesTowerRoute,
+  GamesVideoPokerRoute: GamesVideoPokerRoute,
   GamesWheelRoute: GamesWheelRoute,
   GamesIndexRoute: GamesIndexRoute,
   ApiPublicHooksVipDailyRoute: ApiPublicHooksVipDailyRoute,
