@@ -22,7 +22,7 @@ export const Route = createFileRoute("/games/baccarat")({
       { property: "og:description", content: "Punto Banco style baccarat — Player 2×, Banker 1.95×, Tie 9×।" },
     ],
   }),
-  component: Baccarat;
+  component: Baccarat,
 });
 
 type Pick = "P" | "B" | "TIE";
