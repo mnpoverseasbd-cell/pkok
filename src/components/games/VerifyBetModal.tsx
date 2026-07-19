@@ -217,7 +217,18 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           outcome = `Dice = [${r.d1}, ${r.d2}] · Sum = ${r.sum} · Result = ${r.result === "SEVEN" ? "Lucky 7" : r.result === "UP" ? "Up (>7)" : "Down (<7)"}`;
           break;
         }
+        case "baccarat": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 52);
+          const r = await fairBaccarat(serverSeed, clientSeed, nonce);
+          const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+          const SUITS = ["♠","♥","♦","♣"];
+          const card = (c: number) => `${RANKS[c % 13]}${SUITS[Math.floor(c / 13)]}`;
+          const w = r.winner === "TIE" ? "Tie" : r.winner === "P" ? "Player" : "Banker";
+          outcome = `Player=[${r.player.map(card).join(" ")}]=${r.playerTotal} · Banker=[${r.banker.map(card).join(" ")}]=${r.bankerTotal} · Winner=${w}${r.isNatural ? " (Natural)" : ""}`;
+          break;
+        }
       }
+
 
       setResult({
         message,
