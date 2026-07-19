@@ -286,6 +286,71 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_commissions: {
+        Row: {
+          commission_amount: number
+          commission_pct: number
+          created_at: string
+          deposit_amount: number
+          id: string
+          payout_txn_id: string | null
+          referred_id: string
+          referrer_id: string
+          source_txn_id: string | null
+        }
+        Insert: {
+          commission_amount: number
+          commission_pct: number
+          created_at?: string
+          deposit_amount: number
+          id?: string
+          payout_txn_id?: string | null
+          referred_id: string
+          referrer_id: string
+          source_txn_id?: string | null
+        }
+        Update: {
+          commission_amount?: number
+          commission_pct?: number
+          created_at?: string
+          deposit_amount?: number
+          id?: string
+          payout_txn_id?: string | null
+          referred_id?: string
+          referrer_id?: string
+          source_txn_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_commissions_payout_txn_id_fkey"
+            columns: ["payout_txn_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_commissions_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_commissions_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_commissions_source_txn_id_fkey"
+            columns: ["source_txn_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           admin_note: string | null
