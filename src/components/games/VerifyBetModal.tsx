@@ -17,6 +17,7 @@ import {
   fairSevenUpDown,
   fairBaccarat,
   fairSicBo,
+  fairRoulette,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -24,7 +25,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo";
+  | "sic-bo" | "roulette";
 
 
 export type VerifyPrefill = {
