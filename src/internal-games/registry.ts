@@ -46,6 +46,7 @@ const SEEDS: Seed[] = [
   { slug: "keno", name: "Keno", category: "lottery", image: imgSlot1, tags: ["new"], popularity: 78 },
   { slug: "hi-lo", name: "Hi-Lo", category: "poker", image: imgPoker, tags: ["new", "classic"], popularity: 76 },
   { slug: "color-prediction", name: "Color Prediction", category: "table", image: imgRoulette, tags: ["new", "hot"], featured: true, popularity: 92 },
+  { slug: "andar-bahar", name: "Andar Bahar", category: "table", image: imgBaccarat, tags: ["new", "hot", "cards"], featured: true, popularity: 95 },
 ];
 
 function metaFrom(seed: Seed): GameMetadata {
