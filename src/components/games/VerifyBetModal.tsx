@@ -11,6 +11,7 @@ import {
   fairWheel,
   fairPlinko,
   fairMines,
+  fairAndarBahar,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
