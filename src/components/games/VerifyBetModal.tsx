@@ -209,6 +209,12 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           outcome = `Player=[${r.player.map(card).join(" ")}] (${r.playerCategory}) · Dealer=[${r.dealer.map(card).join(" ")}] (${r.dealerCategory}) · Winner=${w}`;
           break;
         }
+        case "seven-up-down": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 2);
+          const r = await fairSevenUpDown(serverSeed, clientSeed, nonce);
+          outcome = `Dice = [${r.d1}, ${r.d2}] · Sum = ${r.sum} · Result = ${r.result === "SEVEN" ? "Lucky 7" : r.result === "UP" ? "Up (>7)" : "Down (<7)"}`;
+          break;
+        }
       }
 
       setResult({
