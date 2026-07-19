@@ -1608,9 +1608,8 @@ function AdminPromotions() {
   const [claims, setClaims] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<PromoRow> | null>(null);
-  const upsert = useServerFn(
-    (import("@/lib/promotions.functions") as any).then as any,
-  ) as any;
+
+
 
   // Load using dynamic import so we don't add a top-level import earlier
   const load = useCallback(async () => {
