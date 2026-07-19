@@ -27,28 +27,30 @@ function ChickenRoadGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("chicken-road");
   const { data: cfg } = useGameConfig("chicken-road");
+  const pf = useProvablyFair("chicken-road");
   const edge = cfg?.house_edge ?? 0.02;
   const [bet, setBet] = useState(50);
   const [lane, setLane] = useState(0);
   const [active, setActive] = useState(false);
   const [dead, setDead] = useState(false);
   const [msg, setMsg] = useState("");
+  const floatsRef = useRef<number[]>([]);
 
   const currentMult = +((1 / SURVIVE_BASE) ** lane * (1 - edge)).toFixed(3);
   const nextMult = +((1 / SURVIVE_BASE) ** (lane + 1) * (1 - edge)).toFixed(3);
 
-  const start = useCallback(() => {
+  const start = useCallback(async () => {
     if (active) return;
     if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
+    floatsRef.current = await fairFloats(pf.serverSeed, pf.clientSeed, pf.nonce, LANES);
     setActive(true); setDead(false); setLane(0); setMsg("");
-  }, [active, bet, placeBet]);
+  }, [active, bet, placeBet, pf.serverSeed, pf.clientSeed, pf.nonce]);
 
   const step = useCallback(() => {
     if (!active) return;
     try { sfxPeg(0.5); } catch {}
-    if (Math.random() < SURVIVE_BASE && lane + 1 < LANES) {
-      setLane((l) => l + 1);
-    } else if (Math.random() < SURVIVE_BASE) {
+    const f = floatsRef.current[lane] ?? Math.random();
+    if (f < SURVIVE_BASE && lane + 1 < LANES) {
       setLane((l) => l + 1);
     } else {
       setActive(false); setDead(true);
@@ -57,9 +59,10 @@ function ChickenRoadGame() {
       record({ pnl, multiplier: 0 });
       pushMultiplierHistory("chicken-road", 0);
       recordMyBet({ game: "chicken-road", bet, multiplier: 0, payout: 0 });
+      pf.consume(`bust @ lane ${lane}`);
       try { sfxBust(); } catch {}
     }
-  }, [active, lane, bet, record]);
+  }, [active, lane, bet, record, pf]);
 
   const cashout = useCallback(() => {
     if (!active || lane === 0) return;
@@ -71,8 +74,9 @@ function ChickenRoadGame() {
     record({ pnl, multiplier: currentMult });
     pushMultiplierHistory("chicken-road", currentMult);
     recordMyBet({ game: "chicken-road", bet, multiplier: currentMult, payout: win });
+    pf.consume(`cashout @ lane ${lane} · ${currentMult}×`);
     try { sfxWin(currentMult); } catch {}
-  }, [active, lane, bet, currentMult, credit, record]);
+  }, [active, lane, bet, currentMult, credit, record, pf]);
 
   return (
     <GameShell title="Chicken Road" emoji="🐔" gameKey="chicken-road">
