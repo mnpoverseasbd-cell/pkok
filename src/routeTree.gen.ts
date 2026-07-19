@@ -39,6 +39,7 @@ import { Route as GamesWheelRouteImport } from './routes/games.wheel'
 import { Route as GamesVideoPokerRouteImport } from './routes/games.video-poker'
 import { Route as GamesTowerRouteImport } from './routes/games.tower'
 import { Route as GamesTeenPattiRouteImport } from './routes/games.teen-patti'
+import { Route as GamesSlotsRouteImport } from './routes/games.slots'
 import { Route as GamesSicBoRouteImport } from './routes/games.sic-bo'
 import { Route as GamesShellGameRouteImport } from './routes/games.shell-game'
 import { Route as GamesSevenUpDownRouteImport } from './routes/games.seven-up-down'
@@ -212,6 +213,11 @@ const GamesTeenPattiRoute = GamesTeenPattiRouteImport.update({
   path: '/games/teen-patti',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesSlotsRoute = GamesSlotsRouteImport.update({
+  id: '/games/slots',
+  path: '/games/slots',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesSicBoRoute = GamesSicBoRouteImport.update({
   id: '/games/sic-bo',
   path: '/games/sic-bo',
@@ -370,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/games/seven-up-down': typeof GamesSevenUpDownRoute
   '/games/shell-game': typeof GamesShellGameRoute
   '/games/sic-bo': typeof GamesSicBoRoute
+  '/games/slots': typeof GamesSlotsRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/video-poker': typeof GamesVideoPokerRoute
@@ -424,6 +431,7 @@ export interface FileRoutesByTo {
   '/games/seven-up-down': typeof GamesSevenUpDownRoute
   '/games/shell-game': typeof GamesShellGameRoute
   '/games/sic-bo': typeof GamesSicBoRoute
+  '/games/slots': typeof GamesSlotsRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/video-poker': typeof GamesVideoPokerRoute
@@ -479,6 +487,7 @@ export interface FileRoutesById {
   '/games/seven-up-down': typeof GamesSevenUpDownRoute
   '/games/shell-game': typeof GamesShellGameRoute
   '/games/sic-bo': typeof GamesSicBoRoute
+  '/games/slots': typeof GamesSlotsRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/video-poker': typeof GamesVideoPokerRoute
@@ -535,6 +544,7 @@ export interface FileRouteTypes {
     | '/games/seven-up-down'
     | '/games/shell-game'
     | '/games/sic-bo'
+    | '/games/slots'
     | '/games/teen-patti'
     | '/games/tower'
     | '/games/video-poker'
@@ -589,6 +599,7 @@ export interface FileRouteTypes {
     | '/games/seven-up-down'
     | '/games/shell-game'
     | '/games/sic-bo'
+    | '/games/slots'
     | '/games/teen-patti'
     | '/games/tower'
     | '/games/video-poker'
@@ -643,6 +654,7 @@ export interface FileRouteTypes {
     | '/games/seven-up-down'
     | '/games/shell-game'
     | '/games/sic-bo'
+    | '/games/slots'
     | '/games/teen-patti'
     | '/games/tower'
     | '/games/video-poker'
@@ -698,6 +710,7 @@ export interface RootRouteChildren {
   GamesSevenUpDownRoute: typeof GamesSevenUpDownRoute
   GamesShellGameRoute: typeof GamesShellGameRoute
   GamesSicBoRoute: typeof GamesSicBoRoute
+  GamesSlotsRoute: typeof GamesSlotsRoute
   GamesTeenPattiRoute: typeof GamesTeenPattiRoute
   GamesTowerRoute: typeof GamesTowerRoute
   GamesVideoPokerRoute: typeof GamesVideoPokerRoute
@@ -918,6 +931,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesTeenPattiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/slots': {
+      id: '/games/slots'
+      path: '/games/slots'
+      fullPath: '/games/slots'
+      preLoaderRoute: typeof GamesSlotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/sic-bo': {
       id: '/games/sic-bo'
       path: '/games/sic-bo'
@@ -1122,6 +1142,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesSevenUpDownRoute: GamesSevenUpDownRoute,
   GamesShellGameRoute: GamesShellGameRoute,
   GamesSicBoRoute: GamesSicBoRoute,
+  GamesSlotsRoute: GamesSlotsRoute,
   GamesTeenPattiRoute: GamesTeenPattiRoute,
   GamesTowerRoute: GamesTowerRoute,
   GamesVideoPokerRoute: GamesVideoPokerRoute,
