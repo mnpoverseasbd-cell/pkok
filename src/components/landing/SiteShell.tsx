@@ -78,7 +78,7 @@ export function SiteShell({ children, footer = true }: { children: ReactNode; fo
           <SocialRail />
           <LeftFloatingBadges />
           <WelcomePopup />
-          <GoldenEggPopup />
+          
         </div>
       </ModalsProvider>
     </LanguageProvider>
