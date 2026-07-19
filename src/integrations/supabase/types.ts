@@ -223,6 +223,69 @@ export type Database = {
           },
         ]
       }
+      promotions: {
+        Row: {
+          bonus_fixed: number
+          bonus_pct: number
+          code: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          max_bonus: number
+          max_uses_per_user: number
+          max_uses_total: number | null
+          min_deposit: number
+          name: string
+          type: Database["public"]["Enums"]["promo_type"]
+          updated_at: string
+          valid_from: string | null
+          valid_until: string | null
+          wagering_multiplier: number
+        }
+        Insert: {
+          bonus_fixed?: number
+          bonus_pct?: number
+          code?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          max_bonus?: number
+          max_uses_per_user?: number
+          max_uses_total?: number | null
+          min_deposit?: number
+          name: string
+          type?: Database["public"]["Enums"]["promo_type"]
+          updated_at?: string
+          valid_from?: string | null
+          valid_until?: string | null
+          wagering_multiplier?: number
+        }
+        Update: {
+          bonus_fixed?: number
+          bonus_pct?: number
+          code?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          max_bonus?: number
+          max_uses_per_user?: number
+          max_uses_total?: number | null
+          min_deposit?: number
+          name?: string
+          type?: Database["public"]["Enums"]["promo_type"]
+          updated_at?: string
+          valid_from?: string | null
+          valid_until?: string | null
+          wagering_multiplier?: number
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           admin_note: string | null
@@ -287,6 +350,59 @@ export type Database = {
             columns: ["payment_method_id"]
             isOneToOne: false
             referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_promotions: {
+        Row: {
+          activated_at: string
+          completed_at: string | null
+          created_at: string
+          granted_amount: number
+          id: string
+          promotion_id: string
+          source_txn_id: string | null
+          status: Database["public"]["Enums"]["user_promo_status"]
+          updated_at: string
+          user_id: string
+          wagering_progress: number
+          wagering_required: number
+        }
+        Insert: {
+          activated_at?: string
+          completed_at?: string | null
+          created_at?: string
+          granted_amount?: number
+          id?: string
+          promotion_id: string
+          source_txn_id?: string | null
+          status?: Database["public"]["Enums"]["user_promo_status"]
+          updated_at?: string
+          user_id: string
+          wagering_progress?: number
+          wagering_required?: number
+        }
+        Update: {
+          activated_at?: string
+          completed_at?: string | null
+          created_at?: string
+          granted_amount?: number
+          id?: string
+          promotion_id?: string
+          source_txn_id?: string | null
+          status?: Database["public"]["Enums"]["user_promo_status"]
+          updated_at?: string
+          user_id?: string
+          wagering_progress?: number
+          wagering_required?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_promotions_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "promotions"
             referencedColumns: ["id"]
           },
         ]
@@ -365,6 +481,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_promo_code: {
+        Args: { _code: string }
+        Returns: {
+          granted_amount: number
+          message: string
+          user_promotion_id: string
+          wagering_required: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -447,6 +572,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      promo_type: "deposit_bonus" | "free_credit" | "cashback"
       txn_status: "pending" | "approved" | "rejected" | "cancelled"
       txn_type:
         | "deposit"
@@ -456,6 +582,7 @@ export type Database = {
         | "bet"
         | "win"
         | "refund"
+      user_promo_status: "active" | "completed" | "expired" | "cancelled"
       vip_tier: "bronze" | "silver" | "gold" | "platinum" | "diamond"
     }
     CompositeTypes: {
@@ -585,6 +712,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      promo_type: ["deposit_bonus", "free_credit", "cashback"],
       txn_status: ["pending", "approved", "rejected", "cancelled"],
       txn_type: [
         "deposit",
@@ -595,6 +723,7 @@ export const Constants = {
         "win",
         "refund",
       ],
+      user_promo_status: ["active", "completed", "expired", "cancelled"],
       vip_tier: ["bronze", "silver", "gold", "platinum", "diamond"],
     },
   },
