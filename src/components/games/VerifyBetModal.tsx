@@ -275,6 +275,23 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "video-poker": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 52);
+          const deck = await fairVideoPokerDeck(serverSeed, clientSeed, nonce);
+          const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+          const SUITS = ["♠","♥","♦","♣"];
+          const card = (c: number) => `${RANKS[c % 13]}${SUITS[Math.floor(c / 13)]}`;
+          const initial = deck.slice(0, 5);
+          const rank = evaluateVideoPokerHand(initial);
+          const pay = VP_PAYOUTS[rank];
+          outcome = `Initial hand: [${initial.map(card).join(" ")}] · ${VP_LABEL[rank]} (${pay}×) · Draw pool (if all held discarded): [${deck.slice(5, 10).map(card).join(" ")}]`;
+          extra = (
+            <div className="mt-2 text-[10px] text-white/50">
+              Held slots keep their card; discarded slots pull replacements from deck[5..9] in ascending slot order.
+            </div>
+          );
+          break;
+        }
       }
 
 
