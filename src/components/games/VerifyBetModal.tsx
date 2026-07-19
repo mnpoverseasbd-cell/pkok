@@ -16,13 +16,15 @@ import {
   fairTeenPatti,
   fairSevenUpDown,
   fairBaccarat,
+  fairSicBo,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
   | "dice" | "limbo" | "crash" | "coinflip" | "wheel" | "plinko" | "mines"
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
-  | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat";
+  | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
+  | "sic-bo";
 
 
 export type VerifyPrefill = {
