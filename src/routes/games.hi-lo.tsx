@@ -127,6 +127,7 @@ function HiLoGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="hi-lo" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="hi-lo" /></div>
     </GameShell>
   );
 }
