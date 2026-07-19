@@ -89,6 +89,7 @@ function AdminPage() {
       {tab === "flags" && <AdminFeatureFlags />}
       {tab === "reports" && <AdminReports />}
       {tab === "promos" && <AdminPromotions />}
+      {tab === "tournaments" && <AdminTournaments />}
     </AdminShell>
   );
 }
