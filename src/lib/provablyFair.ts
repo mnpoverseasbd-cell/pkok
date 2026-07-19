@@ -456,6 +456,65 @@ export async function fairRoulette(
 }
 
 
+/**
+ * 32 Cards (BD live-casino classic).
+ * 32-card deck: ranks 7,8,9,10,J,Q,K,A of all 4 suits.
+ * Encoding: card = suit*8 + idx, where idx 0..7 ↔ [7,8,9,10,J,Q,K,A].
+ * Players A(8), B(9), C(10), D(11) start with their base score.
+ * All 32 cards dealt in rotation A→B→C→D (8 each).
+ * Values: 7..10 face, J=11, Q=12, K=13, A=1.
+ * Highest total wins; on tie, house wins.
+ */
+export type ThirtyTwoPlayer = "A" | "B" | "C" | "D";
+export const T32_RANK_LABELS = ["7", "8", "9", "10", "J", "Q", "K", "A"];
+export const T32_SUITS = ["♠", "♥", "♦", "♣"];
+export const T32_BASE: Record<ThirtyTwoPlayer, number> = { A: 8, B: 9, C: 10, D: 11 };
+const T32_VAL = [7, 8, 9, 10, 11, 12, 13, 1];
+
+export function t32CardLabel(card: number): string {
+  const suit = Math.floor(card / 8);
+  const idx = card % 8;
+  return `${T32_RANK_LABELS[idx]}${T32_SUITS[suit]}`;
+}
+export function t32CardSuit(card: number): number {
+  return Math.floor(card / 8);
+}
+export function t32CardValue(card: number): number {
+  return T32_VAL[card % 8];
+}
+
+export async function fair32Cards(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<{
+  deck: number[];
+  hands: Record<ThirtyTwoPlayer, number[]>;
+  totals: Record<ThirtyTwoPlayer, number>;
+  winner: ThirtyTwoPlayer | "TIE";
+}> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 32);
+  const deck = Array.from({ length: 32 }, (_, i) => i);
+  for (let i = 31; i > 0; i--) {
+    const j = Math.floor(floats[i] * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  const order: ThirtyTwoPlayer[] = ["A", "B", "C", "D"];
+  const hands: Record<ThirtyTwoPlayer, number[]> = { A: [], B: [], C: [], D: [] };
+  for (let i = 0; i < 32; i++) hands[order[i % 4]].push(deck[i]);
+  const totals: Record<ThirtyTwoPlayer, number> = {
+    A: T32_BASE.A, B: T32_BASE.B, C: T32_BASE.C, D: T32_BASE.D,
+  };
+  for (const p of order) for (const c of hands[p]) totals[p] += t32CardValue(c);
+  const max = Math.max(totals.A, totals.B, totals.C, totals.D);
+  const winners = order.filter((p) => totals[p] === max);
+  const winner: ThirtyTwoPlayer | "TIE" = winners.length === 1 ? winners[0] : "TIE";
+  return { deck, hands, totals, winner };
+}
+
+
+
+
 // ---- Seed generation ---------------------------------------------------------
 
 export function randomSeed(bytes: number = 32): string {
