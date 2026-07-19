@@ -18,7 +18,7 @@ export type VerifyGameKey =
   | "dice" | "limbo" | "crash" | "coinflip" | "wheel" | "plinko" | "mines"
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
-  | "andar-bahar";
+  | "andar-bahar" | "dragon-tiger";
 
 export type VerifyPrefill = {
   serverSeed?: string;
