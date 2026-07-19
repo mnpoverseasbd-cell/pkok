@@ -63,6 +63,8 @@ const myGames: OriginalGame[] = [
   { slug: "sic-bo",           name: "Sic Bo",            nameBn: "সিক বো",            provider: "ASIK", poster: dicePoster,     status: "live", to: "/games/sic-bo" },
   { slug: "roulette",         name: "Roulette",          nameBn: "রুলেট",             provider: "ASIK", poster: imgRoulette,    status: "live", to: "/games/roulette" },
   { slug: "blackjack",        name: "Blackjack",         nameBn: "ব্ল্যাকজ্যাক",         provider: "ASIK", poster: imgPoker,       status: "live", to: "/games/blackjack" },
+  { slug: "32-cards",         name: "32 Cards",          nameBn: "৩২ কার্ড",           provider: "ASIK", poster: imgBaccarat,    status: "live", to: "/games/32-cards" },
+
 
 ];
 
