@@ -588,6 +588,88 @@ export function evaluateVideoPokerHand(cards: number[]): VPRank {
   return "NONE";
 }
 
+// ---- Slots · Cosmic Fortune (5 reels × 3 rows, 10 paylines) ------------------
+
+export const SLOT_SYMBOLS = ["🍒", "🍋", "🔔", "⭐", "💎", "7️⃣"] as const;
+export const SLOT_NAMES = ["Cherry", "Lemon", "Bell", "Star", "Diamond", "Seven"] as const;
+const SLOT_WEIGHTS = [30, 25, 18, 14, 9, 4];
+const SLOT_CUM = (() => {
+  const c: number[] = [];
+  let s = 0;
+  for (const w of SLOT_WEIGHTS) { s += w; c.push(s); }
+  return c;
+})();
+const SLOT_TOTAL = SLOT_CUM[SLOT_CUM.length - 1];
+
+/** Payout per line for [3, 4, 5] of a kind, indexed by symbol. */
+export const SLOT_PAYTABLE: number[][] = [
+  [1, 2, 5],     // 🍒
+  [1, 3, 8],     // 🍋
+  [2, 5, 15],    // 🔔
+  [3, 8, 25],    // ⭐
+  [5, 15, 50],   // 💎
+  [10, 40, 200], // 7️⃣
+];
+
+/** 10 fixed paylines (row indices per reel: 0=top, 1=mid, 2=bottom). */
+export const SLOT_PAYLINES: number[][] = [
+  [1, 1, 1, 1, 1],
+  [0, 0, 0, 0, 0],
+  [2, 2, 2, 2, 2],
+  [0, 1, 2, 1, 0],
+  [2, 1, 0, 1, 2],
+  [0, 0, 1, 2, 2],
+  [2, 2, 1, 0, 0],
+  [1, 0, 0, 0, 1],
+  [1, 2, 2, 2, 1],
+  [1, 1, 2, 1, 1],
+];
+
+function pickSymbol(f: number): number {
+  const t = f * SLOT_TOTAL;
+  for (let i = 0; i < SLOT_CUM.length; i++) if (t < SLOT_CUM[i]) return i;
+  return SLOT_CUM.length - 1;
+}
+
+export type SlotLineWin = { line: number; symbol: number; count: number; payout: number };
+export type SlotResult = {
+  grid: number[][];        // [row 0..2][col 0..4]
+  wins: SlotLineWin[];
+  totalMultiplier: number; // sum of line payouts / 10 (per-line bet = bet/10)
+};
+
+export async function fairSlots(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<SlotResult> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 15);
+  const grid: number[][] = [[], [], []];
+  for (let col = 0; col < 5; col++) {
+    for (let row = 0; row < 3; row++) {
+      grid[row].push(pickSymbol(floats[col * 3 + row]));
+    }
+  }
+  const wins: SlotLineWin[] = [];
+  for (let i = 0; i < SLOT_PAYLINES.length; i++) {
+    const line = SLOT_PAYLINES[i];
+    const first = grid[line[0]][0];
+    let count = 1;
+    for (let col = 1; col < 5; col++) {
+      if (grid[line[col]][col] === first) count++;
+      else break;
+    }
+    if (count >= 3) {
+      const payout = SLOT_PAYTABLE[first][count - 3];
+      wins.push({ line: i + 1, symbol: first, count, payout });
+    }
+  }
+  const totalMultiplier = wins.reduce((a, w) => a + w.payout, 0) / 10;
+  return { grid, wins, totalMultiplier };
+}
+
+
+
 
 
 
