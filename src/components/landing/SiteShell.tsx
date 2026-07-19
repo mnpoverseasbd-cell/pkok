@@ -7,7 +7,7 @@ import type { ComponentType, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 import { WelcomePopup } from "@/components/landing/WelcomePopup";
-import { GoldenEggPopup } from "@/components/landing/GoldenEggPopup";
+
 import { LanguageProvider, useLang, type Lang } from "@/components/landing/LanguageContext";
 import twoJLogo from "@/assets/providers/2J.png.asset.json";
 import ailLogo from "@/assets/providers/AIL.png.asset.json";
@@ -78,7 +78,7 @@ export function SiteShell({ children, footer = true }: { children: ReactNode; fo
           <SocialRail />
           <LeftFloatingBadges />
           <WelcomePopup />
-          <GoldenEggPopup />
+          
         </div>
       </ModalsProvider>
     </LanguageProvider>
