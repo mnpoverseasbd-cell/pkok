@@ -5,6 +5,9 @@ import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
+import { useProvablyFair } from "@/hooks/useProvablyFair";
+import { fairFloats } from "@/lib/provablyFair";
+import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
 import { recordMyBet } from "@/lib/liveFeed";
 import { sfxWin, sfxBust } from "@/lib/sound";
@@ -24,6 +27,7 @@ function ColorPredictionGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("color-prediction");
   const { data: cfg } = useGameConfig("color-prediction");
+  const pf = useProvablyFair("color-prediction");
   const edge = cfg?.house_edge ?? 0.03;
   const [bet, setBet] = useState(50);
   const [pick, setPick] = useState<Color>("red");
@@ -35,8 +39,9 @@ function ColorPredictionGame() {
     if (busy) return;
     if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
     setBusy(true); setMsg(""); setResult(null);
+    const [f] = await fairFloats(pf.serverSeed, pf.clientSeed, pf.nonce, 1);
     await new Promise((r) => setTimeout(r, 500));
-    const c = WHEEL[Math.floor(Math.random() * WHEEL.length)];
+    const c = WHEEL[Math.floor(f * WHEEL.length)];
     setResult(c);
     const rawMult = pick === c ? (c === "violet" ? 5 : 2) : 0;
     const mult = +(rawMult * (1 - edge)).toFixed(3);
@@ -56,8 +61,9 @@ function ColorPredictionGame() {
       recordMyBet({ game: "color-prediction", bet, multiplier: 0, payout: 0 });
       try { sfxBust(); } catch {}
     }
+    pf.consume(`result=${c} · pick=${pick}`);
     setBusy(false);
-  }, [busy, bet, pick, edge, placeBet, credit, record]);
+  }, [busy, bet, pick, edge, placeBet, credit, record, pf]);
 
   const swatch = (c: Color) =>
     c === "red" ? "bg-rose-500" : c === "green" ? "bg-emerald-500" : "bg-fuchsia-500";
@@ -93,6 +99,7 @@ function ColorPredictionGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="color-prediction" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="color-prediction" /></div>
     </GameShell>
   );
 }

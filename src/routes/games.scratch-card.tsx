@@ -5,6 +5,9 @@ import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
+import { useProvablyFair } from "@/hooks/useProvablyFair";
+import { fairFloats } from "@/lib/provablyFair";
+import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
 import { recordMyBet } from "@/lib/liveFeed";
 import { sfxWin, sfxBust } from "@/lib/sound";
@@ -20,17 +23,18 @@ export const Route = createFileRoute("/games/scratch-card")({
 const SYMBOLS = ["🍒","🍋","⭐","💎","7️⃣","🔔"] as const;
 const PAYOUTS: Record<string, number> = { "🍒": 3, "🍋": 5, "⭐": 8, "🔔": 12, "7️⃣": 25, "💎": 50 };
 
-function generateCard(): string[] {
-  // Weighted random to keep house edge; ~40% chance of any 3-match.
-  const bias = Math.random();
+function generateCardFrom(floats: number[]): string[] {
+  let i = 0;
+  const next = () => floats[i++ % floats.length];
+  const bias = next();
   const cells: string[] = [];
   let winner: string | null = null;
-  if (bias < 0.4) winner = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+  if (bias < 0.4) winner = SYMBOLS[Math.floor(next() * SYMBOLS.length)];
   const count = winner ? 3 : 0;
-  for (let i = 0; i < 9; i++) cells.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+  for (let k = 0; k < 9; k++) cells.push(SYMBOLS[Math.floor(next() * SYMBOLS.length)]);
   if (winner) {
     const positions = new Set<number>();
-    while (positions.size < count) positions.add(Math.floor(Math.random() * 9));
+    while (positions.size < count) positions.add(Math.floor(next() * 9));
     for (const p of positions) cells[p] = winner;
   }
   return cells;
@@ -40,6 +44,7 @@ function ScratchCardGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("scratch-card");
   const { data: cfg } = useGameConfig("scratch-card");
+  const pf = useProvablyFair("scratch-card");
   const edge = cfg?.house_edge ?? 0.05;
   const [bet, setBet] = useState(50);
   const [cells, setCells] = useState<string[] | null>(null);
@@ -47,11 +52,12 @@ function ScratchCardGame() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
-  const buy = useCallback(() => {
+  const buy = useCallback(async () => {
     if (busy) return;
     if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
-    setCells(generateCard()); setRevealed(Array(9).fill(false)); setBusy(true); setMsg("");
-  }, [busy, bet, placeBet]);
+    const floats = await fairFloats(pf.serverSeed, pf.clientSeed, pf.nonce, 16);
+    setCells(generateCardFrom(floats)); setRevealed(Array(9).fill(false)); setBusy(true); setMsg("");
+  }, [busy, bet, placeBet, pf.serverSeed, pf.clientSeed, pf.nonce]);
 
   const reveal = useCallback((i: number) => {
     if (!cells || revealed[i]) return;
@@ -79,9 +85,10 @@ function ScratchCardGame() {
         recordMyBet({ game: "scratch-card", bet, multiplier: 0, payout: 0 });
         try { sfxBust(); } catch {}
       }
+      pf.consume(`grid → ${mult > 0 ? `${mult}×` : "no match"}`);
       setBusy(false);
     }
-  }, [cells, revealed, bet, edge, credit, record]);
+  }, [cells, revealed, bet, edge, credit, record, pf]);
 
   return (
     <GameShell title="Scratch Card" emoji="🎟️" gameKey="scratch-card">
@@ -110,6 +117,7 @@ function ScratchCardGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="scratch-card" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="scratch-card" /></div>
     </GameShell>
   );
 }

@@ -14,7 +14,9 @@ import {
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
-  | "dice" | "limbo" | "crash" | "coinflip" | "wheel" | "plinko" | "mines";
+  | "dice" | "limbo" | "crash" | "coinflip" | "wheel" | "plinko" | "mines"
+  | "chicken-road" | "tower" | "lucky-card" | "shell-game"
+  | "scratch-card" | "keno" | "hi-lo" | "color-prediction";
 
 export type VerifyPrefill = {
   serverSeed?: string;
@@ -127,6 +129,50 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
               Fisher-Yates shuffle {total} সেল, তারপর প্রথম {count} নেয়।
             </div>
           );
+          break;
+        }
+        case "chicken-road": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 12);
+          outcome = `Lane survivals derived from floats < survival threshold`;
+          break;
+        }
+        case "tower": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 8);
+          outcome = `Safe tile per floor = floor(f × TILES)`;
+          break;
+        }
+        case "lucky-card": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 2);
+          const rank = 1 + Math.floor(floats[0] * 13);
+          const suit = Math.floor(floats[1] * 4);
+          outcome = `Rank=${rank}, Suit=${["♠","♥","♦","♣"][suit]}`;
+          break;
+        }
+        case "shell-game": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
+          outcome = `Ball under cup ${Math.floor(floats[0] * 3)} (0..2)`;
+          break;
+        }
+        case "scratch-card": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 12);
+          outcome = `9-cell grid derived from float indices`;
+          break;
+        }
+        case "keno": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 20);
+          outcome = `20 draws from 1..80 via Fisher-Yates on floats`;
+          break;
+        }
+        case "hi-lo": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
+          const r = 1 + Math.floor(floats[0] * 13);
+          outcome = `Next card rank = ${r}`;
+          break;
+        }
+        case "color-prediction": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
+          const idx = Math.floor(floats[0] * 3);
+          outcome = `Wheel color index = ${idx} (${["Red","Green","Violet"][idx]})`;
           break;
         }
       }

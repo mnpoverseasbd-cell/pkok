@@ -5,6 +5,9 @@ import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
+import { useProvablyFair } from "@/hooks/useProvablyFair";
+import { fairFloats } from "@/lib/provablyFair";
+import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
 import { recordMyBet } from "@/lib/liveFeed";
 import { sfxWin, sfxBust } from "@/lib/sound";
@@ -21,9 +24,9 @@ const SUITS = ["♠", "♥", "♦", "♣"] as const;
 const RED = new Set(["♥", "♦"]);
 type Bet = "red" | "black" | "high" | "low";
 
-function drawCard() {
-  const rank = 1 + Math.floor(Math.random() * 13);
-  const suit = SUITS[Math.floor(Math.random() * 4)];
+function drawCardFrom(floats: number[]) {
+  const rank = 1 + Math.floor(floats[0] * 13);
+  const suit = SUITS[Math.floor(floats[1] * 4)];
   return { rank, suit, red: RED.has(suit) };
 }
 
@@ -35,11 +38,12 @@ function LuckyCardGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("lucky-card");
   const { data: cfg } = useGameConfig("lucky-card");
+  const pf = useProvablyFair("lucky-card");
   const edge = cfg?.house_edge ?? 0.02;
   const payout = +((2) * (1 - edge)).toFixed(3);
   const [bet, setBet] = useState(50);
   const [pick, setPick] = useState<Bet>("red");
-  const [card, setCard] = useState<ReturnType<typeof drawCard> | null>(null);
+  const [card, setCard] = useState<ReturnType<typeof drawCardFrom> | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -47,8 +51,9 @@ function LuckyCardGame() {
     if (busy) return;
     if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
     setBusy(true); setMsg(""); setCard(null);
+    const floats = await fairFloats(pf.serverSeed, pf.clientSeed, pf.nonce, 2);
     await new Promise((r) => setTimeout(r, 350));
-    const c = drawCard(); setCard(c);
+    const c = drawCardFrom(floats); setCard(c);
     const win =
       (pick === "red" && c.red) ||
       (pick === "black" && !c.red) ||
@@ -71,8 +76,9 @@ function LuckyCardGame() {
       recordMyBet({ game: "lucky-card", bet, multiplier: 0, payout: 0 });
       try { sfxBust(); } catch {}
     }
+    pf.consume(`${c.suit}${rankLabel(c.rank)} · pick=${pick} · ${win ? "WIN" : "LOSS"}`);
     setBusy(false);
-  }, [busy, bet, pick, payout, placeBet, credit, record]);
+  }, [busy, bet, pick, payout, placeBet, credit, record, pf]);
 
   return (
     <GameShell title="Lucky Card" emoji="🃏" gameKey="lucky-card">
@@ -103,6 +109,7 @@ function LuckyCardGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="lucky-card" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="lucky-card" /></div>
     </GameShell>
   );
 }

@@ -5,6 +5,9 @@ import { useGameConfig } from "@/hooks/useGameConfig";
 import { StatsBar } from "@/components/games/StatsBar";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
+import { useProvablyFair } from "@/hooks/useProvablyFair";
+import { fairFloats } from "@/lib/provablyFair";
+import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
 import { recordMyBet } from "@/lib/liveFeed";
 import { sfxWin, sfxBust } from "@/lib/sound";
@@ -21,6 +24,7 @@ function ShellGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("shell-game");
   const { data: cfg } = useGameConfig("shell-game");
+  const pf = useProvablyFair("shell-game");
   const edge = cfg?.house_edge ?? 0.03;
   const payout = +(3 * (1 - edge)).toFixed(3);
   const [bet, setBet] = useState(50);
@@ -33,8 +37,9 @@ function ShellGame() {
     if (busy) return;
     if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
     setBusy(true); setMsg(""); setPick(idx); setBall(null);
+    const [f] = await fairFloats(pf.serverSeed, pf.clientSeed, pf.nonce, 1);
     await new Promise((r) => setTimeout(r, 600));
-    const b = Math.floor(Math.random() * 3);
+    const b = Math.floor(f * 3);
     setBall(b);
     if (b === idx) {
       const w = Math.floor(bet * payout); credit(w);
@@ -52,8 +57,9 @@ function ShellGame() {
       recordMyBet({ game: "shell-game", bet, multiplier: 0, payout: 0 });
       try { sfxBust(); } catch {}
     }
+    pf.consume(`ball=${b} pick=${idx} · ${b === idx ? "WIN" : "LOSS"}`);
     setBusy(false);
-  }, [busy, bet, payout, placeBet, credit, record]);
+  }, [busy, bet, payout, placeBet, credit, record, pf]);
 
   return (
     <GameShell title="Shell Game" emoji="🥥" gameKey="shell-game">
@@ -85,6 +91,7 @@ function ShellGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="shell-game" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="shell-game" /></div>
     </GameShell>
   );
 }
