@@ -163,6 +163,30 @@ export async function fairAndarBahar(
   return { joker, andar, bahar, winner, cardsDrawn: drawn };
 }
 
+/**
+ * Dragon Tiger: draw two distinct cards from a shuffled 52-card deck.
+ * Rank order A(0) < 2 < ... < K(12). Higher rank wins; equal rank = Tie.
+ */
+export async function fairDragonTiger(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<{ dragon: number; tiger: number; winner: "D" | "T" | "TIE" }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 52);
+  const deck = Array.from({ length: 52 }, (_, i) => i);
+  for (let i = 51; i > 0; i--) {
+    const j = Math.floor(floats[i] * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  const dragon = deck[0];
+  const tiger = deck[1];
+  const dr = dragon % 13;
+  const tr = tiger % 13;
+  const winner: "D" | "T" | "TIE" = dr === tr ? "TIE" : dr > tr ? "D" : "T";
+  return { dragon, tiger, winner };
+}
+
+
 // ---- Seed generation ---------------------------------------------------------
 
 export function randomSeed(bytes: number = 32): string {
