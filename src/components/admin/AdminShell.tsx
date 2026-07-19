@@ -16,6 +16,7 @@ import {
   Flag,
   BarChart3,
   Gift,
+  Trophy,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -28,6 +29,7 @@ const NAV = [
   { k: "games", label: "Games", icon: Gamepad2, color: "from-emerald-500 to-teal-500" },
   { k: "vip", label: "VIP Tiers", icon: Crown, color: "from-yellow-500 to-amber-500" },
   { k: "promos", label: "Promotions", icon: Gift, color: "from-rose-500 to-pink-600" },
+  { k: "tournaments", label: "Tournaments", icon: Trophy, color: "from-fuchsia-500 to-violet-600" },
   { k: "reports", label: "Reports", icon: BarChart3, color: "from-fuchsia-500 to-pink-600" },
   { k: "flags", label: "Feature Flags", icon: Flag, color: "from-cyan-500 to-sky-600" },
   { k: "audit", label: "Audit Logs", icon: ShieldCheck, color: "from-slate-600 to-slate-800" },
