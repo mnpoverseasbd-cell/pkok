@@ -133,7 +133,7 @@ function SlotsGame() {
       setMsg(`🎉 জয় +${pnl} · ${mult.toFixed(2)}× · ${lineDesc}`);
       record({ pnl, multiplier: mult });
       fxRef.current?.burst({ count: 80, kind: "confetti", speed: 8 });
-      try { mult >= 5 ? sfxCashout(mult) : sfxWin(mult); } catch { /* noop */ }
+      try { mult >= 5 ? sfxCashout() : sfxWin(mult); } catch { /* noop */ }
     } else {
       pnl = -bet;
       setMsg(`💥 কোন পেলাইন জেতেনি · ${pnl}`);
