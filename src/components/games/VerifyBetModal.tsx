@@ -20,6 +20,8 @@ import {
   fairRoulette,
   fairBlackjackDeck,
   bjTotal,
+  fair32Cards,
+  t32CardLabel,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -27,7 +29,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards";
 
 
 export type VerifyPrefill = {
