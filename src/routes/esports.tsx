@@ -55,6 +55,7 @@ const myGames: OriginalGame[] = [
   { slug: "keno",             name: "Keno",              nameBn: "কেনো",              provider: "ASIK", poster: imgSlot1,       status: "live", to: "/games/keno" },
   { slug: "hi-lo",            name: "Hi-Lo",             nameBn: "হাই-লো",            provider: "ASIK", poster: imgPoker,       status: "live", to: "/games/hi-lo" },
   { slug: "color-prediction", name: "Color Prediction",  nameBn: "কালার প্রেডিকশন",   provider: "ASIK", poster: imgRoulette,    status: "live", to: "/games/color-prediction" },
+  { slug: "andar-bahar",      name: "Andar Bahar",       nameBn: "আন্দর বাহার",       provider: "ASIK", poster: imgBaccarat,    status: "live", to: "/games/andar-bahar" },
 ];
 
 function MyGamesPage() {

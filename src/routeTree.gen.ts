@@ -50,6 +50,7 @@ import { Route as GamesCrashRouteImport } from './routes/games.crash'
 import { Route as GamesColorPredictionRouteImport } from './routes/games.color-prediction'
 import { Route as GamesCoinflipRouteImport } from './routes/games.coinflip'
 import { Route as GamesChickenRoadRouteImport } from './routes/games.chicken-road'
+import { Route as GamesAndarBaharRouteImport } from './routes/games.andar-bahar'
 import { Route as ApiPublicHooksVipDailyRouteImport } from './routes/api/public/hooks/vip-daily'
 
 const WalletRoute = WalletRouteImport.update({
@@ -257,6 +258,11 @@ const GamesChickenRoadRoute = GamesChickenRoadRouteImport.update({
   path: '/games/chicken-road',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesAndarBaharRoute = GamesAndarBaharRouteImport.update({
+  id: '/games/andar-bahar',
+  path: '/games/andar-bahar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksVipDailyRoute = ApiPublicHooksVipDailyRouteImport.update({
   id: '/api/public/hooks/vip-daily',
   path: '/api/public/hooks/vip-daily',
@@ -289,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
+  '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
@@ -333,6 +340,7 @@ export interface FileRoutesByTo {
   '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
+  '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
@@ -378,6 +386,7 @@ export interface FileRoutesById {
   '/tournaments': typeof TournamentsRoute
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
+  '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
@@ -424,6 +433,7 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/vip'
     | '/wallet'
+    | '/games/andar-bahar'
     | '/games/chicken-road'
     | '/games/coinflip'
     | '/games/color-prediction'
@@ -468,6 +478,7 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/vip'
     | '/wallet'
+    | '/games/andar-bahar'
     | '/games/chicken-road'
     | '/games/coinflip'
     | '/games/color-prediction'
@@ -512,6 +523,7 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/vip'
     | '/wallet'
+    | '/games/andar-bahar'
     | '/games/chicken-road'
     | '/games/coinflip'
     | '/games/color-prediction'
@@ -557,6 +569,7 @@ export interface RootRouteChildren {
   TournamentsRoute: typeof TournamentsRoute
   VipRoute: typeof VipRoute
   WalletRoute: typeof WalletRoute
+  GamesAndarBaharRoute: typeof GamesAndarBaharRoute
   GamesChickenRoadRoute: typeof GamesChickenRoadRoute
   GamesCoinflipRoute: typeof GamesCoinflipRoute
   GamesColorPredictionRoute: typeof GamesColorPredictionRoute
@@ -865,6 +878,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesChickenRoadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/andar-bahar': {
+      id: '/games/andar-bahar'
+      path: '/games/andar-bahar'
+      fullPath: '/games/andar-bahar'
+      preLoaderRoute: typeof GamesAndarBaharRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/vip-daily': {
       id: '/api/public/hooks/vip-daily'
       path: '/api/public/hooks/vip-daily'
@@ -901,6 +921,7 @@ const rootRouteChildren: RootRouteChildren = {
   TournamentsRoute: TournamentsRoute,
   VipRoute: VipRoute,
   WalletRoute: WalletRoute,
+  GamesAndarBaharRoute: GamesAndarBaharRoute,
   GamesChickenRoadRoute: GamesChickenRoadRoute,
   GamesCoinflipRoute: GamesCoinflipRoute,
   GamesColorPredictionRoute: GamesColorPredictionRoute,
