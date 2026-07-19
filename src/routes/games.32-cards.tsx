@@ -29,7 +29,7 @@ export const Route = createFileRoute("/games/32-cards")({
       { property: "og:description", content: "Bangladeshi live casino ক্লাসিক — 32 Cards, provably-fair এবং instant payout।" },
     ],
   }),
-  component: ThirtyTwoCards;
+  component: ThirtyTwoCards,
 });
 
 type Phase = "idle" | "dealing" | "done";
