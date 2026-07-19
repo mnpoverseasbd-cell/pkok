@@ -109,6 +109,7 @@ function LuckyCardGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="lucky-card" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="lucky-card" /></div>
     </GameShell>
   );
 }
