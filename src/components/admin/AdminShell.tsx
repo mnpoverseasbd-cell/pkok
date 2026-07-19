@@ -16,6 +16,7 @@ import {
   Flag,
   BarChart3,
   Gift,
+  Trophy,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
