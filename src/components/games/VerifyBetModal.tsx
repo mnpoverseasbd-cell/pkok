@@ -16,13 +16,15 @@ import {
   fairTeenPatti,
   fairSevenUpDown,
   fairBaccarat,
+  fairSicBo,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
   | "dice" | "limbo" | "crash" | "coinflip" | "wheel" | "plinko" | "mines"
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
-  | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat";
+  | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
+  | "sic-bo";
 
 
 export type VerifyPrefill = {
@@ -225,6 +227,13 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           const card = (c: number) => `${RANKS[c % 13]}${SUITS[Math.floor(c / 13)]}`;
           const w = r.winner === "TIE" ? "Tie" : r.winner === "P" ? "Player" : "Banker";
           outcome = `Player=[${r.player.map(card).join(" ")}]=${r.playerTotal} · Banker=[${r.banker.map(card).join(" ")}]=${r.bankerTotal} · Winner=${w}${r.isNatural ? " (Natural)" : ""}`;
+          break;
+        }
+        case "sic-bo": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 3);
+          const r = await fairSicBo(serverSeed, clientSeed, nonce);
+          const label = r.isTriple ? `Triple ${r.tripleFace}` : `${r.size} · ${r.parity}`;
+          outcome = `Dice = [${r.d1}, ${r.d2}, ${r.d3}] · Sum = ${r.sum} · ${label}`;
           break;
         }
       }
