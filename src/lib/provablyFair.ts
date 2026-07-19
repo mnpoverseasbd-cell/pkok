@@ -385,6 +385,44 @@ export async function fairSicBo(
 }
 
 /**
+ * Blackjack: shuffle a 52-card deck deterministically. The route reveals
+ * cards in order as the player Hits/Stands/Doubles.
+ * Card values: A=1 or 11, 2..9 = face, 10/J/Q/K = 10.
+ */
+export async function fairBlackjackDeck(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<number[]> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 52);
+  const deck = Array.from({ length: 52 }, (_, i) => i);
+  for (let i = 51; i > 0; i--) {
+    const j = Math.floor(floats[i] * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  return deck;
+}
+
+/** Blackjack card value helper. */
+export function bjValue(card: number): number {
+  const r = card % 13; // 0=A, 1=2, ..., 9=10, 10=J, 11=Q, 12=K
+  if (r === 0) return 11; // Ace as 11; caller downgrades if bust
+  if (r >= 9) return 10;
+  return r + 1;
+}
+
+/** Best (non-bust preferred) blackjack hand total. */
+export function bjTotal(cards: number[]): { total: number; soft: boolean } {
+  let total = cards.reduce((s, c) => s + bjValue(c), 0);
+  let aces = cards.filter((c) => c % 13 === 0).length;
+  let soft = aces > 0;
+  while (total > 21 && aces > 0) { total -= 10; aces--; }
+  if (aces === 0) soft = false;
+  return { total, soft };
+}
+
+
+/**
  * Roulette (European single-zero, 0..36).
  * Red pockets by tradition:
  *   1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36

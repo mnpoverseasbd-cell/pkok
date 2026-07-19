@@ -18,6 +18,8 @@ import {
   fairBaccarat,
   fairSicBo,
   fairRoulette,
+  fairBlackjackDeck,
+  bjTotal,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -25,7 +27,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette";
+  | "sic-bo" | "roulette" | "blackjack";
 
 
 export type VerifyPrefill = {
@@ -241,6 +243,17 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
           const r = await fairRoulette(serverSeed, clientSeed, nonce);
           outcome = `Pocket = ${r.pocket} · ${r.color}${r.pocket === 0 ? "" : ` · ${r.parity} · ${r.size} · Dozen ${r.dozen}`}`;
+          break;
+        }
+        case "blackjack": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 52);
+          const deck = await fairBlackjackDeck(serverSeed, clientSeed, nonce);
+          const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+          const SUITS = ["♠","♥","♦","♣"];
+          const card = (c: number) => `${RANKS[c % 13]}${SUITS[Math.floor(c / 13)]}`;
+          const initP = [deck[0], deck[2]];
+          const initD = [deck[1], deck[3]];
+          outcome = `Deal order: P=[${initP.map(card).join(" ")}] (${bjTotal(initP).total}) · D=[${initD.map(card).join(" ")}?] (upcard ${bjTotal([initD[0]]).total}) · Next cards: ${deck.slice(4, 10).map(card).join(" ")}...`;
           break;
         }
       }

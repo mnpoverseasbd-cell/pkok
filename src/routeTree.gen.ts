@@ -55,6 +55,7 @@ import { Route as GamesCrashRouteImport } from './routes/games.crash'
 import { Route as GamesColorPredictionRouteImport } from './routes/games.color-prediction'
 import { Route as GamesCoinflipRouteImport } from './routes/games.coinflip'
 import { Route as GamesChickenRoadRouteImport } from './routes/games.chicken-road'
+import { Route as GamesBlackjackRouteImport } from './routes/games.blackjack'
 import { Route as GamesBaccaratRouteImport } from './routes/games.baccarat'
 import { Route as GamesAndarBaharRouteImport } from './routes/games.andar-bahar'
 import { Route as ApiPublicHooksVipDailyRouteImport } from './routes/api/public/hooks/vip-daily'
@@ -289,6 +290,11 @@ const GamesChickenRoadRoute = GamesChickenRoadRouteImport.update({
   path: '/games/chicken-road',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesBlackjackRoute = GamesBlackjackRouteImport.update({
+  id: '/games/blackjack',
+  path: '/games/blackjack',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesBaccaratRoute = GamesBaccaratRouteImport.update({
   id: '/games/baccarat',
   path: '/games/baccarat',
@@ -333,6 +339,7 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof WalletRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/baccarat': typeof GamesBaccaratRoute
+  '/games/blackjack': typeof GamesBlackjackRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
@@ -384,6 +391,7 @@ export interface FileRoutesByTo {
   '/wallet': typeof WalletRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/baccarat': typeof GamesBaccaratRoute
+  '/games/blackjack': typeof GamesBlackjackRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
@@ -436,6 +444,7 @@ export interface FileRoutesById {
   '/wallet': typeof WalletRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/baccarat': typeof GamesBaccaratRoute
+  '/games/blackjack': typeof GamesBlackjackRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
@@ -489,6 +498,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/games/andar-bahar'
     | '/games/baccarat'
+    | '/games/blackjack'
     | '/games/chicken-road'
     | '/games/coinflip'
     | '/games/color-prediction'
@@ -540,6 +550,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/games/andar-bahar'
     | '/games/baccarat'
+    | '/games/blackjack'
     | '/games/chicken-road'
     | '/games/coinflip'
     | '/games/color-prediction'
@@ -591,6 +602,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/games/andar-bahar'
     | '/games/baccarat'
+    | '/games/blackjack'
     | '/games/chicken-road'
     | '/games/coinflip'
     | '/games/color-prediction'
@@ -643,6 +655,7 @@ export interface RootRouteChildren {
   WalletRoute: typeof WalletRoute
   GamesAndarBaharRoute: typeof GamesAndarBaharRoute
   GamesBaccaratRoute: typeof GamesBaccaratRoute
+  GamesBlackjackRoute: typeof GamesBlackjackRoute
   GamesChickenRoadRoute: typeof GamesChickenRoadRoute
   GamesCoinflipRoute: typeof GamesCoinflipRoute
   GamesColorPredictionRoute: typeof GamesColorPredictionRoute
@@ -991,6 +1004,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesChickenRoadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/blackjack': {
+      id: '/games/blackjack'
+      path: '/games/blackjack'
+      fullPath: '/games/blackjack'
+      preLoaderRoute: typeof GamesBlackjackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/baccarat': {
       id: '/games/baccarat'
       path: '/games/baccarat'
@@ -1043,6 +1063,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletRoute: WalletRoute,
   GamesAndarBaharRoute: GamesAndarBaharRoute,
   GamesBaccaratRoute: GamesBaccaratRoute,
+  GamesBlackjackRoute: GamesBlackjackRoute,
   GamesChickenRoadRoute: GamesChickenRoadRoute,
   GamesCoinflipRoute: GamesCoinflipRoute,
   GamesColorPredictionRoute: GamesColorPredictionRoute,

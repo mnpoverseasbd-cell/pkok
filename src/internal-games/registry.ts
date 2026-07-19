@@ -53,6 +53,7 @@ const SEEDS: Seed[] = [
   { slug: "baccarat", name: "Baccarat", category: "table", image: imgBaccarat, tags: ["new", "hot", "cards", "classic"], featured: true, popularity: 91 },
   { slug: "sic-bo", name: "Sic Bo", category: "table", image: imgDice, tags: ["new", "hot", "dice"], featured: true, popularity: 89 },
   { slug: "roulette", name: "Roulette", category: "table", image: imgRoulette, tags: ["new", "hot", "classic"], featured: true, popularity: 97 },
+  { slug: "blackjack", name: "Blackjack", category: "table", image: imgPoker, tags: ["new", "hot", "cards", "classic"], featured: true, popularity: 98 },
 
 ];
 
