@@ -177,6 +177,15 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           outcome = `Wheel color index = ${idx} (${["Red","Green","Violet"][idx]})`;
           break;
         }
+        case "andar-bahar": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 52);
+          const r = await fairAndarBahar(serverSeed, clientSeed, nonce);
+          const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+          const SUITS = ["♠","♥","♦","♣"];
+          const card = (c: number) => `${RANKS[c % 13]}${SUITS[Math.floor(c / 13)]}`;
+          outcome = `Joker=${card(r.joker)} · Winner=${r.winner === "A" ? "Andar" : "Bahar"} · Cards drawn=${r.cardsDrawn}`;
+          break;
+        }
       }
 
       setResult({
