@@ -91,6 +91,7 @@ function ShellGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="shell-game" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="shell-game" /></div>
     </GameShell>
   );
 }
