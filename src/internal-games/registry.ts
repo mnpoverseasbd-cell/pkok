@@ -3,6 +3,7 @@ import type { InternalGame } from "./InternalGame";
 import { RouteInternalGame } from "./base";
 import type { GameMetadata } from "@/core/types";
 import type { GameCategory } from "@/core/constants";
+export type GameSlug = "dice" | "crash" | "mines" | "coinflip" | "plinko" | "wheel" | "limbo" | "chicken-road" | "tower" | "lucky-card" | "shell-game" | "scratch-card" | "keno" | "hi-lo" | "color-prediction" | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat" | "sic-bo" | "roulette" | "blackjack" | "32-cards";
 
 // Reuse existing artwork — new visual assets are out of scope.
 import imgDice from "@/assets/game-dice.jpg";
