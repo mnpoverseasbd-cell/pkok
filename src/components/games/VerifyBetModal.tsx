@@ -237,6 +237,12 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           outcome = `Dice = [${r.d1}, ${r.d2}, ${r.d3}] · Sum = ${r.sum} · ${label}`;
           break;
         }
+        case "roulette": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
+          const r = await fairRoulette(serverSeed, clientSeed, nonce);
+          outcome = `Pocket = ${r.pocket} · ${r.color}${r.pocket === 0 ? "" : ` · ${r.parity} · ${r.size} · Dozen ${r.dozen}`}`;
+          break;
+        }
       }
 
 
