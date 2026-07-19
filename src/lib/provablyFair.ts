@@ -275,6 +275,82 @@ export async function fairSevenUpDown(
   return { d1, d2, sum, result };
 }
 
+/**
+ * Baccarat (Punto Banco): shuffle a 52-card deck, deal 2 cards each to
+ * Player and Banker, apply standard third-card rules.
+ * Values: A=1, 2..9=face, 10/J/Q/K=0. Hand total = sum mod 10.
+ * Payouts (caller applies): Player 2×, Banker 1.95× (5% commission), Tie 9×.
+ */
+export type BaccaratWinner = "P" | "B" | "TIE";
+const bacValue = (c: number) => {
+  const r = c % 13; // 0=A, 1=2, ..., 9=10, 10=J, 11=Q, 12=K
+  if (r === 0) return 1;
+  if (r >= 9) return 0;
+  return r + 1;
+};
+const bacTotal = (cards: number[]) =>
+  cards.reduce((s, c) => s + bacValue(c), 0) % 10;
+
+export async function fairBaccarat(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<{
+  player: number[];
+  banker: number[];
+  playerTotal: number;
+  bankerTotal: number;
+  winner: BaccaratWinner;
+  isNatural: boolean;
+}> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 52);
+  const deck = Array.from({ length: 52 }, (_, i) => i);
+  for (let i = 51; i > 0; i--) {
+    const j = Math.floor(floats[i] * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  const player = [deck[0], deck[2]];
+  const banker = [deck[1], deck[3]];
+  let idx = 4;
+
+  let pt = bacTotal(player);
+  let bt = bacTotal(banker);
+  const isNatural = pt >= 8 || bt >= 8;
+
+  if (!isNatural) {
+    // Player rule
+    let playerThird: number | null = null;
+    if (pt <= 5) {
+      playerThird = deck[idx++];
+      player.push(playerThird);
+      pt = bacTotal(player);
+    }
+    // Banker rule
+    let bankerDraws = false;
+    if (playerThird === null) {
+      // Player stood → banker draws on 0-5
+      bankerDraws = bt <= 5;
+    } else {
+      const pv = bacValue(playerThird);
+      if (bt <= 2) bankerDraws = true;
+      else if (bt === 3) bankerDraws = pv !== 8;
+      else if (bt === 4) bankerDraws = pv >= 2 && pv <= 7;
+      else if (bt === 5) bankerDraws = pv >= 4 && pv <= 7;
+      else if (bt === 6) bankerDraws = pv === 6 || pv === 7;
+      // bt >= 7 stands
+    }
+    if (bankerDraws) {
+      banker.push(deck[idx++]);
+      bt = bacTotal(banker);
+    }
+  }
+
+  const winner: BaccaratWinner = pt === bt ? "TIE" : pt > bt ? "P" : "B";
+  return { player, banker, playerTotal: pt, bankerTotal: bt, winner, isNatural };
+}
+
+
+
 
 
 
