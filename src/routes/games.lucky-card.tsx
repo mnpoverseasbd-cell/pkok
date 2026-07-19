@@ -24,9 +24,9 @@ const SUITS = ["♠", "♥", "♦", "♣"] as const;
 const RED = new Set(["♥", "♦"]);
 type Bet = "red" | "black" | "high" | "low";
 
-function drawCard() {
-  const rank = 1 + Math.floor(Math.random() * 13);
-  const suit = SUITS[Math.floor(Math.random() * 4)];
+function drawCardFrom(floats: number[]) {
+  const rank = 1 + Math.floor(floats[0] * 13);
+  const suit = SUITS[Math.floor(floats[1] * 4)];
   return { rank, suit, red: RED.has(suit) };
 }
 
