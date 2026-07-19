@@ -27,6 +27,7 @@ function ColorPredictionGame() {
   const { bet: placeBet, credit } = useDemoWallet();
   const { stats, record, reset: resetStats } = useGameStats("color-prediction");
   const { data: cfg } = useGameConfig("color-prediction");
+  const pf = useProvablyFair("color-prediction");
   const edge = cfg?.house_edge ?? 0.03;
   const [bet, setBet] = useState(50);
   const [pick, setPick] = useState<Color>("red");
@@ -38,8 +39,9 @@ function ColorPredictionGame() {
     if (busy) return;
     if (!placeBet(bet)) { setMsg("পর্যাপ্ত ব্যালেন্স নেই"); return; }
     setBusy(true); setMsg(""); setResult(null);
+    const [f] = await fairFloats(pf.serverSeed, pf.clientSeed, pf.nonce, 1);
     await new Promise((r) => setTimeout(r, 500));
-    const c = WHEEL[Math.floor(Math.random() * WHEEL.length)];
+    const c = WHEEL[Math.floor(f * WHEEL.length)];
     setResult(c);
     const rawMult = pick === c ? (c === "violet" ? 5 : 2) : 0;
     const mult = +(rawMult * (1 - edge)).toFixed(3);
@@ -59,8 +61,9 @@ function ColorPredictionGame() {
       recordMyBet({ game: "color-prediction", bet, multiplier: 0, payout: 0 });
       try { sfxBust(); } catch {}
     }
+    pf.consume(`result=${c} · pick=${pick}`);
     setBusy(false);
-  }, [busy, bet, pick, edge, placeBet, credit, record]);
+  }, [busy, bet, pick, edge, placeBet, credit, record, pf]);
 
   const swatch = (c: Color) =>
     c === "red" ? "bg-rose-500" : c === "green" ? "bg-emerald-500" : "bg-fuchsia-500";
