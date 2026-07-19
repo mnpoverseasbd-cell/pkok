@@ -117,6 +117,7 @@ function ScratchCardGame() {
       </GameFrame>
       <div className="mt-3"><MultiplierHistoryStrip gameKey="scratch-card" /></div>
       <StatsBar stats={stats} onReset={resetStats} />
+      <div className="mt-3"><ProvablyFairPanel pf={pf} gameKey="scratch-card" /></div>
     </GameShell>
   );
 }
