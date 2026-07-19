@@ -16,7 +16,8 @@ import {
 export type VerifyGameKey =
   | "dice" | "limbo" | "crash" | "coinflip" | "wheel" | "plinko" | "mines"
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
-  | "scratch-card" | "keno" | "hi-lo" | "color-prediction";
+  | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
+  | "andar-bahar";
 
 export type VerifyPrefill = {
   serverSeed?: string;
