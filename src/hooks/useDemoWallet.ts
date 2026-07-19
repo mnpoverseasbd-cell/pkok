@@ -1,13 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 /**
- * Coin wallet backed by profiles.wallet_balance in Supabase.
- * Requires the user to be logged in. Games check `ready` before allowing bets.
+ * Real-money wallet backed by profiles.wallet_balance via the atomic
+ * `wallet_mutate` Postgres RPC. Every bet/win writes a `transactions`
+ * ledger row (type=bet|win) tagged with game_id + round_id so admin
+ * Reports and Bet History reflect true activity.
  *
- * NOTE: Every mount of this hook stays in sync via a shared window event
- * ("wallet:balance"), so GameShell's coin counter reflects bets/wins
- * placed by the game component without waiting for a manual refresh.
+ * UI stays optimistic — bet() / credit() update local balance synchronously,
+ * then reconcile against the RPC result. On failure we revert.
+ *
+ * A "wallet:balance" window event keeps every mount (GameShell counter,
+ * site header) in sync without a manual refresh.
  */
 
 const EVT = "wallet:balance";
@@ -17,11 +22,44 @@ function broadcast(next: number) {
   window.dispatchEvent(new CustomEvent(EVT, { detail: next }));
 }
 
+function currentGameId(): string {
+  if (typeof window === "undefined") return "internal";
+  const m = window.location.pathname.match(/\/games\/([^/?#]+)/);
+  return m ? m[1] : "internal";
+}
+
+function newRoundId() {
+  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+async function rpcMutate(
+  type: "bet" | "win" | "refund",
+  amount: number,
+  gameId: string,
+  roundId: string,
+): Promise<number | null> {
+  const { data, error } = await supabase.rpc("wallet_mutate", {
+    _type: type,
+    _amount: amount,
+    _game_id: gameId,
+    _round_id: roundId,
+    _note: undefined,
+  });
+  if (error) {
+    console.error("[wallet_mutate]", type, error);
+    return null;
+  }
+  const row = Array.isArray(data) ? data[0] : (data as any);
+  const nb = Number(row?.new_balance);
+  return Number.isFinite(nb) ? nb : null;
+}
+
 export function useDemoWallet() {
   const [userId, setUserId] = useState<string | null>(null);
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const balanceRef = useRef(0);
+  const roundIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     balanceRef.current = balance;
@@ -64,7 +102,6 @@ export function useDemoWallet() {
     };
   }, [load]);
 
-  // Listen for balance updates from other mounts of this hook.
   useEffect(() => {
     const handler = (e: Event) => {
       const next = (e as CustomEvent).detail;
@@ -76,33 +113,59 @@ export function useDemoWallet() {
     return () => window.removeEventListener(EVT, handler);
   }, []);
 
-  const persist = useCallback(async (uid: string, next: number) => {
-    await supabase.from("profiles").update({ wallet_balance: next }).eq("id", uid);
-  }, []);
-
   const bet = useCallback(
     (amount: number) => {
       if (!userId) return false;
       const cur = balanceRef.current;
       if (amount <= 0 || amount > cur) return false;
-      const next = cur - amount;
-      setBalance(next);
-      broadcast(next);
-      void persist(userId, next);
+      // Optimistic
+      const optimistic = cur - amount;
+      setBalance(optimistic);
+      broadcast(optimistic);
+      const roundId = newRoundId();
+      roundIdRef.current = roundId;
+      const gameId = currentGameId();
+      // Ledger write (background)
+      void rpcMutate("bet", amount, gameId, roundId).then((nb) => {
+        if (nb == null) {
+          // Revert on failure
+          setBalance(cur);
+          broadcast(cur);
+          toast.error("বাজি ব্যর্থ — ব্যালেন্স পুনরুদ্ধার হয়েছে");
+          roundIdRef.current = null;
+        } else if (nb !== balanceRef.current) {
+          // Reconcile against server truth
+          setBalance(nb);
+          broadcast(nb);
+        }
+      });
       return true;
     },
-    [userId, persist],
+    [userId],
   );
 
   const credit = useCallback(
     (amount: number) => {
       if (!userId || amount <= 0) return;
-      const next = balanceRef.current + amount;
-      setBalance(next);
-      broadcast(next);
-      void persist(userId, next);
+      const cur = balanceRef.current;
+      const optimistic = cur + amount;
+      setBalance(optimistic);
+      broadcast(optimistic);
+      const roundId = roundIdRef.current ?? newRoundId();
+      const gameId = currentGameId();
+      void rpcMutate("win", amount, gameId, roundId).then((nb) => {
+        if (nb == null) {
+          setBalance(cur);
+          broadcast(cur);
+          toast.error("জয় ক্রেডিট ব্যর্থ — refresh করুন");
+        } else if (nb !== balanceRef.current) {
+          setBalance(nb);
+          broadcast(nb);
+        }
+        roundIdRef.current = null;
+      });
     },
-    [userId, persist],
+    [userId],
   );
 
   const refresh = useCallback(() => {
