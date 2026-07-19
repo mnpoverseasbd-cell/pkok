@@ -186,6 +186,80 @@ export async function fairDragonTiger(
   return { dragon, tiger, winner };
 }
 
+/**
+ * Teen Patti: shuffle 52-card deck and deal 3 cards each to Player and Dealer.
+ * Card encoding: 0..51 where rank = card % 13 (0=A, 1=2, ..., 12=K), suit = card / 13.
+ * Returns hands, category names, and winner. Ace can be high or low in straights.
+ */
+export type TeenPattiCategory =
+  | "Trail" | "Pure Sequence" | "Sequence" | "Color" | "Pair" | "High Card";
+
+function tpScore(cards: number[]): { score: number; category: TeenPattiCategory } {
+  // Rank values: A=14, 2=2, ... K=13. But A also = 1 for A-2-3 straight.
+  const ranks = cards.map((c) => {
+    const r = c % 13;
+    return r === 0 ? 14 : r + 1; // A=14, 2=2, K=13
+  }).sort((a, b) => b - a);
+  const suits = cards.map((c) => Math.floor(c / 13));
+  const isFlush = suits[0] === suits[1] && suits[1] === suits[2];
+  // Check straight: consecutive OR the special A-2-3 (14,3,2)
+  const [a, b, c] = ranks;
+  const consecutive = a - b === 1 && b - c === 1;
+  const aceLow = a === 14 && b === 3 && c === 2;
+  const isStraight = consecutive || aceLow;
+  const isTrail = a === b && b === c;
+  const isPair = !isTrail && (a === b || b === c);
+  // Kicker encoding
+  let pairRank = 0, kicker = 0;
+  if (isPair) {
+    if (a === b) { pairRank = a; kicker = c; }
+    else { pairRank = b; kicker = a; }
+  }
+  const straightHigh = aceLow ? 3 : a;
+  // Score: [category(3 digits)][top(2)][mid(2)][low(2)][extra(2)]
+  const enc = (cat: number, x1: number, x2: number, x3: number, x4 = 0) =>
+    cat * 1e8 + x1 * 1e6 + x2 * 1e4 + x3 * 1e2 + x4;
+  if (isTrail) return { score: enc(6, a, 0, 0), category: "Trail" };
+  if (isStraight && isFlush) return { score: enc(5, straightHigh, 0, 0), category: "Pure Sequence" };
+  if (isStraight) return { score: enc(4, straightHigh, 0, 0), category: "Sequence" };
+  if (isFlush) return { score: enc(3, a, b, c), category: "Color" };
+  if (isPair) return { score: enc(2, pairRank, kicker, 0), category: "Pair" };
+  return { score: enc(1, a, b, c), category: "High Card" };
+}
+
+export async function fairTeenPatti(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<{
+  player: number[];
+  dealer: number[];
+  playerCategory: TeenPattiCategory;
+  dealerCategory: TeenPattiCategory;
+  winner: "P" | "D" | "TIE";
+}> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 52);
+  const deck = Array.from({ length: 52 }, (_, i) => i);
+  for (let i = 51; i > 0; i--) {
+    const j = Math.floor(floats[i] * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  const player = [deck[0], deck[2], deck[4]];
+  const dealer = [deck[1], deck[3], deck[5]];
+  const ps = tpScore(player);
+  const ds = tpScore(dealer);
+  const winner: "P" | "D" | "TIE" =
+    ps.score === ds.score ? "TIE" : ps.score > ds.score ? "P" : "D";
+  return {
+    player, dealer,
+    playerCategory: ps.category,
+    dealerCategory: ds.category,
+    winner,
+  };
+}
+
+
+
 
 // ---- Seed generation ---------------------------------------------------------
 

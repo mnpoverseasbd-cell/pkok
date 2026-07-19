@@ -48,6 +48,7 @@ const SEEDS: Seed[] = [
   { slug: "color-prediction", name: "Color Prediction", category: "table", image: imgRoulette, tags: ["new", "hot"], featured: true, popularity: 92 },
   { slug: "andar-bahar", name: "Andar Bahar", category: "table", image: imgBaccarat, tags: ["new", "hot", "cards"], featured: true, popularity: 95 },
   { slug: "dragon-tiger", name: "Dragon Tiger", category: "table", image: imgPoker, tags: ["new", "hot", "cards"], featured: true, popularity: 94 },
+  { slug: "teen-patti", name: "Teen Patti", category: "poker", image: imgPoker, tags: ["new", "hot", "cards", "bd"], featured: true, popularity: 96 },
 ];
 
 function metaFrom(seed: Seed): GameMetadata {
