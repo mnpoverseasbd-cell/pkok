@@ -43,6 +43,10 @@ import {
   penaltyLadderMult,
   PENALTY_ZONES,
   PENALTY_MAX_KICKS,
+  fairCricket,
+  cricketNetMult,
+  CRICKET_OUTCOMES,
+  CRICKET_MAX_BALLS,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
