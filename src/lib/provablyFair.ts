@@ -948,8 +948,47 @@ export async function fairAviatrix(
 }
 
 
+// ---- Dragon Fortune Fishing --------------------------------------------------
+// Multi-shot fishing round. User picks shot count (3/5/8). Each shot is one
+// independent float that lands on a fish tier (or miss). Total payout is
+// sum(shot multipliers) × perShotBet × (1 − edge).
 
+export type DragonFishTier = {
+  key: "miss" | "small" | "medium" | "big" | "boss" | "mega";
+  emoji: string;
+  label: string;
+  mult: number;
+  threshold: number; // ascending CDF boundary
+};
 
+export const DRAGON_FISH_TIERS: DragonFishTier[] = [
+  { key: "mega",   emoji: "🐲", label: "Mega Dragon", mult: 20,  threshold: 0.03 },
+  { key: "boss",   emoji: "🦈", label: "Boss",        mult: 6,   threshold: 0.10 },
+  { key: "big",    emoji: "🐡", label: "Big",         mult: 2.2, threshold: 0.25 },
+  { key: "medium", emoji: "🐠", label: "Medium",      mult: 1.1, threshold: 0.55 },
+  { key: "small",  emoji: "🐟", label: "Small",       mult: 0.4, threshold: 0.80 },
+  { key: "miss",   emoji: "💨", label: "Miss",        mult: 0,   threshold: 1.00 },
+];
+
+export const DRAGON_FISHING_SHOT_CHOICES = [3, 5, 8] as const;
+export type DragonFishingShotCount = typeof DRAGON_FISHING_SHOT_CHOICES[number];
+
+export type DragonFishingShot = { float: number; tierIndex: number; mult: number };
+
+export async function fairDragonFishing(
+  serverSeed: string, clientSeed: string, nonce: number, shots: number,
+): Promise<{ shots: DragonFishingShot[]; totalMult: number }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, shots);
+  const out: DragonFishingShot[] = floats.map((f) => {
+    let idx = DRAGON_FISH_TIERS.length - 1;
+    for (let i = 0; i < DRAGON_FISH_TIERS.length; i++) {
+      if (f < DRAGON_FISH_TIERS[i].threshold) { idx = i; break; }
+    }
+    return { float: f, tierIndex: idx, mult: DRAGON_FISH_TIERS[idx].mult };
+  });
+  const totalMult = +out.reduce((a, s) => a + s.mult, 0).toFixed(4);
+  return { shots: out, totalMult };
+}
 
 
 // ---- Seed generation ---------------------------------------------------------
