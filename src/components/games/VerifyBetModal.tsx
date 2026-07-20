@@ -348,7 +348,7 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
             <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
               {FISH_TIERS.map((t) => (
                 <div key={t.key}>
-                  {t.emoji} {t.label.padEnd(10, " ")} · hit if f &lt; {t.threshold ?? t.hitProb} · payout {t.payout}×
+                  {t.emoji} {t.label.padEnd(10, " ")} · hit if f &lt; {t.hitProb} · payout {t.payout}×
                 </div>
               ))}
             </div>
