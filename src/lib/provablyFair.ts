@@ -794,6 +794,52 @@ export async function fairMatka(
 }
 
 
+// ---- Fish Shooter · Cast Net -------------------------------------------------
+
+export type FishTier = "small" | "medium" | "big" | "boss" | "mega";
+
+export type FishTierConfig = {
+  key: FishTier;
+  label: string;
+  emoji: string;
+  hitProb: number;   // probability the shot lands
+  payout: number;    // gross multiplier on hit (pre-house-edge)
+};
+
+// hitProb × payout is intentionally < 1 so a house edge is applied on top.
+export const FISH_TIERS: FishTierConfig[] = [
+  { key: "small",  label: "Small Fry",   emoji: "🐟", hitProb: 0.70, payout: 1.40 },
+  { key: "medium", label: "Medium",      emoji: "🐠", hitProb: 0.45, payout: 2.20 },
+  { key: "big",    label: "Big Catch",   emoji: "🐡", hitProb: 0.25, payout: 4.00 },
+  { key: "boss",   label: "Boss",        emoji: "🦈", hitProb: 0.10, payout: 10.00 },
+  { key: "mega",   label: "Mega Boss",   emoji: "🐙", hitProb: 0.03, payout: 33.00 },
+];
+
+export type FishShooterResult = {
+  tier: FishTier;
+  hit: boolean;
+  float: number;
+  threshold: number; // hitProb for the chosen tier
+  payout: number;    // gross payout multiplier (0 if miss)
+};
+
+/**
+ * One shot targeting a chosen fish tier.
+ * float[0] < tier.hitProb ⇒ hit (payout = tier.payout), otherwise miss.
+ */
+export async function fairFishShooter(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+  tier: FishTier,
+): Promise<FishShooterResult> {
+  const cfg = FISH_TIERS.find((t) => t.key === tier)!;
+  const [f] = await fairFloats(serverSeed, clientSeed, nonce, 1);
+  const hit = f < cfg.hitProb;
+  return { tier, hit, float: f, threshold: cfg.hitProb, payout: hit ? cfg.payout : 0 };
+}
+
+
 // ---- Seed generation ---------------------------------------------------------
 
 export function randomSeed(bytes: number = 32): string {
