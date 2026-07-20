@@ -28,6 +28,8 @@ import {
   VP_PAYOUTS,
   fairSlots,
   SLOT_SYMBOLS,
+  fairBingo,
+  BINGO_COLS,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -35,7 +37,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo";
 
 
 export type VerifyPrefill = {
@@ -305,6 +307,19 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           extra = (
             <div className="mt-2 text-[10px] text-white/50">
               15 floats → symbol per cell via weighted CDF [30, 25, 18, 14, 9, 4]. Lines pay left-to-right, 3+ in a row.
+            </div>
+          );
+          break;
+        case "bingo": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 32);
+          const r = await fairBingo(serverSeed, clientSeed, nonce);
+          const cardStr = r.card
+            .map((row) => row.map((n) => (n === 0 ? "★" : String(n).padStart(2, "0"))).join(" "))
+            .join("\n  ");
+          outcome = `Card (${BINGO_COLS.join(" ")}):\n  ${cardStr}\nBalls (${r.balls.length}): ${r.balls.join(", ")}\nPatterns: ${r.patterns.join(", ") || "none"} · Total ${r.multiplier}×`;
+          extra = (
+            <div className="mt-2 text-[10px] text-white/50">
+              First 5 columns pull 5 unique numbers each from ranges 1–15, 16–30, 31–45, 46–60, 61–75. Then 30 unique balls drawn from 1–75. Center is FREE.
             </div>
           );
           break;
