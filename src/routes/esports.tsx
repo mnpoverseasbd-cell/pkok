@@ -72,6 +72,7 @@ const myGames: OriginalGame[] = [
   { slug: "megaways",         name: "Fruit Slots Megaways", nameBn: "ফ্রুট স্লট মেগাওয়েজ", provider: "ASIK", poster: imgCandy,    status: "live", to: "/games/megaways" },
   { slug: "aviatrix",         name: "Aviatrix Multi-Race", nameBn: "অ্যাভিয়াট্রিক্স রেস", provider: "ASIK", poster: imgAviator,   status: "live", to: "/games/aviatrix" },
   { slug: "dragon-fishing",   name: "Dragon Fortune Fishing", nameBn: "ড্রাগন ফরচুন ফিশিং", provider: "ASIK", poster: imgAviator, status: "live", to: "/games/dragon-fishing" },
+  { slug: "penalty",          name: "Penalty Shootout",  nameBn: "পেনাল্টি শুটআউট",   provider: "ASIK", poster: imgFortune,     status: "live", to: "/games/penalty" },
 
 
 ];
