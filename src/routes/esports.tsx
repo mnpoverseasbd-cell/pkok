@@ -68,6 +68,7 @@ const myGames: OriginalGame[] = [
   { slug: "slots",            name: "Cosmic Fortune Slots", nameBn: "কসমিক ফরচুন স্লটস", provider: "ASIK", poster: imgSlot1,      status: "live", to: "/games/slots" },
   { slug: "bingo",            name: "Bingo 75",          nameBn: "বিঙ্গো ৭৫",           provider: "ASIK", poster: imgCandy,       status: "live", to: "/games/bingo" },
   { slug: "matka",            name: "Matka King",        nameBn: "মটকা কিং",          provider: "ASIK", poster: imgCandy,       status: "live", to: "/games/matka" },
+  { slug: "fish-shooter",     name: "Fish Shooter",      nameBn: "ফিশ শুটার",         provider: "ASIK", poster: imgAviator,     status: "live", to: "/games/fish-shooter" },
 
 
 ];
