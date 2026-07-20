@@ -392,7 +392,22 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "dragon-fishing": {
+          const shotCount = 5;
+          floats = await fairFloats(serverSeed, clientSeed, nonce, shotCount);
+          const r = await fairDragonFishing(serverSeed, clientSeed, nonce, shotCount);
+          const rows = r.shots.map((s, i) => `Shot ${i + 1}: f=${s.float.toFixed(6)} ⇒ ${DRAGON_FISH_TIERS[s.tierIndex].emoji} ${DRAGON_FISH_TIERS[s.tierIndex].label} · ${s.mult}×`).join(" · ");
+          outcome = `${rows} · Total = ${r.totalMult.toFixed(2)}×`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>N floats (N = shot count). Each float lands in the ascending CDF: mega &lt; 0.03, boss &lt; 0.10, big &lt; 0.25, medium &lt; 0.55, small &lt; 0.80, else miss.</div>
+              <div>Payout = sum(shot mults) × perShotBet × (1 − edge).</div>
+            </div>
+          );
+          break;
+        }
       }
+
 
 
 
