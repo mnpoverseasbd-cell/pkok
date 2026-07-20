@@ -16,6 +16,7 @@ import imgBaccarat from "@/assets/game-baccarat.jpg";
 import imgCandy from "@/assets/game-candy.jpg";
 import imgSlot1 from "@/assets/game-slot1.jpg";
 import imgRoulette from "@/assets/game-roulette.jpg";
+import imgFortune from "@/assets/game-fortune.jpg";
 
 export const Route = createFileRoute("/esports")({
   head: () => ({
