@@ -668,6 +668,106 @@ export async function fairSlots(
   return { grid, wins, totalMultiplier };
 }
 
+// ---- Bingo 75-ball -----------------------------------------------------------
+
+export const BINGO_COLS = ["B", "I", "N", "G", "O"] as const;
+export const BINGO_DRAWS = 30;
+
+/** Column i covers numbers [i*15+1 .. i*15+15]. Center (2,2) is FREE. */
+export type BingoResult = {
+  card: number[][];         // 5×5 (0 at [2][2] = FREE)
+  balls: number[];          // 30 unique numbers drawn from 1..75
+  marks: boolean[][];       // 5×5, true if that cell was drawn (or FREE)
+  patterns: string[];       // e.g. ["Row 3", "Corners", "X", "Full House"]
+  multiplier: number;       // total multiplier
+};
+
+const BINGO_PATTERN_PAYOUTS: Record<string, number> = {
+  LINE: 2,
+  CORNERS: 5,
+  X: 10,
+  FULL: 100,
+};
+
+function pickUnique(count: number, from: number, to: number, floats: number[], cursor: { i: number }): number[] {
+  // Fisher-Yates on the range [from..to] using floats
+  const pool: number[] = [];
+  for (let n = from; n <= to; n++) pool.push(n);
+  for (let i = pool.length - 1; i > 0 && cursor.i < floats.length; i--) {
+    const j = Math.floor(floats[cursor.i++] * (i + 1));
+    const tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+  }
+  return pool.slice(0, count);
+}
+
+export async function fairBingo(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<BingoResult> {
+  // Need floats for 5 columns of 15-pool shuffles (~14 each = 70) + 75 for draw shuffle
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 160);
+  const cursor = { i: 0 };
+
+  // Build card: 5 columns, each 5 unique from its range (center replaced with 0 = FREE)
+  const card: number[][] = [[], [], [], [], []];
+  for (let col = 0; col < 5; col++) {
+    const nums = pickUnique(5, col * 15 + 1, col * 15 + 15, floats, cursor);
+    for (let row = 0; row < 5; row++) card[row].push(nums[row]);
+  }
+  card[2][2] = 0; // FREE
+
+  // Draw 30 balls
+  const balls = pickUnique(BINGO_DRAWS, 1, 75, floats, cursor);
+  const drawn = new Set(balls);
+
+  // Mark card
+  const marks: boolean[][] = [];
+  for (let r = 0; r < 5; r++) {
+    marks.push(card[r].map((n, c) => (r === 2 && c === 2) || drawn.has(n)));
+  }
+
+  const isMarked = (r: number, c: number) => marks[r][c];
+  const patterns: string[] = [];
+  let mult = 0;
+
+  // Rows
+  for (let r = 0; r < 5; r++) {
+    if ([0, 1, 2, 3, 4].every((c) => isMarked(r, c))) {
+      patterns.push(`Row ${r + 1}`);
+      mult += BINGO_PATTERN_PAYOUTS.LINE;
+    }
+  }
+  // Columns
+  for (let c = 0; c < 5; c++) {
+    if ([0, 1, 2, 3, 4].every((r) => isMarked(r, c))) {
+      patterns.push(`Col ${BINGO_COLS[c]}`);
+      mult += BINGO_PATTERN_PAYOUTS.LINE;
+    }
+  }
+  // Diagonals
+  const diag1 = [0, 1, 2, 3, 4].every((i) => isMarked(i, i));
+  const diag2 = [0, 1, 2, 3, 4].every((i) => isMarked(i, 4 - i));
+  if (diag1) { patterns.push("Diag ↘"); mult += BINGO_PATTERN_PAYOUTS.LINE; }
+  if (diag2) { patterns.push("Diag ↙"); mult += BINGO_PATTERN_PAYOUTS.LINE; }
+  // 4 corners
+  if (isMarked(0, 0) && isMarked(0, 4) && isMarked(4, 0) && isMarked(4, 4)) {
+    patterns.push("Corners");
+    mult += BINGO_PATTERN_PAYOUTS.CORNERS;
+  }
+  // X (both diagonals bonus)
+  if (diag1 && diag2) {
+    patterns.push("X");
+    mult += BINGO_PATTERN_PAYOUTS.X;
+  }
+  // Full house
+  let allMarked = true;
+  for (let r = 0; r < 5 && allMarked; r++) for (let c = 0; c < 5; c++) if (!marks[r][c]) { allMarked = false; break; }
+  if (allMarked) { patterns.push("Full House"); mult += BINGO_PATTERN_PAYOUTS.FULL; }
+
+  return { card, balls, marks, patterns, multiplier: mult };
+}
+
 
 
 

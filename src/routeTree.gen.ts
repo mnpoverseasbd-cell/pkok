@@ -58,6 +58,7 @@ import { Route as GamesColorPredictionRouteImport } from './routes/games.color-p
 import { Route as GamesCoinflipRouteImport } from './routes/games.coinflip'
 import { Route as GamesChickenRoadRouteImport } from './routes/games.chicken-road'
 import { Route as GamesBlackjackRouteImport } from './routes/games.blackjack'
+import { Route as GamesBingoRouteImport } from './routes/games.bingo'
 import { Route as GamesBaccaratRouteImport } from './routes/games.baccarat'
 import { Route as GamesAndarBaharRouteImport } from './routes/games.andar-bahar'
 import { Route as Games32CardsRouteImport } from './routes/games.32-cards'
@@ -308,6 +309,11 @@ const GamesBlackjackRoute = GamesBlackjackRouteImport.update({
   path: '/games/blackjack',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesBingoRoute = GamesBingoRouteImport.update({
+  id: '/games/bingo',
+  path: '/games/bingo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesBaccaratRoute = GamesBaccaratRouteImport.update({
   id: '/games/baccarat',
   path: '/games/baccarat',
@@ -358,6 +364,7 @@ export interface FileRoutesByFullPath {
   '/games/32-cards': typeof Games32CardsRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/baccarat': typeof GamesBaccaratRoute
+  '/games/bingo': typeof GamesBingoRoute
   '/games/blackjack': typeof GamesBlackjackRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
@@ -413,6 +420,7 @@ export interface FileRoutesByTo {
   '/games/32-cards': typeof Games32CardsRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/baccarat': typeof GamesBaccaratRoute
+  '/games/bingo': typeof GamesBingoRoute
   '/games/blackjack': typeof GamesBlackjackRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
@@ -469,6 +477,7 @@ export interface FileRoutesById {
   '/games/32-cards': typeof Games32CardsRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/baccarat': typeof GamesBaccaratRoute
+  '/games/bingo': typeof GamesBingoRoute
   '/games/blackjack': typeof GamesBlackjackRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
@@ -526,6 +535,7 @@ export interface FileRouteTypes {
     | '/games/32-cards'
     | '/games/andar-bahar'
     | '/games/baccarat'
+    | '/games/bingo'
     | '/games/blackjack'
     | '/games/chicken-road'
     | '/games/coinflip'
@@ -581,6 +591,7 @@ export interface FileRouteTypes {
     | '/games/32-cards'
     | '/games/andar-bahar'
     | '/games/baccarat'
+    | '/games/bingo'
     | '/games/blackjack'
     | '/games/chicken-road'
     | '/games/coinflip'
@@ -636,6 +647,7 @@ export interface FileRouteTypes {
     | '/games/32-cards'
     | '/games/andar-bahar'
     | '/games/baccarat'
+    | '/games/bingo'
     | '/games/blackjack'
     | '/games/chicken-road'
     | '/games/coinflip'
@@ -692,6 +704,7 @@ export interface RootRouteChildren {
   Games32CardsRoute: typeof Games32CardsRoute
   GamesAndarBaharRoute: typeof GamesAndarBaharRoute
   GamesBaccaratRoute: typeof GamesBaccaratRoute
+  GamesBingoRoute: typeof GamesBingoRoute
   GamesBlackjackRoute: typeof GamesBlackjackRoute
   GamesChickenRoadRoute: typeof GamesChickenRoadRoute
   GamesCoinflipRoute: typeof GamesCoinflipRoute
@@ -1064,6 +1077,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesBlackjackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/bingo': {
+      id: '/games/bingo'
+      path: '/games/bingo'
+      fullPath: '/games/bingo'
+      preLoaderRoute: typeof GamesBingoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/baccarat': {
       id: '/games/baccarat'
       path: '/games/baccarat'
@@ -1124,6 +1144,7 @@ const rootRouteChildren: RootRouteChildren = {
   Games32CardsRoute: Games32CardsRoute,
   GamesAndarBaharRoute: GamesAndarBaharRoute,
   GamesBaccaratRoute: GamesBaccaratRoute,
+  GamesBingoRoute: GamesBingoRoute,
   GamesBlackjackRoute: GamesBlackjackRoute,
   GamesChickenRoadRoute: GamesChickenRoadRoute,
   GamesCoinflipRoute: GamesCoinflipRoute,

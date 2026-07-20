@@ -58,6 +58,7 @@ const SEEDS: Seed[] = [
   { slug: "32-cards", name: "32 Cards", category: "table", image: imgBaccarat, tags: ["new", "hot", "cards", "bd", "classic"], featured: true, popularity: 95 },
   { slug: "video-poker", name: "Video Poker · Jacks or Better", category: "poker", image: imgPoker, tags: ["new", "hot", "cards", "classic"], featured: true, popularity: 90 },
   { slug: "slots", name: "Cosmic Fortune Slots", category: "slots", image: imgSlot1, tags: ["new", "hot", "slots", "classic"], featured: true, popularity: 99 },
+  { slug: "bingo", name: "Bingo 75", category: "lottery", image: imgFortune, tags: ["new", "hot", "lottery", "classic"], featured: true, popularity: 88 },
 
 ];
 
