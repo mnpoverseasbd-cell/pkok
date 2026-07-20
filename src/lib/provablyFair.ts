@@ -794,4 +794,11 @@ export async function fairMatka(
 }
 
 
+// ---- Seed generation ---------------------------------------------------------
+
+export function randomSeed(bytes: number = 32): string {
+  const b = new Uint8Array(bytes);
+  crypto.getRandomValues(b);
+  return toHex(b.buffer);
+}
 
