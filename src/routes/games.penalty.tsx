@@ -16,7 +16,7 @@ import {
 import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { MultiplierHistoryStrip, pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
 import { recordMyBet } from "@/lib/liveFeed";
-import { sfxWin, sfxBust, sfxClick } from "@/lib/sound";
+import { sfxWin, sfxBust, sfxTick as sfxClick } from "@/lib/sound";
 
 export const Route = createFileRoute("/games/penalty")({
   head: () => ({ meta: [
