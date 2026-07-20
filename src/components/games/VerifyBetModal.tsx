@@ -37,6 +37,8 @@ import {
   MEGAWAYS_SYMBOLS,
   fairAviatrix,
   AVIATRIX_PLANES,
+  fairDragonFishing,
+  DRAGON_FISH_TIERS,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -44,7 +46,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing";
 
 
 export type VerifyPrefill = {
