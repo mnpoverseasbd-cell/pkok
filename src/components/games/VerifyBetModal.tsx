@@ -30,6 +30,7 @@ import {
   SLOT_SYMBOLS,
   fairBingo,
   BINGO_COLS,
+  fairMatka,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -37,7 +38,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka";
 
 
 export type VerifyPrefill = {
