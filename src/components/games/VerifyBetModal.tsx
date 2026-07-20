@@ -410,6 +410,20 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "penalty": {
+          const kicks = PENALTY_MAX_KICKS;
+          const r = await fairPenalty(serverSeed, clientSeed, nonce, kicks);
+          floats = r.floats;
+          const rows = r.keeperZones.map((z, i) => `Kick ${i + 1}: f=${r.floats[i].toFixed(6)} ⇒ keeper ${PENALTY_ZONES[z]}`).join(" · ");
+          outcome = `${rows} · Perfect run (${kicks} goals) = ${penaltyLadderMult(kicks, 0.05).toFixed(2)}× @ 5% edge`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>Per kick: keeper_zone = floor(float × {PENALTY_ZONES.length}). Goal if player pick ≠ keeper.</div>
+              <div>Net mult after N consecutive goals = ({PENALTY_ZONES.length}/{PENALTY_ZONES.length - 1})^N × (1 − edge).</div>
+            </div>
+          );
+          break;
+        }
       }
 
 
