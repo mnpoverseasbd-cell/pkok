@@ -62,6 +62,7 @@ const SEEDS: Seed[] = [
   { slug: "matka", name: "Matka King", category: "lottery", image: imgFortune, tags: ["new", "hot", "lottery", "bd", "classic"], featured: true, popularity: 97 },
   { slug: "fish-shooter", name: "Fish Shooter · Cast Net", category: "fishing", image: imgDragon, tags: ["new", "hot", "fishing", "arcade"], featured: true, popularity: 92 },
   { slug: "megaways", name: "Fruit Slots · Megaways", category: "slots", image: imgCandy, tags: ["new", "hot", "slots", "megaways"], featured: true, popularity: 96 },
+  { slug: "aviatrix", name: "Aviatrix · Multi-Race", category: "crash", image: imgAviator, tags: ["new", "hot", "crash", "race"], featured: true, popularity: 95 },
 
 ];
 

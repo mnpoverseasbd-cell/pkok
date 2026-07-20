@@ -925,6 +925,31 @@ export async function fairMegaways(
 }
 
 
+// ---- Aviatrix Multi-Race -----------------------------------------------------
+// 3 planes race, each gets its own crash multiplier from an independent float.
+// Winner = highest multiplier. Player picks one plane before the race.
+
+export const AVIATRIX_PLANES = 3;
+
+export async function fairAviatrix(
+  serverSeed: string, clientSeed: string, nonce: number, edge: number = 0.01,
+): Promise<{ floats: number[]; multipliers: number[]; winner: number }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, AVIATRIX_PLANES);
+  const multipliers = floats.map((f) => {
+    if (f < 0.03) return 1.0;
+    const m = Math.max(1, (1 - edge) / Math.max(f, 1e-9));
+    return +Math.min(m, 1_000_000).toFixed(2);
+  });
+  let winner = 0;
+  for (let i = 1; i < multipliers.length; i++) {
+    if (multipliers[i] > multipliers[winner]) winner = i;
+  }
+  return { floats, multipliers, winner };
+}
+
+
+
+
 
 
 // ---- Seed generation ---------------------------------------------------------
