@@ -1017,7 +1017,69 @@ export function penaltyLadderMult(kicks: number, edge: number): number {
 }
 
 
+// ---- Cricket Star · Six-Over Chase -------------------------------------------
+// Per-ball outcome from a single fair float via an ascending CDF.
+// Wicket ends the innings. Any run compounds the multiplier by (1 + runs*k).
+// Cash out any time. Max 36 balls (6 overs).
+
+export type CricketOutcomeKey = "W" | "0" | "1" | "2" | "3" | "4" | "6";
+export type CricketOutcome = {
+  key: CricketOutcomeKey;
+  label: string;
+  runs: number; // 0 for W/dot
+  threshold: number; // ascending CDF boundary
+};
+
+// Ascending CDF: check in order, first t where f<t wins.
+export const CRICKET_OUTCOMES: CricketOutcome[] = [
+  { key: "W", label: "Wicket",  runs: 0, threshold: 0.10 },
+  { key: "0", label: "Dot",     runs: 0, threshold: 0.35 },
+  { key: "1", label: "Single",  runs: 1, threshold: 0.55 },
+  { key: "2", label: "Double",  runs: 2, threshold: 0.68 },
+  { key: "3", label: "Triple",  runs: 3, threshold: 0.75 },
+  { key: "4", label: "Four",    runs: 4, threshold: 0.90 },
+  { key: "6", label: "Six",     runs: 6, threshold: 1.00 },
+];
+
+export const CRICKET_MAX_BALLS = 36; // 6 overs
+export const CRICKET_RUN_GROWTH = 0.06; // per-run compound step
+
+export function cricketOutcomeForFloat(f: number): number {
+  for (let i = 0; i < CRICKET_OUTCOMES.length; i++) {
+    if (f < CRICKET_OUTCOMES[i].threshold) return i;
+  }
+  return CRICKET_OUTCOMES.length - 1;
+}
+
+export async function fairCricket(
+  serverSeed: string, clientSeed: string, nonce: number, balls: number = CRICKET_MAX_BALLS,
+): Promise<{ floats: number[]; outcomes: number[]; wicketBallIndex: number; totalRuns: number; grossMult: number }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, balls);
+  const outcomes: number[] = [];
+  let wicketBallIndex = -1;
+  let totalRuns = 0;
+  let grossMult = 1;
+  for (let i = 0; i < floats.length; i++) {
+    const idx = cricketOutcomeForFloat(floats[i]);
+    outcomes.push(idx);
+    const o = CRICKET_OUTCOMES[idx];
+    if (o.key === "W") { wicketBallIndex = i; break; }
+    if (o.runs > 0) {
+      grossMult *= 1 + o.runs * CRICKET_RUN_GROWTH;
+      totalRuns += o.runs;
+    }
+  }
+  return { floats, outcomes, wicketBallIndex, totalRuns, grossMult: +grossMult.toFixed(4) };
+}
+
+/** Net mult applied at cash-out after edge. */
+export function cricketNetMult(grossMult: number, edge: number): number {
+  return +(grossMult * (1 - edge)).toFixed(4);
+}
+
+
 // ---- Seed generation ---------------------------------------------------------
+
 
 export function randomSeed(bytes: number = 32): string {
   const b = new Uint8Array(bytes);
