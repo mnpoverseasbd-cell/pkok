@@ -58,6 +58,7 @@ import { Route as GamesFishShooterRouteImport } from './routes/games.fish-shoote
 import { Route as GamesDragonTigerRouteImport } from './routes/games.dragon-tiger'
 import { Route as GamesDragonFishingRouteImport } from './routes/games.dragon-fishing'
 import { Route as GamesDiceRouteImport } from './routes/games.dice'
+import { Route as GamesCricketRouteImport } from './routes/games.cricket'
 import { Route as GamesCrashRouteImport } from './routes/games.crash'
 import { Route as GamesColorPredictionRouteImport } from './routes/games.color-prediction'
 import { Route as GamesCoinflipRouteImport } from './routes/games.coinflip'
@@ -315,6 +316,11 @@ const GamesDiceRoute = GamesDiceRouteImport.update({
   path: '/games/dice',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesCricketRoute = GamesCricketRouteImport.update({
+  id: '/games/cricket',
+  path: '/games/cricket',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesCrashRoute = GamesCrashRouteImport.update({
   id: '/games/crash',
   path: '/games/crash',
@@ -407,6 +413,7 @@ export interface FileRoutesByFullPath {
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
   '/games/crash': typeof GamesCrashRoute
+  '/games/cricket': typeof GamesCricketRoute
   '/games/dice': typeof GamesDiceRoute
   '/games/dragon-fishing': typeof GamesDragonFishingRoute
   '/games/dragon-tiger': typeof GamesDragonTigerRoute
@@ -469,6 +476,7 @@ export interface FileRoutesByTo {
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
   '/games/crash': typeof GamesCrashRoute
+  '/games/cricket': typeof GamesCricketRoute
   '/games/dice': typeof GamesDiceRoute
   '/games/dragon-fishing': typeof GamesDragonFishingRoute
   '/games/dragon-tiger': typeof GamesDragonTigerRoute
@@ -532,6 +540,7 @@ export interface FileRoutesById {
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
   '/games/crash': typeof GamesCrashRoute
+  '/games/cricket': typeof GamesCricketRoute
   '/games/dice': typeof GamesDiceRoute
   '/games/dragon-fishing': typeof GamesDragonFishingRoute
   '/games/dragon-tiger': typeof GamesDragonTigerRoute
@@ -596,6 +605,7 @@ export interface FileRouteTypes {
     | '/games/coinflip'
     | '/games/color-prediction'
     | '/games/crash'
+    | '/games/cricket'
     | '/games/dice'
     | '/games/dragon-fishing'
     | '/games/dragon-tiger'
@@ -658,6 +668,7 @@ export interface FileRouteTypes {
     | '/games/coinflip'
     | '/games/color-prediction'
     | '/games/crash'
+    | '/games/cricket'
     | '/games/dice'
     | '/games/dragon-fishing'
     | '/games/dragon-tiger'
@@ -720,6 +731,7 @@ export interface FileRouteTypes {
     | '/games/coinflip'
     | '/games/color-prediction'
     | '/games/crash'
+    | '/games/cricket'
     | '/games/dice'
     | '/games/dragon-fishing'
     | '/games/dragon-tiger'
@@ -783,6 +795,7 @@ export interface RootRouteChildren {
   GamesCoinflipRoute: typeof GamesCoinflipRoute
   GamesColorPredictionRoute: typeof GamesColorPredictionRoute
   GamesCrashRoute: typeof GamesCrashRoute
+  GamesCricketRoute: typeof GamesCricketRoute
   GamesDiceRoute: typeof GamesDiceRoute
   GamesDragonFishingRoute: typeof GamesDragonFishingRoute
   GamesDragonTigerRoute: typeof GamesDragonTigerRoute
@@ -1155,6 +1168,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesDiceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/cricket': {
+      id: '/games/cricket'
+      path: '/games/cricket'
+      fullPath: '/games/cricket'
+      preLoaderRoute: typeof GamesCricketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/crash': {
       id: '/games/crash'
       path: '/games/crash'
@@ -1271,6 +1291,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesCoinflipRoute: GamesCoinflipRoute,
   GamesColorPredictionRoute: GamesColorPredictionRoute,
   GamesCrashRoute: GamesCrashRoute,
+  GamesCricketRoute: GamesCricketRoute,
   GamesDiceRoute: GamesDiceRoute,
   GamesDragonFishingRoute: GamesDragonFishingRoute,
   GamesDragonTigerRoute: GamesDragonTigerRoute,

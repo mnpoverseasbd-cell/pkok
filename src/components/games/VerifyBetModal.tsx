@@ -43,6 +43,10 @@ import {
   penaltyLadderMult,
   PENALTY_ZONES,
   PENALTY_MAX_KICKS,
+  fairCricket,
+  cricketNetMult,
+  CRICKET_OUTCOMES,
+  CRICKET_MAX_BALLS,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -50,7 +54,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket";
 
 
 export type VerifyPrefill = {
@@ -420,6 +424,24 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
             <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
               <div>Per kick: keeper_zone = floor(float × {PENALTY_ZONES.length}). Goal if player pick ≠ keeper.</div>
               <div>Net mult after N consecutive goals = ({PENALTY_ZONES.length}/{PENALTY_ZONES.length - 1})^N × (1 − edge).</div>
+            </div>
+          );
+          break;
+        }
+        case "cricket": {
+          const r = await fairCricket(serverSeed, clientSeed, nonce, CRICKET_MAX_BALLS);
+          floats = r.floats;
+          const shown = r.wicketBallIndex >= 0 ? r.outcomes : r.outcomes;
+          const rows = shown.map((idx, i) => {
+            const o = CRICKET_OUTCOMES[idx];
+            return `Ball ${i + 1}: f=${r.floats[i].toFixed(6)} ⇒ ${o.key} (${o.label})`;
+          }).join(" · ");
+          const net = cricketNetMult(r.grossMult, 0.05);
+          outcome = `${rows} · Runs=${r.totalRuns} · Gross=${r.grossMult.toFixed(2)}× · Net@5% edge = ${net.toFixed(2)}×${r.wicketBallIndex >= 0 ? " (WICKET)" : ""}`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>CDF: W&lt;0.10, 0&lt;0.35, 1&lt;0.55, 2&lt;0.68, 3&lt;0.75, 4&lt;0.90, else 6. Wicket ends innings.</div>
+              <div>Compound: gross ×= (1 + runs × 0.06) per non-wicket ball. Payout = bet × gross × (1 − edge) on cashout.</div>
             </div>
           );
           break;
