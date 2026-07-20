@@ -70,6 +70,7 @@ const myGames: OriginalGame[] = [
   { slug: "matka",            name: "Matka King",        nameBn: "মটকা কিং",          provider: "ASIK", poster: imgCandy,       status: "live", to: "/games/matka" },
   { slug: "fish-shooter",     name: "Fish Shooter",      nameBn: "ফিশ শুটার",         provider: "ASIK", poster: imgAviator,     status: "live", to: "/games/fish-shooter" },
   { slug: "megaways",         name: "Fruit Slots Megaways", nameBn: "ফ্রুট স্লট মেগাওয়েজ", provider: "ASIK", poster: imgCandy,    status: "live", to: "/games/megaways" },
+  { slug: "aviatrix",         name: "Aviatrix Multi-Race", nameBn: "অ্যাভিয়াট্রিক্স রেস", provider: "ASIK", poster: imgAviator,   status: "live", to: "/games/aviatrix" },
 
 
 ];

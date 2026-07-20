@@ -35,6 +35,8 @@ import {
   FISH_TIERS,
   fairMegaways,
   MEGAWAYS_SYMBOLS,
+  fairAviatrix,
+  AVIATRIX_PLANES,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -42,7 +44,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix";
 
 
 export type VerifyPrefill = {
@@ -371,6 +373,19 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
               {r.reels.map((col, ci) => (
                 <div key={ci}>reel {ci + 1}: {col.map((s) => MEGAWAYS_SYMBOLS[s]).join(" ")}</div>
               ))}
+            </div>
+          );
+          break;
+        }
+        case "aviatrix": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, AVIATRIX_PLANES);
+          const r = await fairAviatrix(serverSeed, clientSeed, nonce);
+          const rows = r.multipliers.map((m, i) => `Plane ${i + 1}: f=${r.floats[i].toFixed(6)} ⇒ ${m.toFixed(2)}×${i === r.winner ? "  🏆" : ""}`).join(" · ");
+          outcome = `${rows} · Winner = Plane ${r.winner + 1} @ ${r.multipliers[r.winner].toFixed(2)}×`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>3 independent floats → 3 crash multipliers. Highest wins.</div>
+              <div>Payout if picked winner: bet × winner_multiplier × (1 − edge).</div>
             </div>
           );
           break;
