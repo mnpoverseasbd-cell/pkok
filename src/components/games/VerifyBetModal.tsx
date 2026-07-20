@@ -471,6 +471,23 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "carrom": {
+          const r = await fairCarrom(serverSeed, clientSeed, nonce, CARROM_MAX_STRIKES);
+          floats = r.floats;
+          const rows = r.strikes.map((s, i) => {
+            const o = CARROM_OUTCOMES[s.outcomeIndex];
+            return `Strike ${i + 1}: f=${r.floats[i].toFixed(6)} ⇒ ${o.key}${s.isBust ? " (MISS)" : ` ×${s.mult}`}`;
+          }).join(" · ");
+          const net = carromNetMult(r.grossMult, 0.05);
+          outcome = `${rows} · Gross=${r.grossMult.toFixed(2)}× · Net@5% edge = ${net.toFixed(2)}×${r.bustAt >= 0 ? " (MISS)" : ""}`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>CDF: miss&lt;0.35, white&lt;0.65 ×1.20, coin&lt;0.85 ×1.50, queen&lt;0.96 ×1.90, king&lt;1.00 ×3.00. Miss ends round.</div>
+              <div>Compound: gross ×= per-strike mult. Payout = bet × gross × (1 − edge) on cashout.</div>
+            </div>
+          );
+          break;
+        }
       }
 
 
