@@ -451,6 +451,22 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "ludo": {
+          const r = await fairLudo(serverSeed, clientSeed, nonce, LUDO_MAX_ROLLS);
+          floats = r.floats;
+          const rows = r.rolls.map((roll, i) => {
+            return `Roll ${i + 1}: f=${r.floats[i].toFixed(6)} ⇒ die=${roll.die}${roll.isBust ? " (SNAKE)" : ` +${roll.advance} ×${roll.stepMult}`}`;
+          }).join(" · ");
+          const net = ludoNetMult(r.grossMult, 0.05);
+          outcome = `${rows} · Spaces=${r.totalSpaces}/${LUDO_TARGET_SPACES} · Gross=${r.grossMult.toFixed(2)}× · Net@5% edge = ${net.toFixed(2)}×${r.bustAt >= 0 ? " (SNAKE)" : r.finishedAt >= 0 ? " (FINISH)" : ""}`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>Per roll: die = floor(float × 6) + 1. die=1 ⇒ snake bust; die 2–5 ⇒ +die spaces ×1.15; die=6 ⇒ +6 ×1.50.</div>
+              <div>Finish bonus ×{LUDO_FINISH_MULT} if spaces ≥ {LUDO_TARGET_SPACES}. Cash out any time. Payout = bet × gross × (1 − edge).</div>
+            </div>
+          );
+          break;
+        }
       }
 
 
