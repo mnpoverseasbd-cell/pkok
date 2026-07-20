@@ -67,6 +67,7 @@ const myGames: OriginalGame[] = [
   { slug: "video-poker",      name: "Video Poker",       nameBn: "ভিডিও পোকার",       provider: "ASIK", poster: imgPoker,       status: "live", to: "/games/video-poker" },
   { slug: "slots",            name: "Cosmic Fortune Slots", nameBn: "কসমিক ফরচুন স্লটস", provider: "ASIK", poster: imgSlot1,      status: "live", to: "/games/slots" },
   { slug: "bingo",            name: "Bingo 75",          nameBn: "বিঙ্গো ৭৫",           provider: "ASIK", poster: imgCandy,       status: "live", to: "/games/bingo" },
+  { slug: "matka",            name: "Matka King",        nameBn: "মটকা কিং",          provider: "ASIK", poster: imgCandy,       status: "live", to: "/games/matka" },
 
 
 ];
