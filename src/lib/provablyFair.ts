@@ -1135,6 +1135,73 @@ export function ludoNetMult(grossMult: number, edge: number): number {
 }
 
 
+// ---- Carrom Strike · Pocket King --------------------------------------------
+// Sequential strikes; per-strike float mapped via ascending CDF.
+// miss<0.35 ⇒ bust; white<0.65 ×1.20; coin<0.85 ×1.50; queen<0.96 ×1.90; king<1.00 ×3.00.
+// Cash out any time after ≥1 pot. Max 15 strikes. EV<1 baseline, plus house edge at cashout.
+
+export const CARROM_MAX_STRIKES = 15;
+
+export type CarromOutcomeKey = "miss" | "white" | "coin" | "queen" | "king";
+
+export type CarromOutcomeDef = {
+  key: CarromOutcomeKey;
+  label: string;
+  emoji: string;
+  cdf: number;   // upper bound on float
+  mult: number;  // per-strike mult (0 = bust)
+  isBust: boolean;
+};
+
+// Ordered by ascending CDF — used both for logic and paytable.
+export const CARROM_OUTCOMES: CarromOutcomeDef[] = [
+  { key: "miss",  label: "MISS",         emoji: "❌", cdf: 0.35, mult: 0.00, isBust: true  },
+  { key: "white", label: "White Coin",   emoji: "⚪", cdf: 0.65, mult: 1.20, isBust: false },
+  { key: "coin",  label: "Black Coin",   emoji: "⚫", cdf: 0.85, mult: 1.50, isBust: false },
+  { key: "queen", label: "Queen",        emoji: "🔴", cdf: 0.96, mult: 1.90, isBust: false },
+  { key: "king",  label: "Pocket KING",  emoji: "👑", cdf: 1.00, mult: 3.00, isBust: false },
+];
+
+export function carromOutcomeForFloat(f: number): CarromOutcomeDef {
+  for (const o of CARROM_OUTCOMES) if (f < o.cdf) return o;
+  return CARROM_OUTCOMES[CARROM_OUTCOMES.length - 1];
+}
+
+export type CarromStrike = {
+  outcomeIndex: number; // index into CARROM_OUTCOMES
+  mult: number;
+  isBust: boolean;
+};
+
+export async function fairCarrom(
+  serverSeed: string, clientSeed: string, nonce: number, maxStrikes: number = CARROM_MAX_STRIKES,
+): Promise<{ floats: number[]; strikes: CarromStrike[]; bustAt: number; grossMult: number }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, maxStrikes);
+  const strikes: CarromStrike[] = [];
+  let bustAt = -1;
+  let grossMult = 1;
+  for (let i = 0; i < floats.length; i++) {
+    const o = carromOutcomeForFloat(floats[i]);
+    const idx = CARROM_OUTCOMES.indexOf(o);
+    if (o.isBust) {
+      strikes.push({ outcomeIndex: idx, mult: 0, isBust: true });
+      bustAt = i;
+      break;
+    }
+    grossMult *= o.mult;
+    strikes.push({ outcomeIndex: idx, mult: o.mult, isBust: false });
+  }
+  return { floats, strikes, bustAt, grossMult: +grossMult.toFixed(4) };
+}
+
+export function carromNetMult(grossMult: number, edge: number): number {
+  return +(grossMult * (1 - edge)).toFixed(4);
+}
+
+
+
+
+
 // ---- Seed generation ---------------------------------------------------------
 
 

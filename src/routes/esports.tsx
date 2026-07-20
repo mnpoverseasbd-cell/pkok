@@ -76,6 +76,7 @@ const myGames: OriginalGame[] = [
   { slug: "penalty",          name: "Penalty Shootout",  nameBn: "পেনাল্টি শুটআউট",   provider: "ASIK", poster: imgFortune,     status: "live", to: "/games/penalty" },
   { slug: "cricket",          name: "Cricket Star",      nameBn: "ক্রিকেট স্টার",     provider: "ASIK", poster: imgAviator,     status: "live", to: "/games/cricket" },
   { slug: "ludo",             name: "Ludo Dash",         nameBn: "লুডু ড্যাশ",         provider: "ASIK", poster: imgAviator,     status: "live", to: "/games/ludo" },
+  { slug: "carrom",           name: "Carrom Strike",     nameBn: "ক্যারাম স্ট্রাইক",   provider: "ASIK", poster: imgBaccarat,    status: "live", to: "/games/carrom" },
 
 
 ];
