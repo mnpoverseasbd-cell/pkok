@@ -428,6 +428,24 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "cricket": {
+          const r = await fairCricket(serverSeed, clientSeed, nonce, CRICKET_MAX_BALLS);
+          floats = r.floats;
+          const shown = r.wicketBallIndex >= 0 ? r.outcomes : r.outcomes;
+          const rows = shown.map((idx, i) => {
+            const o = CRICKET_OUTCOMES[idx];
+            return `Ball ${i + 1}: f=${r.floats[i].toFixed(6)} ⇒ ${o.key} (${o.label})`;
+          }).join(" · ");
+          const net = cricketNetMult(r.grossMult, 0.05);
+          outcome = `${rows} · Runs=${r.totalRuns} · Gross=${r.grossMult.toFixed(2)}× · Net@5% edge = ${net.toFixed(2)}×${r.wicketBallIndex >= 0 ? " (WICKET)" : ""}`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>CDF: W&lt;0.10, 0&lt;0.35, 1&lt;0.55, 2&lt;0.68, 3&lt;0.75, 4&lt;0.90, else 6. Wicket ends innings.</div>
+              <div>Compound: gross ×= (1 + runs × 0.06) per non-wicket ball. Payout = bet × gross × (1 − edge) on cashout.</div>
+            </div>
+          );
+          break;
+        }
       }
 
 
