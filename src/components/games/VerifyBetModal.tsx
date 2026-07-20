@@ -31,6 +31,8 @@ import {
   fairBingo,
   BINGO_COLS,
   fairMatka,
+  fairFishShooter,
+  FISH_TIERS,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -38,7 +40,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter";
 
 
 export type VerifyPrefill = {
@@ -333,6 +335,22 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           extra = (
             <div className="mt-2 text-[10px] text-white/50">
               f[0]×10 ⇒ single (0–9, 9× payout) · f[1]×100 ⇒ jodi (00–99, 90× payout).
+            </div>
+          );
+          break;
+        }
+        case "fish-shooter": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
+          // Verify against the highest-tier (Mega) as a canonical example; UI shows all tier thresholds.
+          const r = await fairFishShooter(serverSeed, clientSeed, nonce, "mega");
+          outcome = `f[0] = ${r.float.toFixed(6)} · Mega threshold = ${r.threshold} ⇒ ${r.hit ? `HIT (${r.payout}×)` : "MISS"}`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              {FISH_TIERS.map((t) => (
+                <div key={t.key}>
+                  {t.emoji} {t.label.padEnd(10, " ")} · hit if f &lt; {t.hitProb} · payout {t.payout}×
+                </div>
+              ))}
             </div>
           );
           break;

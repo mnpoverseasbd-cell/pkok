@@ -52,6 +52,7 @@ import { Route as GamesLuckyCardRouteImport } from './routes/games.lucky-card'
 import { Route as GamesLimboRouteImport } from './routes/games.limbo'
 import { Route as GamesKenoRouteImport } from './routes/games.keno'
 import { Route as GamesHiLoRouteImport } from './routes/games.hi-lo'
+import { Route as GamesFishShooterRouteImport } from './routes/games.fish-shooter'
 import { Route as GamesDragonTigerRouteImport } from './routes/games.dragon-tiger'
 import { Route as GamesDiceRouteImport } from './routes/games.dice'
 import { Route as GamesCrashRouteImport } from './routes/games.crash'
@@ -280,6 +281,11 @@ const GamesHiLoRoute = GamesHiLoRouteImport.update({
   path: '/games/hi-lo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesFishShooterRoute = GamesFishShooterRouteImport.update({
+  id: '/games/fish-shooter',
+  path: '/games/fish-shooter',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesDragonTigerRoute = GamesDragonTigerRouteImport.update({
   id: '/games/dragon-tiger',
   path: '/games/dragon-tiger',
@@ -378,6 +384,7 @@ export interface FileRoutesByFullPath {
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
   '/games/dragon-tiger': typeof GamesDragonTigerRoute
+  '/games/fish-shooter': typeof GamesFishShooterRoute
   '/games/hi-lo': typeof GamesHiLoRoute
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
@@ -435,6 +442,7 @@ export interface FileRoutesByTo {
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
   '/games/dragon-tiger': typeof GamesDragonTigerRoute
+  '/games/fish-shooter': typeof GamesFishShooterRoute
   '/games/hi-lo': typeof GamesHiLoRoute
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
@@ -493,6 +501,7 @@ export interface FileRoutesById {
   '/games/crash': typeof GamesCrashRoute
   '/games/dice': typeof GamesDiceRoute
   '/games/dragon-tiger': typeof GamesDragonTigerRoute
+  '/games/fish-shooter': typeof GamesFishShooterRoute
   '/games/hi-lo': typeof GamesHiLoRoute
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
@@ -552,6 +561,7 @@ export interface FileRouteTypes {
     | '/games/crash'
     | '/games/dice'
     | '/games/dragon-tiger'
+    | '/games/fish-shooter'
     | '/games/hi-lo'
     | '/games/keno'
     | '/games/limbo'
@@ -609,6 +619,7 @@ export interface FileRouteTypes {
     | '/games/crash'
     | '/games/dice'
     | '/games/dragon-tiger'
+    | '/games/fish-shooter'
     | '/games/hi-lo'
     | '/games/keno'
     | '/games/limbo'
@@ -666,6 +677,7 @@ export interface FileRouteTypes {
     | '/games/crash'
     | '/games/dice'
     | '/games/dragon-tiger'
+    | '/games/fish-shooter'
     | '/games/hi-lo'
     | '/games/keno'
     | '/games/limbo'
@@ -724,6 +736,7 @@ export interface RootRouteChildren {
   GamesCrashRoute: typeof GamesCrashRoute
   GamesDiceRoute: typeof GamesDiceRoute
   GamesDragonTigerRoute: typeof GamesDragonTigerRoute
+  GamesFishShooterRoute: typeof GamesFishShooterRoute
   GamesHiLoRoute: typeof GamesHiLoRoute
   GamesKenoRoute: typeof GamesKenoRoute
   GamesLimboRoute: typeof GamesLimboRoute
@@ -1048,6 +1061,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesHiLoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/fish-shooter': {
+      id: '/games/fish-shooter'
+      path: '/games/fish-shooter'
+      fullPath: '/games/fish-shooter'
+      preLoaderRoute: typeof GamesFishShooterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/dragon-tiger': {
       id: '/games/dragon-tiger'
       path: '/games/dragon-tiger'
@@ -1172,6 +1192,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesCrashRoute: GamesCrashRoute,
   GamesDiceRoute: GamesDiceRoute,
   GamesDragonTigerRoute: GamesDragonTigerRoute,
+  GamesFishShooterRoute: GamesFishShooterRoute,
   GamesHiLoRoute: GamesHiLoRoute,
   GamesKenoRoute: GamesKenoRoute,
   GamesLimboRoute: GamesLimboRoute,
