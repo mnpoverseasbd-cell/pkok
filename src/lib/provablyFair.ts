@@ -991,6 +991,32 @@ export async function fairDragonFishing(
 }
 
 
+// ---- Penalty Shootout · Golden Boot ------------------------------------------
+// Player picks a zone (0..N-1). Keeper zone is derived from an independent
+// float per kick. Miss (keeper != player) = goal → multiplier ladders.
+// Match = save → round ends, all bet lost. Player may cash out any time.
+
+export const PENALTY_ZONES = ["TL", "TM", "TR", "BL", "BM", "BR"] as const;
+export type PenaltyZone = typeof PENALTY_ZONES[number];
+export const PENALTY_MAX_KICKS = 10;
+
+/** Base per-kick multiplier before edge: N/(N-1). With N=6 → 1.20. */
+export const PENALTY_BASE_MULT = PENALTY_ZONES.length / (PENALTY_ZONES.length - 1);
+
+export async function fairPenalty(
+  serverSeed: string, clientSeed: string, nonce: number, kicks: number = PENALTY_MAX_KICKS,
+): Promise<{ floats: number[]; keeperZones: number[] }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, kicks);
+  const keeperZones = floats.map((f) => Math.floor(f * PENALTY_ZONES.length) % PENALTY_ZONES.length);
+  return { floats, keeperZones };
+}
+
+/** Ladder: successful kicks → net multiplier after edge. */
+export function penaltyLadderMult(kicks: number, edge: number): number {
+  return +(Math.pow(PENALTY_BASE_MULT, kicks) * (1 - edge)).toFixed(4);
+}
+
+
 // ---- Seed generation ---------------------------------------------------------
 
 export function randomSeed(bytes: number = 32): string {
@@ -998,4 +1024,5 @@ export function randomSeed(bytes: number = 32): string {
   crypto.getRandomValues(b);
   return toHex(b.buffer);
 }
+
 
