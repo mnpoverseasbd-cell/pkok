@@ -39,6 +39,10 @@ import {
   AVIATRIX_PLANES,
   fairDragonFishing,
   DRAGON_FISH_TIERS,
+  fairPenalty,
+  penaltyLadderMult,
+  PENALTY_ZONES,
+  PENALTY_MAX_KICKS,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
