@@ -30,6 +30,7 @@ import {
   SLOT_SYMBOLS,
   fairBingo,
   BINGO_COLS,
+  fairMatka,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -37,7 +38,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka";
 
 
 export type VerifyPrefill = {
@@ -321,6 +322,17 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           extra = (
             <div className="mt-2 text-[10px] text-white/50">
               First 5 columns pull 5 unique numbers each from ranges 1–15, 16–30, 31–45, 46–60, 61–75. Then 30 unique balls drawn from 1–75. Center is FREE.
+            </div>
+          );
+          break;
+        }
+        case "matka": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 2);
+          const r = await fairMatka(serverSeed, clientSeed, nonce);
+          outcome = `Single Ank = ${r.single} · Jodi = ${r.jodiStr}`;
+          extra = (
+            <div className="mt-2 text-[10px] text-white/50">
+              f[0]×10 ⇒ single (0–9, 9× payout) · f[1]×100 ⇒ jodi (00–99, 90× payout).
             </div>
           );
           break;

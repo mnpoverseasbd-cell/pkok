@@ -769,11 +769,29 @@ export async function fairBingo(
 }
 
 
+// ---- Matka King (Single Ank + Jodi) -----------------------------------------
 
+export type MatkaResult = {
+  single: number;   // 0..9  (single ank)
+  jodi: number;     // 0..99 (jodi)
+  jodiStr: string;  // "07", "42" etc — always 2 digits
+};
 
-
-
-
+/**
+ * Draws a single-digit "ank" (0-9) and a two-digit "jodi" (00-99).
+ * Both are derived from independent floats — matches classic Matka semantics
+ * where players can bet either the day's Single or the Jodi.
+ */
+export async function fairMatka(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<MatkaResult> {
+  const [f1, f2] = await fairFloats(serverSeed, clientSeed, nonce, 2);
+  const single = Math.floor(f1 * 10);
+  const jodi = Math.floor(f2 * 100);
+  return { single, jodi, jodiStr: jodi.toString().padStart(2, "0") };
+}
 
 
 // ---- Seed generation ---------------------------------------------------------
@@ -783,3 +801,4 @@ export function randomSeed(bytes: number = 32): string {
   crypto.getRandomValues(b);
   return toHex(b.buffer);
 }
+
