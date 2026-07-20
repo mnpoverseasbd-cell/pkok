@@ -1078,6 +1078,63 @@ export function cricketNetMult(grossMult: number, edge: number): number {
 }
 
 
+// ---- Ludo Dash · Race to 57 --------------------------------------------------
+// Per-roll die (1..6) via floor(float × 6) + 1. Die=1 ⇒ snake bust.
+// Die 2..5 advance by die value and compound mult by LUDO_STEP_MULT.
+// Die=6 grants LUDO_SIX_MULT and grants a bonus advance (still consumes one roll).
+// Reach 57 spaces ⇒ finish bonus LUDO_FINISH_MULT. Cash out any time (>1×).
+
+export const LUDO_MAX_ROLLS = 24;
+export const LUDO_TARGET_SPACES = 57;
+export const LUDO_STEP_MULT = 1.15;
+export const LUDO_SIX_MULT = 1.5;
+export const LUDO_FINISH_MULT = 2.0;
+
+export type LudoRoll = {
+  die: number;         // 1..6
+  isBust: boolean;     // die===1
+  advance: number;     // spaces moved
+  stepMult: number;    // mult applied this roll (1 if bust)
+};
+
+export function ludoRollForFloat(f: number): number {
+  return Math.floor(f * 6) + 1; // 1..6
+}
+
+export async function fairLudo(
+  serverSeed: string, clientSeed: string, nonce: number, maxRolls: number = LUDO_MAX_ROLLS,
+): Promise<{ floats: number[]; rolls: LudoRoll[]; bustAt: number; finishedAt: number; totalSpaces: number; grossMult: number }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, maxRolls);
+  const rolls: LudoRoll[] = [];
+  let bustAt = -1;
+  let finishedAt = -1;
+  let totalSpaces = 0;
+  let grossMult = 1;
+  for (let i = 0; i < floats.length; i++) {
+    const die = ludoRollForFloat(floats[i]);
+    if (die === 1) {
+      rolls.push({ die, isBust: true, advance: 0, stepMult: 1 });
+      bustAt = i;
+      break;
+    }
+    const stepMult = die === 6 ? LUDO_SIX_MULT : LUDO_STEP_MULT;
+    grossMult *= stepMult;
+    totalSpaces += die;
+    rolls.push({ die, isBust: false, advance: die, stepMult });
+    if (totalSpaces >= LUDO_TARGET_SPACES) {
+      grossMult *= LUDO_FINISH_MULT;
+      finishedAt = i;
+      break;
+    }
+  }
+  return { floats, rolls, bustAt, finishedAt, totalSpaces, grossMult: +grossMult.toFixed(4) };
+}
+
+export function ludoNetMult(grossMult: number, edge: number): number {
+  return +(grossMult * (1 - edge)).toFixed(4);
+}
+
+
 // ---- Seed generation ---------------------------------------------------------
 
 

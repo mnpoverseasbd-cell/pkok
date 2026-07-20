@@ -50,6 +50,7 @@ import { Route as GamesPenaltyRouteImport } from './routes/games.penalty'
 import { Route as GamesMinesRouteImport } from './routes/games.mines'
 import { Route as GamesMegawaysRouteImport } from './routes/games.megaways'
 import { Route as GamesMatkaRouteImport } from './routes/games.matka'
+import { Route as GamesLudoRouteImport } from './routes/games.ludo'
 import { Route as GamesLuckyCardRouteImport } from './routes/games.lucky-card'
 import { Route as GamesLimboRouteImport } from './routes/games.limbo'
 import { Route as GamesKenoRouteImport } from './routes/games.keno'
@@ -276,6 +277,11 @@ const GamesMatkaRoute = GamesMatkaRouteImport.update({
   path: '/games/matka',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesLudoRoute = GamesLudoRouteImport.update({
+  id: '/games/ludo',
+  path: '/games/ludo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesLuckyCardRoute = GamesLuckyCardRouteImport.update({
   id: '/games/lucky-card',
   path: '/games/lucky-card',
@@ -422,6 +428,7 @@ export interface FileRoutesByFullPath {
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
   '/games/lucky-card': typeof GamesLuckyCardRoute
+  '/games/ludo': typeof GamesLudoRoute
   '/games/matka': typeof GamesMatkaRoute
   '/games/megaways': typeof GamesMegawaysRoute
   '/games/mines': typeof GamesMinesRoute
@@ -485,6 +492,7 @@ export interface FileRoutesByTo {
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
   '/games/lucky-card': typeof GamesLuckyCardRoute
+  '/games/ludo': typeof GamesLudoRoute
   '/games/matka': typeof GamesMatkaRoute
   '/games/megaways': typeof GamesMegawaysRoute
   '/games/mines': typeof GamesMinesRoute
@@ -549,6 +557,7 @@ export interface FileRoutesById {
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
   '/games/lucky-card': typeof GamesLuckyCardRoute
+  '/games/ludo': typeof GamesLudoRoute
   '/games/matka': typeof GamesMatkaRoute
   '/games/megaways': typeof GamesMegawaysRoute
   '/games/mines': typeof GamesMinesRoute
@@ -614,6 +623,7 @@ export interface FileRouteTypes {
     | '/games/keno'
     | '/games/limbo'
     | '/games/lucky-card'
+    | '/games/ludo'
     | '/games/matka'
     | '/games/megaways'
     | '/games/mines'
@@ -677,6 +687,7 @@ export interface FileRouteTypes {
     | '/games/keno'
     | '/games/limbo'
     | '/games/lucky-card'
+    | '/games/ludo'
     | '/games/matka'
     | '/games/megaways'
     | '/games/mines'
@@ -740,6 +751,7 @@ export interface FileRouteTypes {
     | '/games/keno'
     | '/games/limbo'
     | '/games/lucky-card'
+    | '/games/ludo'
     | '/games/matka'
     | '/games/megaways'
     | '/games/mines'
@@ -804,6 +816,7 @@ export interface RootRouteChildren {
   GamesKenoRoute: typeof GamesKenoRoute
   GamesLimboRoute: typeof GamesLimboRoute
   GamesLuckyCardRoute: typeof GamesLuckyCardRoute
+  GamesLudoRoute: typeof GamesLudoRoute
   GamesMatkaRoute: typeof GamesMatkaRoute
   GamesMegawaysRoute: typeof GamesMegawaysRoute
   GamesMinesRoute: typeof GamesMinesRoute
@@ -1112,6 +1125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesMatkaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/ludo': {
+      id: '/games/ludo'
+      path: '/games/ludo'
+      fullPath: '/games/ludo'
+      preLoaderRoute: typeof GamesLudoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/lucky-card': {
       id: '/games/lucky-card'
       path: '/games/lucky-card'
@@ -1300,6 +1320,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesKenoRoute: GamesKenoRoute,
   GamesLimboRoute: GamesLimboRoute,
   GamesLuckyCardRoute: GamesLuckyCardRoute,
+  GamesLudoRoute: GamesLudoRoute,
   GamesMatkaRoute: GamesMatkaRoute,
   GamesMegawaysRoute: GamesMegawaysRoute,
   GamesMinesRoute: GamesMinesRoute,

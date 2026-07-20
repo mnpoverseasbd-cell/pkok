@@ -75,6 +75,7 @@ const myGames: OriginalGame[] = [
   { slug: "dragon-fishing",   name: "Dragon Fortune Fishing", nameBn: "ড্রাগন ফরচুন ফিশিং", provider: "ASIK", poster: imgAviator, status: "live", to: "/games/dragon-fishing" },
   { slug: "penalty",          name: "Penalty Shootout",  nameBn: "পেনাল্টি শুটআউট",   provider: "ASIK", poster: imgFortune,     status: "live", to: "/games/penalty" },
   { slug: "cricket",          name: "Cricket Star",      nameBn: "ক্রিকেট স্টার",     provider: "ASIK", poster: imgAviator,     status: "live", to: "/games/cricket" },
+  { slug: "ludo",             name: "Ludo Dash",         nameBn: "লুডু ড্যাশ",         provider: "ASIK", poster: imgAviator,     status: "live", to: "/games/ludo" },
 
 
 ];
