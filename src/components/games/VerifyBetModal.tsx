@@ -339,6 +339,22 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "fish-shooter": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
+          // Verify against the highest-tier (Mega) as a canonical example; UI shows all tier thresholds.
+          const r = await fairFishShooter(serverSeed, clientSeed, nonce, "mega");
+          outcome = `f[0] = ${r.float.toFixed(6)} · Mega threshold = ${r.threshold} ⇒ ${r.hit ? `HIT (${r.payout}×)` : "MISS"}`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              {FISH_TIERS.map((t) => (
+                <div key={t.key}>
+                  {t.emoji} {t.label.padEnd(10, " ")} · hit if f &lt; {t.threshold ?? t.hitProb} · payout {t.payout}×
+                </div>
+              ))}
+            </div>
+          );
+          break;
+        }
       }
 
 
