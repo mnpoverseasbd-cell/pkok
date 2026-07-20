@@ -64,6 +64,7 @@ import { Route as GamesCrashRouteImport } from './routes/games.crash'
 import { Route as GamesColorPredictionRouteImport } from './routes/games.color-prediction'
 import { Route as GamesCoinflipRouteImport } from './routes/games.coinflip'
 import { Route as GamesChickenRoadRouteImport } from './routes/games.chicken-road'
+import { Route as GamesCarromRouteImport } from './routes/games.carrom'
 import { Route as GamesBlackjackRouteImport } from './routes/games.blackjack'
 import { Route as GamesBingoRouteImport } from './routes/games.bingo'
 import { Route as GamesBaccaratRouteImport } from './routes/games.baccarat'
@@ -347,6 +348,11 @@ const GamesChickenRoadRoute = GamesChickenRoadRouteImport.update({
   path: '/games/chicken-road',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesCarromRoute = GamesCarromRouteImport.update({
+  id: '/games/carrom',
+  path: '/games/carrom',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesBlackjackRoute = GamesBlackjackRouteImport.update({
   id: '/games/blackjack',
   path: '/games/blackjack',
@@ -415,6 +421,7 @@ export interface FileRoutesByFullPath {
   '/games/baccarat': typeof GamesBaccaratRoute
   '/games/bingo': typeof GamesBingoRoute
   '/games/blackjack': typeof GamesBlackjackRoute
+  '/games/carrom': typeof GamesCarromRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
@@ -479,6 +486,7 @@ export interface FileRoutesByTo {
   '/games/baccarat': typeof GamesBaccaratRoute
   '/games/bingo': typeof GamesBingoRoute
   '/games/blackjack': typeof GamesBlackjackRoute
+  '/games/carrom': typeof GamesCarromRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
@@ -544,6 +552,7 @@ export interface FileRoutesById {
   '/games/baccarat': typeof GamesBaccaratRoute
   '/games/bingo': typeof GamesBingoRoute
   '/games/blackjack': typeof GamesBlackjackRoute
+  '/games/carrom': typeof GamesCarromRoute
   '/games/chicken-road': typeof GamesChickenRoadRoute
   '/games/coinflip': typeof GamesCoinflipRoute
   '/games/color-prediction': typeof GamesColorPredictionRoute
@@ -610,6 +619,7 @@ export interface FileRouteTypes {
     | '/games/baccarat'
     | '/games/bingo'
     | '/games/blackjack'
+    | '/games/carrom'
     | '/games/chicken-road'
     | '/games/coinflip'
     | '/games/color-prediction'
@@ -674,6 +684,7 @@ export interface FileRouteTypes {
     | '/games/baccarat'
     | '/games/bingo'
     | '/games/blackjack'
+    | '/games/carrom'
     | '/games/chicken-road'
     | '/games/coinflip'
     | '/games/color-prediction'
@@ -738,6 +749,7 @@ export interface FileRouteTypes {
     | '/games/baccarat'
     | '/games/bingo'
     | '/games/blackjack'
+    | '/games/carrom'
     | '/games/chicken-road'
     | '/games/coinflip'
     | '/games/color-prediction'
@@ -803,6 +815,7 @@ export interface RootRouteChildren {
   GamesBaccaratRoute: typeof GamesBaccaratRoute
   GamesBingoRoute: typeof GamesBingoRoute
   GamesBlackjackRoute: typeof GamesBlackjackRoute
+  GamesCarromRoute: typeof GamesCarromRoute
   GamesChickenRoadRoute: typeof GamesChickenRoadRoute
   GamesCoinflipRoute: typeof GamesCoinflipRoute
   GamesColorPredictionRoute: typeof GamesColorPredictionRoute
@@ -1223,6 +1236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesChickenRoadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/carrom': {
+      id: '/games/carrom'
+      path: '/games/carrom'
+      fullPath: '/games/carrom'
+      preLoaderRoute: typeof GamesCarromRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/blackjack': {
       id: '/games/blackjack'
       path: '/games/blackjack'
@@ -1307,6 +1327,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesBaccaratRoute: GamesBaccaratRoute,
   GamesBingoRoute: GamesBingoRoute,
   GamesBlackjackRoute: GamesBlackjackRoute,
+  GamesCarromRoute: GamesCarromRoute,
   GamesChickenRoadRoute: GamesChickenRoadRoute,
   GamesCoinflipRoute: GamesCoinflipRoute,
   GamesColorPredictionRoute: GamesColorPredictionRoute,
