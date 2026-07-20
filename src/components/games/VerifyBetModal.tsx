@@ -326,6 +326,17 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "matka": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 2);
+          const r = await fairMatka(serverSeed, clientSeed, nonce);
+          outcome = `Single Ank = ${r.single} · Jodi = ${r.jodiStr}`;
+          extra = (
+            <div className="mt-2 text-[10px] text-white/50">
+              f[0]×10 ⇒ single (0–9, 9× payout) · f[1]×100 ⇒ jodi (00–99, 90× payout).
+            </div>
+          );
+          break;
+        }
       }
 
 
