@@ -310,6 +310,7 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
             </div>
           );
           break;
+        }
         case "bingo": {
           floats = await fairFloats(serverSeed, clientSeed, nonce, 32);
           const r = await fairBingo(serverSeed, clientSeed, nonce);
