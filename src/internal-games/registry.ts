@@ -61,6 +61,7 @@ const SEEDS: Seed[] = [
   { slug: "bingo", name: "Bingo 75", category: "lottery", image: imgFortune, tags: ["new", "hot", "lottery", "classic"], featured: true, popularity: 88 },
   { slug: "matka", name: "Matka King", category: "lottery", image: imgFortune, tags: ["new", "hot", "lottery", "bd", "classic"], featured: true, popularity: 97 },
   { slug: "fish-shooter", name: "Fish Shooter · Cast Net", category: "fishing", image: imgDragon, tags: ["new", "hot", "fishing", "arcade"], featured: true, popularity: 92 },
+  { slug: "megaways", name: "Fruit Slots · Megaways", category: "slots", image: imgCandy, tags: ["new", "hot", "slots", "megaways"], featured: true, popularity: 96 },
 
 ];
 

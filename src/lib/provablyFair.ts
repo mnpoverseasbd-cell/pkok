@@ -840,6 +840,93 @@ export async function fairFishShooter(
 }
 
 
+// ---- Fruit Slots · Megaways --------------------------------------------------
+
+export const MEGAWAYS_REELS = 6;
+export const MEGAWAYS_MIN_ROWS = 2;
+export const MEGAWAYS_MAX_ROWS = 7;
+export const MEGAWAYS_SYMBOLS = ["🍒", "🍋", "🍊", "🍇", "🍉", "⭐", "💎", "7️⃣"] as const;
+
+const MEGAWAYS_WEIGHTS = [24, 22, 20, 17, 13, 8, 3, 1];
+
+/** Pay-per-way for match length 3, 4, 5, 6 (indexed matchLen-3). */
+export const MEGAWAYS_PAYTABLE: Record<number, [number, number, number, number]> = {
+  0: [0.20, 0.50, 1.5, 4],
+  1: [0.20, 0.50, 1.5, 4],
+  2: [0.30, 0.80, 2.0, 5],
+  3: [0.40, 1.00, 3.0, 8],
+  4: [0.50, 1.50, 4.0, 12],
+  5: [1.00, 3.00, 8.0, 25],
+  6: [2.00, 6.00, 20, 60],
+  7: [5.00, 15.0, 50, 150],
+};
+
+export type MegawaysWin = { symbol: number; matchLen: number; ways: number; mult: number };
+export type MegawaysResult = {
+  heights: number[];
+  reels: number[][];
+  wins: MegawaysWin[];
+  totalMultiplier: number;
+  totalWays: number;
+};
+
+function pickMegawaysSymbol(f: number): number {
+  const total = MEGAWAYS_WEIGHTS.reduce((a, b) => a + b, 0);
+  let x = f * total;
+  for (let s = 0; s < MEGAWAYS_WEIGHTS.length; s++) {
+    x -= MEGAWAYS_WEIGHTS[s];
+    if (x < 0) return s;
+  }
+  return MEGAWAYS_WEIGHTS.length - 1;
+}
+
+export async function fairMegaways(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+): Promise<MegawaysResult> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 60);
+  let i = 0;
+
+  const heights: number[] = [];
+  for (let r = 0; r < MEGAWAYS_REELS; r++) {
+    const span = MEGAWAYS_MAX_ROWS - MEGAWAYS_MIN_ROWS + 1;
+    heights.push(MEGAWAYS_MIN_ROWS + Math.floor(floats[i++] * span));
+  }
+
+  const reels: number[][] = heights.map((h) => {
+    const cells: number[] = [];
+    for (let r = 0; r < h; r++) cells.push(pickMegawaysSymbol(floats[i++]));
+    return cells;
+  });
+
+  const totalWays = heights.reduce((a, b) => a * b, 1);
+  const wins: MegawaysWin[] = [];
+  let totalMultiplier = 0;
+
+  for (let s = 0; s < MEGAWAYS_SYMBOLS.length; s++) {
+    let matchLen = 0;
+    let ways = 1;
+    for (let r = 0; r < MEGAWAYS_REELS; r++) {
+      const c = reels[r].filter((x) => x === s).length;
+      if (c === 0) break;
+      matchLen++;
+      ways *= c;
+    }
+    if (matchLen >= 3) {
+      const pay = MEGAWAYS_PAYTABLE[s][matchLen - 3];
+      const mult = +(pay * ways).toFixed(4);
+      wins.push({ symbol: s, matchLen, ways, mult });
+      totalMultiplier += mult;
+    }
+  }
+
+  return { heights, reels, wins, totalMultiplier: +totalMultiplier.toFixed(4), totalWays };
+}
+
+
+
+
 // ---- Seed generation ---------------------------------------------------------
 
 export function randomSeed(bytes: number = 32): string {

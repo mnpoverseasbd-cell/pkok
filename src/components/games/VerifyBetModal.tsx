@@ -33,6 +33,8 @@ import {
   fairMatka,
   fairFishShooter,
   FISH_TIERS,
+  fairMegaways,
+  MEGAWAYS_SYMBOLS,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -40,7 +42,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways";
 
 
 export type VerifyPrefill = {
@@ -350,6 +352,24 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
                 <div key={t.key}>
                   {t.emoji} {t.label.padEnd(10, " ")} · hit if f &lt; {t.hitProb} · payout {t.payout}×
                 </div>
+              ))}
+            </div>
+          );
+          break;
+        }
+        case "megaways": {
+          floats = await fairFloats(serverSeed, clientSeed, nonce, 60);
+          const r = await fairMegaways(serverSeed, clientSeed, nonce);
+          const heights = r.heights.join("×");
+          const winStr = r.wins.length
+            ? r.wins.map((w) => `${MEGAWAYS_SYMBOLS[w.symbol]}×${w.matchLen} (ways ${w.ways}) = ${w.mult}×`).join(" · ")
+            : "no wins";
+          outcome = `Reels ${heights} (${r.totalWays} ways) ⇒ total ${r.totalMultiplier}× · ${winStr}`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>First 6 floats → reel heights (2..7). Next floats → symbols per cell (weighted).</div>
+              {r.reels.map((col, ci) => (
+                <div key={ci}>reel {ci + 1}: {col.map((s) => MEGAWAYS_SYMBOLS[s]).join(" ")}</div>
               ))}
             </div>
           );
