@@ -64,6 +64,7 @@ const SEEDS: Seed[] = [
   { slug: "megaways", name: "Fruit Slots · Megaways", category: "slots", image: imgCandy, tags: ["new", "hot", "slots", "megaways"], featured: true, popularity: 96 },
   { slug: "aviatrix", name: "Aviatrix · Multi-Race", category: "crash", image: imgAviator, tags: ["new", "hot", "crash", "race"], featured: true, popularity: 95 },
   { slug: "dragon-fishing", name: "Dragon Fortune Fishing", category: "fishing", image: imgDragon, tags: ["new", "hot", "fishing", "arcade"], featured: true, popularity: 94 },
+  { slug: "penalty", name: "Penalty Shootout · Golden Boot", category: "table", image: imgFortune, tags: ["new", "hot", "sports", "bd"], featured: true, popularity: 93 },
 
 ];
 
