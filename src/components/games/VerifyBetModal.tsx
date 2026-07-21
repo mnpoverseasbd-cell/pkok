@@ -48,6 +48,10 @@ import {
   CRICKET_OUTCOMES,
   CRICKET_MAX_BALLS,
   fairLudo,
+  fairJhandi,
+  JHANDI_SYMBOLS,
+  jhandiCount,
+  jhandiNetMult,
   ludoNetMult,
   LUDO_MAX_ROLLS,
   LUDO_TARGET_SPACES,
@@ -87,7 +91,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon" | "dragon-phoenix" | "wingo" | "aviator-x2";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon" | "dragon-phoenix" | "wingo" | "aviator-x2" | "jhandi-munda";
 
 
 export type VerifyPrefill = {
@@ -581,6 +585,20 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
             <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
               <div>Each plane: if f&lt;0.03 ⇒ instant 1.00×, else m = (1 − edge)/f.</div>
               <div>LEFT/RIGHT pays when its peak &gt; the other's. BOTH pays when both peaks ≥ {AVX2_BOTH_THRESHOLD.toFixed(1)}×.</div>
+            </div>
+          );
+          break;
+        }
+        case "jhandi-munda": {
+          const r = await fairJhandi(serverSeed, clientSeed, nonce);
+          floats = r.floats;
+          const counts = JHANDI_SYMBOLS.map((_, i) => jhandiCount(r.dice, i));
+          const summary = JHANDI_SYMBOLS.map((s, i) => `${s}×${counts[i]}`).join(" · ");
+          outcome = `dice=[${r.symbols.join(" ")}] ⇒ ${summary}`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>Each die: symbol = floor(float × 6). Six dice → count matches for your pick.</div>
+              <div>Payout: net mult = 1 + count (0 if no match). Example: 2 matches ⇒ ×{jhandiNetMult(2).toFixed(2)}.</div>
             </div>
           );
           break;
