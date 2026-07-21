@@ -75,6 +75,11 @@ import {
   fairWingo,
   wingoColorsOf,
   wingoSizeOf,
+  fairAviatorX2,
+  avx2NetMult,
+  AVX2_SIDE_GROSS,
+  AVX2_BOTH_GROSS,
+  AVX2_BOTH_THRESHOLD,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -82,7 +87,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon" | "dragon-phoenix" | "wingo";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon" | "dragon-phoenix" | "wingo" | "aviator-x2";
 
 
 export type VerifyPrefill = {
@@ -560,6 +565,22 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
             <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
               <div>number = floor(float × 10). Colors: 1/3/7/9 GREEN, 2/4/6/8 RED, 0 RED+VIOLET, 5 GREEN+VIOLET.</div>
               <div>Payouts (gross): number ×9 · pure color ×2 · mixed color ×1.5 · violet ×4.5 · big/small ×2. Net = gross × (1 − edge).</div>
+            </div>
+          );
+          break;
+        }
+        case "aviator-x2": {
+          const r = await fairAviatorX2(serverSeed, clientSeed, nonce);
+          floats = r.floats;
+          const winner = r.left > r.right ? "LEFT" : r.right > r.left ? "RIGHT" : "TIE";
+          const bothHit = r.left >= AVX2_BOTH_THRESHOLD && r.right >= AVX2_BOTH_THRESHOLD;
+          const netSide = avx2NetMult("left", r.left, r.right, 0.05);
+          const netBoth = avx2NetMult("both", r.left, r.right, 0.05);
+          outcome = `L=×${r.left.toFixed(2)} · R=×${r.right.toFixed(2)} ⇒ winner=${winner} · BOTH≥×${AVX2_BOTH_THRESHOLD.toFixed(1)}? ${bothHit ? "YES" : "no"} · side ×${AVX2_SIDE_GROSS} gross (×${netSide.toFixed(2)} net@5%) · both ×${AVX2_BOTH_GROSS} gross (×${netBoth.toFixed(2)} net@5%)`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>Each plane: if f&lt;0.03 ⇒ instant 1.00×, else m = (1 − edge)/f.</div>
+              <div>LEFT/RIGHT pays when its peak &gt; the other's. BOTH pays when both peaks ≥ {AVX2_BOTH_THRESHOLD.toFixed(1)}×.</div>
             </div>
           );
           break;

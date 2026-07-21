@@ -1381,6 +1381,43 @@ export function wingoNetMult(pick: WingoPick, n: number, edge: number): number {
 }
 
 
+// ---- Aviator X2 · Duo-Plane -------------------------------------------------
+// Two independent crash planes fly side by side. Each plane's multiplier is
+// derived from one float with the classic crash formula (3% instant bust to 1×).
+// Bets:
+//   LEFT   — wins if left plane's peak > right plane's peak. Gross ×1.97
+//   RIGHT  — wins if right plane's peak > left plane's peak. Gross ×1.97
+//   BOTH   — wins if BOTH planes reach at least AVX2_BOTH_THRESHOLD. Gross ×3.5
+// Ties (equal peaks) resolve as loss for LEFT/RIGHT; BOTH is independent.
+
+export const AVX2_SIDE_GROSS = 1.97;
+export const AVX2_BOTH_GROSS = 3.5;
+export const AVX2_BOTH_THRESHOLD = 2.0;
+
+export type AvX2Pick = "left" | "right" | "both";
+
+export async function fairAviatorX2(
+  serverSeed: string, clientSeed: string, nonce: number, edge: number = 0.03,
+): Promise<{ floats: number[]; left: number; right: number }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 2);
+  const toMult = (f: number) => {
+    if (f < 0.03) return 1.0;
+    const m = Math.max(1, (1 - edge) / Math.max(f, 1e-9));
+    return +Math.min(m, 1_000_000).toFixed(2);
+  };
+  return { floats, left: toMult(floats[0]), right: toMult(floats[1]) };
+}
+
+export function avx2NetMult(pick: AvX2Pick, left: number, right: number, edge: number): number {
+  const apply = (g: number) => +(g * (1 - edge)).toFixed(4);
+  if (pick === "left") return left > right ? apply(AVX2_SIDE_GROSS) : 0;
+  if (pick === "right") return right > left ? apply(AVX2_SIDE_GROSS) : 0;
+  return left >= AVX2_BOTH_THRESHOLD && right >= AVX2_BOTH_THRESHOLD ? apply(AVX2_BOTH_GROSS) : 0;
+}
+
+
+
+
 
 
 
