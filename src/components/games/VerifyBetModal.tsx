@@ -59,6 +59,12 @@ import {
   fairFanTan,
   fanTanNetMult,
   FAN_TAN_STRAIGHT_MULT,
+  fairBalloon,
+  balloonMultAt,
+  balloonNetMult,
+  BALLOON_MAX_PUMPS,
+  BALLOON_POP_CHANCE,
+  BALLOON_STEP,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -66,7 +72,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon";
 
 
 export type VerifyPrefill = {
@@ -500,6 +506,24 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
             <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
               <div>Beads = 40 + floor(float × 81) in [40,120]. Winner = beads mod 4 (0 ⇒ 4).</div>
               <div>Straight pick: 25% win prob, payout = bet × 4 × (1 − edge). Loss forfeits stake.</div>
+            </div>
+          );
+          break;
+        }
+        case "balloon": {
+          const r = await fairBalloon(serverSeed, clientSeed, nonce, BALLOON_MAX_PUMPS);
+          floats = r.floats;
+          const shown = r.popAt >= 0 ? r.popAt + 1 : r.floats.length;
+          const rows = r.floats.slice(0, shown).map((f, i) => {
+            const popped = r.popAt === i;
+            return `Pump ${i + 1}: f=${f.toFixed(6)}${popped ? " < 0.09 ⇒ 💥 POP" : ` ⇒ ×${balloonMultAt(i + 1).toFixed(2)}`}`;
+          }).join(" · ");
+          const net = balloonNetMult(r.popMult, 0.05);
+          outcome = `${rows} · popAt=${r.popAt >= 0 ? r.popAt + 1 : "SAFE"} · popMult=${r.popMult.toFixed(2)}× · Net@5% edge = ${net.toFixed(2)}×`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>Each pump: multiplier ×= {BALLOON_STEP}. Pop if float &lt; {BALLOON_POP_CHANCE} ({(BALLOON_POP_CHANCE * 100).toFixed(0)}% per pump).</div>
+              <div>Cash out any time before pop. Payout = bet × {BALLOON_STEP}^pumps × (1 − edge). Pop forfeits stake. Max {BALLOON_MAX_PUMPS} pumps.</div>
             </div>
           );
           break;

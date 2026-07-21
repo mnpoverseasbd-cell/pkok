@@ -78,6 +78,7 @@ const myGames: OriginalGame[] = [
   { slug: "ludo",             name: "Ludo Dash",         nameBn: "লুডু ড্যাশ",         provider: "ASIK", poster: imgAviator,     status: "live", to: "/games/ludo" },
   { slug: "carrom",           name: "Carrom Strike",     nameBn: "ক্যারাম স্ট্রাইক",   provider: "ASIK", poster: imgBaccarat,    status: "live", to: "/games/carrom" },
   { slug: "fan-tan",          name: "Fan-Tan",           nameBn: "ফ্যান-টান",         provider: "ASIK", poster: imgFortune,     status: "live", to: "/games/fan-tan" },
+  { slug: "balloon",          name: "Balloon Cash or Crash", nameBn: "বেলুন ক্র্যাশ",  provider: "ASIK", poster: imgCandy,       status: "live", to: "/games/balloon" },
 
 
 

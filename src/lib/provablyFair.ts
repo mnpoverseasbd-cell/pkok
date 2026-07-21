@@ -1237,6 +1237,41 @@ export function fanTanNetMult(win: boolean, edge: number): number {
 }
 
 
+// ---- Balloon · Cash or Crash -----------------------------------------------
+// Arcade crash variant. Each "pump" inflates the balloon and multiplies the
+// cash-out by BALLOON_STEP. Every pump has an independent BALLOON_POP_CHANCE
+// of popping. Provably fair: we consume up to BALLOON_MAX_PUMPS floats; the
+// first float below BALLOON_POP_CHANCE marks the pop; if none pop, the
+// balloon safely reaches max. On cashout before pop, payout = bet × step^k ×
+// (1 − edge); a pop forfeits the stake.
+
+export const BALLOON_MAX_PUMPS = 25;
+export const BALLOON_POP_CHANCE = 0.09; // avg ~11 pumps before pop
+export const BALLOON_STEP = 1.14;       // per-pump gross multiplier
+
+export function balloonMultAt(pumps: number): number {
+  if (pumps <= 0) return 1;
+  return +Math.pow(BALLOON_STEP, pumps).toFixed(4);
+}
+
+export function balloonNetMult(grossMult: number, edge: number): number {
+  return +(grossMult * (1 - edge)).toFixed(4);
+}
+
+export async function fairBalloon(
+  serverSeed: string, clientSeed: string, nonce: number,
+  maxPumps: number = BALLOON_MAX_PUMPS,
+): Promise<{ floats: number[]; popAt: number; popMult: number }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, maxPumps);
+  let popAt = -1;
+  for (let i = 0; i < floats.length; i++) {
+    if (floats[i] < BALLOON_POP_CHANCE) { popAt = i; break; }
+  }
+  const popMult = popAt >= 0 ? balloonMultAt(popAt) : balloonMultAt(maxPumps);
+  return { floats, popAt, popMult };
+}
+
+
 // ---- Seed generation ---------------------------------------------------------
 
 
