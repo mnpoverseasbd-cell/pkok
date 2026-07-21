@@ -73,6 +73,7 @@ import { Route as GamesBingoRouteImport } from './routes/games.bingo'
 import { Route as GamesBalloonRouteImport } from './routes/games.balloon'
 import { Route as GamesBaccaratRouteImport } from './routes/games.baccarat'
 import { Route as GamesAviatrixRouteImport } from './routes/games.aviatrix'
+import { Route as GamesAviatorX2RouteImport } from './routes/games.aviator-x2'
 import { Route as GamesAndarBaharRouteImport } from './routes/games.andar-bahar'
 import { Route as Games32CardsRouteImport } from './routes/games.32-cards'
 import { Route as ApiPublicHooksVipDailyRouteImport } from './routes/api/public/hooks/vip-daily'
@@ -397,6 +398,11 @@ const GamesAviatrixRoute = GamesAviatrixRouteImport.update({
   path: '/games/aviatrix',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesAviatorX2Route = GamesAviatorX2RouteImport.update({
+  id: '/games/aviator-x2',
+  path: '/games/aviator-x2',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesAndarBaharRoute = GamesAndarBaharRouteImport.update({
   id: '/games/andar-bahar',
   path: '/games/andar-bahar',
@@ -441,6 +447,7 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof WalletRoute
   '/games/32-cards': typeof Games32CardsRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
+  '/games/aviator-x2': typeof GamesAviatorX2Route
   '/games/aviatrix': typeof GamesAviatrixRoute
   '/games/baccarat': typeof GamesBaccaratRoute
   '/games/balloon': typeof GamesBalloonRoute
@@ -510,6 +517,7 @@ export interface FileRoutesByTo {
   '/wallet': typeof WalletRoute
   '/games/32-cards': typeof Games32CardsRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
+  '/games/aviator-x2': typeof GamesAviatorX2Route
   '/games/aviatrix': typeof GamesAviatrixRoute
   '/games/baccarat': typeof GamesBaccaratRoute
   '/games/balloon': typeof GamesBalloonRoute
@@ -580,6 +588,7 @@ export interface FileRoutesById {
   '/wallet': typeof WalletRoute
   '/games/32-cards': typeof Games32CardsRoute
   '/games/andar-bahar': typeof GamesAndarBaharRoute
+  '/games/aviator-x2': typeof GamesAviatorX2Route
   '/games/aviatrix': typeof GamesAviatrixRoute
   '/games/baccarat': typeof GamesBaccaratRoute
   '/games/balloon': typeof GamesBalloonRoute
@@ -651,6 +660,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/games/32-cards'
     | '/games/andar-bahar'
+    | '/games/aviator-x2'
     | '/games/aviatrix'
     | '/games/baccarat'
     | '/games/balloon'
@@ -720,6 +730,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/games/32-cards'
     | '/games/andar-bahar'
+    | '/games/aviator-x2'
     | '/games/aviatrix'
     | '/games/baccarat'
     | '/games/balloon'
@@ -789,6 +800,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/games/32-cards'
     | '/games/andar-bahar'
+    | '/games/aviator-x2'
     | '/games/aviatrix'
     | '/games/baccarat'
     | '/games/balloon'
@@ -859,6 +871,7 @@ export interface RootRouteChildren {
   WalletRoute: typeof WalletRoute
   Games32CardsRoute: typeof Games32CardsRoute
   GamesAndarBaharRoute: typeof GamesAndarBaharRoute
+  GamesAviatorX2Route: typeof GamesAviatorX2Route
   GamesAviatrixRoute: typeof GamesAviatrixRoute
   GamesBaccaratRoute: typeof GamesBaccaratRoute
   GamesBalloonRoute: typeof GamesBalloonRoute
@@ -1351,6 +1364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesAviatrixRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/aviator-x2': {
+      id: '/games/aviator-x2'
+      path: '/games/aviator-x2'
+      fullPath: '/games/aviator-x2'
+      preLoaderRoute: typeof GamesAviatorX2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/andar-bahar': {
       id: '/games/andar-bahar'
       path: '/games/andar-bahar'
@@ -1403,6 +1423,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletRoute: WalletRoute,
   Games32CardsRoute: Games32CardsRoute,
   GamesAndarBaharRoute: GamesAndarBaharRoute,
+  GamesAviatorX2Route: GamesAviatorX2Route,
   GamesAviatrixRoute: GamesAviatrixRoute,
   GamesBaccaratRoute: GamesBaccaratRoute,
   GamesBalloonRoute: GamesBalloonRoute,
