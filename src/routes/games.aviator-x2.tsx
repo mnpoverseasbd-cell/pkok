@@ -150,7 +150,9 @@ function AviatorX2Game() {
               const hue = side === "L" ? "sky" : "rose";
               const climb = Math.min(0.85, (val - 1) * 0.18); // 0..0.85 of height
               return (
-                <div key={side} className={`relative h-56 overflow-hidden rounded-xl border border-${hue}-400/30 bg-black/40`}>
+              const borderCls = side === "L" ? "border-sky-400/30" : "border-rose-400/30";
+              return (
+                <div key={side} className={`relative h-56 overflow-hidden rounded-xl border ${borderCls} bg-black/40`}>
                   <div className="pointer-events-none absolute inset-0"
                     style={{
                       background: side === "L"
