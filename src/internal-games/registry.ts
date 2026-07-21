@@ -70,6 +70,7 @@ const SEEDS: Seed[] = [
   { slug: "carrom", name: "Carrom Strike · Pocket King", category: "table", image: imgBaccarat, tags: ["new", "hot", "arcade", "bd"], featured: true, popularity: 95 },
   { slug: "fan-tan", name: "Fan-Tan · Bead Count", category: "table", image: imgFortune, tags: ["new", "hot", "arcade", "asia", "classic"], featured: true, popularity: 92 },
   { slug: "balloon", name: "Balloon · Cash or Crash", category: "crash", image: imgCandy, tags: ["new", "hot", "arcade", "crash"], featured: true, popularity: 94 },
+  { slug: "dragon-phoenix", name: "Dragon vs Phoenix · Battle Wheel", category: "table", image: imgDragon, tags: ["new", "hot", "arcade", "asia", "wheel"], featured: true, popularity: 93 },
 
 ];
 
