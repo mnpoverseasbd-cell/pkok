@@ -72,6 +72,9 @@ import {
   DP_PHOENIX_COUNT,
   DP_SIDE_GROSS,
   DP_TIE_GROSS,
+  fairWingo,
+  wingoColorsOf,
+  wingoSizeOf,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -79,7 +82,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon" | "dragon-phoenix";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon" | "dragon-phoenix" | "wingo";
 
 
 export type VerifyPrefill = {
@@ -549,7 +552,20 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "wingo": {
+          const r = await fairWingo(serverSeed, clientSeed, nonce);
+          floats = r.floats;
+          outcome = `f=${r.floats[0].toFixed(6)} ⇒ number=${r.number} · colors=[${r.colors.join("+")}] · size=${r.size.toUpperCase()}`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>number = floor(float × 10). Colors: 1/3/7/9 GREEN, 2/4/6/8 RED, 0 RED+VIOLET, 5 GREEN+VIOLET.</div>
+              <div>Payouts (gross): number ×9 · pure color ×2 · mixed color ×1.5 · violet ×4.5 · big/small ×2. Net = gross × (1 − edge).</div>
+            </div>
+          );
+          break;
+        }
       }
+
 
 
 

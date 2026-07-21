@@ -80,6 +80,7 @@ const myGames: OriginalGame[] = [
   { slug: "fan-tan",          name: "Fan-Tan",           nameBn: "ফ্যান-টান",         provider: "ASIK", poster: imgFortune,     status: "live", to: "/games/fan-tan" },
   { slug: "balloon",          name: "Balloon Cash or Crash", nameBn: "বেলুন ক্র্যাশ",  provider: "ASIK", poster: imgCandy,       status: "live", to: "/games/balloon" },
   { slug: "dragon-phoenix",   name: "Dragon vs Phoenix", nameBn: "ড্রাগন বনাম ফিনিক্স", provider: "ASIK", poster: imgFortune,     status: "live", to: "/games/dragon-phoenix" },
+  { slug: "wingo",            name: "Wingo 3-Min Lottery", nameBn: "উইনগো ৩-মিনিট লটারি", provider: "ASIK", poster: imgFortune,     status: "live", to: "/games/wingo" },
 
 
 
