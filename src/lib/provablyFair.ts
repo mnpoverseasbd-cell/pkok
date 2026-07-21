@@ -1272,6 +1272,46 @@ export async function fairBalloon(
 }
 
 
+// ---- Dragon vs Phoenix · Battle Wheel --------------------------------------
+// 25-segment battle wheel: 12 Dragon, 12 Phoenix, 1 Tie. Player picks one side.
+// Segment index = floor(float × 25). Straight side gross ×(25/12); Tie ×25.
+// Net = gross × (1 − edge). Loss forfeits stake.
+
+export const DP_SEGMENTS = 25;
+export const DP_DRAGON_COUNT = 12;
+export const DP_PHOENIX_COUNT = 12;
+export const DP_TIE_COUNT = 1;
+export const DP_SIDE_GROSS = DP_SEGMENTS / DP_DRAGON_COUNT; // ≈ 2.0833
+export const DP_TIE_GROSS = DP_SEGMENTS / DP_TIE_COUNT;     // 25
+
+export type DPPick = "dragon" | "phoenix" | "tie";
+
+export function dpSegmentForFloat(f: number): number {
+  return Math.min(DP_SEGMENTS - 1, Math.max(0, Math.floor(f * DP_SEGMENTS)));
+}
+
+export function dpOutcomeForSegment(seg: number): DPPick {
+  if (seg < DP_DRAGON_COUNT) return "dragon";
+  if (seg < DP_DRAGON_COUNT + DP_PHOENIX_COUNT) return "phoenix";
+  return "tie";
+}
+
+export async function fairDragonPhoenix(
+  serverSeed: string, clientSeed: string, nonce: number,
+): Promise<{ floats: number[]; segment: number; outcome: DPPick }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
+  const segment = dpSegmentForFloat(floats[0]);
+  const outcome = dpOutcomeForSegment(segment);
+  return { floats, segment, outcome };
+}
+
+export function dpNetMult(pick: DPPick, outcome: DPPick, edge: number): number {
+  if (pick !== outcome) return 0;
+  const gross = pick === "tie" ? DP_TIE_GROSS : DP_SIDE_GROSS;
+  return +(gross * (1 - edge)).toFixed(4);
+}
+
+
 // ---- Seed generation ---------------------------------------------------------
 
 
