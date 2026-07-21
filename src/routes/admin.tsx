@@ -697,6 +697,7 @@ function AdminGames() {
 
   return (
     <Panel title="Game Controls">
+      <ThumbnailDuplicateReport />
       {loading ? <div className="text-slate-500">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-slate-400">No games configured</div> : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {rows.map((r) => {
