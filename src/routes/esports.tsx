@@ -79,6 +79,7 @@ const myGames: OriginalGame[] = [
   { slug: "carrom",           name: "Carrom Strike",     nameBn: "ক্যারাম স্ট্রাইক",   provider: "ASIK", poster: imgBaccarat,    status: "live", to: "/games/carrom" },
   { slug: "fan-tan",          name: "Fan-Tan",           nameBn: "ফ্যান-টান",         provider: "ASIK", poster: imgFortune,     status: "live", to: "/games/fan-tan" },
   { slug: "balloon",          name: "Balloon Cash or Crash", nameBn: "বেলুন ক্র্যাশ",  provider: "ASIK", poster: imgCandy,       status: "live", to: "/games/balloon" },
+  { slug: "dragon-phoenix",   name: "Dragon vs Phoenix", nameBn: "ড্রাগন বনাম ফিনিক্স", provider: "ASIK", poster: imgFortune,     status: "live", to: "/games/dragon-phoenix" },
 
 
 
