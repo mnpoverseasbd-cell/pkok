@@ -13,6 +13,7 @@ import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayout
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag, BarChart3, Bell } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
+import { ThumbnailDuplicateReport } from "@/components/admin/ThumbnailDuplicateReport";
 
 
 const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit", "flags", "reports", "promos", "tournaments", "notifs"]).optional() });
@@ -696,6 +697,7 @@ function AdminGames() {
 
   return (
     <Panel title="Game Controls">
+      <ThumbnailDuplicateReport />
       {loading ? <div className="text-slate-500">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-slate-400">No games configured</div> : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {rows.map((r) => {
