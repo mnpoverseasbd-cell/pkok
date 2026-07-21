@@ -65,6 +65,13 @@ import {
   BALLOON_MAX_PUMPS,
   BALLOON_POP_CHANCE,
   BALLOON_STEP,
+  fairDragonPhoenix,
+  dpNetMult,
+  DP_SEGMENTS,
+  DP_DRAGON_COUNT,
+  DP_PHOENIX_COUNT,
+  DP_SIDE_GROSS,
+  DP_TIE_GROSS,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -72,7 +79,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon" | "dragon-phoenix";
 
 
 export type VerifyPrefill = {
@@ -524,6 +531,20 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
             <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
               <div>Each pump: multiplier ×= {BALLOON_STEP}. Pop if float &lt; {BALLOON_POP_CHANCE} ({(BALLOON_POP_CHANCE * 100).toFixed(0)}% per pump).</div>
               <div>Cash out any time before pop. Payout = bet × {BALLOON_STEP}^pumps × (1 − edge). Pop forfeits stake. Max {BALLOON_MAX_PUMPS} pumps.</div>
+            </div>
+          );
+          break;
+        }
+        case "dragon-phoenix": {
+          const r = await fairDragonPhoenix(serverSeed, clientSeed, nonce);
+          floats = r.floats;
+          const netSide = dpNetMult("dragon", "dragon", 0.05);
+          const netTie = dpNetMult("tie", "tie", 0.05);
+          outcome = `f=${r.floats[0].toFixed(6)} ⇒ seg=${r.segment}/${DP_SEGMENTS - 1} ⇒ ${r.outcome.toUpperCase()} · Side pays ×${DP_SIDE_GROSS.toFixed(4)} gross (×${netSide.toFixed(2)} net@5%) · Tie ×${DP_TIE_GROSS.toFixed(2)} gross (×${netTie.toFixed(2)} net@5%)`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>Segment = floor(float × {DP_SEGMENTS}). [0..{DP_DRAGON_COUNT - 1}] Dragon, [{DP_DRAGON_COUNT}..{DP_DRAGON_COUNT + DP_PHOENIX_COUNT - 1}] Phoenix, [{DP_SEGMENTS - 1}] Tie.</div>
+              <div>Payout = bet × gross × (1 − edge) when pick matches outcome. Loss forfeits stake.</div>
             </div>
           );
           break;
