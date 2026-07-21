@@ -35,6 +35,7 @@ import { Route as CrashRouteImport } from './routes/crash'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GamesIndexRouteImport } from './routes/games.index'
+import { Route as GamesWingoRouteImport } from './routes/games.wingo'
 import { Route as GamesWheelRouteImport } from './routes/games.wheel'
 import { Route as GamesVideoPokerRouteImport } from './routes/games.video-poker'
 import { Route as GamesTowerRouteImport } from './routes/games.tower'
@@ -204,6 +205,11 @@ const IndexRoute = IndexRouteImport.update({
 const GamesIndexRoute = GamesIndexRouteImport.update({
   id: '/games/',
   path: '/games/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesWingoRoute = GamesWingoRouteImport.update({
+  id: '/games/wingo',
+  path: '/games/wingo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesWheelRoute = GamesWheelRouteImport.update({
@@ -472,6 +478,7 @@ export interface FileRoutesByFullPath {
   '/games/tower': typeof GamesTowerRoute
   '/games/video-poker': typeof GamesVideoPokerRoute
   '/games/wheel': typeof GamesWheelRoute
+  '/games/wingo': typeof GamesWingoRoute
   '/games/': typeof GamesIndexRoute
   '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
 }
@@ -540,6 +547,7 @@ export interface FileRoutesByTo {
   '/games/tower': typeof GamesTowerRoute
   '/games/video-poker': typeof GamesVideoPokerRoute
   '/games/wheel': typeof GamesWheelRoute
+  '/games/wingo': typeof GamesWingoRoute
   '/games': typeof GamesIndexRoute
   '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
 }
@@ -609,6 +617,7 @@ export interface FileRoutesById {
   '/games/tower': typeof GamesTowerRoute
   '/games/video-poker': typeof GamesVideoPokerRoute
   '/games/wheel': typeof GamesWheelRoute
+  '/games/wingo': typeof GamesWingoRoute
   '/games/': typeof GamesIndexRoute
   '/api/public/hooks/vip-daily': typeof ApiPublicHooksVipDailyRoute
 }
@@ -679,6 +688,7 @@ export interface FileRouteTypes {
     | '/games/tower'
     | '/games/video-poker'
     | '/games/wheel'
+    | '/games/wingo'
     | '/games/'
     | '/api/public/hooks/vip-daily'
   fileRoutesByTo: FileRoutesByTo
@@ -747,6 +757,7 @@ export interface FileRouteTypes {
     | '/games/tower'
     | '/games/video-poker'
     | '/games/wheel'
+    | '/games/wingo'
     | '/games'
     | '/api/public/hooks/vip-daily'
   id:
@@ -815,6 +826,7 @@ export interface FileRouteTypes {
     | '/games/tower'
     | '/games/video-poker'
     | '/games/wheel'
+    | '/games/wingo'
     | '/games/'
     | '/api/public/hooks/vip-daily'
   fileRoutesById: FileRoutesById
@@ -884,6 +896,7 @@ export interface RootRouteChildren {
   GamesTowerRoute: typeof GamesTowerRoute
   GamesVideoPokerRoute: typeof GamesVideoPokerRoute
   GamesWheelRoute: typeof GamesWheelRoute
+  GamesWingoRoute: typeof GamesWingoRoute
   GamesIndexRoute: typeof GamesIndexRoute
   ApiPublicHooksVipDailyRoute: typeof ApiPublicHooksVipDailyRoute
 }
@@ -1070,6 +1083,13 @@ declare module '@tanstack/react-router' {
       path: '/games'
       fullPath: '/games/'
       preLoaderRoute: typeof GamesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/wingo': {
+      id: '/games/wingo'
+      path: '/games/wingo'
+      fullPath: '/games/wingo'
+      preLoaderRoute: typeof GamesWingoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/wheel': {
@@ -1420,6 +1440,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesTowerRoute: GamesTowerRoute,
   GamesVideoPokerRoute: GamesVideoPokerRoute,
   GamesWheelRoute: GamesWheelRoute,
+  GamesWingoRoute: GamesWingoRoute,
   GamesIndexRoute: GamesIndexRoute,
   ApiPublicHooksVipDailyRoute: ApiPublicHooksVipDailyRoute,
 }
