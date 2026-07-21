@@ -68,6 +68,7 @@ const SEEDS: Seed[] = [
   { slug: "cricket", name: "Cricket Star · Six-Over Chase", category: "crash", image: imgAviator, tags: ["new", "hot", "sports", "bd", "crash"], featured: true, popularity: 97 },
   { slug: "ludo", name: "Ludo Dash · Race to 57", category: "crash", image: imgDice, tags: ["new", "hot", "dice", "bd", "crash"], featured: true, popularity: 96 },
   { slug: "carrom", name: "Carrom Strike · Pocket King", category: "table", image: imgBaccarat, tags: ["new", "hot", "arcade", "bd"], featured: true, popularity: 95 },
+  { slug: "fan-tan", name: "Fan-Tan · Bead Count", category: "table", image: imgFortune, tags: ["new", "hot", "arcade", "asia", "classic"], featured: true, popularity: 92 },
 
 ];
 
