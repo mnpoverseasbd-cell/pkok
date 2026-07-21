@@ -13,6 +13,7 @@ import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayout
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag, BarChart3, Bell } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
+import { ThumbnailDuplicateReport } from "@/components/admin/ThumbnailDuplicateReport";
 
 
 const searchSchema = z.object({ tab: z.enum(["overview", "txns", "users", "methods", "games", "vip", "audit", "flags", "reports", "promos", "tournaments", "notifs"]).optional() });
