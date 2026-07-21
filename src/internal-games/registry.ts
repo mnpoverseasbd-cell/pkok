@@ -5,18 +5,50 @@ import type { GameMetadata } from "@/core/types";
 import type { GameCategory } from "@/core/constants";
 
 
-// Reuse existing artwork — new visual assets are out of scope.
-import imgDice from "@/assets/game-dice.jpg";
-import imgAviator from "@/assets/game-aviator.jpg";
-import imgCrash from "@/assets/game-crash.jpg";
-import imgDragon from "@/assets/game-dragon.jpg";
-import imgFortune from "@/assets/game-fortune.jpg";
-import imgRoulette from "@/assets/game-roulette.jpg";
-import imgSlot1 from "@/assets/game-slot1.jpg";
-import imgPharaoh from "@/assets/game-pharaoh.jpg";
-import imgPoker from "@/assets/game-poker.jpg";
-import imgCandy from "@/assets/game-candy.jpg";
-import imgBaccarat from "@/assets/game-baccarat.jpg";
+// Game-specific thumbnails — one unique image per game.
+import imgDice from "@/assets/thumbs/dice.jpg";
+import imgCrash from "@/assets/thumbs/crash.jpg";
+import imgMines from "@/assets/thumbs/mines.jpg";
+import imgPlinko from "@/assets/thumbs/plinko.jpg";
+import imgWheel from "@/assets/thumbs/wheel.jpg";
+import imgLimbo from "@/assets/thumbs/limbo.jpg";
+import imgCoinflip from "@/assets/thumbs/coinflip.jpg";
+import imgChickenRoad from "@/assets/thumbs/chicken-road.jpg";
+import imgTower from "@/assets/thumbs/tower.jpg";
+import imgLuckyCard from "@/assets/thumbs/lucky-card.jpg";
+import imgShellGame from "@/assets/thumbs/shell-game.jpg";
+import imgScratchCard from "@/assets/thumbs/scratch-card.jpg";
+import imgKeno from "@/assets/thumbs/keno.jpg";
+import imgHiLo from "@/assets/thumbs/hi-lo.jpg";
+import imgColorPrediction from "@/assets/thumbs/color-prediction.jpg";
+import imgAndarBahar from "@/assets/thumbs/andar-bahar.jpg";
+import imgDragonTiger from "@/assets/thumbs/dragon-tiger.jpg";
+import imgTeenPatti from "@/assets/thumbs/teen-patti.jpg";
+import imgSevenUpDown from "@/assets/thumbs/seven-up-down.jpg";
+import imgBaccarat from "@/assets/thumbs/baccarat.jpg";
+import imgSicBo from "@/assets/thumbs/sic-bo.jpg";
+import imgRoulette from "@/assets/thumbs/roulette.jpg";
+import imgBlackjack from "@/assets/thumbs/blackjack.jpg";
+import img32Cards from "@/assets/thumbs/32-cards.jpg";
+import imgVideoPoker from "@/assets/thumbs/video-poker.jpg";
+import imgSlots from "@/assets/thumbs/slots.jpg";
+import imgBingo from "@/assets/thumbs/bingo.jpg";
+import imgMatka from "@/assets/thumbs/matka.jpg";
+import imgFishShooter from "@/assets/thumbs/fish-shooter.jpg";
+import imgMegaways from "@/assets/thumbs/megaways.jpg";
+import imgAviatrix from "@/assets/thumbs/aviatrix.jpg";
+import imgDragonFishing from "@/assets/thumbs/dragon-fishing.jpg";
+import imgPenalty from "@/assets/thumbs/penalty.jpg";
+import imgCricket from "@/assets/thumbs/cricket.jpg";
+import imgLudo from "@/assets/thumbs/ludo.jpg";
+import imgCarrom from "@/assets/thumbs/carrom.jpg";
+import imgFanTan from "@/assets/thumbs/fan-tan.jpg";
+import imgBalloon from "@/assets/thumbs/balloon.jpg";
+import imgDragonPhoenix from "@/assets/thumbs/dragon-phoenix.jpg";
+import imgWingo from "@/assets/thumbs/wingo.jpg";
+import imgAviatorX2 from "@/assets/thumbs/aviator-x2.jpg";
+import imgJhandiMunda from "@/assets/thumbs/jhandi-munda.jpg";
+
 
 type Seed = {
   slug: string;
