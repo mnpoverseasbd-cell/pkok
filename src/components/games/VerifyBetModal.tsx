@@ -56,6 +56,9 @@ import {
   carromNetMult,
   CARROM_MAX_STRIKES,
   CARROM_OUTCOMES,
+  fairFanTan,
+  fanTanNetMult,
+  FAN_TAN_STRAIGHT_MULT,
 } from "@/lib/provablyFair";
 
 export type VerifyGameKey =
@@ -63,7 +66,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan";
 
 
 export type VerifyPrefill = {
@@ -488,7 +491,21 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
           );
           break;
         }
+        case "fan-tan": {
+          const r = await fairFanTan(serverSeed, clientSeed, nonce);
+          floats = r.floats;
+          const net = fanTanNetMult(true, 0.05);
+          outcome = `f=${r.floats[0].toFixed(6)} ⇒ beads=${r.beads} · groups of 4 = ${r.groups} · remainder = ${r.beads % 4} ⇒ winner ${r.winner} · Straight pays ×${FAN_TAN_STRAIGHT_MULT.toFixed(2)} gross, ×${net.toFixed(2)} net@5% edge`;
+          extra = (
+            <div className="mt-2 space-y-0.5 font-mono text-[10px] text-white/60">
+              <div>Beads = 40 + floor(float × 81) in [40,120]. Winner = beads mod 4 (0 ⇒ 4).</div>
+              <div>Straight pick: 25% win prob, payout = bet × 4 × (1 − edge). Loss forfeits stake.</div>
+            </div>
+          );
+          break;
+        }
       }
+
 
 
 
