@@ -68,6 +68,7 @@ import { Route as GamesChickenRoadRouteImport } from './routes/games.chicken-roa
 import { Route as GamesCarromRouteImport } from './routes/games.carrom'
 import { Route as GamesBlackjackRouteImport } from './routes/games.blackjack'
 import { Route as GamesBingoRouteImport } from './routes/games.bingo'
+import { Route as GamesBalloonRouteImport } from './routes/games.balloon'
 import { Route as GamesBaccaratRouteImport } from './routes/games.baccarat'
 import { Route as GamesAviatrixRouteImport } from './routes/games.aviatrix'
 import { Route as GamesAndarBaharRouteImport } from './routes/games.andar-bahar'
@@ -369,6 +370,11 @@ const GamesBingoRoute = GamesBingoRouteImport.update({
   path: '/games/bingo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesBalloonRoute = GamesBalloonRouteImport.update({
+  id: '/games/balloon',
+  path: '/games/balloon',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesBaccaratRoute = GamesBaccaratRouteImport.update({
   id: '/games/baccarat',
   path: '/games/baccarat',
@@ -425,6 +431,7 @@ export interface FileRoutesByFullPath {
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/aviatrix': typeof GamesAviatrixRoute
   '/games/baccarat': typeof GamesBaccaratRoute
+  '/games/balloon': typeof GamesBalloonRoute
   '/games/bingo': typeof GamesBingoRoute
   '/games/blackjack': typeof GamesBlackjackRoute
   '/games/carrom': typeof GamesCarromRoute
@@ -491,6 +498,7 @@ export interface FileRoutesByTo {
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/aviatrix': typeof GamesAviatrixRoute
   '/games/baccarat': typeof GamesBaccaratRoute
+  '/games/balloon': typeof GamesBalloonRoute
   '/games/bingo': typeof GamesBingoRoute
   '/games/blackjack': typeof GamesBlackjackRoute
   '/games/carrom': typeof GamesCarromRoute
@@ -558,6 +566,7 @@ export interface FileRoutesById {
   '/games/andar-bahar': typeof GamesAndarBaharRoute
   '/games/aviatrix': typeof GamesAviatrixRoute
   '/games/baccarat': typeof GamesBaccaratRoute
+  '/games/balloon': typeof GamesBalloonRoute
   '/games/bingo': typeof GamesBingoRoute
   '/games/blackjack': typeof GamesBlackjackRoute
   '/games/carrom': typeof GamesCarromRoute
@@ -626,6 +635,7 @@ export interface FileRouteTypes {
     | '/games/andar-bahar'
     | '/games/aviatrix'
     | '/games/baccarat'
+    | '/games/balloon'
     | '/games/bingo'
     | '/games/blackjack'
     | '/games/carrom'
@@ -692,6 +702,7 @@ export interface FileRouteTypes {
     | '/games/andar-bahar'
     | '/games/aviatrix'
     | '/games/baccarat'
+    | '/games/balloon'
     | '/games/bingo'
     | '/games/blackjack'
     | '/games/carrom'
@@ -758,6 +769,7 @@ export interface FileRouteTypes {
     | '/games/andar-bahar'
     | '/games/aviatrix'
     | '/games/baccarat'
+    | '/games/balloon'
     | '/games/bingo'
     | '/games/blackjack'
     | '/games/carrom'
@@ -825,6 +837,7 @@ export interface RootRouteChildren {
   GamesAndarBaharRoute: typeof GamesAndarBaharRoute
   GamesAviatrixRoute: typeof GamesAviatrixRoute
   GamesBaccaratRoute: typeof GamesBaccaratRoute
+  GamesBalloonRoute: typeof GamesBalloonRoute
   GamesBingoRoute: typeof GamesBingoRoute
   GamesBlackjackRoute: typeof GamesBlackjackRoute
   GamesCarromRoute: typeof GamesCarromRoute
@@ -1277,6 +1290,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesBingoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/balloon': {
+      id: '/games/balloon'
+      path: '/games/balloon'
+      fullPath: '/games/balloon'
+      preLoaderRoute: typeof GamesBalloonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/baccarat': {
       id: '/games/baccarat'
       path: '/games/baccarat'
@@ -1345,6 +1365,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesAndarBaharRoute: GamesAndarBaharRoute,
   GamesAviatrixRoute: GamesAviatrixRoute,
   GamesBaccaratRoute: GamesBaccaratRoute,
+  GamesBalloonRoute: GamesBalloonRoute,
   GamesBingoRoute: GamesBingoRoute,
   GamesBlackjackRoute: GamesBlackjackRoute,
   GamesCarromRoute: GamesCarromRoute,
