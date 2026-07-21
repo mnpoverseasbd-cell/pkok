@@ -147,9 +147,7 @@ function AviatorX2Game() {
               const val = side === "L" ? tickL : tickR;
               const peakSettled = settled ? (side === "L" ? settled.left : settled.right) : null;
               const crashed = peakSettled !== null && peakSettled <= 1.0;
-              const hue = side === "L" ? "sky" : "rose";
               const climb = Math.min(0.85, (val - 1) * 0.18); // 0..0.85 of height
-              return (
               const borderCls = side === "L" ? "border-sky-400/30" : "border-rose-400/30";
               return (
                 <div key={side} className={`relative h-56 overflow-hidden rounded-xl border ${borderCls} bg-black/40`}>
