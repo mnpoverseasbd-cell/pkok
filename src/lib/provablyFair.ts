@@ -1416,6 +1416,34 @@ export function avx2NetMult(pick: AvX2Pick, left: number, right: number, edge: n
 }
 
 
+// ---- Jhandi Munda · Crown & Anchor -----------------------------------------
+// Classic South-Asian arcade dice: 6 dice, each face shows 1 of 6 symbols.
+// Player picks a symbol; count matching dice. Payout = bet × (1 + count) if
+// count > 0, else 0. (Traditional payout — house edge ~7.87% is baked in.)
+
+export const JHANDI_SYMBOLS = ["🚩", "👑", "♥", "♠", "♦", "♣"] as const;
+export type JhandiSymbol = (typeof JHANDI_SYMBOLS)[number];
+
+export async function fairJhandi(
+  serverSeed: string, clientSeed: string, nonce: number,
+): Promise<{ floats: number[]; dice: number[]; symbols: JhandiSymbol[] }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 6);
+  const dice = floats.map((f) => Math.floor(f * 6) % 6);
+  const symbols = dice.map((d) => JHANDI_SYMBOLS[d]);
+  return { floats, dice, symbols };
+}
+
+export function jhandiCount(dice: number[], pickIdx: number): number {
+  let n = 0;
+  for (const d of dice) if (d === pickIdx) n++;
+  return n;
+}
+
+export function jhandiNetMult(count: number): number {
+  return count > 0 ? +(1 + count).toFixed(4) : 0;
+}
+
+
 
 
 
