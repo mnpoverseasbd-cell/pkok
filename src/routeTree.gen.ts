@@ -55,6 +55,7 @@ import { Route as GamesLudoRouteImport } from './routes/games.ludo'
 import { Route as GamesLuckyCardRouteImport } from './routes/games.lucky-card'
 import { Route as GamesLimboRouteImport } from './routes/games.limbo'
 import { Route as GamesKenoRouteImport } from './routes/games.keno'
+import { Route as GamesJhandiMundaRouteImport } from './routes/games.jhandi-munda'
 import { Route as GamesHiLoRouteImport } from './routes/games.hi-lo'
 import { Route as GamesFishShooterRouteImport } from './routes/games.fish-shooter'
 import { Route as GamesFanTanRouteImport } from './routes/games.fan-tan'
@@ -308,6 +309,11 @@ const GamesKenoRoute = GamesKenoRouteImport.update({
   path: '/games/keno',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesJhandiMundaRoute = GamesJhandiMundaRouteImport.update({
+  id: '/games/jhandi-munda',
+  path: '/games/jhandi-munda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesHiLoRoute = GamesHiLoRouteImport.update({
   id: '/games/hi-lo',
   path: '/games/hi-lo',
@@ -466,6 +472,7 @@ export interface FileRoutesByFullPath {
   '/games/fan-tan': typeof GamesFanTanRoute
   '/games/fish-shooter': typeof GamesFishShooterRoute
   '/games/hi-lo': typeof GamesHiLoRoute
+  '/games/jhandi-munda': typeof GamesJhandiMundaRoute
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
   '/games/lucky-card': typeof GamesLuckyCardRoute
@@ -536,6 +543,7 @@ export interface FileRoutesByTo {
   '/games/fan-tan': typeof GamesFanTanRoute
   '/games/fish-shooter': typeof GamesFishShooterRoute
   '/games/hi-lo': typeof GamesHiLoRoute
+  '/games/jhandi-munda': typeof GamesJhandiMundaRoute
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
   '/games/lucky-card': typeof GamesLuckyCardRoute
@@ -607,6 +615,7 @@ export interface FileRoutesById {
   '/games/fan-tan': typeof GamesFanTanRoute
   '/games/fish-shooter': typeof GamesFishShooterRoute
   '/games/hi-lo': typeof GamesHiLoRoute
+  '/games/jhandi-munda': typeof GamesJhandiMundaRoute
   '/games/keno': typeof GamesKenoRoute
   '/games/limbo': typeof GamesLimboRoute
   '/games/lucky-card': typeof GamesLuckyCardRoute
@@ -679,6 +688,7 @@ export interface FileRouteTypes {
     | '/games/fan-tan'
     | '/games/fish-shooter'
     | '/games/hi-lo'
+    | '/games/jhandi-munda'
     | '/games/keno'
     | '/games/limbo'
     | '/games/lucky-card'
@@ -749,6 +759,7 @@ export interface FileRouteTypes {
     | '/games/fan-tan'
     | '/games/fish-shooter'
     | '/games/hi-lo'
+    | '/games/jhandi-munda'
     | '/games/keno'
     | '/games/limbo'
     | '/games/lucky-card'
@@ -819,6 +830,7 @@ export interface FileRouteTypes {
     | '/games/fan-tan'
     | '/games/fish-shooter'
     | '/games/hi-lo'
+    | '/games/jhandi-munda'
     | '/games/keno'
     | '/games/limbo'
     | '/games/lucky-card'
@@ -890,6 +902,7 @@ export interface RootRouteChildren {
   GamesFanTanRoute: typeof GamesFanTanRoute
   GamesFishShooterRoute: typeof GamesFishShooterRoute
   GamesHiLoRoute: typeof GamesHiLoRoute
+  GamesJhandiMundaRoute: typeof GamesJhandiMundaRoute
   GamesKenoRoute: typeof GamesKenoRoute
   GamesLimboRoute: typeof GamesLimboRoute
   GamesLuckyCardRoute: typeof GamesLuckyCardRoute
@@ -1238,6 +1251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesKenoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/jhandi-munda': {
+      id: '/games/jhandi-munda'
+      path: '/games/jhandi-munda'
+      fullPath: '/games/jhandi-munda'
+      preLoaderRoute: typeof GamesJhandiMundaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/hi-lo': {
       id: '/games/hi-lo'
       path: '/games/hi-lo'
@@ -1442,6 +1462,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesFanTanRoute: GamesFanTanRoute,
   GamesFishShooterRoute: GamesFishShooterRoute,
   GamesHiLoRoute: GamesHiLoRoute,
+  GamesJhandiMundaRoute: GamesJhandiMundaRoute,
   GamesKenoRoute: GamesKenoRoute,
   GamesLimboRoute: GamesLimboRoute,
   GamesLuckyCardRoute: GamesLuckyCardRoute,
