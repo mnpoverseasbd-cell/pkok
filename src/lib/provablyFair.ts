@@ -1312,6 +1312,78 @@ export function dpNetMult(pick: DPPick, outcome: DPPick, edge: number): number {
 }
 
 
+// ---- Wingo · 3-Minute Color+Number Lottery ---------------------------------
+// BD/Asia lottery staple. Each round produces a number 0..9 derived from a
+// single float. Colors: 1,3,7,9 = GREEN pure; 2,4,6,8 = RED pure; 0 = RED+VIOLET
+// mixed; 5 = GREEN+VIOLET mixed. Size: 5..9 = BIG, 0..4 = SMALL.
+//
+// Bets & gross payouts (edge applied to net):
+//   number straight ...... 9.0×
+//   pure color hit ....... 2.0×  (green on 1/3/7/9 or red on 2/4/6/8)
+//   mixed color hit ...... 1.5×  (green on 5, red on 0)
+//   violet ............... 4.5×  (0 or 5)
+//   big / small .......... 2.0×
+
+export const WINGO_NUMBERS = 10;
+export const WINGO_NUM_GROSS = 9.0;
+export const WINGO_COLOR_PURE_GROSS = 2.0;
+export const WINGO_COLOR_MIXED_GROSS = 1.5;
+export const WINGO_VIOLET_GROSS = 4.5;
+export const WINGO_SIZE_GROSS = 2.0;
+
+export type WingoColor = "red" | "green" | "violet";
+export type WingoSize = "big" | "small";
+export type WingoPickKind = "num" | "color" | "violet" | "size";
+export type WingoPick =
+  | { kind: "num"; value: number }
+  | { kind: "color"; value: "red" | "green" }
+  | { kind: "violet" }
+  | { kind: "size"; value: WingoSize };
+
+export function wingoNumberForFloat(f: number): number {
+  return Math.min(WINGO_NUMBERS - 1, Math.max(0, Math.floor(f * WINGO_NUMBERS)));
+}
+
+export function wingoColorsOf(n: number): WingoColor[] {
+  if (n === 0) return ["red", "violet"];
+  if (n === 5) return ["green", "violet"];
+  return [n % 2 === 0 ? "red" : "green"];
+}
+
+export function wingoSizeOf(n: number): WingoSize {
+  return n >= 5 ? "big" : "small";
+}
+
+export async function fairWingo(
+  serverSeed: string, clientSeed: string, nonce: number,
+): Promise<{ floats: number[]; number: number; colors: WingoColor[]; size: WingoSize }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
+  const number = wingoNumberForFloat(floats[0]);
+  return { floats, number, colors: wingoColorsOf(number), size: wingoSizeOf(number) };
+}
+
+export function wingoNetMult(pick: WingoPick, n: number, edge: number): number {
+  const apply = (g: number) => +(g * (1 - edge)).toFixed(4);
+  switch (pick.kind) {
+    case "num":
+      return pick.value === n ? apply(WINGO_NUM_GROSS) : 0;
+    case "color": {
+      const cs = wingoColorsOf(n);
+      if (!cs.includes(pick.value)) return 0;
+      const mixed = cs.length > 1;
+      return apply(mixed ? WINGO_COLOR_MIXED_GROSS : WINGO_COLOR_PURE_GROSS);
+    }
+    case "violet":
+      return wingoColorsOf(n).includes("violet") ? apply(WINGO_VIOLET_GROSS) : 0;
+    case "size":
+      return wingoSizeOf(n) === pick.value ? apply(WINGO_SIZE_GROSS) : 0;
+  }
+}
+
+
+
+
+
 // ---- Seed generation ---------------------------------------------------------
 
 
