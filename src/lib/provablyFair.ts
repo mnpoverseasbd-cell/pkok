@@ -1199,6 +1199,49 @@ export function carromNetMult(grossMult: number, edge: number): number {
 }
 
 
+// ---- Fan-Tan · Bead Count ---------------------------------------------------
+// Classic Macau/HK arcade: dealer scoops a pile of beads, counts them out in
+// groups of 4, and the remainder (1..4) is the winning number. Player picks 1..4.
+// Straight pick pays 4× (edge applied). We derive bead count from float1 in
+// [FAN_TAN_MIN_BEADS..FAN_TAN_MAX_BEADS] purely for flavour; the winner is
+// remainder mod 4 (mapping 0 ⇒ 4).
+
+export const FAN_TAN_MIN_BEADS = 40;
+export const FAN_TAN_MAX_BEADS = 120;
+export const FAN_TAN_STRAIGHT_MULT = 4.0; // gross, edge applied on payout
+
+export type FanTanPick = 1 | 2 | 3 | 4;
+
+export function fanTanBeadCountForFloat(f: number): number {
+  const span = FAN_TAN_MAX_BEADS - FAN_TAN_MIN_BEADS + 1;
+  return FAN_TAN_MIN_BEADS + Math.floor(f * span);
+}
+
+export function fanTanWinnerForBeads(beads: number): FanTanPick {
+  const rem = beads % 4;
+  return (rem === 0 ? 4 : rem) as FanTanPick;
+}
+
+export async function fairFanTan(
+  serverSeed: string, clientSeed: string, nonce: number,
+): Promise<{ floats: number[]; beads: number; winner: FanTanPick; groups: number }> {
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 1);
+  const beads = fanTanBeadCountForFloat(floats[0]);
+  const winner = fanTanWinnerForBeads(beads);
+  const groups = Math.floor(beads / 4);
+  return { floats, beads, winner, groups };
+}
+
+export function fanTanNetMult(win: boolean, edge: number): number {
+  return win ? +(FAN_TAN_STRAIGHT_MULT * (1 - edge)).toFixed(4) : 0;
+}
+
+
+// ---- Seed generation ---------------------------------------------------------
+
+
+
+
 
 
 
