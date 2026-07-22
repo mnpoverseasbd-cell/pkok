@@ -136,7 +136,7 @@ function MyGamesPage() {
             "radial-gradient(ellipse at 20% 10%, rgba(180,120,255,0.20), transparent 55%), radial-gradient(ellipse at 80% 90%, rgba(255,220,120,0.14), transparent 55%), linear-gradient(180deg, #0f5a34 0%, #0a4527 55%, #062e19 100%)",
         }}
       >
-        <div className="mx-auto mb-6 flex w-[1200px] max-w-[calc(100vw-96px)] flex-wrap items-center justify-between gap-3">
+        <div className="mx-auto mb-6 flex w-[1320px] max-w-[calc(100vw-64px)] flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2 rounded-lg bg-[linear-gradient(180deg,#0f5a34,#083f22)] px-4 py-2 ring-1 ring-[var(--neon-green)]/50">
             <Gamepad2 className="h-5 w-5 text-[var(--neon-gold)]" />
             <h2 className="text-base font-bold tracking-wide text-[var(--neon-gold)]">
