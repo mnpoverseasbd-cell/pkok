@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CheckCircle2, Clock, XCircle, Copy } from "lucide-react";
@@ -145,7 +145,7 @@ export function TxnDetailsDialog({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="rounded-md border border-white/10 bg-black/30 p-2">
       <div className="text-[10px] uppercase text-white/50">{label}</div>

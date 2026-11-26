@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -76,7 +76,7 @@ function PromotionsPage() {
   }, [user]);
   useEffect(() => { load(); }, [load]);
 
-  async function submitCode(e: React.FormEvent) {
+  async function submitCode(e: FormEvent) {
     e.preventDefault();
     if (!user) {
       toast.error("লগইন করুন");

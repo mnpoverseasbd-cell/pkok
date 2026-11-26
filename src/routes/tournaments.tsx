@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { CalendarClock, Coins, Flame, Trophy, Users, Loader2, Crown, Medal, Gamepad2 } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
@@ -63,7 +64,7 @@ function Countdown({ to }: { to: number }) {
   );
 }
 
-function CosmicCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function CosmicCard({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div className={`relative overflow-hidden rounded-2xl border border-violet-500/30 bg-gradient-to-br from-slate-950/80 to-violet-950/40 p-5 backdrop-blur ${className}`}>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(168,85,247,0.15),transparent_60%)]" />

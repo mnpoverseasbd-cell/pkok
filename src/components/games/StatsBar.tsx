@@ -1,4 +1,5 @@
 import { RotateCcw, TrendingDown, TrendingUp, Trophy } from "lucide-react";
+import type { ReactNode } from "react";
 import { GameStats } from "@/hooks/useGameStats";
 
 export function StatsBar({ stats, onReset }: { stats: GameStats; onReset: () => void }) {
@@ -42,7 +43,7 @@ function Stat({
   label: string;
   value: string | number;
   valueClass?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }) {
   return (
     <div className="flex min-w-[70px] flex-col rounded-md bg-white/5 px-2 py-1 ring-1 ring-white/10">

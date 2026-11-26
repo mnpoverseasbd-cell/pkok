@@ -9,189 +9,79 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WalletRouteImport } from './routes/wallet'
-import { Route as VipRouteImport } from './routes/vip'
-import { Route as TournamentsRouteImport } from './routes/tournaments'
-import { Route as SportsRouteImport } from './routes/sports'
-import { Route as SlotsRouteImport } from './routes/slots'
-import { Route as RegisterRouteImport } from './routes/register'
-import { Route as ReferralRouteImport } from './routes/referral'
-import { Route as RecentlyPlayedRouteImport } from './routes/recently-played'
-import { Route as PromotionsRouteImport } from './routes/promotions'
-import { Route as PromotionRouteImport } from './routes/promotion'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as PokerRouteImport } from './routes/poker'
-import { Route as LotteryRouteImport } from './routes/lottery'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as LiveRouteImport } from './routes/live'
-import { Route as LeaderboardRouteImport } from './routes/leaderboard'
-import { Route as HotRouteImport } from './routes/hot'
-import { Route as FishingRouteImport } from './routes/fishing'
-import { Route as FishRouteImport } from './routes/fish'
-import { Route as FavoritesRouteImport } from './routes/favorites'
-import { Route as EsportsRouteImport } from './routes/esports'
-import { Route as DownloadRouteImport } from './routes/download'
-import { Route as CrashRouteImport } from './routes/crash'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as CrashRouteImport } from './routes/crash'
+import { Route as DownloadRouteImport } from './routes/download'
+import { Route as EsportsRouteImport } from './routes/esports'
+import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as FishRouteImport } from './routes/fish'
+import { Route as FishingRouteImport } from './routes/fishing'
+import { Route as HotRouteImport } from './routes/hot'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as LiveRouteImport } from './routes/live'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as LotteryRouteImport } from './routes/lottery'
+import { Route as PokerRouteImport } from './routes/poker'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PromotionRouteImport } from './routes/promotion'
+import { Route as PromotionsRouteImport } from './routes/promotions'
+import { Route as RecentlyPlayedRouteImport } from './routes/recently-played'
+import { Route as ReferralRouteImport } from './routes/referral'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as SlotsRouteImport } from './routes/slots'
+import { Route as SportsRouteImport } from './routes/sports'
+import { Route as TournamentsRouteImport } from './routes/tournaments'
+import { Route as VipRouteImport } from './routes/vip'
+import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as GamesIndexRouteImport } from './routes/games.index'
-import { Route as GamesWingoRouteImport } from './routes/games.wingo'
-import { Route as GamesWheelRouteImport } from './routes/games.wheel'
-import { Route as GamesVideoPokerRouteImport } from './routes/games.video-poker'
-import { Route as GamesTowerRouteImport } from './routes/games.tower'
-import { Route as GamesTeenPattiRouteImport } from './routes/games.teen-patti'
-import { Route as GamesSlotsRouteImport } from './routes/games.slots'
-import { Route as GamesSicBoRouteImport } from './routes/games.sic-bo'
-import { Route as GamesShellGameRouteImport } from './routes/games.shell-game'
-import { Route as GamesSevenUpDownRouteImport } from './routes/games.seven-up-down'
-import { Route as GamesScratchCardRouteImport } from './routes/games.scratch-card'
-import { Route as GamesRouletteRouteImport } from './routes/games.roulette'
-import { Route as GamesPlinkoRouteImport } from './routes/games.plinko'
-import { Route as GamesPenaltyRouteImport } from './routes/games.penalty'
-import { Route as GamesMinesRouteImport } from './routes/games.mines'
-import { Route as GamesMegawaysRouteImport } from './routes/games.megaways'
-import { Route as GamesMatkaRouteImport } from './routes/games.matka'
-import { Route as GamesLudoRouteImport } from './routes/games.ludo'
-import { Route as GamesLuckyCardRouteImport } from './routes/games.lucky-card'
-import { Route as GamesLimboRouteImport } from './routes/games.limbo'
-import { Route as GamesKenoRouteImport } from './routes/games.keno'
-import { Route as GamesJhandiMundaRouteImport } from './routes/games.jhandi-munda'
-import { Route as GamesHiLoRouteImport } from './routes/games.hi-lo'
-import { Route as GamesFishShooterRouteImport } from './routes/games.fish-shooter'
-import { Route as GamesFanTanRouteImport } from './routes/games.fan-tan'
-import { Route as GamesDragonTigerRouteImport } from './routes/games.dragon-tiger'
-import { Route as GamesDragonPhoenixRouteImport } from './routes/games.dragon-phoenix'
-import { Route as GamesDragonFishingRouteImport } from './routes/games.dragon-fishing'
-import { Route as GamesDiceRouteImport } from './routes/games.dice'
-import { Route as GamesCricketRouteImport } from './routes/games.cricket'
-import { Route as GamesCrashRouteImport } from './routes/games.crash'
-import { Route as GamesColorPredictionRouteImport } from './routes/games.color-prediction'
-import { Route as GamesCoinflipRouteImport } from './routes/games.coinflip'
-import { Route as GamesChickenRoadRouteImport } from './routes/games.chicken-road'
-import { Route as GamesCarromRouteImport } from './routes/games.carrom'
-import { Route as GamesBlackjackRouteImport } from './routes/games.blackjack'
-import { Route as GamesBingoRouteImport } from './routes/games.bingo'
-import { Route as GamesBalloonRouteImport } from './routes/games.balloon'
-import { Route as GamesBaccaratRouteImport } from './routes/games.baccarat'
-import { Route as GamesAviatrixRouteImport } from './routes/games.aviatrix'
-import { Route as GamesAviatorX2RouteImport } from './routes/games.aviator-x2'
-import { Route as GamesAndarBaharRouteImport } from './routes/games.andar-bahar'
 import { Route as Games32CardsRouteImport } from './routes/games.32-cards'
+import { Route as GamesAndarBaharRouteImport } from './routes/games.andar-bahar'
+import { Route as GamesAviatorX2RouteImport } from './routes/games.aviator-x2'
+import { Route as GamesAviatrixRouteImport } from './routes/games.aviatrix'
+import { Route as GamesBaccaratRouteImport } from './routes/games.baccarat'
+import { Route as GamesBalloonRouteImport } from './routes/games.balloon'
+import { Route as GamesBingoRouteImport } from './routes/games.bingo'
+import { Route as GamesBlackjackRouteImport } from './routes/games.blackjack'
+import { Route as GamesCarromRouteImport } from './routes/games.carrom'
+import { Route as GamesChickenRoadRouteImport } from './routes/games.chicken-road'
+import { Route as GamesCoinflipRouteImport } from './routes/games.coinflip'
+import { Route as GamesColorPredictionRouteImport } from './routes/games.color-prediction'
+import { Route as GamesCrashRouteImport } from './routes/games.crash'
+import { Route as GamesCricketRouteImport } from './routes/games.cricket'
+import { Route as GamesDiceRouteImport } from './routes/games.dice'
+import { Route as GamesDragonFishingRouteImport } from './routes/games.dragon-fishing'
+import { Route as GamesDragonPhoenixRouteImport } from './routes/games.dragon-phoenix'
+import { Route as GamesDragonTigerRouteImport } from './routes/games.dragon-tiger'
+import { Route as GamesFanTanRouteImport } from './routes/games.fan-tan'
+import { Route as GamesFishShooterRouteImport } from './routes/games.fish-shooter'
+import { Route as GamesHiLoRouteImport } from './routes/games.hi-lo'
+import { Route as GamesJhandiMundaRouteImport } from './routes/games.jhandi-munda'
+import { Route as GamesKenoRouteImport } from './routes/games.keno'
+import { Route as GamesLimboRouteImport } from './routes/games.limbo'
+import { Route as GamesLuckyCardRouteImport } from './routes/games.lucky-card'
+import { Route as GamesLudoRouteImport } from './routes/games.ludo'
+import { Route as GamesMatkaRouteImport } from './routes/games.matka'
+import { Route as GamesMegawaysRouteImport } from './routes/games.megaways'
+import { Route as GamesMinesRouteImport } from './routes/games.mines'
+import { Route as GamesPenaltyRouteImport } from './routes/games.penalty'
+import { Route as GamesPlinkoRouteImport } from './routes/games.plinko'
+import { Route as GamesRouletteRouteImport } from './routes/games.roulette'
+import { Route as GamesScratchCardRouteImport } from './routes/games.scratch-card'
+import { Route as GamesSevenUpDownRouteImport } from './routes/games.seven-up-down'
+import { Route as GamesShellGameRouteImport } from './routes/games.shell-game'
+import { Route as GamesSicBoRouteImport } from './routes/games.sic-bo'
+import { Route as GamesSlotsRouteImport } from './routes/games.slots'
+import { Route as GamesTeenPattiRouteImport } from './routes/games.teen-patti'
+import { Route as GamesTowerRouteImport } from './routes/games.tower'
+import { Route as GamesVideoPokerRouteImport } from './routes/games.video-poker'
+import { Route as GamesWheelRouteImport } from './routes/games.wheel'
+import { Route as GamesWingoRouteImport } from './routes/games.wingo'
 import { Route as ApiPublicHooksVipDailyRouteImport } from './routes/api/public/hooks/vip-daily'
 
-const WalletRoute = WalletRouteImport.update({
-  id: '/wallet',
-  path: '/wallet',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VipRoute = VipRouteImport.update({
-  id: '/vip',
-  path: '/vip',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TournamentsRoute = TournamentsRouteImport.update({
-  id: '/tournaments',
-  path: '/tournaments',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SportsRoute = SportsRouteImport.update({
-  id: '/sports',
-  path: '/sports',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SlotsRoute = SlotsRouteImport.update({
-  id: '/slots',
-  path: '/slots',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReferralRoute = ReferralRouteImport.update({
-  id: '/referral',
-  path: '/referral',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecentlyPlayedRoute = RecentlyPlayedRouteImport.update({
-  id: '/recently-played',
-  path: '/recently-played',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PromotionsRoute = PromotionsRouteImport.update({
-  id: '/promotions',
-  path: '/promotions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PromotionRoute = PromotionRouteImport.update({
-  id: '/promotion',
-  path: '/promotion',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PokerRoute = PokerRouteImport.update({
-  id: '/poker',
-  path: '/poker',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LotteryRoute = LotteryRouteImport.update({
-  id: '/lottery',
-  path: '/lottery',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LiveRoute = LiveRouteImport.update({
-  id: '/live',
-  path: '/live',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LeaderboardRoute = LeaderboardRouteImport.update({
-  id: '/leaderboard',
-  path: '/leaderboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HotRoute = HotRouteImport.update({
-  id: '/hot',
-  path: '/hot',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FishingRoute = FishingRouteImport.update({
-  id: '/fishing',
-  path: '/fishing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FishRoute = FishRouteImport.update({
-  id: '/fish',
-  path: '/fish',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FavoritesRoute = FavoritesRouteImport.update({
-  id: '/favorites',
-  path: '/favorites',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EsportsRoute = EsportsRouteImport.update({
-  id: '/esports',
-  path: '/esports',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DownloadRoute = DownloadRouteImport.update({
-  id: '/download',
-  path: '/download',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CrashRoute = CrashRouteImport.update({
-  id: '/crash',
-  path: '/crash',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -199,9 +89,119 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CrashRoute = CrashRouteImport.update({
+  id: '/crash',
+  path: '/crash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DownloadRoute = DownloadRouteImport.update({
+  id: '/download',
+  path: '/download',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsportsRoute = EsportsRouteImport.update({
+  id: '/esports',
+  path: '/esports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FishRoute = FishRouteImport.update({
+  id: '/fish',
+  path: '/fish',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FishingRoute = FishingRouteImport.update({
+  id: '/fishing',
+  path: '/fishing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotRoute = HotRouteImport.update({
+  id: '/hot',
+  path: '/hot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LiveRoute = LiveRouteImport.update({
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LotteryRoute = LotteryRouteImport.update({
+  id: '/lottery',
+  path: '/lottery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PokerRoute = PokerRouteImport.update({
+  id: '/poker',
+  path: '/poker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PromotionRoute = PromotionRouteImport.update({
+  id: '/promotion',
+  path: '/promotion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PromotionsRoute = PromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecentlyPlayedRoute = RecentlyPlayedRouteImport.update({
+  id: '/recently-played',
+  path: '/recently-played',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferralRoute = ReferralRouteImport.update({
+  id: '/referral',
+  path: '/referral',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SlotsRoute = SlotsRouteImport.update({
+  id: '/slots',
+  path: '/slots',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SportsRoute = SportsRouteImport.update({
+  id: '/sports',
+  path: '/sports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TournamentsRoute = TournamentsRouteImport.update({
+  id: '/tournaments',
+  path: '/tournaments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VipRoute = VipRouteImport.update({
+  id: '/vip',
+  path: '/vip',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesIndexRoute = GamesIndexRouteImport.update({
@@ -209,204 +209,9 @@ const GamesIndexRoute = GamesIndexRouteImport.update({
   path: '/games/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GamesWingoRoute = GamesWingoRouteImport.update({
-  id: '/games/wingo',
-  path: '/games/wingo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesWheelRoute = GamesWheelRouteImport.update({
-  id: '/games/wheel',
-  path: '/games/wheel',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesVideoPokerRoute = GamesVideoPokerRouteImport.update({
-  id: '/games/video-poker',
-  path: '/games/video-poker',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesTowerRoute = GamesTowerRouteImport.update({
-  id: '/games/tower',
-  path: '/games/tower',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesTeenPattiRoute = GamesTeenPattiRouteImport.update({
-  id: '/games/teen-patti',
-  path: '/games/teen-patti',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesSlotsRoute = GamesSlotsRouteImport.update({
-  id: '/games/slots',
-  path: '/games/slots',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesSicBoRoute = GamesSicBoRouteImport.update({
-  id: '/games/sic-bo',
-  path: '/games/sic-bo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesShellGameRoute = GamesShellGameRouteImport.update({
-  id: '/games/shell-game',
-  path: '/games/shell-game',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesSevenUpDownRoute = GamesSevenUpDownRouteImport.update({
-  id: '/games/seven-up-down',
-  path: '/games/seven-up-down',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesScratchCardRoute = GamesScratchCardRouteImport.update({
-  id: '/games/scratch-card',
-  path: '/games/scratch-card',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesRouletteRoute = GamesRouletteRouteImport.update({
-  id: '/games/roulette',
-  path: '/games/roulette',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesPlinkoRoute = GamesPlinkoRouteImport.update({
-  id: '/games/plinko',
-  path: '/games/plinko',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesPenaltyRoute = GamesPenaltyRouteImport.update({
-  id: '/games/penalty',
-  path: '/games/penalty',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesMinesRoute = GamesMinesRouteImport.update({
-  id: '/games/mines',
-  path: '/games/mines',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesMegawaysRoute = GamesMegawaysRouteImport.update({
-  id: '/games/megaways',
-  path: '/games/megaways',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesMatkaRoute = GamesMatkaRouteImport.update({
-  id: '/games/matka',
-  path: '/games/matka',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesLudoRoute = GamesLudoRouteImport.update({
-  id: '/games/ludo',
-  path: '/games/ludo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesLuckyCardRoute = GamesLuckyCardRouteImport.update({
-  id: '/games/lucky-card',
-  path: '/games/lucky-card',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesLimboRoute = GamesLimboRouteImport.update({
-  id: '/games/limbo',
-  path: '/games/limbo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesKenoRoute = GamesKenoRouteImport.update({
-  id: '/games/keno',
-  path: '/games/keno',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesJhandiMundaRoute = GamesJhandiMundaRouteImport.update({
-  id: '/games/jhandi-munda',
-  path: '/games/jhandi-munda',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesHiLoRoute = GamesHiLoRouteImport.update({
-  id: '/games/hi-lo',
-  path: '/games/hi-lo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesFishShooterRoute = GamesFishShooterRouteImport.update({
-  id: '/games/fish-shooter',
-  path: '/games/fish-shooter',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesFanTanRoute = GamesFanTanRouteImport.update({
-  id: '/games/fan-tan',
-  path: '/games/fan-tan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesDragonTigerRoute = GamesDragonTigerRouteImport.update({
-  id: '/games/dragon-tiger',
-  path: '/games/dragon-tiger',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesDragonPhoenixRoute = GamesDragonPhoenixRouteImport.update({
-  id: '/games/dragon-phoenix',
-  path: '/games/dragon-phoenix',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesDragonFishingRoute = GamesDragonFishingRouteImport.update({
-  id: '/games/dragon-fishing',
-  path: '/games/dragon-fishing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesDiceRoute = GamesDiceRouteImport.update({
-  id: '/games/dice',
-  path: '/games/dice',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesCricketRoute = GamesCricketRouteImport.update({
-  id: '/games/cricket',
-  path: '/games/cricket',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesCrashRoute = GamesCrashRouteImport.update({
-  id: '/games/crash',
-  path: '/games/crash',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesColorPredictionRoute = GamesColorPredictionRouteImport.update({
-  id: '/games/color-prediction',
-  path: '/games/color-prediction',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesCoinflipRoute = GamesCoinflipRouteImport.update({
-  id: '/games/coinflip',
-  path: '/games/coinflip',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesChickenRoadRoute = GamesChickenRoadRouteImport.update({
-  id: '/games/chicken-road',
-  path: '/games/chicken-road',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesCarromRoute = GamesCarromRouteImport.update({
-  id: '/games/carrom',
-  path: '/games/carrom',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesBlackjackRoute = GamesBlackjackRouteImport.update({
-  id: '/games/blackjack',
-  path: '/games/blackjack',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesBingoRoute = GamesBingoRouteImport.update({
-  id: '/games/bingo',
-  path: '/games/bingo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesBalloonRoute = GamesBalloonRouteImport.update({
-  id: '/games/balloon',
-  path: '/games/balloon',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesBaccaratRoute = GamesBaccaratRouteImport.update({
-  id: '/games/baccarat',
-  path: '/games/baccarat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesAviatrixRoute = GamesAviatrixRouteImport.update({
-  id: '/games/aviatrix',
-  path: '/games/aviatrix',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesAviatorX2Route = GamesAviatorX2RouteImport.update({
-  id: '/games/aviator-x2',
-  path: '/games/aviator-x2',
+const Games32CardsRoute = Games32CardsRouteImport.update({
+  id: '/games/32-cards',
+  path: '/games/32-cards',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesAndarBaharRoute = GamesAndarBaharRouteImport.update({
@@ -414,9 +219,204 @@ const GamesAndarBaharRoute = GamesAndarBaharRouteImport.update({
   path: '/games/andar-bahar',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Games32CardsRoute = Games32CardsRouteImport.update({
-  id: '/games/32-cards',
-  path: '/games/32-cards',
+const GamesAviatorX2Route = GamesAviatorX2RouteImport.update({
+  id: '/games/aviator-x2',
+  path: '/games/aviator-x2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesAviatrixRoute = GamesAviatrixRouteImport.update({
+  id: '/games/aviatrix',
+  path: '/games/aviatrix',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesBaccaratRoute = GamesBaccaratRouteImport.update({
+  id: '/games/baccarat',
+  path: '/games/baccarat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesBalloonRoute = GamesBalloonRouteImport.update({
+  id: '/games/balloon',
+  path: '/games/balloon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesBingoRoute = GamesBingoRouteImport.update({
+  id: '/games/bingo',
+  path: '/games/bingo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesBlackjackRoute = GamesBlackjackRouteImport.update({
+  id: '/games/blackjack',
+  path: '/games/blackjack',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesCarromRoute = GamesCarromRouteImport.update({
+  id: '/games/carrom',
+  path: '/games/carrom',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesChickenRoadRoute = GamesChickenRoadRouteImport.update({
+  id: '/games/chicken-road',
+  path: '/games/chicken-road',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesCoinflipRoute = GamesCoinflipRouteImport.update({
+  id: '/games/coinflip',
+  path: '/games/coinflip',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesColorPredictionRoute = GamesColorPredictionRouteImport.update({
+  id: '/games/color-prediction',
+  path: '/games/color-prediction',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesCrashRoute = GamesCrashRouteImport.update({
+  id: '/games/crash',
+  path: '/games/crash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesCricketRoute = GamesCricketRouteImport.update({
+  id: '/games/cricket',
+  path: '/games/cricket',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesDiceRoute = GamesDiceRouteImport.update({
+  id: '/games/dice',
+  path: '/games/dice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesDragonFishingRoute = GamesDragonFishingRouteImport.update({
+  id: '/games/dragon-fishing',
+  path: '/games/dragon-fishing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesDragonPhoenixRoute = GamesDragonPhoenixRouteImport.update({
+  id: '/games/dragon-phoenix',
+  path: '/games/dragon-phoenix',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesDragonTigerRoute = GamesDragonTigerRouteImport.update({
+  id: '/games/dragon-tiger',
+  path: '/games/dragon-tiger',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesFanTanRoute = GamesFanTanRouteImport.update({
+  id: '/games/fan-tan',
+  path: '/games/fan-tan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesFishShooterRoute = GamesFishShooterRouteImport.update({
+  id: '/games/fish-shooter',
+  path: '/games/fish-shooter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesHiLoRoute = GamesHiLoRouteImport.update({
+  id: '/games/hi-lo',
+  path: '/games/hi-lo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesJhandiMundaRoute = GamesJhandiMundaRouteImport.update({
+  id: '/games/jhandi-munda',
+  path: '/games/jhandi-munda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesKenoRoute = GamesKenoRouteImport.update({
+  id: '/games/keno',
+  path: '/games/keno',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesLimboRoute = GamesLimboRouteImport.update({
+  id: '/games/limbo',
+  path: '/games/limbo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesLuckyCardRoute = GamesLuckyCardRouteImport.update({
+  id: '/games/lucky-card',
+  path: '/games/lucky-card',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesLudoRoute = GamesLudoRouteImport.update({
+  id: '/games/ludo',
+  path: '/games/ludo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesMatkaRoute = GamesMatkaRouteImport.update({
+  id: '/games/matka',
+  path: '/games/matka',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesMegawaysRoute = GamesMegawaysRouteImport.update({
+  id: '/games/megaways',
+  path: '/games/megaways',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesMinesRoute = GamesMinesRouteImport.update({
+  id: '/games/mines',
+  path: '/games/mines',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesPenaltyRoute = GamesPenaltyRouteImport.update({
+  id: '/games/penalty',
+  path: '/games/penalty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesPlinkoRoute = GamesPlinkoRouteImport.update({
+  id: '/games/plinko',
+  path: '/games/plinko',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesRouletteRoute = GamesRouletteRouteImport.update({
+  id: '/games/roulette',
+  path: '/games/roulette',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesScratchCardRoute = GamesScratchCardRouteImport.update({
+  id: '/games/scratch-card',
+  path: '/games/scratch-card',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesSevenUpDownRoute = GamesSevenUpDownRouteImport.update({
+  id: '/games/seven-up-down',
+  path: '/games/seven-up-down',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesShellGameRoute = GamesShellGameRouteImport.update({
+  id: '/games/shell-game',
+  path: '/games/shell-game',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesSicBoRoute = GamesSicBoRouteImport.update({
+  id: '/games/sic-bo',
+  path: '/games/sic-bo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesSlotsRoute = GamesSlotsRouteImport.update({
+  id: '/games/slots',
+  path: '/games/slots',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesTeenPattiRoute = GamesTeenPattiRouteImport.update({
+  id: '/games/teen-patti',
+  path: '/games/teen-patti',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesTowerRoute = GamesTowerRouteImport.update({
+  id: '/games/tower',
+  path: '/games/tower',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesVideoPokerRoute = GamesVideoPokerRouteImport.update({
+  id: '/games/video-poker',
+  path: '/games/video-poker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesWheelRoute = GamesWheelRouteImport.update({
+  id: '/games/wheel',
+  path: '/games/wheel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesWingoRoute = GamesWingoRouteImport.update({
+  id: '/games/wingo',
+  path: '/games/wingo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicHooksVipDailyRoute = ApiPublicHooksVipDailyRouteImport.update({
@@ -929,165 +929,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/wallet': {
-      id: '/wallet'
-      path: '/wallet'
-      fullPath: '/wallet'
-      preLoaderRoute: typeof WalletRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vip': {
-      id: '/vip'
-      path: '/vip'
-      fullPath: '/vip'
-      preLoaderRoute: typeof VipRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tournaments': {
-      id: '/tournaments'
-      path: '/tournaments'
-      fullPath: '/tournaments'
-      preLoaderRoute: typeof TournamentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sports': {
-      id: '/sports'
-      path: '/sports'
-      fullPath: '/sports'
-      preLoaderRoute: typeof SportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/slots': {
-      id: '/slots'
-      path: '/slots'
-      fullPath: '/slots'
-      preLoaderRoute: typeof SlotsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/referral': {
-      id: '/referral'
-      path: '/referral'
-      fullPath: '/referral'
-      preLoaderRoute: typeof ReferralRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recently-played': {
-      id: '/recently-played'
-      path: '/recently-played'
-      fullPath: '/recently-played'
-      preLoaderRoute: typeof RecentlyPlayedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/promotions': {
-      id: '/promotions'
-      path: '/promotions'
-      fullPath: '/promotions'
-      preLoaderRoute: typeof PromotionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/promotion': {
-      id: '/promotion'
-      path: '/promotion'
-      fullPath: '/promotion'
-      preLoaderRoute: typeof PromotionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/poker': {
-      id: '/poker'
-      path: '/poker'
-      fullPath: '/poker'
-      preLoaderRoute: typeof PokerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lottery': {
-      id: '/lottery'
-      path: '/lottery'
-      fullPath: '/lottery'
-      preLoaderRoute: typeof LotteryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/live': {
-      id: '/live'
-      path: '/live'
-      fullPath: '/live'
-      preLoaderRoute: typeof LiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/leaderboard': {
-      id: '/leaderboard'
-      path: '/leaderboard'
-      fullPath: '/leaderboard'
-      preLoaderRoute: typeof LeaderboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hot': {
-      id: '/hot'
-      path: '/hot'
-      fullPath: '/hot'
-      preLoaderRoute: typeof HotRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fishing': {
-      id: '/fishing'
-      path: '/fishing'
-      fullPath: '/fishing'
-      preLoaderRoute: typeof FishingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fish': {
-      id: '/fish'
-      path: '/fish'
-      fullPath: '/fish'
-      preLoaderRoute: typeof FishRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/favorites': {
-      id: '/favorites'
-      path: '/favorites'
-      fullPath: '/favorites'
-      preLoaderRoute: typeof FavoritesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/esports': {
-      id: '/esports'
-      path: '/esports'
-      fullPath: '/esports'
-      preLoaderRoute: typeof EsportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/download': {
-      id: '/download'
-      path: '/download'
-      fullPath: '/download'
-      preLoaderRoute: typeof DownloadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/crash': {
-      id: '/crash'
-      path: '/crash'
-      fullPath: '/crash'
-      preLoaderRoute: typeof CrashRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -1097,11 +943,165 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/crash': {
+      id: '/crash'
+      path: '/crash'
+      fullPath: '/crash'
+      preLoaderRoute: typeof CrashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/download': {
+      id: '/download'
+      path: '/download'
+      fullPath: '/download'
+      preLoaderRoute: typeof DownloadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/esports': {
+      id: '/esports'
+      path: '/esports'
+      fullPath: '/esports'
+      preLoaderRoute: typeof EsportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fish': {
+      id: '/fish'
+      path: '/fish'
+      fullPath: '/fish'
+      preLoaderRoute: typeof FishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fishing': {
+      id: '/fishing'
+      path: '/fishing'
+      fullPath: '/fishing'
+      preLoaderRoute: typeof FishingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hot': {
+      id: '/hot'
+      path: '/hot'
+      fullPath: '/hot'
+      preLoaderRoute: typeof HotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/live': {
+      id: '/live'
+      path: '/live'
+      fullPath: '/live'
+      preLoaderRoute: typeof LiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lottery': {
+      id: '/lottery'
+      path: '/lottery'
+      fullPath: '/lottery'
+      preLoaderRoute: typeof LotteryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/poker': {
+      id: '/poker'
+      path: '/poker'
+      fullPath: '/poker'
+      preLoaderRoute: typeof PokerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/promotion': {
+      id: '/promotion'
+      path: '/promotion'
+      fullPath: '/promotion'
+      preLoaderRoute: typeof PromotionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/promotions': {
+      id: '/promotions'
+      path: '/promotions'
+      fullPath: '/promotions'
+      preLoaderRoute: typeof PromotionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recently-played': {
+      id: '/recently-played'
+      path: '/recently-played'
+      fullPath: '/recently-played'
+      preLoaderRoute: typeof RecentlyPlayedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/referral': {
+      id: '/referral'
+      path: '/referral'
+      fullPath: '/referral'
+      preLoaderRoute: typeof ReferralRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/slots': {
+      id: '/slots'
+      path: '/slots'
+      fullPath: '/slots'
+      preLoaderRoute: typeof SlotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sports': {
+      id: '/sports'
+      path: '/sports'
+      fullPath: '/sports'
+      preLoaderRoute: typeof SportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments': {
+      id: '/tournaments'
+      path: '/tournaments'
+      fullPath: '/tournaments'
+      preLoaderRoute: typeof TournamentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vip': {
+      id: '/vip'
+      path: '/vip'
+      fullPath: '/vip'
+      preLoaderRoute: typeof VipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/': {
@@ -1111,284 +1111,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/games/wingo': {
-      id: '/games/wingo'
-      path: '/games/wingo'
-      fullPath: '/games/wingo'
-      preLoaderRoute: typeof GamesWingoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/wheel': {
-      id: '/games/wheel'
-      path: '/games/wheel'
-      fullPath: '/games/wheel'
-      preLoaderRoute: typeof GamesWheelRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/video-poker': {
-      id: '/games/video-poker'
-      path: '/games/video-poker'
-      fullPath: '/games/video-poker'
-      preLoaderRoute: typeof GamesVideoPokerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/tower': {
-      id: '/games/tower'
-      path: '/games/tower'
-      fullPath: '/games/tower'
-      preLoaderRoute: typeof GamesTowerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/teen-patti': {
-      id: '/games/teen-patti'
-      path: '/games/teen-patti'
-      fullPath: '/games/teen-patti'
-      preLoaderRoute: typeof GamesTeenPattiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/slots': {
-      id: '/games/slots'
-      path: '/games/slots'
-      fullPath: '/games/slots'
-      preLoaderRoute: typeof GamesSlotsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/sic-bo': {
-      id: '/games/sic-bo'
-      path: '/games/sic-bo'
-      fullPath: '/games/sic-bo'
-      preLoaderRoute: typeof GamesSicBoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/shell-game': {
-      id: '/games/shell-game'
-      path: '/games/shell-game'
-      fullPath: '/games/shell-game'
-      preLoaderRoute: typeof GamesShellGameRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/seven-up-down': {
-      id: '/games/seven-up-down'
-      path: '/games/seven-up-down'
-      fullPath: '/games/seven-up-down'
-      preLoaderRoute: typeof GamesSevenUpDownRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/scratch-card': {
-      id: '/games/scratch-card'
-      path: '/games/scratch-card'
-      fullPath: '/games/scratch-card'
-      preLoaderRoute: typeof GamesScratchCardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/roulette': {
-      id: '/games/roulette'
-      path: '/games/roulette'
-      fullPath: '/games/roulette'
-      preLoaderRoute: typeof GamesRouletteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/plinko': {
-      id: '/games/plinko'
-      path: '/games/plinko'
-      fullPath: '/games/plinko'
-      preLoaderRoute: typeof GamesPlinkoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/penalty': {
-      id: '/games/penalty'
-      path: '/games/penalty'
-      fullPath: '/games/penalty'
-      preLoaderRoute: typeof GamesPenaltyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/mines': {
-      id: '/games/mines'
-      path: '/games/mines'
-      fullPath: '/games/mines'
-      preLoaderRoute: typeof GamesMinesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/megaways': {
-      id: '/games/megaways'
-      path: '/games/megaways'
-      fullPath: '/games/megaways'
-      preLoaderRoute: typeof GamesMegawaysRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/matka': {
-      id: '/games/matka'
-      path: '/games/matka'
-      fullPath: '/games/matka'
-      preLoaderRoute: typeof GamesMatkaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/ludo': {
-      id: '/games/ludo'
-      path: '/games/ludo'
-      fullPath: '/games/ludo'
-      preLoaderRoute: typeof GamesLudoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/lucky-card': {
-      id: '/games/lucky-card'
-      path: '/games/lucky-card'
-      fullPath: '/games/lucky-card'
-      preLoaderRoute: typeof GamesLuckyCardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/limbo': {
-      id: '/games/limbo'
-      path: '/games/limbo'
-      fullPath: '/games/limbo'
-      preLoaderRoute: typeof GamesLimboRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/keno': {
-      id: '/games/keno'
-      path: '/games/keno'
-      fullPath: '/games/keno'
-      preLoaderRoute: typeof GamesKenoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/jhandi-munda': {
-      id: '/games/jhandi-munda'
-      path: '/games/jhandi-munda'
-      fullPath: '/games/jhandi-munda'
-      preLoaderRoute: typeof GamesJhandiMundaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/hi-lo': {
-      id: '/games/hi-lo'
-      path: '/games/hi-lo'
-      fullPath: '/games/hi-lo'
-      preLoaderRoute: typeof GamesHiLoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/fish-shooter': {
-      id: '/games/fish-shooter'
-      path: '/games/fish-shooter'
-      fullPath: '/games/fish-shooter'
-      preLoaderRoute: typeof GamesFishShooterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/fan-tan': {
-      id: '/games/fan-tan'
-      path: '/games/fan-tan'
-      fullPath: '/games/fan-tan'
-      preLoaderRoute: typeof GamesFanTanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/dragon-tiger': {
-      id: '/games/dragon-tiger'
-      path: '/games/dragon-tiger'
-      fullPath: '/games/dragon-tiger'
-      preLoaderRoute: typeof GamesDragonTigerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/dragon-phoenix': {
-      id: '/games/dragon-phoenix'
-      path: '/games/dragon-phoenix'
-      fullPath: '/games/dragon-phoenix'
-      preLoaderRoute: typeof GamesDragonPhoenixRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/dragon-fishing': {
-      id: '/games/dragon-fishing'
-      path: '/games/dragon-fishing'
-      fullPath: '/games/dragon-fishing'
-      preLoaderRoute: typeof GamesDragonFishingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/dice': {
-      id: '/games/dice'
-      path: '/games/dice'
-      fullPath: '/games/dice'
-      preLoaderRoute: typeof GamesDiceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/cricket': {
-      id: '/games/cricket'
-      path: '/games/cricket'
-      fullPath: '/games/cricket'
-      preLoaderRoute: typeof GamesCricketRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/crash': {
-      id: '/games/crash'
-      path: '/games/crash'
-      fullPath: '/games/crash'
-      preLoaderRoute: typeof GamesCrashRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/color-prediction': {
-      id: '/games/color-prediction'
-      path: '/games/color-prediction'
-      fullPath: '/games/color-prediction'
-      preLoaderRoute: typeof GamesColorPredictionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/coinflip': {
-      id: '/games/coinflip'
-      path: '/games/coinflip'
-      fullPath: '/games/coinflip'
-      preLoaderRoute: typeof GamesCoinflipRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/chicken-road': {
-      id: '/games/chicken-road'
-      path: '/games/chicken-road'
-      fullPath: '/games/chicken-road'
-      preLoaderRoute: typeof GamesChickenRoadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/carrom': {
-      id: '/games/carrom'
-      path: '/games/carrom'
-      fullPath: '/games/carrom'
-      preLoaderRoute: typeof GamesCarromRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/blackjack': {
-      id: '/games/blackjack'
-      path: '/games/blackjack'
-      fullPath: '/games/blackjack'
-      preLoaderRoute: typeof GamesBlackjackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/bingo': {
-      id: '/games/bingo'
-      path: '/games/bingo'
-      fullPath: '/games/bingo'
-      preLoaderRoute: typeof GamesBingoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/balloon': {
-      id: '/games/balloon'
-      path: '/games/balloon'
-      fullPath: '/games/balloon'
-      preLoaderRoute: typeof GamesBalloonRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/baccarat': {
-      id: '/games/baccarat'
-      path: '/games/baccarat'
-      fullPath: '/games/baccarat'
-      preLoaderRoute: typeof GamesBaccaratRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/aviatrix': {
-      id: '/games/aviatrix'
-      path: '/games/aviatrix'
-      fullPath: '/games/aviatrix'
-      preLoaderRoute: typeof GamesAviatrixRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/aviator-x2': {
-      id: '/games/aviator-x2'
-      path: '/games/aviator-x2'
-      fullPath: '/games/aviator-x2'
-      preLoaderRoute: typeof GamesAviatorX2RouteImport
+    '/games/32-cards': {
+      id: '/games/32-cards'
+      path: '/games/32-cards'
+      fullPath: '/games/32-cards'
+      preLoaderRoute: typeof Games32CardsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/andar-bahar': {
@@ -1398,11 +1125,284 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesAndarBaharRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/games/32-cards': {
-      id: '/games/32-cards'
-      path: '/games/32-cards'
-      fullPath: '/games/32-cards'
-      preLoaderRoute: typeof Games32CardsRouteImport
+    '/games/aviator-x2': {
+      id: '/games/aviator-x2'
+      path: '/games/aviator-x2'
+      fullPath: '/games/aviator-x2'
+      preLoaderRoute: typeof GamesAviatorX2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/aviatrix': {
+      id: '/games/aviatrix'
+      path: '/games/aviatrix'
+      fullPath: '/games/aviatrix'
+      preLoaderRoute: typeof GamesAviatrixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/baccarat': {
+      id: '/games/baccarat'
+      path: '/games/baccarat'
+      fullPath: '/games/baccarat'
+      preLoaderRoute: typeof GamesBaccaratRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/balloon': {
+      id: '/games/balloon'
+      path: '/games/balloon'
+      fullPath: '/games/balloon'
+      preLoaderRoute: typeof GamesBalloonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/bingo': {
+      id: '/games/bingo'
+      path: '/games/bingo'
+      fullPath: '/games/bingo'
+      preLoaderRoute: typeof GamesBingoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/blackjack': {
+      id: '/games/blackjack'
+      path: '/games/blackjack'
+      fullPath: '/games/blackjack'
+      preLoaderRoute: typeof GamesBlackjackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/carrom': {
+      id: '/games/carrom'
+      path: '/games/carrom'
+      fullPath: '/games/carrom'
+      preLoaderRoute: typeof GamesCarromRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/chicken-road': {
+      id: '/games/chicken-road'
+      path: '/games/chicken-road'
+      fullPath: '/games/chicken-road'
+      preLoaderRoute: typeof GamesChickenRoadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/coinflip': {
+      id: '/games/coinflip'
+      path: '/games/coinflip'
+      fullPath: '/games/coinflip'
+      preLoaderRoute: typeof GamesCoinflipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/color-prediction': {
+      id: '/games/color-prediction'
+      path: '/games/color-prediction'
+      fullPath: '/games/color-prediction'
+      preLoaderRoute: typeof GamesColorPredictionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/crash': {
+      id: '/games/crash'
+      path: '/games/crash'
+      fullPath: '/games/crash'
+      preLoaderRoute: typeof GamesCrashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/cricket': {
+      id: '/games/cricket'
+      path: '/games/cricket'
+      fullPath: '/games/cricket'
+      preLoaderRoute: typeof GamesCricketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/dice': {
+      id: '/games/dice'
+      path: '/games/dice'
+      fullPath: '/games/dice'
+      preLoaderRoute: typeof GamesDiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/dragon-fishing': {
+      id: '/games/dragon-fishing'
+      path: '/games/dragon-fishing'
+      fullPath: '/games/dragon-fishing'
+      preLoaderRoute: typeof GamesDragonFishingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/dragon-phoenix': {
+      id: '/games/dragon-phoenix'
+      path: '/games/dragon-phoenix'
+      fullPath: '/games/dragon-phoenix'
+      preLoaderRoute: typeof GamesDragonPhoenixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/dragon-tiger': {
+      id: '/games/dragon-tiger'
+      path: '/games/dragon-tiger'
+      fullPath: '/games/dragon-tiger'
+      preLoaderRoute: typeof GamesDragonTigerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/fan-tan': {
+      id: '/games/fan-tan'
+      path: '/games/fan-tan'
+      fullPath: '/games/fan-tan'
+      preLoaderRoute: typeof GamesFanTanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/fish-shooter': {
+      id: '/games/fish-shooter'
+      path: '/games/fish-shooter'
+      fullPath: '/games/fish-shooter'
+      preLoaderRoute: typeof GamesFishShooterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/hi-lo': {
+      id: '/games/hi-lo'
+      path: '/games/hi-lo'
+      fullPath: '/games/hi-lo'
+      preLoaderRoute: typeof GamesHiLoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/jhandi-munda': {
+      id: '/games/jhandi-munda'
+      path: '/games/jhandi-munda'
+      fullPath: '/games/jhandi-munda'
+      preLoaderRoute: typeof GamesJhandiMundaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/keno': {
+      id: '/games/keno'
+      path: '/games/keno'
+      fullPath: '/games/keno'
+      preLoaderRoute: typeof GamesKenoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/limbo': {
+      id: '/games/limbo'
+      path: '/games/limbo'
+      fullPath: '/games/limbo'
+      preLoaderRoute: typeof GamesLimboRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/lucky-card': {
+      id: '/games/lucky-card'
+      path: '/games/lucky-card'
+      fullPath: '/games/lucky-card'
+      preLoaderRoute: typeof GamesLuckyCardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/ludo': {
+      id: '/games/ludo'
+      path: '/games/ludo'
+      fullPath: '/games/ludo'
+      preLoaderRoute: typeof GamesLudoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/matka': {
+      id: '/games/matka'
+      path: '/games/matka'
+      fullPath: '/games/matka'
+      preLoaderRoute: typeof GamesMatkaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/megaways': {
+      id: '/games/megaways'
+      path: '/games/megaways'
+      fullPath: '/games/megaways'
+      preLoaderRoute: typeof GamesMegawaysRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/mines': {
+      id: '/games/mines'
+      path: '/games/mines'
+      fullPath: '/games/mines'
+      preLoaderRoute: typeof GamesMinesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/penalty': {
+      id: '/games/penalty'
+      path: '/games/penalty'
+      fullPath: '/games/penalty'
+      preLoaderRoute: typeof GamesPenaltyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/plinko': {
+      id: '/games/plinko'
+      path: '/games/plinko'
+      fullPath: '/games/plinko'
+      preLoaderRoute: typeof GamesPlinkoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/roulette': {
+      id: '/games/roulette'
+      path: '/games/roulette'
+      fullPath: '/games/roulette'
+      preLoaderRoute: typeof GamesRouletteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/scratch-card': {
+      id: '/games/scratch-card'
+      path: '/games/scratch-card'
+      fullPath: '/games/scratch-card'
+      preLoaderRoute: typeof GamesScratchCardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/seven-up-down': {
+      id: '/games/seven-up-down'
+      path: '/games/seven-up-down'
+      fullPath: '/games/seven-up-down'
+      preLoaderRoute: typeof GamesSevenUpDownRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/shell-game': {
+      id: '/games/shell-game'
+      path: '/games/shell-game'
+      fullPath: '/games/shell-game'
+      preLoaderRoute: typeof GamesShellGameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/sic-bo': {
+      id: '/games/sic-bo'
+      path: '/games/sic-bo'
+      fullPath: '/games/sic-bo'
+      preLoaderRoute: typeof GamesSicBoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/slots': {
+      id: '/games/slots'
+      path: '/games/slots'
+      fullPath: '/games/slots'
+      preLoaderRoute: typeof GamesSlotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/teen-patti': {
+      id: '/games/teen-patti'
+      path: '/games/teen-patti'
+      fullPath: '/games/teen-patti'
+      preLoaderRoute: typeof GamesTeenPattiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/tower': {
+      id: '/games/tower'
+      path: '/games/tower'
+      fullPath: '/games/tower'
+      preLoaderRoute: typeof GamesTowerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/video-poker': {
+      id: '/games/video-poker'
+      path: '/games/video-poker'
+      fullPath: '/games/video-poker'
+      preLoaderRoute: typeof GamesVideoPokerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/wheel': {
+      id: '/games/wheel'
+      path: '/games/wheel'
+      fullPath: '/games/wheel'
+      preLoaderRoute: typeof GamesWheelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/wingo': {
+      id: '/games/wingo'
+      path: '/games/wingo'
+      fullPath: '/games/wingo'
+      preLoaderRoute: typeof GamesWingoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/vip-daily': {
@@ -1489,3 +1489,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

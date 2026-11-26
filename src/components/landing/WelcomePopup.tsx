@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { X, Megaphone, Volume2, Gift, Trophy, Sparkles, Crown, ShieldAlert, CheckCircle2, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import tutorialImg from "@/assets/bkash-tutorial.jpg";
 
 type Announcement = {
   id: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
-  headerIcon: React.ReactNode;
-  body: React.ReactNode;
+  headerIcon: ReactNode;
+  body: ReactNode;
 };
 
 const BkashBody = () => (

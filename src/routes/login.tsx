@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeOff, Loader2, Lock, ShieldCheck, Sparkles, User } from "lucide-react";
 import { toast } from "sonner";
@@ -61,7 +61,7 @@ function LoginPage() {
   }, [user, authLoading]);
 
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
     const parsed = loginSchema.safeParse({ identifier: username, password });
     if (!parsed.success) {

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -266,9 +267,9 @@ function CosmicCard({
   children,
 }: {
   title: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   accent?: "violet" | "emerald" | "amber";
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const border =
     accent === "emerald"
@@ -564,7 +565,7 @@ function DepositForm({ userId, onCreated }: { userId: string; onCreated: () => v
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
       <label className="text-[11px] font-semibold uppercase tracking-wider text-white/60">{label}</label>

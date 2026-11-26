@@ -3,7 +3,7 @@ import { Bell, ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, F
 import { NotificationBell } from "@/components/NotificationBell";
 import { toast } from "sonner";
 import { useAuth, useProfile, signOut } from "@/hooks/useAuth";
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType, FormEvent, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
 import { WelcomePopup } from "@/components/landing/WelcomePopup";
@@ -223,7 +223,7 @@ function TopBar() {
     navigate({ to: "/" });
   }
 
-  async function handleQuickLogin(e: React.FormEvent) {
+  async function handleQuickLogin(e: FormEvent) {
     e.preventDefault();
     if (!phone || !password) {
       toast.error("ফোন ও পাসওয়ার্ড দিন");

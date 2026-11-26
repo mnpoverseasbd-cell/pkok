@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Coins, RefreshCw, Wrench, LogIn, ShoppingCart } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
@@ -219,7 +219,7 @@ export function ControlsPanel({ children }: { children: ReactNode }) {
 export function PrimaryButton({
   onClick, disabled, children, tone = "emerald",
 }: { onClick: () => void; disabled?: boolean; children: ReactNode; tone?: "emerald" | "gold" }) {
-  const style: React.CSSProperties = tone === "gold"
+  const style: CSSProperties = tone === "gold"
     ? {
         background: "linear-gradient(135deg, #fde047 0%, #f59e0b 60%, #ea580c 100%)",
         color: "#1a0a00",

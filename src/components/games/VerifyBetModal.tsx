@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { X, ShieldCheck, Loader2 } from "lucide-react";
 import {
   hmacSha256,
@@ -126,7 +126,7 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
     floats: number[];
     hashOfServer: string;
     outcome: string;
-    extra?: React.ReactNode;
+    extra?: ReactNode;
   }>(null);
 
   useEffect(() => {
@@ -149,7 +149,7 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
 
       let floats: number[] = [];
       let outcome = "";
-      let extra: React.ReactNode = null;
+      let extra: ReactNode = null;
 
       switch (gameKey) {
         case "dice": {
@@ -736,7 +736,7 @@ function Field({ label, value, onChange, mono }: { label: string; value: string;
   );
 }
 
-function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+function Step({ n, title, children }: { n: number; title: string; children: ReactNode }) {
   return (
     <div className="rounded-lg border border-[#1a3321] bg-[#112216] p-3">
       <div className="mb-1 flex items-center gap-2">
