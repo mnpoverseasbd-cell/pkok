@@ -1,10 +1,11 @@
--- Configure mnpoverseasbd@gmail.com as the main admin account (email & initial password: mnpoverseasbd@gmail.com)
+-- Configure mnpoverseasbd@gmail.com as the main admin account (email & password: mnpoverseasbd@gmail.com)
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 DO $$
 DECLARE
   v_uid uuid;
   v_email constant text := 'mnpoverseasbd@gmail.com';
+  v_username text := 'mnpoverseasbd';
   v_hash text;
 BEGIN
   SET LOCAL search_path = public, extensions, auth;
@@ -16,6 +17,10 @@ BEGIN
   LIMIT 1;
 
   IF v_uid IS NULL THEN
+    IF EXISTS (SELECT 1 FROM public.profiles WHERE username = v_username) THEN
+      v_username := 'mnpoverseasbd_admin';
+    END IF;
+
     v_uid := gen_random_uuid();
     INSERT INTO auth.users (
       instance_id,
@@ -46,7 +51,7 @@ BEGIN
       '',
       '',
       '{"provider":"email","providers":["email"]}'::jsonb,
-      '{"username":"mnpoverseasbd","display_name":"Main Admin"}'::jsonb,
+      jsonb_build_object('username', v_username, 'display_name', 'Main Admin'),
       now(),
       now()
     );
@@ -86,7 +91,7 @@ BEGIN
   END IF;
 
   INSERT INTO public.profiles (id, username, display_name, email, referral_code)
-  VALUES (v_uid, 'mnpoverseasbd', 'Main Admin', v_email, public.generate_referral_code())
+  VALUES (v_uid, v_username, 'Main Admin', v_email, public.generate_referral_code())
   ON CONFLICT (id) DO UPDATE
     SET email = EXCLUDED.email,
         display_name = COALESCE(public.profiles.display_name, 'Main Admin');
