@@ -1,10 +1,11 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { supabase } from "@/integrations/supabase/client";
 
 function getEnv(viteKey: string, serverKey: string): string {
   const fromImportMeta =
     typeof import.meta !== "undefined"
-      ? ((import.meta as unknown as { env?: Record<string, string | undefined> }).env?.[viteKey])
+      ? (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.[viteKey]
       : undefined;
   if (fromImportMeta) return fromImportMeta;
   if (typeof process !== "undefined" && process.env) {
@@ -36,8 +37,13 @@ let _adminSupabase: SupabaseClient<Database> | null = null;
 
 function getAdminSupabaseClient(): SupabaseClient<Database> {
   if (_adminSupabase) return _adminSupabase;
-  const supabaseUrl = getEnv("VITE_SUPABASE_URL", "SUPABASE_URL");
-  const supabaseKey = getEnv("VITE_SUPABASE_PUBLISHABLE_KEY", "SUPABASE_PUBLISHABLE_KEY");
+
+  // Always read the live URL/key directly from the generated `supabase` instance first
+  // so Admin Portal stays bound to the exact project Lovable connected at build time.
+  const base = supabase as unknown as { supabaseUrl?: string; supabaseKey?: string };
+  const supabaseUrl = base.supabaseUrl || getEnv("VITE_SUPABASE_URL", "SUPABASE_URL");
+  const supabaseKey =
+    base.supabaseKey || getEnv("VITE_SUPABASE_PUBLISHABLE_KEY", "SUPABASE_PUBLISHABLE_KEY");
 
   _adminSupabase = createClient<Database>(supabaseUrl, supabaseKey, {
     global: {
