@@ -13,8 +13,8 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { createClient } = await import("@supabase/supabase-js");
-    const url = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SERVICE_ROLE_KEY;
+    const url = process.env["SUPABASE_URL"];
+    const serviceKey = process.env["SERVICE_ROLE_KEY"];
     if (!url || !serviceKey) {
       throw new Error("Server configuration missing");
     }
@@ -36,20 +36,6 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
 
     const email = `${data.phone}@asikgame.app`;
 
-    const { data: existingProfile, error: lookupError } = await admin
-      .from("profiles")
-      .select("id")
-      .eq("phone", data.phone)
-      .maybeSingle();
-
-    if (lookupError) {
-      throw new Error("Account lookup failed");
-    }
-
-    if (existingProfile) {
-      return { success: false as const, reason: "already_registered" as const };
-    }
-
     const { data: created, error: createError } = await admin.auth.admin.createUser({
       email,
       password: data.password,
@@ -64,9 +50,9 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
     if (createError) {
       const message = createError.message.toLowerCase();
       if (message.includes("already") || message.includes("registered")) {
-        return { success: false as const, reason: "already_registered" as const };
+        return { accepted: true as const };
       }
-      throw new Error(createError.message);
+      throw new Error("Account creation failed");
     }
 
     if (!created.user) {
@@ -111,5 +97,5 @@ export const createPhoneAccount = createServerFn({ method: "POST" })
       throw new Error("Account role setup failed");
     }
 
-    return { success: true as const, email };
+    return { accepted: true as const };
   });

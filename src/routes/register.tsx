@@ -6,7 +6,6 @@ import { Eye, EyeOff, Gift, Loader2, Lock, Phone, ShieldCheck, Sparkles } from "
 import { toast } from "sonner";
 import { z } from "zod";
 import { SiteShell } from "@/components/landing/SiteShell";
-import { supabase } from "@/integrations/supabase/client";
 import { createPhoneAccount } from "@/lib/auth.functions";
 import { phoneRegex } from "@/lib/auth-utils";
 
@@ -56,28 +55,12 @@ function RegisterPage() {
     try {
       setLoading(true);
       const ref = refCode.trim() || undefined;
-      const result = await registerAccount({ data: { ...parsed.data, ref } });
-
-      if (!result.success) {
-        toast.error("এই ফোন নম্বর দিয়ে আগে অ্যাকাউন্ট আছে");
-        return;
-      }
-
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: result.email,
-        password: parsed.data.password,
-      });
-
-      if (signInError) {
-        toast.error("অ্যাকাউন্ট তৈরি হয়েছে, এখন ফোন নম্বর ও পাসওয়ার্ড দিয়ে লগইন করুন");
-        return;
-      }
-
-      toast.success("অ্যাকাউন্ট তৈরি হয়েছে! স্বাগতম 🎉");
-      navigate({ to: "/" });
+      await registerAccount({ data: { ...parsed.data, ref } });
+      toast.success("নতুন নম্বর হলে অ্যাকাউন্ট তৈরি হয়েছে; আগে অ্যাকাউন্ট থাকলে লগইন করুন।");
+      navigate({ to: "/login" });
     } catch (error) {
       const message = error instanceof Error ? error.message : "রেজিস্ট্রেশন করা যায়নি";
-      toast.error(message.includes("rate limit") ? "অনেক বেশি রিকোয়েস্ট হয়েছে, কিছুক্ষণ পর আবার চেষ্টা করুন" : message);
+      toast.error(message.includes("rate limit") ? "অনেক বেশি রিকোয়েস্ট হয়েছে, কিছুক্ষণ পর আবার চেষ্টা করুন" : "রেজিস্ট্রেশন করা যায়নি, পরে আবার চেষ্টা করুন");
     } finally {
       setLoading(false);
     }

@@ -22,17 +22,9 @@ type Row = {
   user_id: string;
   display_name: string | null;
   username: string | null;
-  vip_tier: string | null;
   total_wager: number;
   total_bets: number;
-};
-
-const TIER_COLORS: Record<string, string> = {
-  bronze: "text-amber-500",
-  silver: "text-slate-200",
-  gold: "text-yellow-300",
-  platinum: "text-cyan-300",
-  diamond: "text-fuchsia-300",
+  is_current_user: boolean;
 };
 
 function LeaderboardPage() {
@@ -54,7 +46,7 @@ function LeaderboardPage() {
 
   const podium = rows.slice(0, 3);
   const rest = rows.slice(3);
-  const me = user ? rows.find((r) => r.user_id === user.id) : null;
+  const me = user ? rows.find((r) => r.is_current_user) : null;
 
   return (
     <SiteShell>
@@ -122,11 +114,6 @@ function LeaderboardPage() {
                       </div>
                       <div className="mt-2 text-xs font-bold uppercase tracking-widest text-white/60">Rank #{e.rank}</div>
                       <div className="truncate text-lg font-black text-white">{e.display_name ?? e.username ?? "Player"}</div>
-                      {e.vip_tier && (
-                        <div className={`mt-1 text-[10px] font-bold uppercase ${TIER_COLORS[e.vip_tier] ?? "text-white/50"}`}>
-                          ★ {e.vip_tier}
-                        </div>
-                      )}
                       <div className="mt-2 text-xs text-white/60">মোট বেট</div>
                       <div className="text-lg font-black text-cyan-300">৳ {Number(e.total_wager).toLocaleString("en-BD")}</div>
                       <div className="mt-1 text-[10px] text-white/50">{e.total_bets} বেট</div>
@@ -148,7 +135,7 @@ function LeaderboardPage() {
                 </thead>
                 <tbody>
                   {rest.map((e) => {
-                    const isMe = user && e.user_id === user.id;
+                    const isMe = e.is_current_user;
                     return (
                       <tr key={e.user_id} className={`border-t border-white/5 ${isMe ? "bg-fuchsia-500/10" : ""}`}>
                         <td className="px-4 py-3 font-bold text-white/80">
@@ -159,7 +146,6 @@ function LeaderboardPage() {
                         <td className="px-4 py-3 font-semibold text-white/90">
                           {e.display_name ?? e.username ?? "Player"}
                           {isMe && <span className="ml-2 rounded-full bg-fuchsia-500/30 px-2 py-0.5 text-[10px] font-bold text-fuchsia-200">You</span>}
-                          {e.vip_tier && <span className={`ml-2 text-[10px] uppercase ${TIER_COLORS[e.vip_tier] ?? "text-white/50"}`}>★{e.vip_tier}</span>}
                         </td>
                         <td className="px-4 py-3 text-right text-white/60 hidden sm:table-cell">{e.total_bets}</td>
                         <td className="px-4 py-3 text-right font-black text-cyan-300">৳ {Number(e.total_wager).toLocaleString("en-BD")}</td>

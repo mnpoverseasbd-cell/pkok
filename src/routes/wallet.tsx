@@ -21,7 +21,6 @@ import {
   Copy,
   ArrowUpRight,
   ArrowDownRight,
-  Zap,
   ShieldCheck,
 } from "lucide-react";
 
@@ -227,11 +226,6 @@ function WalletPage() {
 
         {tab === "deposit" && (
           <div className="space-y-4">
-            <QuickBuyCoins
-              userId={user.id}
-              balance={balance}
-              onCredited={() => { refetch(); setDepositBump((n) => n + 1); }}
-            />
             <DepositForm userId={user.id} onCreated={() => { refetch(); setDepositBump((n) => n + 1); }} />
             <DepositHistory userId={user.id} refreshKey={depositBump} />
           </div>
@@ -294,119 +288,6 @@ function CosmicCard({
   );
 }
 
-function QuickBuyCoins({
-  userId,
-  balance,
-  onCredited,
-}: {
-  userId: string;
-  balance: number;
-  onCredited: () => void;
-}) {
-  const MIN_COINS = 50;
-  const MAX_COINS = 100_000;
-  const [amount, setAmount] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const presets = [100, 500, 1000, 5000, 10000];
-
-  function validate(amt: number): string | null {
-    if (!Number.isFinite(amt) || amt <= 0) return "সঠিক পরিমাণ দিন";
-    if (!Number.isInteger(amt)) return "পূর্ণ সংখ্যা দিন";
-    if (amt < MIN_COINS) return `ন্যূনতম ${MIN_COINS} কয়েন`;
-    if (amt > MAX_COINS) return `সর্বোচ্চ ${MAX_COINS.toLocaleString()} কয়েন এক বারে`;
-    return null;
-  }
-
-  async function buy() {
-    const amt = Math.floor(Number(amount));
-    const err = validate(amt);
-    if (err) {
-      setError(err);
-      toast.error(err);
-      return;
-    }
-    setError(null);
-    setSubmitting(true);
-    const next = Number(balance) + amt;
-    const { error: dbErr } = await supabase
-      .from("profiles")
-      .update({ wallet_balance: next })
-      .eq("id", userId);
-    if (dbErr) {
-      setSubmitting(false);
-      await supabase.from("transactions").insert({
-        user_id: userId,
-        type: "deposit",
-        status: "rejected",
-        amount: amt,
-        txn_reference: "QUICKBUY",
-        admin_note: dbErr.message,
-      });
-      return toast.error(dbErr.message);
-    }
-    await supabase.from("transactions").insert({
-      user_id: userId,
-      type: "deposit",
-      status: "approved",
-      amount: amt,
-      txn_reference: "QUICKBUY",
-      user_note: "Instant coin top-up",
-      approved_at: new Date().toISOString(),
-    });
-    setSubmitting(false);
-    toast.success(`+${amt.toLocaleString()} কয়েন যোগ হয়েছে`);
-    setAmount("");
-    onCredited();
-  }
-
-  return (
-    <CosmicCard title="Quick Top-Up · কয়েন যোগ করুন" icon={<Zap className="h-4 w-4 text-amber-300" />} accent="amber">
-      <div className="space-y-4">
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
-          {presets.map((p) => (
-            <button
-              key={p}
-              type="button"
-              onClick={() => { setAmount(String(p)); setError(null); }}
-              className="group rounded-xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 to-orange-500/5 px-3 py-2.5 text-sm font-bold text-amber-200 transition-all hover:border-amber-300/60 hover:from-amber-500/20 hover:shadow-[0_0_20px_-5px_rgba(245,158,11,0.6)]"
-            >
-              +{p.toLocaleString()}
-            </button>
-          ))}
-        </div>
-        <div>
-          <label className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
-            Custom amount ({MIN_COINS}–{MAX_COINS.toLocaleString()})
-          </label>
-          <Input
-            type="number"
-            inputMode="numeric"
-            min={MIN_COINS}
-            max={MAX_COINS}
-            value={amount}
-            onChange={(e) => { setAmount(e.target.value); setError(null); }}
-            placeholder={`যেমন ${MIN_COINS * 20}`}
-            aria-invalid={!!error}
-            className={`mt-1.5 h-11 border-white/10 bg-black/40 text-base font-bold ${error ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-          />
-          {error && <p className="mt-1 text-xs font-semibold text-red-400">{error}</p>}
-        </div>
-        <Button
-          disabled={submitting}
-          onClick={buy}
-          className="h-11 w-full rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-sm font-black text-black shadow-[0_0_30px_-8px_rgba(245,158,11,0.7)] hover:from-amber-300 hover:to-orange-400"
-        >
-          {submitting ? "যোগ হচ্ছে…" : "ব্যালেন্সে যোগ করুন"}
-        </Button>
-        <p className="rounded-lg border border-white/5 bg-black/30 p-2.5 text-[11px] text-white/50">
-          ⚡ ইনস্ট্যান্ট টপ-আপ — সরাসরি আপনার ব্যালেন্সে যোগ হবে। নিচের ফর্মটি অ্যাডমিন-অনুমোদিত ডিপোজিটের জন্য।
-        </p>
-      </div>
-    </CosmicCard>
-  );
-}
-
 function DepositForm({ userId, onCreated }: { userId: string; onCreated: () => void }) {
   const methods = useMethods().filter((m) => m.supports_deposit);
   const [methodId, setMethodId] = useState<string>("");
@@ -439,7 +320,6 @@ function DepositForm({ userId, onCreated }: { userId: string; onCreated: () => v
     const { error } = await supabase.from("transactions").insert({
       user_id: userId,
       type: "deposit",
-      status: "pending",
       amount: parsed.data.amount,
       payment_method_id: methodId,
       sender_account: parsed.data.sender,
@@ -639,7 +519,6 @@ function WithdrawForm({ userId, balance, onCreated }: { userId: string; balance:
     const { error } = await supabase.from("transactions").insert({
       user_id: userId,
       type: "withdraw",
-      status: "pending",
       amount: parsed.data.amount,
       payment_method_id: methodId,
       receiver_account: parsed.data.receiver,
