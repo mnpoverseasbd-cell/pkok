@@ -14,3 +14,4 @@
 - Authenticated profile writes are column-limited to contact and display fields; wallet and VIP values remain database-controlled because browser requests are untrusted.
 - Public leaderboards use board-scoped pseudonyms and a caller-only self marker because usernames can contain private phone numbers.
 - Public payout hooks verify the server-held service key before privileged actions because public API routes bypass site sign-in.
+- Protected TanStack server functions attach the current browser session token globally, then validate it server-side to preserve the user's RLS identity.
