@@ -123,10 +123,10 @@ const heroSlides = [
 
 
 const mainCategories = [
-  { key: "catSlots" as const, mascot: mascotSlots },
-  { key: "catFish" as const, mascot: mascotFish },
-  { key: "catLive" as const, mascot: mascotLive },
-  { key: "catPoker" as const, mascot: mascotPoker },
+  { key: "catSlots" as const, mascot: mascotSlots, to: "/slots" },
+  { key: "catFish" as const, mascot: mascotFish, to: "/fishing" },
+  { key: "catLive" as const, mascot: mascotLive, to: "/live" },
+  { key: "catPoker" as const, mascot: mascotPoker, to: "/poker" },
 ];
 
 const statCards = [
@@ -195,62 +195,16 @@ const popupImagesUser = [
 function Index() {
   return (
     <SiteShell>
-      <CosmicBackdrop />
-      <div className="relative z-10">
-        <PromoPopup />
-        <HeroBanner />
-        <TickerBar />
-        <HotGamesSection />
-        <JackpotSection />
-        <MainCategoryCards />
-        <AppSection />
-        <ServiceStats />
-        <FeatureList />
-      </div>
+      <PromoPopup />
+      <HeroBanner />
+      <TickerBar />
+      <HotGamesSection />
+      <JackpotSection />
+      <MainCategoryCards />
+      <AppSection />
+      <ServiceStats />
+      <FeatureList />
     </SiteShell>
-  );
-}
-
-function CosmicBackdrop() {
-  const stars = Array.from({ length: 60 }, (_, i) => {
-    const seed = i * 9973;
-    return {
-      x: (seed % 100),
-      y: ((seed * 7) % 100),
-      s: ((seed * 3) % 3) + 1,
-      o: 0.2 + ((seed % 7) / 12),
-    };
-  });
-  return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0520] via-[#0d0830]/60 to-transparent" />
-      <div
-        className="absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(139,92,246,0.18), transparent 70%)" }}
-      />
-      <div
-        className="absolute top-1/3 -right-32 h-[600px] w-[600px] rounded-full blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(236,72,153,0.14), transparent 70%)" }}
-      />
-      <div
-        className="absolute bottom-0 left-0 h-[500px] w-[500px] rounded-full blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.12), transparent 70%)" }}
-      />
-      {stars.map((s, i) => (
-        <div
-          key={i}
-          className="absolute rounded-full bg-white"
-          style={{
-            left: `${s.x}%`,
-            top: `${s.y}%`,
-            width: `${s.s}px`,
-            height: `${s.s}px`,
-            opacity: s.o,
-            boxShadow: "0 0 6px rgba(255,255,255,0.5)",
-          }}
-        />
-      ))}
-    </div>
   );
 }
 
@@ -517,13 +471,13 @@ function HeroBanner() {
           <ChevronRight className="h-5 w-5" />
         </button>
         {/* Dots */}
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
+        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1.5 backdrop-blur-sm">
           {heroSlides.map((_, i) => (
             <button
               key={i}
               aria-label={`Go to slide ${i + 1}`}
               onClick={() => setIdx(i)}
-              className={`h-2 rounded-full transition-all ${i === idx ? "w-6 bg-[var(--neon-gold)]" : "w-2 bg-white/50"}`}
+              className={`h-2 rounded-full transition-all ${i === idx ? "w-6 bg-[var(--neon-gold)]" : "w-2 bg-white/55 hover:bg-white/80"}`}
             />
           ))}
         </div>
@@ -546,8 +500,8 @@ function TickerBar() {
   ];
   const loop = [...items, ...items];
   return (
-    <section className="w-full border-y border-white/10 bg-black/60">
-      <div className="flex items-center gap-3 px-3 py-3 text-sm font-medium leading-none text-white/95 sm:px-4 sm:text-base lg:px-6">
+    <section className="w-full border-y border-[var(--neon-green)]/25 bg-[#061f14]/90">
+      <div className="mx-auto flex max-w-[1440px] items-center gap-3 px-3 py-2.5 text-sm font-medium leading-none text-white/95 sm:px-4 sm:text-base lg:px-6 xl:pr-20">
         <span className="shrink-0 grid h-7 w-7 place-items-center rounded-full bg-[var(--neon-green)]/25 text-[var(--neon-green)] ring-1 ring-[var(--neon-green)]/40 sm:h-8 sm:w-8">
           <Megaphone className="h-4 w-4" />
         </span>
@@ -599,12 +553,18 @@ function HotGamesSection() {
 
   return (
     <section className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 sm:py-9 lg:px-8 lg:py-10">
-      <div className="relative overflow-hidden rounded-3xl border border-violet-400/30 bg-gradient-to-br from-[#12082d]/80 via-[#1a0d3d]/60 to-[#0a0520]/80 p-4 shadow-[0_0_60px_-20px_rgba(139,92,246,0.6)] backdrop-blur sm:p-5 lg:p-6">
+      <div className="relative overflow-hidden rounded-2xl inset-panel p-4 shadow-[0_12px_36px_rgba(0,0,0,0.4)] sm:p-5 lg:p-6">
         <div className="mb-4 flex items-center justify-between gap-2 sm:mb-5">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-gradient-to-r from-amber-500/15 to-orange-500/10 px-4 py-1.5 text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 sm:text-xl lg:text-2xl">
-            <Flame className="h-5 w-5 text-amber-300 sm:h-6 sm:w-6" /> {t("hotGames")}
+          <div className="flex items-center gap-2 text-xl font-black text-[var(--neon-gold)] sm:text-2xl lg:text-[26px]">
+            <Flame className="h-6 w-6 text-orange-400 sm:h-7 sm:w-7" />
+            <span>{t("hotGames")}</span>
           </div>
-          <button className="rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-5 py-2 text-sm font-black text-black shadow-[0_0_20px_-5px_rgba(16,185,129,0.7)] hover:from-emerald-300 hover:to-teal-400 sm:px-7 sm:py-2.5 sm:text-base">{t("more")}</button>
+          <Link
+            to="/hot"
+            className="rounded-full bg-green-button px-5 py-2 text-base font-black text-[var(--background)] shadow-md transition hover:brightness-110 sm:px-7 sm:py-2.5 sm:text-lg"
+          >
+            {t("more")}
+          </Link>
         </div>
 
 
@@ -619,7 +579,7 @@ function HotGamesSection() {
           <button
             aria-label="Previous"
             onClick={() => scrollBy(-1)}
-            className="absolute -left-2 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/60 text-white shadow-md backdrop-blur transition hover:bg-[var(--neon-green)]/70 sm:-left-3 sm:h-10 sm:w-10"
+            className="absolute -left-2 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-[var(--neon-green)]/40 bg-black/65 text-white shadow-md backdrop-blur transition hover:bg-[var(--neon-green)]/70 sm:-left-3 sm:h-10 sm:w-10"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -628,8 +588,9 @@ function HotGamesSection() {
             className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {hotGames.map((game) => (
-              <div
+              <Link
                 key={game.title}
+                to="/hot"
                 className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-2 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
               >
                 {game.tag && (
@@ -641,16 +602,16 @@ function HotGamesSection() {
                   {game.provider}
                 </span>
                 <img src={game.image} alt={game.title} width={512} height={512} loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" />
-                <div className="pt-3 text-center text-sm font-semibold text-foreground/90 sm:text-[15px] lg:text-base">{game.title}</div>
+                <div className="truncate pt-2.5 text-center text-sm font-semibold text-foreground/95 sm:text-[15px] lg:text-base">{game.title}</div>
 
-              </div>
+              </Link>
             ))}
 
           </div>
           <button
             aria-label="Next"
             onClick={() => scrollBy(1)}
-            className="absolute -right-2 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-[var(--neon-green)]/40 text-white shadow-md backdrop-blur transition hover:bg-[var(--neon-green)]/70 sm:-right-3 sm:h-10 sm:w-10"
+            className="absolute -right-2 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-[var(--neon-green)]/40 bg-black/65 text-white shadow-md backdrop-blur transition hover:bg-[var(--neon-green)]/70 sm:-right-3 sm:h-10 sm:w-10"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -669,17 +630,24 @@ function JackpotSection() {
     <section className="mx-auto max-w-[1440px] px-4 pb-8 sm:px-6 sm:pb-10 lg:px-8 lg:pb-12">
       <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:gap-6">
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-fuchsia-400/40 bg-gradient-to-r from-fuchsia-500/15 to-pink-500/10 px-4 py-1.5 text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-200 to-pink-200 sm:text-xl lg:text-2xl"><Gift className="h-5 w-5 text-fuchsia-300 sm:h-6 sm:w-6" /> {t("promo")}</div>
+          <div className="flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl">
+            <Gift className="h-5 w-5 text-[var(--neon-gold)] sm:h-6 sm:w-6" />
+            <span>{t("promo")}</span>
+          </div>
           {promoCards.map((card) => (
-            <div key={card.titleKey} className="overflow-hidden rounded-2xl border border-violet-400/30 bg-black/40 shadow-[0_0_30px_-15px_rgba(139,92,246,0.6)] transition hover:border-violet-400/60 hover:shadow-[0_0_40px_-10px_rgba(139,92,246,0.7)]">
+            <Link
+              key={card.titleKey}
+              to="/promotion"
+              className="block overflow-hidden rounded-xl border border-[var(--neon-green)]/45 bg-black/35 transition hover:border-[var(--neon-gold)]/70 hover:shadow-[0_0_24px_-8px_rgba(255,215,80,0.45)]"
+            >
               <img src={card.image} alt={t(card.titleKey)} width={1024} height={512} loading="lazy" className="block w-full" />
-            </div>
+            </Link>
           ))}
         </div>
 
 
-        <div className="relative overflow-hidden rounded-3xl border border-violet-400/40 bg-gradient-to-br from-[#1a0b3d] via-[#2d1465] to-[#0b1a4a] p-3 text-center shadow-[0_0_60px_-15px_rgba(139,92,246,0.7)]">
-          <div className="pointer-events-none absolute -top-20 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(245,158,11,0.3), transparent 70%)" }} />
+        <div className="relative overflow-hidden rounded-2xl border border-[var(--neon-green)]/45 bg-[radial-gradient(ellipse_at_top,rgba(22,80,54,0.65),rgba(4,18,12,0.95))] p-4 text-center shadow-[0_12px_36px_rgba(0,0,0,0.45)]">
+          <div className="pointer-events-none absolute -top-20 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(255,215,80,0.22), transparent 70%)" }} />
           <img
             src={jackpotHero}
             alt="Jackpots"
@@ -713,20 +681,23 @@ function LatestWinners() {
   const loop = [...winners, ...winners];
   return (
     <div>
-      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-gradient-to-r from-emerald-500/15 to-teal-500/10 px-4 py-1.5 text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-teal-200 sm:text-xl lg:text-2xl"><Trophy className="h-5 w-5 text-emerald-300 sm:h-6 sm:w-6" /> {t("latestWinners")}</div>
-      <div className="relative h-[400px] overflow-hidden rounded-2xl border border-violet-400/30 bg-gradient-to-b from-[#12082d]/70 to-black/50 p-3 shadow-[0_0_40px_-15px_rgba(139,92,246,0.6)] backdrop-blur">
+      <div className="mb-4 flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl">
+        <Trophy className="h-5 w-5 text-[var(--neon-gold)] sm:h-6 sm:w-6" />
+        <span>{t("latestWinners")}</span>
+      </div>
+      <div className="relative h-[400px] overflow-hidden rounded-xl border border-[var(--neon-green)]/40 bg-black/40 p-3 shadow-[0_12px_32px_rgba(0,0,0,0.4)]">
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-black/70 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-black/70 to-transparent" />
         <div className="flex flex-col gap-2 animate-marquee-y">
           {loop.map((entry, i) => (
-            <div key={`${entry.name}-${i}`} className="flex shrink-0 items-center gap-3 rounded-xl border border-violet-400/20 bg-gradient-to-r from-white/[0.04] to-black/40 p-2.5 backdrop-blur transition hover:border-emerald-400/40">
-              <img src={entry.image} alt="" loading="lazy" decoding="async" className="h-11 w-11 shrink-0 rounded-lg object-cover ring-1 ring-white/10" />
+            <div key={`${entry.name}-${i}`} className="flex shrink-0 items-center gap-3 rounded-lg border border-[var(--neon-green)]/30 bg-black/55 p-2.5 transition hover:border-[var(--neon-gold)]/55">
+              <img src={entry.image} alt="" loading="lazy" decoding="async" className="h-11 w-11 shrink-0 rounded-md object-cover ring-1 ring-white/10" />
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-semibold text-white">{entry.name}</div>
-                <div className="truncate text-xs text-foreground/65">{t("justWonIn")} <span className="text-fuchsia-300">{entry.game}</span></div>
+                <div className="truncate text-xs text-foreground/70">{t("justWonIn")} <span className="text-[var(--neon-gold)]/90">{entry.game}</span></div>
               </div>
-              <div className="shrink-0 text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200">{entry.amount}</div>
+              <div className="shrink-0 text-base font-black text-[var(--neon-green)]">{entry.amount}</div>
             </div>
           ))}
 
@@ -788,13 +759,14 @@ function MainCategoryCards() {
           className="category-reference-img"
         />
         {mainCategories.map((item) => (
-          <button
+          <Link
             key={item.key}
+            to={item.to}
             aria-label={t(item.key)}
-            className={`category-hit category-hit-${item.key}`}
+            className={`category-hit category-hit-${item.key} rounded-2xl transition hover:bg-white/5`}
           >
             <span className="sr-only">{t(item.key)}</span>
-          </button>
+          </Link>
         ))}
       </div>
     </section>
@@ -807,8 +779,8 @@ function MainCategoryCards() {
 function AppSection() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-[1440px] px-4 pb-10 sm:px-6 sm:pb-12 lg:px-8 lg:pb-14">
-      <div className="relative grid items-center gap-8 overflow-hidden rounded-3xl border border-violet-400/30 bg-gradient-to-br from-[#12082d]/80 via-[#1a0d3d]/70 to-[#0a0520]/80 p-6 shadow-[0_0_60px_-20px_rgba(139,92,246,0.6)] backdrop-blur sm:p-8 lg:grid-cols-[1.1fr_1fr] lg:p-10">
+    <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+      <div className="relative grid items-center gap-8 overflow-hidden rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-6 shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:p-8 lg:grid-cols-[1.1fr_1fr] lg:p-10">
 
         <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-2xl sm:min-h-[380px] lg:min-h-[440px]">
           <img
@@ -832,7 +804,11 @@ function AppSection() {
               { label: "Android APP", Icon: Download },
               { label: "IOS APP", Icon: Apple },
             ].map(({ label, Icon }) => (
-              <div key={label} className="rounded-2xl border border-[var(--neon-green)]/40 bg-black/35 p-3 text-center">
+              <Link
+                key={label}
+                to="/download"
+                className="rounded-2xl border border-[var(--neon-green)]/40 bg-black/35 p-3 text-center transition hover:border-[var(--neon-gold)]/70 hover:bg-black/50"
+              >
                 <div className="mx-auto grid h-28 w-28 place-items-center rounded-lg bg-white text-[var(--background)] sm:h-32 sm:w-32">
                   <QrCode className="h-20 w-20" strokeWidth={1.5} />
                 </div>
@@ -840,7 +816,7 @@ function AppSection() {
                   <Icon className="h-4 w-4" /> {label}
                 </div>
 
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -856,18 +832,18 @@ function ServiceStats() {
   return (
     <section className="mx-auto max-w-[1440px] px-4 pb-6 pt-4 sm:px-6 sm:pb-8 lg:px-8">
       <div className="mb-5 flex justify-center sm:mb-6">
-        <div className="rounded-full border border-violet-400/40 bg-gradient-to-r from-violet-500/20 via-fuchsia-500/15 to-pink-500/20 px-8 py-2.5 text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-100 via-fuchsia-100 to-pink-100 shadow-[0_0_30px_-10px_rgba(139,92,246,0.7)] sm:px-12 sm:text-2xl">
+        <div className="rounded-xl bg-green-button px-12 py-3 text-xl font-black text-[var(--background)] shadow-lg sm:text-2xl">
           {t("serviceQualityTitle")}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {statCards.map((item) => (
-          <div key={item.labelKey} className="relative overflow-hidden rounded-2xl border border-violet-400/30 bg-gradient-to-br from-[#12082d]/80 to-black/60 px-4 py-5 text-center shadow-[0_0_30px_-15px_rgba(139,92,246,0.5)] backdrop-blur transition hover:border-fuchsia-400/50 hover:shadow-[0_0_30px_-8px_rgba(217,70,239,0.5)] sm:px-5 sm:py-6">
+          <div key={item.labelKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 px-4 py-5 text-center transition hover:border-[var(--neon-gold)]/60 sm:px-5 sm:py-6">
             <div className="flex items-baseline justify-center">
-              <span className="text-5xl font-black leading-none text-transparent bg-clip-text bg-gradient-to-br from-amber-200 via-yellow-100 to-amber-300 sm:text-6xl lg:text-7xl">{item.value}</span>
-              {item.unit && <span className="ml-1 text-lg font-bold text-amber-300 sm:text-2xl">{item.unit}</span>}
+              <span className="text-5xl font-black leading-none text-[var(--neon-gold)] sm:text-6xl lg:text-7xl">{item.value}</span>
+              {item.unit && <span className="ml-1 text-lg font-bold text-[var(--neon-gold)] sm:text-2xl">{item.unit}</span>}
             </div>
-            <div className="mx-auto mt-4 w-full rounded-full border border-emerald-400/40 bg-emerald-500/15 px-3 py-1.5 text-sm font-black text-emerald-200 sm:text-base">
+            <div className="mx-auto mt-4 w-full rounded-full bg-green-button px-3 py-1.5 text-sm font-black text-[var(--background)] sm:text-base">
               {t(item.labelKey)}
             </div>
 
@@ -884,13 +860,13 @@ function FeatureList() {
   return (
     <section className="mx-auto max-w-[1440px] space-y-3.5 px-4 pb-10 sm:px-6 sm:pb-12 lg:px-8">
       {featureCards.map((card) => (
-        <div key={card.titleKey} className="rounded-2xl border border-violet-400/25 bg-gradient-to-r from-[#12082d]/60 via-black/50 to-[#0a0520]/60 p-4 shadow-[0_0_30px_-20px_rgba(139,92,246,0.5)] backdrop-blur transition hover:border-fuchsia-400/40 sm:p-5">
+        <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 p-4 transition hover:border-[var(--neon-gold)]/55 sm:p-5">
           <div className="flex items-center gap-4 sm:gap-5">
-            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-500/15 to-fuchsia-500/10 sm:h-16 sm:w-16">
+            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-[var(--neon-green)]/35 bg-[var(--surface-elevated)]/70 sm:h-16 sm:w-16">
               <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-10 w-10 object-contain sm:h-12 sm:w-12" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-100 sm:text-xl">{t(card.titleKey)}</h3>
+              <h3 className="text-lg font-black text-[var(--neon-gold)] sm:text-xl">{t(card.titleKey)}</h3>
               <p className="mt-1 text-sm leading-6 text-foreground/80 sm:text-base sm:leading-7">{t(card.bodyKey)}</p>
 
             </div>
