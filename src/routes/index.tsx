@@ -5,13 +5,13 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
+  Crown,
   Download,
   Flame,
   Gamepad2,
   Gift,
   Medal,
   Megaphone,
-  QrCode,
   ShieldCheck,
   Smartphone,
   Trophy,
@@ -42,7 +42,7 @@ import mascotSlots from "@/assets/mascot-slots.png";
 import mascotFish from "@/assets/mascot-fish.png";
 import mascotLive from "@/assets/mascot-live.png";
 import mascotPoker from "@/assets/mascot-poker.png";
-import categoryReference from "@/assets/reference/category-reference.png.asset.json";
+import qrImg from "@/assets/download-qr.jpg";
 import promoWelcome from "@/assets/promo-welcome.jpg";
 import promoDaily from "@/assets/promo-daily.jpg";
 import promoVip from "@/assets/promo-vip.jpg";
@@ -591,14 +591,14 @@ function HotGamesSection() {
               <Link
                 key={game.title}
                 to="/hot"
-                className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl p-2 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
+                className="game-frame relative w-[44%] shrink-0 snap-start overflow-hidden rounded-xl bg-[#072617]/80 p-2 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:border-[var(--neon-gold)]/70 hover:shadow-[0_12px_28px_rgba(255,215,80,0.22)] sm:w-[32%] md:w-[24%] lg:w-[15.5%]"
               >
                 {game.tag && (
-                  <span className={`absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[11px] font-black ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
+                  <span className={`absolute left-3 top-3 z-10 rounded-full px-2 py-0.5 text-[10px] font-black shadow ${game.tag === "HOT" ? "bg-[var(--neon-pink)] text-white" : "bg-[var(--neon-gold)] text-[var(--background)]"}`}>
                     {game.tag}
                   </span>
                 )}
-                <span className="absolute right-2 top-2 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[11px] font-bold text-[var(--neon-gold)]">
+                <span className="absolute right-3 top-3 z-10 rounded-md bg-black/75 px-1.5 py-0.5 text-[10px] font-bold text-[var(--neon-gold)]">
                   {game.provider}
                 </span>
                 <img src={game.image} alt={game.title} width={512} height={512} loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" />
@@ -628,35 +628,43 @@ function JackpotSection() {
   const { t } = useLang();
   return (
     <section className="mx-auto max-w-[1440px] px-4 pb-8 sm:px-6 sm:pb-10 lg:px-8 lg:pb-12">
-      <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:gap-6">
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl">
+      <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:items-stretch lg:gap-6">
+        <div className="flex flex-col">
+          <div className="mb-4 flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl">
             <Gift className="h-5 w-5 text-[var(--neon-gold)] sm:h-6 sm:w-6" />
             <span>{t("promo")}</span>
           </div>
-          {promoCards.map((card) => (
-            <Link
-              key={card.titleKey}
-              to="/promotion"
-              className="block overflow-hidden rounded-xl border border-[var(--neon-green)]/45 bg-black/35 transition hover:border-[var(--neon-gold)]/70 hover:shadow-[0_0_24px_-8px_rgba(255,215,80,0.45)]"
-            >
-              <img src={card.image} alt={t(card.titleKey)} width={1024} height={512} loading="lazy" className="block w-full" />
-            </Link>
-          ))}
+          <div className="flex flex-1 flex-col justify-between gap-3.5">
+            {promoCards.map((card) => (
+              <Link
+                key={card.titleKey}
+                to="/promotion"
+                className="block overflow-hidden rounded-xl border border-[var(--neon-green)]/45 bg-black/35 transition hover:border-[var(--neon-gold)]/70 hover:shadow-[0_0_24px_-8px_rgba(255,215,80,0.45)]"
+              >
+                <img src={card.image} alt={t(card.titleKey)} width={1024} height={512} loading="lazy" className="block w-full" />
+              </Link>
+            ))}
+          </div>
         </div>
 
 
-        <div className="relative overflow-hidden rounded-2xl border border-[var(--neon-green)]/45 bg-[radial-gradient(ellipse_at_top,rgba(22,80,54,0.65),rgba(4,18,12,0.95))] p-4 text-center shadow-[0_12px_36px_rgba(0,0,0,0.45)]">
-          <div className="pointer-events-none absolute -top-20 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(255,215,80,0.22), transparent 70%)" }} />
-          <img
-            src={jackpotHero}
-            alt="Jackpots"
-            width={1024}
-            height={768}
-            loading="lazy"
-            className="relative mx-auto -mb-2 w-full max-w-[440px] object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.55)]"
-          />
-          <JackpotCounter />
+        <div className="flex flex-col">
+          <div className="mb-4 flex items-center justify-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl">
+            <Crown className="h-5 w-5 text-[var(--neon-gold)] sm:h-6 sm:w-6" />
+            <span>মেগা জ্যাকপট</span>
+          </div>
+          <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden rounded-2xl border border-[var(--neon-green)]/45 bg-[radial-gradient(ellipse_at_top,rgba(22,80,54,0.7),rgba(4,18,12,0.96))] p-4 text-center shadow-[0_12px_36px_rgba(0,0,0,0.45)]">
+            <div className="pointer-events-none absolute -top-20 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(255,215,80,0.22), transparent 70%)" }} />
+            <img
+              src={jackpotHero}
+              alt="Jackpots"
+              width={1024}
+              height={768}
+              loading="lazy"
+              className="relative mx-auto -mb-2 w-full max-w-[440px] object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.55)]"
+            />
+            <JackpotCounter />
+          </div>
         </div>
 
 
@@ -680,12 +688,12 @@ function LatestWinners() {
   ];
   const loop = [...winners, ...winners];
   return (
-    <div>
+    <div className="flex flex-col">
       <div className="mb-4 flex items-center gap-2 text-lg font-black text-[var(--neon-gold)] sm:text-xl lg:text-2xl">
         <Trophy className="h-5 w-5 text-[var(--neon-gold)] sm:h-6 sm:w-6" />
         <span>{t("latestWinners")}</span>
       </div>
-      <div className="relative h-[400px] overflow-hidden rounded-xl border border-[var(--neon-green)]/40 bg-black/40 p-3 shadow-[0_12px_32px_rgba(0,0,0,0.4)]">
+      <div className="relative h-[400px] overflow-hidden rounded-xl border border-[var(--neon-green)]/40 bg-black/40 p-3 shadow-[0_12px_32px_rgba(0,0,0,0.4)] lg:h-[480px]">
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-black/70 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 bg-gradient-to-t from-black/70 to-transparent" />
@@ -748,24 +756,29 @@ function DigitReel({ digit }: { digit: number }) {
 function MainCategoryCards() {
   const { t } = useLang();
   return (
-    <section className="category-strip">
-      <div className="category-reference-wrap mx-auto">
-        <img
-          src={categoryReference.url}
-          alt="Slot, Fishing, Live and Poker game categories"
-          width={1487}
-          height={372}
-          loading="lazy"
-          className="category-reference-img"
-        />
+    <section className="mx-auto max-w-[1440px] px-4 pb-6 pt-2 sm:px-6 sm:pb-8 lg:px-8">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
         {mainCategories.map((item) => (
           <Link
             key={item.key}
             to={item.to}
-            aria-label={t(item.key)}
-            className={`category-hit category-hit-${item.key} rounded-2xl transition hover:bg-white/5`}
+            className="group relative flex flex-col items-center justify-between overflow-hidden rounded-2xl border border-[var(--neon-green)]/45 bg-[radial-gradient(ellipse_at_top,rgba(24,112,68,0.6),rgba(5,26,16,0.94))] p-4 text-center shadow-[0_12px_30px_rgba(0,0,0,0.4)] transition duration-300 hover:-translate-y-1 hover:border-[var(--neon-gold)]/75 hover:shadow-[0_16px_36px_rgba(255,215,80,0.22)] sm:p-5"
           >
-            <span className="sr-only">{t(item.key)}</span>
+            <div className="pointer-events-none absolute -top-10 left-1/2 h-32 w-32 -translate-x-1/2 rounded-full bg-[var(--neon-gold)]/15 blur-2xl transition group-hover:bg-[var(--neon-gold)]/25" />
+            <img
+              src={item.mascot}
+              alt={t(item.key)}
+              width={512}
+              height={512}
+              loading="lazy"
+              className="relative h-32 w-32 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.55)] transition duration-300 group-hover:scale-105 sm:h-40 sm:w-40 lg:h-44 lg:w-44"
+            />
+            <div className="relative mt-3 flex w-full items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/45 px-3.5 py-2">
+              <span className="text-base font-black text-[var(--neon-gold)] sm:text-lg">{t(item.key)}</span>
+              <span className="rounded-full bg-green-button px-2.5 py-0.5 text-xs font-black text-[var(--background)]">
+                খেলুন
+              </span>
+            </div>
           </Link>
         ))}
       </div>
@@ -782,7 +795,7 @@ function AppSection() {
     <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <div className="relative grid items-center gap-8 overflow-hidden rounded-3xl border border-[var(--neon-green)]/45 panel-dark p-6 shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:p-8 lg:grid-cols-[1.1fr_1fr] lg:p-10">
 
-        <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-2xl sm:min-h-[380px] lg:min-h-[440px]">
+        <div className="relative flex min-h-[280px] items-center justify-center overflow-hidden rounded-2xl sm:min-h-[360px] lg:min-h-[420px]">
           <img
             src={mascotAppScene}
             alt="PKOK app preview with mascots"
@@ -809,11 +822,11 @@ function AppSection() {
                 to="/download"
                 className="rounded-2xl border border-[var(--neon-green)]/40 bg-black/35 p-3 text-center transition hover:border-[var(--neon-gold)]/70 hover:bg-black/50"
               >
-                <div className="mx-auto grid h-28 w-28 place-items-center rounded-lg bg-white text-[var(--background)] sm:h-32 sm:w-32">
-                  <QrCode className="h-20 w-20" strokeWidth={1.5} />
+                <div className="mx-auto grid h-28 w-28 place-items-center overflow-hidden rounded-xl bg-white p-1.5 sm:h-32 sm:w-32">
+                  <img src={qrImg} alt={`${label} QR`} width={256} height={256} loading="lazy" className="h-full w-full object-contain" />
                 </div>
-                <div className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-white sm:text-base">
-                  <Icon className="h-4 w-4" /> {label}
+                <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-green-button px-3 py-1 text-xs font-black text-[var(--background)] sm:text-sm">
+                  <Icon className="h-3.5 w-3.5" /> {label}
                 </div>
 
               </Link>
@@ -830,7 +843,7 @@ function AppSection() {
 function ServiceStats() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-[1440px] px-4 pb-6 pt-4 sm:px-6 sm:pb-8 lg:px-8">
+    <section className="mx-auto max-w-[1440px] px-4 pb-6 pt-2 sm:px-6 sm:pb-8 lg:px-8">
       <div className="mb-5 flex justify-center sm:mb-6">
         <div className="rounded-xl bg-green-button px-12 py-3 text-xl font-black text-[var(--background)] shadow-lg sm:text-2xl">
           {t("serviceQualityTitle")}
@@ -858,21 +871,23 @@ function ServiceStats() {
 function FeatureList() {
   const { t } = useLang();
   return (
-    <section className="mx-auto max-w-[1440px] space-y-3.5 px-4 pb-10 sm:px-6 sm:pb-12 lg:px-8">
-      {featureCards.map((card) => (
-        <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 p-4 transition hover:border-[var(--neon-gold)]/55 sm:p-5">
-          <div className="flex items-center gap-4 sm:gap-5">
-            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-[var(--neon-green)]/35 bg-[var(--surface-elevated)]/70 sm:h-16 sm:w-16">
-              <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-10 w-10 object-contain sm:h-12 sm:w-12" />
-            </div>
-            <div className="min-w-0">
-              <h3 className="text-lg font-black text-[var(--neon-gold)] sm:text-xl">{t(card.titleKey)}</h3>
-              <p className="mt-1 text-sm leading-6 text-foreground/80 sm:text-base sm:leading-7">{t(card.bodyKey)}</p>
+    <section className="mx-auto max-w-[1440px] px-4 pb-8 sm:px-6 sm:pb-10 lg:px-8">
+      <div className="grid gap-4 md:grid-cols-2">
+        {featureCards.map((card) => (
+          <div key={card.titleKey} className="rounded-2xl border border-[var(--neon-green)]/45 bg-black/50 p-4 transition hover:border-[var(--neon-gold)]/55 sm:p-5">
+            <div className="flex items-start gap-4 sm:gap-5">
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-[var(--neon-green)]/35 bg-[var(--surface-elevated)]/70 sm:h-16 sm:w-16">
+                <img src={card.icon} alt="" loading="lazy" width={64} height={64} className="h-10 w-10 object-contain sm:h-12 sm:w-12" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-lg font-black text-[var(--neon-gold)] sm:text-xl">{t(card.titleKey)}</h3>
+                <p className="mt-1 text-sm leading-6 text-foreground/80 sm:text-base sm:leading-7">{t(card.bodyKey)}</p>
 
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </section>
 
   );

@@ -347,7 +347,7 @@ function MainNav() {
           <span className="rounded-[6px] bg-[#ff9700] px-1.5 text-black shadow-[0_2px_0_rgba(0,0,0,0.35)]">OK</span>
           <span className="-ml-1 text-[#ff9700] drop-shadow">👌</span>
         </Link>
-        <nav className="hidden min-w-0 flex-1 items-center justify-start gap-1 whitespace-nowrap pl-4 text-[14px] font-bold text-white lg:flex xl:gap-2 xl:pl-6 xl:text-[15px]">
+        <nav className="no-scrollbar hidden min-w-0 flex-1 items-center justify-start gap-0.5 overflow-x-auto whitespace-nowrap pl-3 text-[13px] font-bold text-white lg:flex xl:gap-2 xl:pl-6 xl:text-[15px]">
           {topMenu.map((item) => (
             <Link
               key={item.key}
@@ -355,7 +355,7 @@ function MainNav() {
               className="group flex shrink-0 items-center gap-1.5 rounded-md px-2 py-2 transition-colors hover:text-[var(--neon-gold)]"
               activeProps={{ className: "shrink-0 text-[var(--neon-gold)]" }}
             >
-              <item.icon className="h-7 w-7 transition-transform group-hover:scale-110" />
+              <item.icon className="h-5 w-5 transition-transform group-hover:scale-110 xl:h-6 xl:w-6" />
               <span>{t(item.key)}</span>
             </Link>
           ))}
