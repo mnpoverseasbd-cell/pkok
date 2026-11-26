@@ -317,6 +317,7 @@ export const adminListFeatureFlags = createServerFn({ method: "POST" })
     const { data, error } = await admin
       .from("feature_flags")
       .select("*")
+      .not("flag_key", "like", "game.disabled.%")
       .order("flag_key", { ascending: true });
     if (error) throw new Error(error.message);
     return { rows: data ?? [] };
@@ -341,6 +342,9 @@ export const adminUpsertFeatureFlag = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
+    if (data.flag_key.startsWith("game.disabled.")) {
+      throw new Error("This feature flag is system-managed");
+    }
     const admin = await getAdminClient();
     const { data: row, error } = await admin
       .from("feature_flags")
@@ -367,6 +371,9 @@ export const adminDeleteFeatureFlag = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ flag_key: z.string().min(1) }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
+    if (data.flag_key.startsWith("game.disabled.")) {
+      throw new Error("This feature flag is system-managed");
+    }
     const admin = await getAdminClient();
     const { error } = await admin.from("feature_flags").delete().eq("flag_key", data.flag_key);
     if (error) throw new Error(error.message);

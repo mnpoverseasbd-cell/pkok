@@ -41,9 +41,9 @@ export function useGameConfig(gameKey: string) {
       if (error) throw error;
       if (!data) {
         const { data: disabled, error: statusError } = await supabase
-          .from("disabled_game_configs")
-          .select("game_key")
-          .eq("game_key", gameKey)
+          .from("feature_flags")
+          .select("flag_key")
+          .eq("flag_key", `game.disabled.${gameKey}`)
           .maybeSingle();
         if (statusError) throw statusError;
 

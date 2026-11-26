@@ -47,29 +47,6 @@ export type Database = {
         }
         Relationships: []
       }
-      disabled_game_configs: {
-        Row: {
-          game_key: string
-          updated_at: string
-        }
-        Insert: {
-          game_key: string
-          updated_at?: string
-        }
-        Update: {
-          game_key?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "disabled_game_configs_game_key_fkey"
-            columns: ["game_key"]
-            isOneToOne: true
-            referencedRelation: "game_configs"
-            referencedColumns: ["game_key"]
-          },
-        ]
-      }
       feature_flags: {
         Row: {
           created_at: string
