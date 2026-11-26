@@ -466,7 +466,7 @@ function HeroBanner() {
         <button
           aria-label="Next slide"
           onClick={() => setIdx((i) => (i + 1) % total)}
-          className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-[var(--neon-green)]/60 sm:right-4 sm:h-11 sm:w-11"
+          className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-[var(--neon-green)]/60 sm:right-4 sm:h-11 sm:w-11 xl:right-20"
         >
           <ChevronRight className="h-5 w-5" />
         </button>

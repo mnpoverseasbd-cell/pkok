@@ -485,15 +485,15 @@ function FooterBlock() {
 
 function SocialRail() {
   return (
-    <div className="fixed right-2 top-[56%] z-30 hidden -translate-y-1/2 flex-col gap-1.5 xl:flex">
+    <div className="fixed right-2 top-[max(8.75rem,calc(50vh-145px))] z-40 hidden flex-col gap-1 xl:flex">
       {sideActions.map((item, index) => (
         <a
           key={item}
           href="#"
-          className="flex w-14 flex-col items-center rounded-2xl border border-[var(--neon-green)]/55 bg-[color-mix(in_oklab,var(--surface)_92%,black)] px-1.5 py-1.5 text-center text-[10px] font-bold leading-tight text-white shadow-lg shadow-black/40 transition hover:scale-105 hover:border-[var(--neon-gold)]"
+          className="flex w-[54px] flex-col items-center rounded-2xl border border-[var(--neon-green)]/55 bg-[color-mix(in_oklab,var(--surface)_92%,black)] px-1 py-1.5 text-center text-[9px] font-bold leading-tight text-white shadow-lg shadow-black/40 transition hover:scale-105 hover:border-[var(--neon-gold)]"
         >
-          <span className={`mb-0.5 grid h-8 w-8 place-items-center rounded-full ${index === 0 ? "bg-green-button text-[var(--background)]" : "bg-[var(--neon-green)]/25"}`}>
-            {index === 0 ? <Headphones className="h-4 w-4" /> : <MessageCircle className="h-4 w-4" />}
+          <span className={`mb-0.5 grid h-7 w-7 place-items-center rounded-full ${index === 0 ? "bg-green-button text-[var(--background)]" : "bg-[var(--neon-green)]/25"}`}>
+            {index === 0 ? <Headphones className="h-3.5 w-3.5" /> : <MessageCircle className="h-3.5 w-3.5" />}
           </span>
           {item}
         </a>
