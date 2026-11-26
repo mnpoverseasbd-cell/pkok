@@ -1,6 +1,9 @@
 # Selected Security Fixes
 
-- [ ] Lock wallet, transaction, VIP payout, and tournament prize changes to trusted server/database paths.
-- [ ] Protect role checks, notifications, signup responses, payout hooks, and leaderboard profile data.
-- [ ] Verify the selected code and database fixes, then update only their scan findings.
-- [ ] Leave leaked-password screening pending for the Supabase Auth setting owner action.
+- [x] Lock profile balances, payment approvals, and tournament results to trusted database paths.
+- [x] Protect role checks, notifications, signup responses, payout access, and leaderboard identities.
+- [x] Verify database permissions, the nightly payout schedule, the public route denial, and the app build.
+- [ ] Decide whether administrator accounts are eligible for VIP payouts; awaiting user confirmation.
+- [ ] Approve server-verified game payouts across all 42 games; awaiting user confirmation.
+- [ ] Enable leaked-password screening in Supabase Auth; requires the project owner/dashboard setting.
+- [ ] Verify signed-in screens; Lovable cannot mint a session for this user-managed Supabase backend.

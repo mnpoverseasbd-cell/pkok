@@ -47,6 +47,18 @@ WITH checks(name, passed) AS (
   SELECT 'tournament leaderboard hides account identities',
     position('public.profiles' in pg_get_functiondef('public.get_tournament_leaderboard(uuid, integer)'::regprocedure)) = 0
     AND position('tournament-leaderboard-v1' in pg_get_functiondef('public.get_tournament_leaderboard(uuid, integer)'::regprocedure)) > 0
+  UNION ALL
+  SELECT 'nightly payouts no longer use the public route',
+    EXISTS (
+      SELECT 1 FROM cron.job
+      WHERE jobid = 1
+        AND active
+        AND schedule = '0 0 * * *'
+        AND position('run_daily_bonuses' in command) > 0
+        AND position('run_weekly_bonuses' in command) > 0
+        AND position('run_daily_cashback' in command) > 0
+        AND position('vip-daily' in command) = 0
+    )
 )
 SELECT 1 / (bool_and(passed)::integer) AS all_selected_database_checks_passed
 FROM checks;

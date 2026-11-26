@@ -52,6 +52,10 @@ export const Route = createFileRoute("/wallet")({
     meta: [
       { title: "Wallet — PKOK" },
       { name: "description", content: "Manage your wallet: deposit, withdraw, and transaction history." },
+      { property: "og:title", content: "Wallet — PKOK" },
+      { property: "og:description", content: "Manage deposits, withdrawals, and transaction history in your PKOK wallet." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   validateSearch: (search) => searchSchema.parse(search),

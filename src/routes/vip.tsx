@@ -12,6 +12,8 @@ export const Route = createFileRoute("/vip")({
       { name: "description", content: "Asik Game VIP প্রোগ্রাম — Bronze থেকে Diamond পর্যন্ত লেভেল, এক্সক্লুসিভ ক্যাশব্যাক, ব্যক্তিগত ম্যানেজার ও বিশেষ গিফট।" },
       { property: "og:title", content: "VIP ক্লাব — Asik Game" },
       { property: "og:description", content: "VIP লেভেল আপ করুন এবং পান প্রিমিয়াম রিওয়ার্ড, ফাস্ট উত্তোলন ও এক্সক্লুসিভ বোনাস।" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: VipPage,

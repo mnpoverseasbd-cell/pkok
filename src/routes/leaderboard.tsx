@@ -12,6 +12,8 @@ export const Route = createFileRoute("/leaderboard")({
       { name: "description", content: "সাপ্তাহিক ও মাসিক সেরা প্লেয়ারদের র‍্যাঙ্কিং।" },
       { property: "og:title", content: "লিডারবোর্ড — PKOK" },
       { property: "og:description", content: "সেরা প্লেয়ারদের র‍্যাঙ্কিং দেখুন।" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: LeaderboardPage,

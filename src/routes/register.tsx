@@ -19,6 +19,8 @@ export const Route = createFileRoute("/register")({
       { name: "description", content: "Asik Game-এ নতুন অ্যাকাউন্ট তৈরি করুন এবং পান ৯৫০% ওয়েলকাম বোনাস।" },
       { property: "og:title", content: "রেজিস্টার — Asik Game" },
       { property: "og:description", content: "নতুন অ্যাকাউন্ট তৈরি করে এক্সক্লুসিভ ওয়েলকাম বোনাস পান।" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: RegisterPage,
