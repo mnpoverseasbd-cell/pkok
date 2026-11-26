@@ -9,7 +9,7 @@ import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts, adminListAuditLogs, adminLogAction, adminListFeatureFlags, adminUpsertFeatureFlag, adminDeleteFeatureFlag, adminReports } from "@/lib/admin.functions";
+import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts, adminListAuditLogs, adminLogAction, adminListFeatureFlags, adminUpsertFeatureFlag, adminDeleteFeatureFlag, adminListVipTierConfigs, adminUpdateVipTierConfig, adminReports } from "@/lib/admin.functions";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag, BarChart3, Bell } from "lucide-react";
@@ -748,15 +748,22 @@ function AdminVipTiers() {
   const [dirty, setDirty] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
+  const listTierConfigs = useServerFn(adminListVipTierConfigs);
+  const updateTierConfig = useServerFn(adminUpdateVipTierConfig);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("vip_tier_configs").select("*").order("sort_order");
-    if (error) toast.error(error.message);
-    setRows(data ?? []);
-    setDirty({});
-    setLoading(false);
-  }, []);
+    try {
+      const { rows } = await listTierConfigs();
+      setRows(rows);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not load VIP tiers");
+      setRows([]);
+    } finally {
+      setDirty({});
+      setLoading(false);
+    }
+  }, [listTierConfigs]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -770,11 +777,15 @@ function AdminVipTiers() {
     if (!isDirty(r.id)) return;
     setSaving(r.id);
     const patch = dirty[r.id];
-    const { error } = await supabase.from("vip_tier_configs").update(patch).eq("id", r.id);
-    setSaving(null);
-    if (error) return toast.error(error.message);
-    toast.success(`${r.tier.toUpperCase()} tier updated`);
-    load();
+    try {
+      await updateTierConfig({ data: { id: r.id, patch } });
+      toast.success(`${r.tier.toUpperCase()} tier updated`);
+      await load();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update VIP tier");
+    } finally {
+      setSaving(null);
+    }
   };
 
   const tierColor: Record<string, string> = {

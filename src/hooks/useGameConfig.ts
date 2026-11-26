@@ -28,13 +28,32 @@ export function useGameConfig(gameKey: string) {
   return useQuery({
     queryKey: ["game_config", gameKey],
     queryFn: async (): Promise<GameConfig> => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        return { ...DEFAULT_GAME_CONFIG, game_key: gameKey, name: gameKey };
+      }
+
       const { data, error } = await supabase
         .from("game_configs")
         .select("*")
         .eq("game_key", gameKey)
         .maybeSingle();
       if (error) throw error;
-      if (!data) return { ...DEFAULT_GAME_CONFIG, game_key: gameKey, name: gameKey };
+      if (!data) {
+        const { data: disabled, error: statusError } = await supabase
+          .from("disabled_game_configs")
+          .select("game_key")
+          .eq("game_key", gameKey)
+          .maybeSingle();
+        if (statusError) throw statusError;
+
+        return {
+          ...DEFAULT_GAME_CONFIG,
+          game_key: gameKey,
+          name: gameKey,
+          is_enabled: !disabled,
+        };
+      }
       return {
         ...data,
         min_bet: Number(data.min_bet),

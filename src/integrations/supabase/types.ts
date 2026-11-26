@@ -47,6 +47,29 @@ export type Database = {
         }
         Relationships: []
       }
+      disabled_game_configs: {
+        Row: {
+          game_key: string
+          updated_at: string
+        }
+        Insert: {
+          game_key: string
+          updated_at?: string
+        }
+        Update: {
+          game_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disabled_game_configs_game_key_fkey"
+            columns: ["game_key"]
+            isOneToOne: true
+            referencedRelation: "game_configs"
+            referencedColumns: ["game_key"]
+          },
+        ]
+      }
       feature_flags: {
         Row: {
           created_at: string
@@ -723,29 +746,6 @@ export type Database = {
         Returns: {
           paid_users: number
           total_paid: number
-        }[]
-      }
-      get_public_game_config: {
-        Args: { _game_key: string }
-        Returns: {
-          config: Json
-          game_key: string
-          house_edge: number
-          id: string
-          is_enabled: boolean
-          max_bet: number
-          min_bet: number
-          name: string
-        }[]
-      }
-      get_public_vip_tier_benefits: {
-        Args: never
-        Returns: {
-          cashback_pct: number
-          daily_bonus: number
-          min_deposit_total: number
-          tier: string
-          weekly_bonus: number
         }[]
       }
       get_tournament_leaderboard: {

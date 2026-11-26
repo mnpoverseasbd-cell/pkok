@@ -374,6 +374,58 @@ export const adminDeleteFeatureFlag = createServerFn({ method: "POST" })
     return { success: true as const };
   });
 
+export const adminListVipTierConfigs = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const admin = await getAdminClient();
+    const { data, error } = await admin
+      .from("vip_tier_configs")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return { rows: data ?? [] };
+  });
+
+export const adminUpdateVipTierConfig = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        patch: z
+          .object({
+            min_deposit_total: z.number().finite().optional(),
+            cashback_pct: z.number().finite().optional(),
+            daily_bonus: z.number().finite().optional(),
+            weekly_bonus: z.number().finite().optional(),
+            min_deposit_amount: z.number().finite().optional(),
+            max_deposit_amount: z.number().finite().optional(),
+            min_withdraw_amount: z.number().finite().optional(),
+            max_withdraw_amount: z.number().finite().optional(),
+          })
+          .strict(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    if (Object.keys(data.patch).length === 0) throw new Error("No tier changes provided");
+
+    const admin = await getAdminClient();
+    const { data: row, error } = await admin
+      .from("vip_tier_configs")
+      .update(data.patch)
+      .eq("id", data.id)
+      .select("id, tier")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) throw new Error("VIP tier not found");
+
+    await writeAudit(admin, context.userId, "vip.tier.update", "vip_tier_config", data.id, data.patch);
+    return { tier: row.tier };
+  });
+
 export const adminReports = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
