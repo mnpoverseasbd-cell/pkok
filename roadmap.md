@@ -1,5 +1,10 @@
-# Selected Security Fixes
+# Roadmap
 
+## TypeScript errors
+- [x] Restore the complete Supabase schema types so all app database calls type-check.
+- [x] Replace the unsupported Admin icon `title` prop with an accessible label.
+
+## Selected security fixes
 - [x] Lock profile balances, payment approvals, and tournament results to trusted database paths.
 - [x] Protect role checks, notifications, signup responses, payout access, and leaderboard identities.
 - [x] Verify database permissions, the nightly payout schedule, the public route denial, and the app build.

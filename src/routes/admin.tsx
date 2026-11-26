@@ -995,7 +995,7 @@ function AdminUsers() {
                         <div>
                           <div className="flex items-center gap-1 font-bold text-slate-900">
                             {u.display_name || u.username || "—"}
-                            {isAdmin && <ShieldCheck className="h-3.5 w-3.5 text-indigo-600" title="Admin" />}
+                            {isAdmin && <ShieldCheck className="h-3.5 w-3.5 text-indigo-600" aria-label="Admin" />}
                             {isMainAdmin && (
                               <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-amber-700">MAIN</span>
                             )}
