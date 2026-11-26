@@ -40,21 +40,15 @@ function LoginPage() {
   const { user, loading: authLoading } = useAuth();
   const { redirect } = Route.useSearch();
 
-  async function resolveDestination(userId: string): Promise<string> {
-    if (redirect && redirect.startsWith("/")) return redirect;
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
-    return data ? "/admin" : "/";
+  async function resolveDestination(): Promise<string> {
+    if (redirect && redirect.startsWith("/") && !redirect.startsWith("/admin")) return redirect;
+    return "/";
   }
 
   useEffect(() => {
     if (authLoading || !user) return;
     (async () => {
-      const dest = await resolveDestination(user.id);
+      const dest = await resolveDestination();
       navigate({ to: dest, replace: true });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,8 +79,7 @@ function LoginPage() {
       return;
     }
     toast.success("সফলভাবে লগইন হয়েছে");
-    const uid = authData.user?.id;
-    const dest = uid ? await resolveDestination(uid) : "/";
+    const dest = await resolveDestination();
     navigate({ to: dest, replace: true });
   }
 

@@ -35,7 +35,7 @@ import {
 } from "@/lib/admin.functions";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag, BarChart3, Bell, Coins, Copy, KeyRound, Ban, Settings2, Sliders, Gamepad2, ExternalLink } from "lucide-react";
+import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, EyeOff, Lock, Mail, LogOut, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag, BarChart3, Bell, Coins, Copy, KeyRound, Ban, Settings2, Sliders, Gamepad2, ExternalLink } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 import { ThumbnailDuplicateReport } from "@/components/admin/ThumbnailDuplicateReport";
 
@@ -66,35 +66,21 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
 function AdminPage() {
   const { user, loading } = useAuth();
   const { isAdmin, loading: roleLoading } = useIsAdmin(user?.id);
-  const navigate = useNavigate();
   const search = useSearch({ from: "/admin" });
   const tab = search.tab ?? "overview";
 
-  useEffect(() => {
-    if (!loading && !user) navigate({ to: "/login", search: { redirect: "/admin" } as any });
-  }, [loading, user, navigate]);
-
-  if (loading || roleLoading) {
+  if (loading || (user && roleLoading)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500">
-        <div className="flex items-center gap-3 text-sm"><RefreshCw className="h-4 w-4 animate-spin" /> Loading admin…</div>
-      </div>
-    );
-  }
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
-        <div className="max-w-md rounded-3xl border border-rose-100 bg-white p-10 text-center shadow-xl shadow-rose-500/5">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/30">
-            <ShieldOff className="h-7 w-7" />
-          </div>
-          <h1 className="mt-4 text-2xl font-black text-slate-900">Access Denied</h1>
-          <p className="mt-2 text-sm text-slate-500">শুধুমাত্র অ্যাডমিন এই পেজ দেখতে পারবেন।</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-300">
+        <div className="flex items-center gap-3 text-sm font-semibold">
+          <RefreshCw className="h-4 w-4 animate-spin text-indigo-400" /> Loading Admin Portal…
         </div>
       </div>
     );
   }
-
+  if (!user || !isAdmin) {
+    return <AdminPortalLogin currentUser={user} />;
+  }
 
   const meta = TAB_TITLES[tab] ?? TAB_TITLES.overview;
 
@@ -118,6 +104,149 @@ function AdminPage() {
       {tab === "tournaments" && <AdminTournaments />}
       {tab === "notifs" && <AdminNotifications />}
     </AdminShell>
+  );
+}
+
+function AdminPortalLogin({ currentUser }: { currentUser: any }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail || !password) {
+      toast.error("Admin Email এবং Password দিন");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      if (currentUser) {
+        await supabase.auth.signOut();
+      }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
+      if (error) {
+        toast.error(error.message === "Invalid login credentials" ? "Email বা Password ভুল" : error.message);
+        return;
+      }
+      const uid = data.user?.id;
+      if (!uid) {
+        toast.error("লগইন ব্যর্থ হয়েছে");
+        return;
+      }
+      const { data: roleRow } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", uid)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (!roleRow) {
+        await supabase.auth.signOut();
+        toast.error("এই অ্যাকাউন্টে Admin অনুমতি নেই");
+        return;
+      }
+      toast.success("Admin Portal-এ স্বাগতম");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 py-12 text-slate-100">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 20% 20%, rgba(99,102,241,0.22), transparent 45%), radial-gradient(circle at 80% 80%, rgba(14,165,233,0.16), transparent 45%)",
+        }}
+      />
+      <div className="relative w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/90 p-7 shadow-2xl shadow-indigo-500/10 backdrop-blur sm:p-9">
+        <div className="flex flex-col items-center text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-400 text-white shadow-lg shadow-indigo-500/30">
+            <ShieldCheck className="h-7 w-7" strokeWidth={2.3} />
+          </div>
+          <div className="mt-4 text-[11px] font-bold uppercase tracking-[0.25em] text-indigo-400">
+            PKOK Control Center
+          </div>
+          <h1 className="mt-1 text-2xl font-black text-white">Admin Portal Login</h1>
+          <p className="mt-1 text-xs text-slate-400">
+            এটি সম্পূর্ণ আলাদা অ্যাডমিন পোর্টাল — শুধুমাত্র অনুমোদিত অ্যাডমিনের জন্য
+          </p>
+        </div>
+
+        {currentUser && (
+          <div className="mt-5 flex items-center justify-between gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 text-xs text-amber-200">
+            <span className="truncate">
+              সাইন ইন করা আছে: <b>{currentUser.email || currentUser.phone}</b> (Admin নয়)
+            </span>
+            <button
+              type="button"
+              onClick={() => supabase.auth.signOut()}
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-amber-400/20 px-2.5 py-1 text-[11px] font-bold text-amber-200 hover:bg-amber-400/30"
+            >
+              <LogOut className="h-3 w-3" /> Sign out
+            </button>
+          </div>
+        )}
+
+        <form onSubmit={onSubmit} className="mt-6 space-y-4">
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">
+              Admin Email
+            </label>
+            <div className="flex items-center gap-2.5 rounded-xl border border-slate-700 bg-slate-950/70 px-3.5 py-2.5 focus-within:border-indigo-500">
+              <Mail className="h-4 w-4 text-slate-400" />
+              <input
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@domain.com"
+                className="w-full bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">
+              Password
+            </label>
+            <div className="flex items-center gap-2.5 rounded-xl border border-slate-700 bg-slate-950/70 px-3.5 py-2.5 focus-within:border-indigo-500">
+              <Lock className="h-4 w-4 text-slate-400" />
+              <input
+                type={showPw ? "text" : "password"}
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                className="text-slate-400 hover:text-white"
+              >
+                {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-500 py-3 text-sm font-black text-white shadow-lg shadow-indigo-500/25 transition hover:brightness-110 disabled:opacity-60"
+          >
+            {submitting && <RefreshCw className="h-4 w-4 animate-spin" />}
+            {submitting ? "Verifying…" : "Sign In to Admin Portal"}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }
 
@@ -780,7 +909,11 @@ function AdminUsers() {
     }
   }
 
-  async function toggleAdmin(userId: string, isAdmin: boolean) {
+  async function toggleAdmin(u: any, isAdmin: boolean) {
+    if (isAdmin && u.email?.toLowerCase() === "mnpoverseasbd@gmail.com") {
+      return toast.error("Main Admin রোল সরানো যাবে না");
+    }
+    const userId = u.id;
     if (isAdmin) {
       const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "admin");
       if (error) return toast.error(error.message);
@@ -851,6 +984,7 @@ function AdminUsers() {
             <TableBody>
               {filtered.map((u) => {
                 const isAdmin = (u.user_roles ?? []).some((r: any) => r.role === "admin");
+                const isMainAdmin = u.email?.toLowerCase() === "mnpoverseasbd@gmail.com";
                 return (
                   <TableRow key={u.id} className="border-slate-100 hover:bg-slate-50">
                     <TableCell>
@@ -862,6 +996,9 @@ function AdminUsers() {
                           <div className="flex items-center gap-1 font-bold text-slate-900">
                             {u.display_name || u.username || "—"}
                             {isAdmin && <ShieldCheck className="h-3.5 w-3.5 text-indigo-600" title="Admin" />}
+                            {isMainAdmin && (
+                              <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-amber-700">MAIN</span>
+                            )}
                           </div>
                           <div className="text-[10px] text-slate-400">{u.email}</div>
                         </div>
@@ -885,12 +1022,16 @@ function AdminUsers() {
                         <Button size="sm" variant="outline" onClick={() => openManage(u)} className="h-7 border-slate-200 gap-1 px-2 text-xs" title="Manage Account">
                           <Settings2 className="h-3 w-3" /> Manage
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => toggleAdmin(u.id, isAdmin)} className="h-7 border-slate-200" title={isAdmin ? "Remove admin" : "Make admin"}>
-                          {isAdmin ? <ShieldOff className="h-3 w-3 text-indigo-600" /> : <ShieldCheck className="h-3 w-3" />}
-                        </Button>
-                        <Button size="sm" onClick={() => setDeleteTarget(u)} className="h-7 bg-rose-500 hover:bg-rose-600 text-white" title="Delete">
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                        {!isMainAdmin && (
+                          <>
+                            <Button size="sm" variant="outline" onClick={() => toggleAdmin(u, isAdmin)} className="h-7 border-slate-200" title={isAdmin ? "Remove admin" : "Make admin"}>
+                              {isAdmin ? <ShieldOff className="h-3 w-3 text-indigo-600" /> : <ShieldCheck className="h-3 w-3" />}
+                            </Button>
+                            <Button size="sm" onClick={() => setDeleteTarget(u)} className="h-7 bg-rose-500 hover:bg-rose-600 text-white" title="Delete">
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

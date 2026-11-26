@@ -62,6 +62,8 @@ async function writeAudit(
   }
 }
 
+const MAIN_ADMIN_EMAIL = "mnpoverseasbd@gmail.com";
+
 export const adminDeleteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ userId: z.string().uuid() }).parse(input))
@@ -69,6 +71,10 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
     await assertAdmin(context);
     if (data.userId === context.userId) throw new Error("নিজেকে ডিলিট করা যাবে না");
     const admin = await getAdminClient();
+    const { data: targetProf } = await admin.from("profiles").select("email").eq("id", data.userId).maybeSingle();
+    if (targetProf?.email?.toLowerCase() === MAIN_ADMIN_EMAIL) {
+      throw new Error("Main Admin অ্যাকাউন্ট ডিলিট করা যাবে না");
+    }
     const { error } = await admin.auth.admin.deleteUser(data.userId);
     if (error) throw new Error(error.message);
     await writeAudit(admin, context.userId, "user.delete", "user", data.userId, {});
@@ -119,7 +125,7 @@ export const adminCreateUser = createServerFn({ method: "POST" })
     );
     await admin
       .from("user_roles")
-      .upsert({ user_id: created.user.id, role: "user" }, { onConflict: "user_id,role" });
+      .upsert({ user_id: created.user.id, role: "player" }, { onConflict: "user_id,role" });
     if (data.makeAdmin) {
       await admin
         .from("user_roles")
@@ -256,6 +262,12 @@ export const adminUpdateUser = createServerFn({ method: "POST" })
       throw new Error("নিজেকে ব্যান করা যাবে না");
     }
     const admin = await getAdminClient();
+    if (data.banned) {
+      const { data: targetProf } = await admin.from("profiles").select("email").eq("id", data.userId).maybeSingle();
+      if (targetProf?.email?.toLowerCase() === MAIN_ADMIN_EMAIL) {
+        throw new Error("Main Admin অ্যাকাউন্ট ব্যান করা যাবে না");
+      }
+    }
     const patch: Record<string, unknown> = {};
     if (data.display_name !== undefined) patch.display_name = data.display_name;
     if (data.username !== undefined) patch.username = data.username;

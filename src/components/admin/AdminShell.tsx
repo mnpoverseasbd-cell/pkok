@@ -69,7 +69,7 @@ export function AdminShell({
 
   async function logout() {
     await supabase.auth.signOut();
-    navigate({ to: "/login" });
+    navigate({ to: "/admin" });
   }
 
   const active = NAV.find((n) => n.k === tab) ?? NAV[0];
@@ -127,14 +127,21 @@ export function AdminShell({
       </nav>
 
       <div className="border-t border-slate-100 p-4 space-y-2">
-        <Link
-          to="/"
+        <a
+          href="/"
+          target="_blank"
+          rel="noreferrer"
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-800"
         >
-          <ExternalLink className="h-3.5 w-3.5" /> View Site
-        </Link>
+          <ExternalLink className="h-3.5 w-3.5" /> Open User Site ↗
+        </a>
         <div className="rounded-2xl bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-400 p-4 text-white shadow-lg shadow-blue-500/20">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-white/70">Signed in</div>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/70">Signed in</span>
+            {user?.email?.toLowerCase() === "mnpoverseasbd@gmail.com" && (
+              <span className="rounded-full bg-amber-300 px-2 py-0.5 text-[9px] font-black uppercase text-slate-900">Main Admin</span>
+            )}
+          </div>
           <div className="mt-1 truncate text-sm font-black">{user?.email || user?.phone || "Admin"}</div>
           <button
             onClick={logout}

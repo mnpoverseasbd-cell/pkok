@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth, useProfile, useIsAdmin } from "@/hooks/useAuth";
+import { useAuth, useProfile } from "@/hooks/useAuth";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Copy,
   Crown,
-  ShieldCheck,
   Wallet as WalletIcon,
   Gift,
   Users,
@@ -48,7 +47,6 @@ const TIER_META: Record<string, { label: string; grad: string; ring: string; glo
 function ProfilePage() {
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading, refetch } = useProfile(user?.id);
-  const { isAdmin } = useIsAdmin(user?.id);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -165,11 +163,6 @@ function ProfilePage() {
                 <h1 className="text-2xl font-black text-white">
                   {profile.display_name || profile.username || "Player"}
                 </h1>
-                {isAdmin && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-300 ring-1 ring-rose-500/30">
-                    <ShieldCheck className="h-3 w-3" /> ADMIN
-                  </span>
-                )}
                 <span className={`inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${currentMeta.grad} px-2.5 py-0.5 text-[10px] font-black text-white shadow`}>
                   <Crown className="h-3 w-3" /> {currentMeta.label}
                 </span>
@@ -206,11 +199,6 @@ function ProfilePage() {
               <Button onClick={() => setEditing(true)} variant="outline" size="sm" className="border-white/20 bg-white/5 text-white hover:bg-white/10">
                 <Pencil className="mr-1 h-3.5 w-3.5" /> Edit
               </Button>
-              {isAdmin && (
-                <Button onClick={() => navigate({ to: "/admin" })} size="sm" className="bg-gradient-to-r from-rose-500 to-pink-600 text-white">
-                  <ShieldCheck className="mr-1 h-3.5 w-3.5" /> Admin
-                </Button>
-              )}
               <Button onClick={logout} variant="ghost" size="sm" className="text-white/60 hover:bg-white/10 hover:text-white">
                 <LogOut className="mr-1 h-3.5 w-3.5" /> Logout
               </Button>
