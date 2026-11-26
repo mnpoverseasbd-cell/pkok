@@ -742,6 +742,7 @@ export type Database = {
         Args: { _limit?: number; _period: string }
         Returns: {
           display_name: string
+          is_current_user: boolean
           rank: number
           total_bets: number
           total_wager: number
