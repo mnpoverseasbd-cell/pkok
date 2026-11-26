@@ -14,23 +14,23 @@ export type Profile = {
   vip_tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
 };
 
-export function useAuth() {
+export function useAuth(client = supabase) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: sub } = client.auth.onAuthStateChange((_event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
     });
-    supabase.auth.getSession().then(({ data }) => {
+    client.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
       setLoading(false);
     });
     return () => sub.subscription.unsubscribe();
-  }, []);
+  }, [client]);
 
   return { session, user, loading };
 }
@@ -107,7 +107,7 @@ export function useProfile(userId: string | undefined) {
   return { profile, loading, refetch: () => setReloadKey((k) => k + 1) };
 }
 
-export function useIsAdmin(userId: string | undefined) {
+export function useIsAdmin(userId: string | undefined, client = supabase) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -119,7 +119,7 @@ export function useIsAdmin(userId: string | undefined) {
     }
     let cancelled = false;
     setLoading(true);
-    supabase
+    client
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
@@ -134,11 +134,11 @@ export function useIsAdmin(userId: string | undefined) {
     return () => {
       cancelled = true;
     };
-  }, [userId]);
+  }, [userId, client]);
 
   return { isAdmin, loading };
 }
 
-export async function signOut() {
-  await supabase.auth.signOut();
+export async function signOut(client = supabase) {
+  await client.auth.signOut();
 }

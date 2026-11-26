@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { normalizeBdPhone, phoneRegex } from "@/lib/auth-utils";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 async function assertAdmin(context: { supabase: any; userId: string }) {
@@ -86,7 +87,11 @@ export const adminCreateUser = createServerFn({ method: "POST" })
   .inputValidator((input) =>
     z
       .object({
-        phone: z.string().trim().regex(/^01[3-9]\d{8}$/),
+        phone: z
+          .string()
+          .trim()
+          .transform(normalizeBdPhone)
+          .refine((v) => phoneRegex.test(v), "Invalid BD phone number"),
         password: z.string().min(6).max(72),
         displayName: z.string().trim().max(80).optional(),
         initialBalance: z.number().min(0).max(10_000_000).optional(),
@@ -298,10 +303,15 @@ export const adminResetUserPassword = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const admin = await getAdminClient();
-    const { error } = await admin.auth.admin.updateUserById(data.userId, { password: data.password });
+    const { data: updated, error } = await admin.auth.admin.updateUserById(data.userId, {
+      password: data.password,
+      email_confirm: true,
+    });
     if (error) throw new Error(error.message);
-    await writeAudit(admin, context.userId, "user.password_reset", "user", data.userId, {});
-    return { success: true as const };
+    await writeAudit(admin, context.userId, "user.password_reset", "user", data.userId, {
+      auth_email: updated.user?.email ?? null,
+    });
+    return { success: true as const, authEmail: updated.user?.email ?? null };
   });
 
 export const adminGetUserDetails = createServerFn({ method: "POST" })
@@ -310,7 +320,7 @@ export const adminGetUserDetails = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const admin = await getAdminClient();
-    const [profRes, txnsRes, allTxnsRes] = await Promise.all([
+    const [profRes, txnsRes, allTxnsRes, authRes] = await Promise.all([
       admin.from("profiles").select("*").eq("id", data.userId).maybeSingle(),
       admin
         .from("transactions")
@@ -324,6 +334,7 @@ export const adminGetUserDetails = createServerFn({ method: "POST" })
         .eq("user_id", data.userId)
         .eq("status", "approved")
         .limit(2000),
+      admin.auth.admin.getUserById(data.userId),
     ]);
     if (profRes.error) throw new Error(profRes.error.message);
     const summary = { deposits: 0, withdraws: 0, bets: 0, wins: 0, bonuses: 0 };
@@ -335,8 +346,11 @@ export const adminGetUserDetails = createServerFn({ method: "POST" })
       else if (t.type === "win") summary.wins += a;
       else if (t.type === "bonus") summary.bonuses += a;
     });
+    const authUser = authRes.data?.user;
     return {
       profile: profRes.data,
+      authEmail: authUser?.email ?? profRes.data?.email ?? null,
+      emailConfirmed: !!authUser?.email_confirmed_at,
       transactions: txnsRes.data ?? [],
       summary,
     };

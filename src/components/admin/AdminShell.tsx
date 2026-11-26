@@ -18,7 +18,7 @@ import {
   Gift,
   Trophy,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { adminSupabase } from "@/lib/admin-supabase";
 import { useAuth } from "@/hooks/useAuth";
 
 const NAV = [
@@ -50,14 +50,14 @@ export function AdminShell({
   const navigate = useNavigate();
   const search = useSearch({ from: "/admin" }) as { tab?: string };
   const tab = search.tab ?? "overview";
-  const { user } = useAuth();
+  const { user } = useAuth(adminSupabase);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [quickJump, setQuickJump] = useState("");
 
   useEffect(() => {
     let cancelled = false;
-    supabase
+    adminSupabase
       .from("transactions")
       .select("id", { count: "exact", head: true })
       .eq("status", "pending")
@@ -68,7 +68,7 @@ export function AdminShell({
   }, [tab]);
 
   async function logout() {
-    await supabase.auth.signOut();
+    await adminSupabase.auth.signOut();
     navigate({ to: "/admin" });
   }
 
@@ -155,7 +155,26 @@ export function AdminShell({
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex">
+    <div
+      className="min-h-screen bg-slate-50 text-slate-900 flex"
+      style={
+        {
+          "--background": "#ffffff",
+          "--foreground": "#0f172a",
+          "--card": "#ffffff",
+          "--card-foreground": "#0f172a",
+          "--popover": "#ffffff",
+          "--popover-foreground": "#0f172a",
+          "--muted": "#f1f5f9",
+          "--muted-foreground": "#64748b",
+          "--accent": "#f1f5f9",
+          "--accent-foreground": "#0f172a",
+          "--border": "#e2e8f0",
+          "--input": "#cbd5e1",
+          "--ring": "#6366f1",
+        } as React.CSSProperties
+      }
+    >
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex w-72 shrink-0 flex-col border-r border-slate-200/70">
         {SidebarContent}

@@ -232,9 +232,22 @@ function TopBar() {
     setSubmitting(true);
     try {
       const { supabase } = await import("@/integrations/supabase/client");
-      const email = `${phone.replace(/\D/g, "")}@asikgame.app`;
+      const { normalizeBdPhone, phoneRegex, phoneToEmail } = await import("@/lib/auth-utils");
+      const norm = normalizeBdPhone(phone);
+      const email = phoneRegex.test(norm)
+        ? phoneToEmail(norm)
+        : `${phone.trim().toLowerCase()}@asikgame.app`;
+      if (phoneRegex.test(norm) && norm !== phone.trim()) {
+        setPhone(norm);
+      }
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      if (error) {
+        throw new Error(
+          error.message === "Invalid login credentials"
+            ? "ফোন নম্বর বা পাসওয়ার্ড ভুল"
+            : error.message,
+        );
+      }
       toast.success("লগইন সফল");
       navigate({ to: "/" });
     } catch (err) {

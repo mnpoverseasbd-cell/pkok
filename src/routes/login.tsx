@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
-import { phoneToEmail } from "@/lib/auth-utils";
+import { normalizeBdPhone, phoneToEmail } from "@/lib/auth-utils";
 
 const loginSearchSchema = z.object({ redirect: z.string().optional() });
 
@@ -62,10 +62,11 @@ function LoginPage() {
       toast.error(parsed.error.issues[0]?.message ?? "ভুল ইনপুট");
       return;
     }
-    const id = parsed.data.identifier;
+    const id = parsed.data.identifier.trim();
+    const normalizedPhone = normalizeBdPhone(id);
     let email: string;
-    if (phoneRegex.test(id)) email = phoneToEmail(id);
-    else if (emailRegex.test(id)) email = id.toLowerCase();
+    if (emailRegex.test(id)) email = id.toLowerCase();
+    else if (phoneRegex.test(normalizedPhone)) email = phoneToEmail(normalizedPhone);
     else email = `${id.toLowerCase()}@asikgame.app`;
 
     setLoading(true);

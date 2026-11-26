@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { adminSupabase } from "@/lib/admin-supabase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CheckCircle2, Clock, XCircle, Copy } from "lucide-react";
 import { toast } from "sonner";
@@ -44,9 +45,10 @@ export function TxnDetailsDialog({
     (async () => {
       const withUser = "id, user_id, type, status, amount, txn_reference, sender_account, receiver_account, user_note, admin_note, created_at, approved_at, approved_by, payment_method_id, payment_methods(label, kind, account_number), profiles!transactions_user_id_fkey(display_name, username, email, phone)";
       const noUser = "id, user_id, type, status, amount, txn_reference, sender_account, receiver_account, user_note, admin_note, created_at, approved_at, approved_by, payment_method_id, payment_methods(label, kind, account_number)";
-      const { data, error } = await supabase.from("transactions").select(showUser ? withUser : noUser).eq("id", txnId).maybeSingle();
+      const client = showUser ? adminSupabase : supabase;
+      const { data, error } = await client.from("transactions").select(showUser ? withUser : noUser).eq("id", txnId).maybeSingle();
       if (error) {
-        const fb = await supabase.from("transactions").select("*").eq("id", txnId).maybeSingle();
+        const fb = await client.from("transactions").select("*").eq("id", txnId).maybeSingle();
         setRow(fb.data as TxnDetailRow | null);
       } else setRow(data as unknown as TxnDetailRow);
       setLoading(false);

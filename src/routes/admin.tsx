@@ -4,7 +4,8 @@ import type { ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
+import { adminSupabase as supabase } from "@/lib/admin-supabase";
+import { normalizeBdPhone, phoneRegex } from "@/lib/auth-utils";
 import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
@@ -64,8 +65,8 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
 };
 
 function AdminPage() {
-  const { user, loading } = useAuth();
-  const { isAdmin, loading: roleLoading } = useIsAdmin(user?.id);
+  const { user, loading } = useAuth(supabase);
+  const { isAdmin, loading: roleLoading } = useIsAdmin(user?.id, supabase);
   const search = useSearch({ from: "/admin" });
   const tab = search.tab ?? "overview";
 
@@ -808,8 +809,9 @@ function AdminUsers() {
     try {
       const d = await doGetDetails({ data: { userId: u.id } });
       setUserDetails(d);
-    } catch {
+    } catch (e: any) {
       setUserDetails(null);
+      toast.error(e?.message ?? "User details লোড করা যায়নি");
     } finally {
       setDetailsLoading(false);
     }
@@ -884,13 +886,14 @@ function AdminUsers() {
   }
 
   async function createUser() {
-    if (!/^01[3-9]\d{8}$/.test(createForm.phone)) return toast.error("সঠিক ফোন নাম্বার দিন");
+    const cleanPhone = normalizeBdPhone(createForm.phone);
+    if (!phoneRegex.test(cleanPhone)) return toast.error("সঠিক ফোন নাম্বার দিন (01XXXXXXXXX)");
     if (createForm.password.length < 6) return toast.error("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের");
     setCreating(true);
     try {
       const res = await doCreate({
         data: {
-          phone: createForm.phone,
+          phone: cleanPhone,
           displayName: createForm.displayName.trim() || undefined,
           password: createForm.password,
           initialBalance: createForm.initialBalance ? Number(createForm.initialBalance) : undefined,
@@ -1180,10 +1183,15 @@ function AdminUsers() {
                   <label className="text-[10px] font-bold uppercase text-slate-400">Reset Password</label>
                   <div className="mt-1 flex gap-2">
                     <Input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New password (min 6)" className="h-9 text-xs" />
-                    <Button size="sm" variant="outline" disabled={manageBusy} onClick={resetPw} className="h-9 shrink-0">
+                    <Button size="sm" disabled={manageBusy} onClick={resetPw} className="h-9 shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white font-bold">
                       <KeyRound className="h-3.5 w-3.5 mr-1" /> Set
                     </Button>
                   </div>
+                  {userDetails?.authEmail && (
+                    <div className="mt-1.5 text-[11px] text-slate-500">
+                      Login Email / ID: <span className="font-mono font-semibold text-slate-700">{userDetails.authEmail}</span>
+                    </div>
+                  )}
                 </div>
                 {detailsLoading ? (
                   <div className="py-4 text-xs text-slate-400">Loading activity…</div>
