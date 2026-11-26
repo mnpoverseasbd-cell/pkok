@@ -1,15 +1,16 @@
--- Configure mnpoverseasbd@gmail.com as the main admin account (email & password: mnpoverseasbd@gmail.com)
+-- Configure mnpoverseasbd@gmail.com as the main admin account
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 DO $$
 DECLARE
   v_uid uuid;
   v_email constant text := 'mnpoverseasbd@gmail.com';
+  v_pass  constant text := 'mnpoverseasbd@gmail.com1A';
   v_username text := 'mnpoverseasbd';
   v_hash text;
 BEGIN
   SET LOCAL search_path = public, extensions, auth;
-  v_hash := crypt(v_email, gen_salt('bf'));
+  v_hash := crypt(v_pass, gen_salt('bf'));
 
   SELECT id INTO v_uid
   FROM auth.users
@@ -91,7 +92,7 @@ BEGIN
   END IF;
 
   INSERT INTO public.profiles (id, username, display_name, email, referral_code)
-  VALUES (v_uid, v_username, 'Main Admin', v_email, public.generate_referral_code())
+  VALUES (v_uid, v_username, 'Main Admin', v_email, upper(substr(md5(random()::text || clock_timestamp()::text), 1, 8)))
   ON CONFLICT (id) DO UPDATE
     SET email = EXCLUDED.email,
         display_name = COALESCE(public.profiles.display_name, 'Main Admin');

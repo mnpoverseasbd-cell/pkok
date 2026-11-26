@@ -125,7 +125,7 @@ export const adminCreateUser = createServerFn({ method: "POST" })
     );
     await admin
       .from("user_roles")
-      .upsert({ user_id: created.user.id, role: "player" }, { onConflict: "user_id,role" });
+      .upsert({ user_id: created.user.id, role: "user" }, { onConflict: "user_id,role" });
     if (data.makeAdmin) {
       await admin
         .from("user_roles")
