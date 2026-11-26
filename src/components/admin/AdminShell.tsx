@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import {
   LayoutDashboard,
@@ -52,6 +52,20 @@ export function AdminShell({
   const tab = search.tab ?? "overview";
   const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [quickJump, setQuickJump] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from("transactions")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending")
+      .then(({ count }) => {
+        if (!cancelled) setPendingCount(count ?? 0);
+      });
+    return () => { cancelled = true; };
+  }, [tab]);
 
   async function logout() {
     await supabase.auth.signOut();
@@ -72,7 +86,7 @@ export function AdminShell({
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1.5 p-4">
+      <nav className="flex-1 space-y-1.5 overflow-y-auto p-4">
         <div className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">Menu</div>
         {NAV.map((n) => {
           const isActive = tab === n.k;
@@ -99,7 +113,12 @@ export function AdminShell({
                 <n.icon className="h-4 w-4" strokeWidth={2.2} />
               </span>
               {n.label}
-              {isActive && (
+              {n.k === "txns" && pendingCount > 0 && (
+                <span className="ml-auto rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">
+                  {pendingCount}
+                </span>
+              )}
+              {isActive && !(n.k === "txns" && pendingCount > 0) && (
                 <span className="ml-auto h-2 w-2 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
               )}
             </button>
@@ -163,16 +182,38 @@ export function AdminShell({
             {subtitle && <div className="text-xs text-slate-500 mt-0.5">{subtitle}</div>}
           </div>
           <div className="ml-auto hidden md:flex items-center gap-2">
-            <div className="relative">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const q = quickJump.trim().toLowerCase();
+                if (!q) return;
+                const match = NAV.find((n) => n.label.toLowerCase().includes(q) || n.k.includes(q));
+                if (match) {
+                  navigate({ to: "/admin", search: { tab: match.k as any } });
+                  setQuickJump("");
+                }
+              }}
+              className="relative"
+            >
               <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
               <input
-                placeholder="Search…"
+                value={quickJump}
+                onChange={(e) => setQuickJump(e.target.value)}
+                placeholder="Jump to tab (users, games, txns…)"
                 className="h-10 w-64 rounded-xl border border-slate-200 bg-slate-50/60 pl-9 pr-3 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-200"
               />
-            </div>
-            <button className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:text-slate-800">
+            </form>
+            <button
+              onClick={() => navigate({ to: "/admin", search: { tab: "txns" } })}
+              title={pendingCount > 0 ? `${pendingCount} pending requests` : "Transactions"}
+              className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:text-slate-800"
+            >
               <Bell className="h-4 w-4" />
-              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" />
+              {pendingCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-black text-white ring-2 ring-white">
+                  {pendingCount}
+                </span>
+              )}
             </button>
             {actions}
           </div>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getActiveGameConfig } from "@/hooks/useGameConfig";
 
 /**
  * Real-money wallet backed by profiles.wallet_balance via the atomic
@@ -60,6 +61,7 @@ export function useDemoWallet() {
   const [loading, setLoading] = useState(true);
   const balanceRef = useRef(0);
   const roundIdRef = useRef<string | null>(null);
+  const lastBetRef = useRef<number>(0);
 
   useEffect(() => {
     balanceRef.current = balance;
@@ -118,13 +120,29 @@ export function useDemoWallet() {
       if (!userId) return false;
       const cur = balanceRef.current;
       if (amount <= 0 || amount > cur) return false;
+      const gameId = currentGameId();
+      const cfg = getActiveGameConfig(gameId);
+      if (cfg) {
+        if (!cfg.is_enabled) {
+          toast.error("এই গেমটি বর্তমানে বন্ধ আছে");
+          return false;
+        }
+        if (amount < cfg.min_bet) {
+          toast.error(`সর্বনিম্ন বাজি ৳${cfg.min_bet}`);
+          return false;
+        }
+        if (amount > cfg.max_bet) {
+          toast.error(`সর্বোচ্চ বাজি ৳${cfg.max_bet}`);
+          return false;
+        }
+      }
+      lastBetRef.current = amount;
       // Optimistic
       const optimistic = cur - amount;
       setBalance(optimistic);
       broadcast(optimistic);
       const roundId = newRoundId();
       roundIdRef.current = roundId;
-      const gameId = currentGameId();
       // Ledger write (background)
       void rpcMutate("bet", amount, gameId, roundId).then((nb) => {
         if (nb == null) {
@@ -147,13 +165,23 @@ export function useDemoWallet() {
   const credit = useCallback(
     (amount: number) => {
       if (!userId || amount <= 0) return;
+      const gameId = currentGameId();
+      const cfg = getActiveGameConfig(gameId);
+      let finalAmount = amount;
+      const multScale = Number(cfg?.config?.payout_multiplier ?? 1);
+      if (Number.isFinite(multScale) && multScale > 0 && multScale !== 1) {
+        finalAmount = Math.max(1, Math.floor(finalAmount * multScale));
+      }
+      const maxCapMult = Number(cfg?.config?.max_payout_mult ?? 0);
+      if (Number.isFinite(maxCapMult) && maxCapMult > 0 && lastBetRef.current > 0) {
+        finalAmount = Math.min(finalAmount, Math.floor(lastBetRef.current * maxCapMult));
+      }
       const cur = balanceRef.current;
-      const optimistic = cur + amount;
+      const optimistic = cur + finalAmount;
       setBalance(optimistic);
       broadcast(optimistic);
       const roundId = roundIdRef.current ?? newRoundId();
-      const gameId = currentGameId();
-      void rpcMutate("win", amount, gameId, roundId).then((nb) => {
+      void rpcMutate("win", finalAmount, gameId, roundId).then((nb) => {
         if (nb == null) {
           setBalance(cur);
           broadcast(cur);

@@ -9,10 +9,33 @@ import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { adminAdjustBalance, adminCreateUser, adminDeleteUser, adminRunVipPayouts, adminPreviewVipPayouts, adminListAuditLogs, adminLogAction, adminListFeatureFlags, adminUpsertFeatureFlag, adminDeleteFeatureFlag, adminListVipTierConfigs, adminUpdateVipTierConfig, adminReports } from "@/lib/admin.functions";
+import {
+  adminAdjustBalance,
+  adminBulkUpdateGames,
+  adminCreateUser,
+  adminDeleteGameConfig,
+  adminDeleteUser,
+  adminGetUserDetails,
+  adminListAuditLogs,
+  adminListFeatureFlags,
+  adminListUsers,
+  adminListVipTierConfigs,
+  adminLogAction,
+  adminPreviewVipPayouts,
+  adminProcessTransaction,
+  adminReports,
+  adminResetUserPassword,
+  adminRunVipPayouts,
+  adminSyncAllGames,
+  adminUpdateUser,
+  adminUpdateVipTierConfig,
+  adminUpsertFeatureFlag,
+  adminUpsertGameConfig,
+  adminDeleteFeatureFlag,
+} from "@/lib/admin.functions";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag, BarChart3, Bell } from "lucide-react";
+import { CheckCircle2, XCircle, ShieldCheck, ShieldOff, Plus, Minus, Eye, Users as UsersIcon, Wallet, TrendingUp, Clock, RefreshCw, Search, ArrowUpRight, ArrowDownRight, Trash2, UserPlus, Flag, BarChart3, Bell, Coins, Copy, KeyRound, Ban, Settings2, Sliders, Gamepad2, ExternalLink } from "lucide-react";
 import { TxnDetailsDialog } from "@/components/TxnDetailsDialog";
 import { ThumbnailDuplicateReport } from "@/components/admin/ThumbnailDuplicateReport";
 
@@ -126,14 +149,16 @@ function StatCard({ label, value, hint, icon: Icon, tone = "indigo", urgent }: a
 
 function AdminOverview() {
   const [stats, setStats] = useState<any>({ loading: true });
+  const navigate = useNavigate();
 
   const load = useCallback(async () => {
     setStats((s: any) => ({ ...s, loading: true }));
     const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
     const iso = startOfDay.toISOString();
-    const [users, pending, balances, depToday, wdToday, depAll, wdAll, recent] = await Promise.all([
+    const [users, pending, pendingWd, balances, depToday, wdToday, depAll, wdAll, recent] = await Promise.all([
       supabase.from("profiles").select("id", { count: "exact", head: true }),
       supabase.from("transactions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("transactions").select("amount").eq("type", "withdraw").eq("status", "pending"),
       supabase.from("profiles").select("wallet_balance"),
       supabase.from("transactions").select("amount").eq("type", "deposit").eq("status", "approved").gte("created_at", iso),
       supabase.from("transactions").select("amount").eq("type", "withdraw").eq("status", "approved").gte("created_at", iso),
@@ -145,6 +170,8 @@ function AdminOverview() {
     setStats({
       userCount: users.count ?? 0,
       pendingCount: pending.count ?? 0,
+      pendingWdCount: (pendingWd.data ?? []).length,
+      pendingWdTotal: sum(pendingWd.data),
       totalBalance: sum(balances.data),
       depositsToday: sum(depToday.data),
       withdrawsToday: sum(wdToday.data),
@@ -171,9 +198,9 @@ function AdminOverview() {
           <div>
             <div className="text-[11px] font-bold uppercase tracking-widest text-white/70">Welcome back to</div>
             <div className="mt-1 text-2xl sm:text-3xl font-black">PKOK Admin Dashboard</div>
-            <div className="mt-1 text-sm text-white/80">প্ল্যাটফর্মের সব কিছু এক নজরে দেখুন</div>
+            <div className="mt-1 text-sm text-white/80">সব অ্যাকাউন্ট, কয়েন, গেম উইন রেট ও উইথড্র এখান থেকেই কন্ট্রোল করুন</div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <div className="rounded-2xl bg-white/15 backdrop-blur px-4 py-3 text-center min-w-[110px]">
               <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Deposit Today</div>
               <div className="mt-1 text-xl font-black">৳{stats.depositsToday.toLocaleString()}</div>
@@ -183,6 +210,32 @@ function AdminOverview() {
               <div className="mt-1 text-xl font-black">৳{stats.withdrawsToday.toLocaleString()}</div>
             </div>
           </div>
+        </div>
+        <div className="relative mt-5 flex flex-wrap gap-2">
+          <button
+            onClick={() => navigate({ to: "/admin", search: { tab: "txns" } })}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-2 text-xs font-black text-indigo-700 shadow hover:bg-indigo-50"
+          >
+            <Clock className="h-3.5 w-3.5" /> Pending Withdraws ({stats.pendingWdCount} · ৳{stats.pendingWdTotal.toLocaleString()})
+          </button>
+          <button
+            onClick={() => navigate({ to: "/admin", search: { tab: "users" } })}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white/20 px-3.5 py-2 text-xs font-bold text-white backdrop-blur hover:bg-white/30"
+          >
+            <Coins className="h-3.5 w-3.5" /> Give Coins / Manage Users
+          </button>
+          <button
+            onClick={() => navigate({ to: "/admin", search: { tab: "games" } })}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white/20 px-3.5 py-2 text-xs font-bold text-white backdrop-blur hover:bg-white/30"
+          >
+            <Gamepad2 className="h-3.5 w-3.5" /> Game Win Rates &amp; Controls
+          </button>
+          <button
+            onClick={() => navigate({ to: "/admin", search: { tab: "methods" } })}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white/20 px-3.5 py-2 text-xs font-bold text-white backdrop-blur hover:bg-white/30"
+          >
+            <Wallet className="h-3.5 w-3.5" /> Payment Methods
+          </button>
         </div>
       </div>
 
@@ -271,8 +324,15 @@ function StatusPill({ status }: { status: string }) {
 function AdminTxns() {
   const [rows, setRows] = useState<any[]>([]);
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
+  const [typeFilter, setTypeFilter] = useState<"all" | "withdraw" | "deposit" | "bonus">("all");
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [actionRow, setActionRow] = useState<{ row: any; nextStatus: "approved" | "rejected" } | null>(null);
+  const [actionNote, setActionNote] = useState("");
+  const [acting, setActing] = useState(false);
+
+  const processTxn = useServerFn(adminProcessTransaction);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -280,152 +340,417 @@ function AdminTxns() {
       .from("transactions")
       .select("id, user_id, type, status, amount, txn_reference, sender_account, receiver_account, admin_note, created_at, profiles!transactions_user_id_fkey(display_name, username, email, phone)")
       .order("created_at", { ascending: false })
-      .limit(100);
+      .limit(200);
     if (filter !== "all") q = q.eq("status", filter);
+    if (typeFilter !== "all") q = q.eq("type", typeFilter);
     const { data, error } = await q;
     if (error) {
-      const { data: d2 } = await supabase.from("transactions").select("*").order("created_at", { ascending: false }).limit(100);
+      const { data: d2 } = await supabase.from("transactions").select("*").order("created_at", { ascending: false }).limit(200);
       setRows(d2 ?? []);
     } else setRows(data ?? []);
     setLoading(false);
-  }, [filter]);
+  }, [filter, typeFilter]);
 
   useEffect(() => { load(); }, [load]);
 
-  async function act(id: string, status: "approved" | "rejected") {
-    const note = status === "rejected" ? prompt("Rejection reason (optional)") ?? "" : "";
-    const { error } = await supabase.from("transactions").update({ status, admin_note: note || null }).eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success(status === "approved" ? "Approved ✓" : "Rejected");
-    adminLogAction({ data: { action: `txn.${status}`, targetType: "transaction", targetId: id, details: note ? { note } : {} } }).catch(() => {});
-    load();
+  const filtered = useMemo(() => {
+    if (!search.trim()) return rows;
+    const q = search.trim().toLowerCase();
+    return rows.filter((r) =>
+      [
+        r.profiles?.display_name,
+        r.profiles?.username,
+        r.profiles?.phone,
+        r.profiles?.email,
+        r.txn_reference,
+        r.sender_account,
+        r.receiver_account,
+        r.admin_note,
+      ].some((v) => v && String(v).toLowerCase().includes(q)),
+    );
+  }, [rows, search]);
+
+  const pendingStats = useMemo(() => {
+    const wd = rows.filter((r) => r.status === "pending" && r.type === "withdraw");
+    const dep = rows.filter((r) => r.status === "pending" && r.type === "deposit");
+    return {
+      wdCount: wd.length,
+      wdTotal: wd.reduce((s, r) => s + Number(r.amount || 0), 0),
+      depCount: dep.length,
+      depTotal: dep.reduce((s, r) => s + Number(r.amount || 0), 0),
+    };
+  }, [rows]);
+
+  async function confirmAction() {
+    if (!actionRow) return;
+    setActing(true);
+    try {
+      await processTxn({
+        data: {
+          id: actionRow.row.id,
+          status: actionRow.nextStatus,
+          note: actionNote.trim() || undefined,
+        },
+      });
+      toast.success(actionRow.nextStatus === "approved" ? "Approved ✓" : "Rejected");
+      setActionRow(null);
+      setActionNote("");
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    } finally {
+      setActing(false);
+    }
+  }
+
+  function copyText(val: string) {
+    navigator.clipboard?.writeText(val);
+    toast.success(`Copied: ${val}`);
   }
 
   return (
-    <Panel
-      title="Transactions"
-      action={
-        <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
-          {(["pending", "approved", "rejected", "all"] as const).map((f) => (
-            <button key={f} onClick={() => setFilter(f)} className={`rounded-md px-3 py-1 text-[11px] font-bold uppercase transition ${filter === f ? "bg-emerald-100 text-emerald-600" : "text-slate-400 hover:text-slate-900"}`}>{f}</button>
-          ))}
-          <button onClick={load} className="ml-1 rounded-md p-1.5 text-slate-400 hover:text-slate-900"><RefreshCw className="h-3.5 w-3.5" /></button>
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-white p-4 shadow-sm">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-rose-500">Pending Withdraws</div>
+            <div className="mt-1 text-2xl font-black text-slate-900">৳{pendingStats.wdTotal.toLocaleString()}</div>
+            <div className="text-xs text-slate-500">{pendingStats.wdCount}টি রিকোয়েস্ট অপেক্ষমান</div>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => { setFilter("pending"); setTypeFilter("withdraw"); }} className="border-rose-200 text-rose-600 hover:bg-rose-50">
+            Filter Withdraws
+          </Button>
         </div>
-      }
-    >
-      {loading ? <div className="text-slate-500">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-slate-400">No transactions</div> : (
-        <div className="overflow-x-auto rounded-lg border border-slate-100">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-slate-200 bg-slate-50">
-                <TableHead>User</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Reference</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((r) => (
-                <TableRow key={r.id} className="border-slate-100 hover:bg-slate-50">
-                  <TableCell>
-                    <div className="font-bold text-slate-900">{r.profiles?.display_name || r.profiles?.username || "—"}</div>
-                    <div className="text-[10px] text-slate-400">{r.profiles?.phone || r.profiles?.email}</div>
-                  </TableCell>
-                  <TableCell>
-                    <span className={`inline-flex items-center gap-1 text-xs font-bold capitalize ${r.type === "deposit" ? "text-emerald-600" : r.type === "withdraw" ? "text-rose-600" : "text-amber-600"}`}>
-                      {r.type === "deposit" ? <ArrowDownRight className="h-3 w-3" /> : r.type === "withdraw" ? <ArrowUpRight className="h-3 w-3" /> : null}
-                      {r.type}
-                    </span>
-                  </TableCell>
-                  <TableCell className="font-black text-emerald-600">৳{Number(r.amount).toFixed(2)}</TableCell>
-                  <TableCell className="text-xs font-mono text-slate-500">{r.txn_reference || r.sender_account || r.receiver_account || "—"}</TableCell>
-                  <TableCell><StatusPill status={r.status} /></TableCell>
-                  <TableCell className="text-xs text-slate-400">{new Date(r.created_at).toLocaleString()}</TableCell>
-                  <TableCell>
-                    <div className="flex justify-end gap-1">
-                      <Button size="sm" variant="outline" onClick={() => setDetailId(r.id)} className="h-7 border-slate-200"><Eye className="h-3 w-3" /></Button>
-                      {r.status === "pending" && (
-                        <>
-                          <Button size="sm" onClick={() => act(r.id, "approved")} className="h-7 bg-emerald-500 hover:bg-emerald-600 text-black"><CheckCircle2 className="h-3 w-3" /></Button>
-                          <Button size="sm" variant="destructive" onClick={() => act(r.id, "rejected")} className="h-7"><XCircle className="h-3 w-3" /></Button>
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
+        <div className="flex items-center justify-between rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Pending Deposits</div>
+            <div className="mt-1 text-2xl font-black text-slate-900">৳{pendingStats.depTotal.toLocaleString()}</div>
+            <div className="text-xs text-slate-500">{pendingStats.depCount}টি রিকোয়েস্ট অপেক্ষমান</div>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => { setFilter("pending"); setTypeFilter("deposit"); }} className="border-emerald-200 text-emerald-600 hover:bg-emerald-50">
+            Filter Deposits
+          </Button>
+        </div>
+      </div>
+
+      <Panel
+        title={`Transactions (${filtered.length})`}
+        action={
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+              <Input
+                placeholder="Search phone / txn / ref…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-8 w-48 border-slate-200 bg-slate-50 pl-8 text-xs"
+              />
+            </div>
+            <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
+              {(["all", "withdraw", "deposit", "bonus"] as const).map((t) => (
+                <button key={t} onClick={() => setTypeFilter(t)} className={`rounded-md px-2.5 py-1 text-[10px] font-bold uppercase transition ${typeFilter === t ? "bg-indigo-600 text-white" : "text-slate-500 hover:text-slate-900"}`}>{t}</button>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+            <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
+              {(["pending", "approved", "rejected", "all"] as const).map((f) => (
+                <button key={f} onClick={() => setFilter(f)} className={`rounded-md px-2.5 py-1 text-[10px] font-bold uppercase transition ${filter === f ? "bg-emerald-100 text-emerald-700" : "text-slate-400 hover:text-slate-900"}`}>{f}</button>
+              ))}
+              <button onClick={load} className="ml-1 rounded-md p-1 text-slate-400 hover:text-slate-900"><RefreshCw className="h-3.5 w-3.5" /></button>
+            </div>
+          </div>
+        }
+      >
+        {loading ? <div className="text-slate-500">Loading…</div> : filtered.length === 0 ? <div className="py-8 text-center text-slate-400">No transactions</div> : (
+          <div className="overflow-x-auto rounded-lg border border-slate-100">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-slate-200 bg-slate-50">
+                  <TableHead>User</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Account / Reference</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((r) => {
+                  const accountRef = r.receiver_account || r.sender_account || r.txn_reference;
+                  return (
+                    <TableRow key={r.id} className="border-slate-100 hover:bg-slate-50">
+                      <TableCell>
+                        <div className="font-bold text-slate-900">{r.profiles?.display_name || r.profiles?.username || "—"}</div>
+                        <div className="text-[10px] text-slate-400">{r.profiles?.phone || r.profiles?.email}</div>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center gap-1 text-xs font-bold capitalize ${r.type === "deposit" ? "text-emerald-600" : r.type === "withdraw" ? "text-rose-600" : "text-amber-600"}`}>
+                          {r.type === "deposit" ? <ArrowDownRight className="h-3 w-3" /> : r.type === "withdraw" ? <ArrowUpRight className="h-3 w-3" /> : null}
+                          {r.type}
+                        </span>
+                      </TableCell>
+                      <TableCell className="font-black text-slate-900 tabular-nums">৳{Number(r.amount).toFixed(2)}</TableCell>
+                      <TableCell>
+                        {accountRef ? (
+                          <button onClick={() => copyText(String(accountRef))} className="inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 text-xs font-mono text-slate-700 hover:bg-slate-200" title="Click to copy">
+                            <span>{accountRef}</span>
+                            <Copy className="h-3 w-3 text-slate-400" />
+                          </button>
+                        ) : "—"}
+                        {r.txn_reference && r.receiver_account && (
+                          <div className="mt-0.5 text-[10px] font-mono text-slate-400">Ref: {r.txn_reference}</div>
+                        )}
+                      </TableCell>
+                      <TableCell><StatusPill status={r.status} /></TableCell>
+                      <TableCell className="text-xs text-slate-400">{new Date(r.created_at).toLocaleString()}</TableCell>
+                      <TableCell>
+                        <div className="flex justify-end gap-1">
+                          <Button size="sm" variant="outline" onClick={() => setDetailId(r.id)} className="h-7 border-slate-200" title="Details"><Eye className="h-3 w-3" /></Button>
+                          {r.status === "pending" && (
+                            <>
+                              <Button size="sm" onClick={() => { setActionRow({ row: r, nextStatus: "approved" }); setActionNote(""); }} className="h-7 bg-emerald-500 hover:bg-emerald-600 text-white gap-1 px-2 text-xs">
+                                <CheckCircle2 className="h-3 w-3" /> Approve
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => { setActionRow({ row: r, nextStatus: "rejected" }); setActionNote(""); }} className="h-7 gap-1 px-2 text-xs">
+                                <XCircle className="h-3 w-3" /> Reject
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+        <TxnDetailsDialog txnId={detailId} open={!!detailId} onOpenChange={(v) => !v && setDetailId(null)} showUser />
+      </Panel>
+
+      {actionRow && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm" onClick={() => setActionRow(null)}>
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-black text-slate-900">
+              {actionRow.nextStatus === "approved" ? "Approve Transaction" : "Reject Transaction"}
+            </h3>
+            <div className="mt-3 rounded-xl bg-slate-50 p-3 text-xs space-y-1">
+              <div><span className="font-bold text-slate-500">User:</span> {actionRow.row.profiles?.display_name || actionRow.row.profiles?.phone || "User"}</div>
+              <div><span className="font-bold text-slate-500">Type:</span> <span className="uppercase font-bold">{actionRow.row.type}</span> · <span className="font-black text-emerald-700">৳{Number(actionRow.row.amount).toLocaleString()}</span></div>
+              {(actionRow.row.receiver_account || actionRow.row.sender_account) && (
+                <div><span className="font-bold text-slate-500">Account:</span> <span className="font-mono">{actionRow.row.receiver_account || actionRow.row.sender_account}</span></div>
+              )}
+              {actionRow.row.txn_reference && (
+                <div><span className="font-bold text-slate-500">Txn Ref:</span> <span className="font-mono">{actionRow.row.txn_reference}</span></div>
+              )}
+            </div>
+            {actionRow.nextStatus === "rejected" && (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {["ভুল Txn ID", "পেমেন্ট আসেনি", "টার্নওভার অসম্পূর্ণ", "সঠিক নম্বর দিন"].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => setActionNote(preset)}
+                    className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100"
+                  >
+                    {preset}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="mt-3">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Admin Note (Optional)</label>
+              <Input value={actionNote} onChange={(e) => setActionNote(e.target.value)} placeholder="মন্তব্য লিখুন…" className="mt-1" />
+            </div>
+            <div className="mt-5 flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setActionRow(null)}>Cancel</Button>
+              <Button
+                disabled={acting}
+                onClick={confirmAction}
+                className={actionRow.nextStatus === "approved" ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-rose-600 hover:bg-rose-700 text-white"}
+              >
+                {acting ? "Processing…" : actionRow.nextStatus === "approved" ? "Confirm Approve" : "Confirm Reject"}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
-      <TxnDetailsDialog txnId={detailId} open={!!detailId} onOpenChange={(v) => !v && setDetailId(null)} showUser />
-    </Panel>
+    </div>
   );
 }
 
 function AdminUsers() {
   const [users, setUsers] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [filterMode, setFilterMode] = useState<"all" | "admins" | "banned">("all");
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  const [createForm, setCreateForm] = useState({ phone: "", password: "", initialBalance: "" });
+  const [createForm, setCreateForm] = useState({ phone: "", displayName: "", password: "", initialBalance: "", makeAdmin: false });
   const [creating, setCreating] = useState(false);
 
+  // Modals
+  const [coinUser, setCoinUser] = useState<any | null>(null);
+  const [coinMode, setCoinMode] = useState<"add" | "deduct" | "set">("add");
+  const [coinAmount, setCoinAmount] = useState("");
+  const [coinNote, setCoinNote] = useState("");
+  const [coinBusy, setCoinBusy] = useState(false);
+
+  const [manageUser, setManageUser] = useState<any | null>(null);
+  const [manageForm, setManageForm] = useState({ display_name: "", username: "", phone: "", vip_tier: "bronze" });
+  const [newPassword, setNewPassword] = useState("");
+  const [userDetails, setUserDetails] = useState<any | null>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [manageBusy, setManageBusy] = useState(false);
+
+  const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const doList = useServerFn(adminListUsers);
   const doAdjust = useServerFn(adminAdjustBalance);
   const doDelete = useServerFn(adminDeleteUser);
   const doCreate = useServerFn(adminCreateUser);
+  const doUpdateUser = useServerFn(adminUpdateUser);
+  const doResetPw = useServerFn(adminResetUserPassword);
+  const doGetDetails = useServerFn(adminGetUserDetails);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [{ data: profs, error: pErr }, { data: roles, error: rErr }] = await Promise.all([
-      supabase.from("profiles").select("id, display_name, username, email, phone, wallet_balance, vip_tier, referral_code, created_at").order("created_at", { ascending: false }).limit(200),
-      supabase.from("user_roles").select("user_id, role"),
-    ]);
-    if (pErr) toast.error(pErr.message);
-    if (rErr) console.error("[admin/users] roles error:", rErr);
-    const roleMap = new Map<string, string[]>();
-    (roles ?? []).forEach((r: any) => {
-      const arr = roleMap.get(r.user_id) ?? [];
-      arr.push(r.role);
-      roleMap.set(r.user_id, arr);
-    });
-    setUsers((profs ?? []).map((p: any) => ({ ...p, user_roles: (roleMap.get(p.id) ?? []).map((role) => ({ role })) })));
-    setLoading(false);
-  }, []);
+    try {
+      const res = await doList();
+      setUsers(res.rows ?? []);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Could not load users");
+    } finally {
+      setLoading(false);
+    }
+  }, [doList]);
   useEffect(() => { load(); }, [load]);
 
   const filtered = useMemo(() => users.filter((u) => {
+    const isAdm = (u.user_roles ?? []).some((r: any) => r.role === "admin");
+    if (filterMode === "admins" && !isAdm) return false;
+    if (filterMode === "banned" && !u.is_banned) return false;
     if (!search) return true;
     const q = search.toLowerCase();
-    return [u.display_name, u.username, u.email, u.phone, u.referral_code].some((v) => v?.toLowerCase().includes(q));
-  }), [users, search]);
+    return [u.display_name, u.username, u.email, u.phone, u.referral_code, u.id].some((v) => v?.toLowerCase().includes(q));
+  }), [users, search, filterMode]);
 
-  async function adjust(userId: string, sign: 1 | -1) {
-    const amtStr = prompt(sign > 0 ? "কত টাকা যোগ করবেন?" : "কত টাকা কাটবেন?");
-    if (!amtStr) return;
-    const amt = Number(amtStr);
-    if (!amt || amt <= 0) return toast.error("সঠিক পরিমাণ দিন");
-    const note = prompt("Note (optional)") ?? "";
+  function openCoins(u: any, defaultMode: "add" | "deduct" | "set" = "add") {
+    setCoinUser(u);
+    setCoinMode(defaultMode);
+    setCoinAmount(defaultMode === "set" ? String(Number(u.wallet_balance ?? 0)) : "");
+    setCoinNote("");
+  }
+
+  async function submitCoins() {
+    if (!coinUser) return;
+    const val = Number(coinAmount);
+    if (!Number.isFinite(val) || (coinMode !== "set" && val <= 0) || (coinMode === "set" && val < 0)) {
+      return toast.error("সঠিক কয়েন/টাকার পরিমাণ দিন");
+    }
+    setCoinBusy(true);
     try {
-      await doAdjust({ data: { userId, amount: sign * amt, note: note || undefined } });
-      toast.success("ব্যালেন্স আপডেট হয়েছে");
+      const payload =
+        coinMode === "set"
+          ? { userId: coinUser.id, amount: val, mode: "set" as const, note: coinNote.trim() || undefined }
+          : { userId: coinUser.id, amount: coinMode === "add" ? val : -val, mode: "delta" as const, note: coinNote.trim() || undefined };
+      const res = await doAdjust({ data: payload });
+      toast.success(`ব্যালেন্স আপডেট হয়েছে → ৳${Number(res.balance).toLocaleString()}`);
+      setCoinUser(null);
       load();
     } catch (e: any) {
       toast.error(e?.message ?? "Failed");
+    } finally {
+      setCoinBusy(false);
     }
   }
 
-  async function removeUser(userId: string, name: string) {
-    if (!confirm(`"${name}" কে পুরোপুরি ডিলিট করবেন? এটা আর ফেরানো যাবে না।`)) return;
+  async function openManage(u: any) {
+    setManageUser(u);
+    setManageForm({
+      display_name: u.display_name ?? "",
+      username: u.username ?? "",
+      phone: u.phone ?? "",
+      vip_tier: u.vip_tier ?? "bronze",
+    });
+    setNewPassword("");
+    setUserDetails(null);
+    setDetailsLoading(true);
     try {
-      await doDelete({ data: { userId } });
-      toast.success("User ডিলিট হয়েছে");
+      const d = await doGetDetails({ data: { userId: u.id } });
+      setUserDetails(d);
+    } catch {
+      setUserDetails(null);
+    } finally {
+      setDetailsLoading(false);
+    }
+  }
+
+  async function saveProfile() {
+    if (!manageUser) return;
+    setManageBusy(true);
+    try {
+      await doUpdateUser({
+        data: {
+          userId: manageUser.id,
+          display_name: manageForm.display_name.trim() || null,
+          username: manageForm.username.trim() || null,
+          phone: manageForm.phone.trim() || null,
+          vip_tier: manageForm.vip_tier as any,
+        },
+      });
+      toast.success("অ্যাকাউন্ট আপডেট হয়েছে");
+      setManageUser((prev: any) => (prev ? { ...prev, ...manageForm } : prev));
       load();
     } catch (e: any) {
       toast.error(e?.message ?? "Failed");
+    } finally {
+      setManageBusy(false);
+    }
+  }
+
+  async function resetPw() {
+    if (!manageUser) return;
+    if (newPassword.length < 6) return toast.error("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের দিন");
+    setManageBusy(true);
+    try {
+      await doResetPw({ data: { userId: manageUser.id, password: newPassword } });
+      toast.success("পাসওয়ার্ড পরিবর্তন হয়েছে");
+      setNewPassword("");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    } finally {
+      setManageBusy(false);
+    }
+  }
+
+  async function toggleBan(u: any) {
+    setManageBusy(true);
+    try {
+      await doUpdateUser({ data: { userId: u.id, banned: !u.is_banned } });
+      toast.success(!u.is_banned ? "অ্যাকাউন্ট ব্যান করা হয়েছে" : "অ্যাকাউন্ট আনব্যান করা হয়েছে");
+      setManageUser((prev: any) => (prev && prev.id === u.id ? { ...prev, is_banned: !u.is_banned } : prev));
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    } finally {
+      setManageBusy(false);
+    }
+  }
+
+  async function confirmDeleteUser() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await doDelete({ data: { userId: deleteTarget.id } });
+      toast.success("User পুরোপুরি ডিলিট হয়েছে");
+      setDeleteTarget(null);
+      if (manageUser?.id === deleteTarget.id) setManageUser(null);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -437,13 +762,15 @@ function AdminUsers() {
       const res = await doCreate({
         data: {
           phone: createForm.phone,
+          displayName: createForm.displayName.trim() || undefined,
           password: createForm.password,
           initialBalance: createForm.initialBalance ? Number(createForm.initialBalance) : undefined,
+          makeAdmin: createForm.makeAdmin,
         },
       });
       if (!res.success) return toast.error("এই ফোন আগে থেকেই রেজিস্টার্ড");
       toast.success("নতুন ইউজার তৈরি হয়েছে");
-      setCreateForm({ phone: "", password: "", initialBalance: "" });
+      setCreateForm({ phone: "", displayName: "", password: "", initialBalance: "", makeAdmin: false });
       setShowCreate(false);
       load();
     } catch (e: any) {
@@ -472,29 +799,40 @@ function AdminUsers() {
     <Panel
       title={`Users (${filtered.length})`}
       action={
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
+            {(["all", "admins", "banned"] as const).map((m) => (
+              <button key={m} onClick={() => setFilterMode(m)} className={`rounded-md px-2.5 py-1 text-[10px] font-bold uppercase transition ${filterMode === m ? "bg-indigo-600 text-white" : "text-slate-500 hover:text-slate-900"}`}>{m}</button>
+            ))}
+          </div>
           <div className="relative">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-            <Input placeholder="Search name / phone / email…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 w-64 border-slate-200 bg-slate-50 pl-8 text-xs" />
+            <Input placeholder="Search name / phone / email…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 w-56 border-slate-200 bg-slate-50 pl-8 text-xs" />
           </div>
           <Button size="sm" onClick={() => setShowCreate((s) => !s)} className="h-9 bg-indigo-600 hover:bg-indigo-700 text-white gap-1">
             <UserPlus className="h-3.5 w-3.5" /> New User
           </Button>
+          <Button size="sm" variant="outline" onClick={load} className="h-9 border-slate-200"><RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /></Button>
         </div>
       }
     >
       {showCreate && (
         <div className="mb-4 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4">
           <div className="mb-3 text-xs font-bold uppercase tracking-wider text-indigo-700">নতুন ইউজার তৈরি করুন</div>
-          <div className="grid gap-3 sm:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-5">
             <Input placeholder="Phone (01XXXXXXXXX)" value={createForm.phone} onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })} className="border-slate-200 bg-white text-xs" />
+            <Input placeholder="Display Name (optional)" value={createForm.displayName} onChange={(e) => setCreateForm({ ...createForm, displayName: e.target.value })} className="border-slate-200 bg-white text-xs" />
             <Input type="text" placeholder="Password (min 6)" value={createForm.password} onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })} className="border-slate-200 bg-white text-xs" />
-            <Input type="number" placeholder="Initial ৳ balance (optional)" value={createForm.initialBalance} onChange={(e) => setCreateForm({ ...createForm, initialBalance: e.target.value })} className="border-slate-200 bg-white text-xs" />
-            <div className="flex gap-2">
+            <Input type="number" placeholder="Initial Coins ৳ (optional)" value={createForm.initialBalance} onChange={(e) => setCreateForm({ ...createForm, initialBalance: e.target.value })} className="border-slate-200 bg-white text-xs" />
+            <div className="flex items-center gap-2">
               <Button size="sm" disabled={creating} onClick={createUser} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white">{creating ? "…" : "Create"}</Button>
               <Button size="sm" variant="outline" onClick={() => setShowCreate(false)} className="border-slate-200">Cancel</Button>
             </div>
           </div>
+          <label className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer">
+            <input type="checkbox" checked={createForm.makeAdmin} onChange={(e) => setCreateForm({ ...createForm, makeAdmin: e.target.checked })} />
+            Admin role দিন
+          </label>
         </div>
       )}
       {loading ? <div className="text-slate-500">Loading…</div> : (
@@ -504,9 +842,9 @@ function AdminUsers() {
               <TableRow className="border-slate-200 bg-slate-50">
                 <TableHead>User</TableHead>
                 <TableHead>Phone</TableHead>
-                <TableHead>Balance</TableHead>
+                <TableHead>Coins / Balance</TableHead>
                 <TableHead>VIP</TableHead>
-                <TableHead>Referral</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -523,24 +861,36 @@ function AdminUsers() {
                         <div>
                           <div className="flex items-center gap-1 font-bold text-slate-900">
                             {u.display_name || u.username || "—"}
-                            {isAdmin && <ShieldCheck className="h-3 w-3 text-red-400" />}
+                            {isAdmin && <ShieldCheck className="h-3.5 w-3.5 text-indigo-600" title="Admin" />}
                           </div>
                           <div className="text-[10px] text-slate-400">{u.email}</div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="text-xs text-slate-600">{u.phone || "—"}</TableCell>
-                    <TableCell className="font-black text-emerald-600">৳{Number(u.wallet_balance).toFixed(2)}</TableCell>
+                    <TableCell className="font-black text-emerald-600 tabular-nums">৳{Number(u.wallet_balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                     <TableCell><span className="rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-600">{u.vip_tier}</span></TableCell>
-                    <TableCell className="font-mono text-xs text-slate-500">{u.referral_code}</TableCell>
+                    <TableCell>
+                      {u.is_banned ? (
+                        <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700">BANNED</span>
+                      ) : (
+                        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">ACTIVE</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-1">
-                        <Button size="sm" onClick={() => adjust(u.id, 1)} className="h-7 bg-emerald-500 hover:bg-emerald-600 text-white" title="টাকা যোগ"><Plus className="h-3 w-3" /></Button>
-                        <Button size="sm" onClick={() => adjust(u.id, -1)} className="h-7 bg-amber-500 hover:bg-amber-600 text-white" title="টাকা কাটুন"><Minus className="h-3 w-3" /></Button>
-                        <Button size="sm" variant="outline" onClick={() => toggleAdmin(u.id, isAdmin)} className="h-7 border-slate-200" title={isAdmin ? "Remove admin" : "Make admin"}>
-                          {isAdmin ? <ShieldOff className="h-3 w-3" /> : <ShieldCheck className="h-3 w-3" />}
+                        <Button size="sm" onClick={() => openCoins(u, "add")} className="h-7 bg-emerald-500 hover:bg-emerald-600 text-white gap-1 px-2 text-xs" title="কয়েন দিন/কাটুন">
+                          <Coins className="h-3 w-3" /> Coins
                         </Button>
-                        <Button size="sm" onClick={() => removeUser(u.id, u.display_name || u.username || u.phone || "user")} className="h-7 bg-rose-500 hover:bg-rose-600 text-white" title="Delete"><Trash2 className="h-3 w-3" /></Button>
+                        <Button size="sm" variant="outline" onClick={() => openManage(u)} className="h-7 border-slate-200 gap-1 px-2 text-xs" title="Manage Account">
+                          <Settings2 className="h-3 w-3" /> Manage
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => toggleAdmin(u.id, isAdmin)} className="h-7 border-slate-200" title={isAdmin ? "Remove admin" : "Make admin"}>
+                          {isAdmin ? <ShieldOff className="h-3 w-3 text-indigo-600" /> : <ShieldCheck className="h-3 w-3" />}
+                        </Button>
+                        <Button size="sm" onClick={() => setDeleteTarget(u)} className="h-7 bg-rose-500 hover:bg-rose-600 text-white" title="Delete">
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -548,6 +898,231 @@ function AdminUsers() {
               })}
             </TableBody>
           </Table>
+        </div>
+      )}
+
+      {/* Coin Adjustment Modal */}
+      {coinUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm" onClick={() => setCoinUser(null)}>
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-black text-slate-900">কয়েন / ব্যালেন্স ম্যানেজ</h3>
+              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
+                Current: ৳{Number(coinUser.wallet_balance).toLocaleString()}
+              </span>
+            </div>
+            <div className="mt-1 text-xs text-slate-500">{coinUser.display_name || coinUser.username || coinUser.phone}</div>
+
+            <div className="mt-4 grid grid-cols-3 gap-1.5 rounded-xl bg-slate-100 p-1">
+              {[
+                { k: "add", label: "+ Add Coins" },
+                { k: "deduct", label: "− Deduct" },
+                { k: "set", label: "= Set Exact" },
+              ].map((m) => (
+                <button
+                  key={m.k}
+                  type="button"
+                  onClick={() => {
+                    setCoinMode(m.k as any);
+                    if (m.k === "set") setCoinAmount(String(Number(coinUser.wallet_balance ?? 0)));
+                  }}
+                  className={`rounded-lg py-2 text-xs font-bold transition ${coinMode === m.k ? "bg-white text-slate-900 shadow" : "text-slate-500 hover:text-slate-900"}`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {[100, 500, 1000, 5000, 10000, 50000].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setCoinAmount(String(preset))}
+                  className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:border-emerald-300"
+                >
+                  ৳{preset.toLocaleString()}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  {coinMode === "set" ? "New Exact Balance (৳)" : "Amount (৳)"}
+                </label>
+                <Input type="number" value={coinAmount} onChange={(e) => setCoinAmount(e.target.value)} placeholder="500" className="mt-1 text-base font-bold" />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Reason / Note (optional)</label>
+                <Input value={coinNote} onChange={(e) => setCoinNote(e.target.value)} placeholder="e.g. Manual top-up / VIP bonus" className="mt-1 text-xs" />
+              </div>
+            </div>
+
+            <div className="mt-5 flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setCoinUser(null)}>Cancel</Button>
+              <Button disabled={coinBusy} onClick={submitCoins} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
+                {coinBusy ? "Saving…" : "Update Balance"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Full Account Management Modal */}
+      {manageUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 overflow-y-auto backdrop-blur-sm" onClick={() => setManageUser(null)}>
+          <div className="my-8 w-full max-w-3xl rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <h3 className="text-lg font-black text-slate-900">Manage Account — {manageUser.display_name || manageUser.phone}</h3>
+                <div className="text-xs text-slate-500 font-mono">{manageUser.id}</div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" onClick={() => openCoins(manageUser, "add")} className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1">
+                  <Coins className="h-3.5 w-3.5" /> ৳{Number(manageUser.wallet_balance).toLocaleString()}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={manageBusy}
+                  onClick={() => toggleBan(manageUser)}
+                  className={manageUser.is_banned ? "border-emerald-300 text-emerald-700" : "border-amber-300 text-amber-700"}
+                >
+                  <Ban className="h-3.5 w-3.5 mr-1" /> {manageUser.is_banned ? "Unban" : "Ban User"}
+                </Button>
+                <Button size="sm" variant="destructive" onClick={() => setDeleteTarget(manageUser)}>
+                  <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                </Button>
+              </div>
+            </div>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="space-y-3 rounded-2xl border border-slate-200 p-4">
+                <div className="text-xs font-black uppercase tracking-wider text-slate-600">Profile &amp; VIP</div>
+                <div className="grid gap-2.5">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-slate-400">Display Name</label>
+                    <Input value={manageForm.display_name} onChange={(e) => setManageForm({ ...manageForm, display_name: e.target.value })} className="mt-1 h-9 text-xs" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-slate-400">Username</label>
+                    <Input value={manageForm.username} onChange={(e) => setManageForm({ ...manageForm, username: e.target.value })} className="mt-1 h-9 text-xs" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-slate-400">Phone</label>
+                      <Input value={manageForm.phone} onChange={(e) => setManageForm({ ...manageForm, phone: e.target.value })} className="mt-1 h-9 text-xs" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-slate-400">VIP Tier</label>
+                      <select
+                        value={manageForm.vip_tier}
+                        onChange={(e) => setManageForm({ ...manageForm, vip_tier: e.target.value })}
+                        className="mt-1 h-9 w-full rounded-md border border-slate-200 bg-white px-2 text-xs font-bold uppercase"
+                      >
+                        {["bronze", "silver", "gold", "platinum", "diamond"].map((t) => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <Button size="sm" disabled={manageBusy} onClick={saveProfile} className="mt-1 bg-indigo-600 hover:bg-indigo-700 text-white">
+                    Save Profile
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-3 rounded-2xl border border-slate-200 p-4">
+                <div className="text-xs font-black uppercase tracking-wider text-slate-600">Security &amp; Summary</div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-slate-400">Reset Password</label>
+                  <div className="mt-1 flex gap-2">
+                    <Input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New password (min 6)" className="h-9 text-xs" />
+                    <Button size="sm" variant="outline" disabled={manageBusy} onClick={resetPw} className="h-9 shrink-0">
+                      <KeyRound className="h-3.5 w-3.5 mr-1" /> Set
+                    </Button>
+                  </div>
+                </div>
+                {detailsLoading ? (
+                  <div className="py-4 text-xs text-slate-400">Loading activity…</div>
+                ) : userDetails?.summary && (
+                  <div className="grid grid-cols-2 gap-2 pt-2 text-xs">
+                    <div className="rounded-xl bg-emerald-50 p-2.5">
+                      <div className="text-[10px] font-bold text-emerald-700">Deposits</div>
+                      <div className="font-black text-emerald-800">৳{userDetails.summary.deposits.toLocaleString()}</div>
+                    </div>
+                    <div className="rounded-xl bg-rose-50 p-2.5">
+                      <div className="text-[10px] font-bold text-rose-700">Withdraws</div>
+                      <div className="font-black text-rose-800">৳{userDetails.summary.withdraws.toLocaleString()}</div>
+                    </div>
+                    <div className="rounded-xl bg-indigo-50 p-2.5">
+                      <div className="text-[10px] font-bold text-indigo-700">Total Wagered</div>
+                      <div className="font-black text-indigo-800">৳{userDetails.summary.bets.toLocaleString()}</div>
+                    </div>
+                    <div className="rounded-xl bg-amber-50 p-2.5">
+                      <div className="text-[10px] font-bold text-amber-700">Total Won</div>
+                      <div className="font-black text-amber-800">৳{userDetails.summary.wins.toLocaleString()}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-2xl border border-slate-200 p-4">
+              <div className="mb-2 text-xs font-black uppercase tracking-wider text-slate-600">Recent Transactions &amp; Bets</div>
+              <div className="max-h-56 overflow-y-auto">
+                {detailsLoading ? (
+                  <div className="text-xs text-slate-400">Loading…</div>
+                ) : !(userDetails?.transactions?.length) ? (
+                  <div className="text-xs text-slate-400 py-4 text-center">No recent activity</div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-[10px]">Type</TableHead>
+                        <TableHead className="text-[10px]">Game / Note</TableHead>
+                        <TableHead className="text-[10px]">Status</TableHead>
+                        <TableHead className="text-[10px] text-right">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {userDetails.transactions.map((t: any) => (
+                        <TableRow key={t.id}>
+                          <TableCell className="text-xs font-bold uppercase">{t.type}</TableCell>
+                          <TableCell className="text-xs text-slate-500">{t.game_id || t.admin_note || t.txn_reference || "—"}</TableCell>
+                          <TableCell><StatusPill status={t.status} /></TableCell>
+                          <TableCell className="text-right text-xs font-black">৳{Number(t.amount).toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 flex justify-end">
+              <Button variant="outline" onClick={() => setManageUser(null)}>Close</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm" onClick={() => setDeleteTarget(null)}>
+          <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-black text-rose-600">Delete Account?</h3>
+            <p className="mt-2 text-xs text-slate-600">
+              আপনি কি নিশ্চিত <span className="font-bold text-slate-900">{deleteTarget.display_name || deleteTarget.phone || deleteTarget.email}</span>-কে পুরোপুরি ডিলিট করবেন? এটি আর ফেরানো যাবে না।
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+              <Button variant="destructive" disabled={deleting} onClick={confirmDeleteUser}>
+                {deleting ? "Deleting…" : "Confirm Delete"}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </Panel>
@@ -655,7 +1230,20 @@ function AdminMethods() {
 function AdminGames() {
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "enabled" | "disabled">("all");
   const [edits, setEdits] = useState<Record<string, any>>({});
+  const [bulkWinRate, setBulkWinRate] = useState("50");
+  const [bulkEdge, setBulkEdge] = useState("4");
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
+  const [addForm, setAddForm] = useState({ game_key: "", name: "", min_bet: 10, max_bet: 10000, house_edge_pct: 4, win_rate_pct: 50, payout_multiplier: 1, max_payout_mult: 0 });
+
+  const doSync = useServerFn(adminSyncAllGames);
+  const doUpsert = useServerFn(adminUpsertGameConfig);
+  const doBulk = useServerFn(adminBulkUpdateGames);
+  const doDeleteGame = useServerFn(adminDeleteGameConfig);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -670,7 +1258,34 @@ function AdminGames() {
     setEdits((prev) => ({ ...prev, [id]: { ...(prev[id] ?? {}), [field]: value } }));
   }
   function valOf(r: any, field: string) {
-    return edits[r.id]?.[field] ?? r[field];
+    if (edits[r.id]?.[field] !== undefined) return edits[r.id][field];
+    if (field === "win_rate_pct") return Number(r.config?.win_rate_pct ?? 50);
+    if (field === "payout_multiplier") return Number(r.config?.payout_multiplier ?? 1);
+    if (field === "max_payout_mult") return Number(r.config?.max_payout_mult ?? 0);
+    return r[field];
+  }
+
+  const filtered = useMemo(() => {
+    return rows.filter((r) => {
+      if (statusFilter === "enabled" && !r.is_enabled) return false;
+      if (statusFilter === "disabled" && r.is_enabled) return false;
+      if (!search.trim()) return true;
+      const q = search.toLowerCase();
+      return r.name.toLowerCase().includes(q) || r.game_key.toLowerCase().includes(q);
+    });
+  }, [rows, search, statusFilter]);
+
+  async function syncAll() {
+    setSyncing(true);
+    try {
+      const res = await doSync();
+      toast.success(`Synced! ${res.inserted}টি নতুন গেম যোগ হয়েছে (মোট ${res.total})`);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Sync failed");
+    } finally {
+      setSyncing(false);
+    }
   }
 
   async function save(r: any) {
@@ -679,67 +1294,265 @@ function AdminGames() {
     const min = Number(patch.min_bet ?? r.min_bet);
     const max = Number(patch.max_bet ?? r.max_bet);
     const edge = Number(patch.house_edge ?? r.house_edge);
+    const winRate = Number(patch.win_rate_pct ?? r.config?.win_rate_pct ?? 50);
+    const multScale = Number(patch.payout_multiplier ?? r.config?.payout_multiplier ?? 1);
+    const maxCap = Number(patch.max_payout_mult ?? r.config?.max_payout_mult ?? 0);
     if (!Number.isFinite(min) || min < 0) return toast.error("Min Bet ০ বা তার বেশি হতে হবে");
     if (!Number.isFinite(max) || max <= 0) return toast.error("Max Bet ০ এর বেশি হতে হবে");
     if (min > max) return toast.error("Min Bet, Max Bet এর চেয়ে বড় হতে পারবে না");
-    if (!Number.isFinite(edge) || edge < 0 || edge > 1) return toast.error("House Edge ০ থেকে ১০০% এর মধ্যে হতে হবে");
-    const { error } = await supabase.from("game_configs").update(patch).eq("id", r.id);
-    if (error) return toast.error(error.message);
-    toast.success(`${r.name} আপডেট হয়েছে`);
-    load();
+    if (!Number.isFinite(edge) || edge < 0 || edge > 0.95) return toast.error("House Edge ০% থেকে ৯৫% এর মধ্যে হতে হবে");
+    if (!Number.isFinite(winRate) || winRate < 1 || winRate > 99) return toast.error("Win Rate ১% থেকে ৯৯% এর মধ্যে হতে হবে");
+    try {
+      await doUpsert({
+        data: {
+          id: r.id,
+          game_key: r.game_key,
+          name: r.name,
+          is_enabled: r.is_enabled,
+          min_bet: min,
+          max_bet: max,
+          house_edge: edge,
+          win_rate_pct: winRate,
+          payout_multiplier: multScale,
+          max_payout_mult: maxCap,
+        },
+      });
+      toast.success(`${r.name} আপডেট হয়েছে`);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Save failed");
+    }
   }
 
   async function toggleEnabled(r: any) {
-    const { error } = await supabase.from("game_configs").update({ is_enabled: !r.is_enabled }).eq("id", r.id);
-    if (error) return toast.error(error.message);
-    toast.success(`${r.name} ${!r.is_enabled ? "ON" : "OFF"}`);
-    load();
+    try {
+      await doUpsert({
+        data: {
+          id: r.id,
+          game_key: r.game_key,
+          name: r.name,
+          is_enabled: !r.is_enabled,
+          min_bet: Number(r.min_bet),
+          max_bet: Number(r.max_bet),
+          house_edge: Number(r.house_edge),
+          win_rate_pct: Number(r.config?.win_rate_pct ?? 50),
+          payout_multiplier: Number(r.config?.payout_multiplier ?? 1),
+          max_payout_mult: Number(r.config?.max_payout_mult ?? 0),
+        },
+      });
+      toast.success(`${r.name} ${!r.is_enabled ? "ON" : "OFF"}`);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    }
+  }
+
+  async function applyBulk(opts: { win_rate_pct?: number; house_edge?: number; is_enabled?: boolean }) {
+    if (!filtered.length) return;
+    setBulkBusy(true);
+    try {
+      const res = await doBulk({
+        data: {
+          gameKeys: filtered.map((r) => r.game_key),
+          ...opts,
+        },
+      });
+      toast.success(`${res.updated}টি গেম একসাথে আপডেট হয়েছে`);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Bulk update failed");
+    } finally {
+      setBulkBusy(false);
+    }
+  }
+
+  async function createGame() {
+    if (!addForm.game_key.trim() || !addForm.name.trim()) return toast.error("Game Key এবং Name দিন");
+    try {
+      await doUpsert({
+        data: {
+          game_key: addForm.game_key.trim().toLowerCase(),
+          name: addForm.name.trim(),
+          is_enabled: true,
+          min_bet: Number(addForm.min_bet),
+          max_bet: Number(addForm.max_bet),
+          house_edge: Number(addForm.house_edge_pct) / 100,
+          win_rate_pct: Number(addForm.win_rate_pct),
+          payout_multiplier: Number(addForm.payout_multiplier),
+          max_payout_mult: Number(addForm.max_payout_mult),
+        },
+      });
+      toast.success("নতুন গেম যোগ হয়েছে");
+      setShowAdd(false);
+      setAddForm({ game_key: "", name: "", min_bet: 10, max_bet: 10000, house_edge_pct: 4, win_rate_pct: 50, payout_multiplier: 1, max_payout_mult: 0 });
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    }
+  }
+
+  async function removeGame(r: any) {
+    if (!confirm(`Delete config for "${r.name}"?`)) return;
+    try {
+      await doDeleteGame({ data: { id: r.id } });
+      toast.success("Deleted");
+      load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    }
   }
 
   return (
-    <Panel title="Game Controls">
-      <ThumbnailDuplicateReport />
-      {loading ? <div className="text-slate-500">Loading…</div> : rows.length === 0 ? <div className="py-8 text-center text-slate-400">No games configured</div> : (
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {rows.map((r) => {
-            const dirty = !!edits[r.id];
-            return (
-              <div key={r.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="text-base font-black text-slate-900">{r.name}</div>
-                    <div className="mt-0.5 font-mono text-[10px] text-slate-400">{r.game_key}</div>
-                  </div>
-                  <button
-                    onClick={() => toggleEnabled(r)}
-                    className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase ${r.is_enabled ? "border-emerald-300 bg-emerald-100 text-emerald-600" : "border-rose-300 bg-rose-100 text-rose-600"}`}
-                  >
-                    {r.is_enabled ? "● Enabled" : "○ Disabled"}
-                  </button>
-                </div>
-                <div className="mt-4 grid grid-cols-3 gap-2">
-                  <div>
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Min Bet</label>
-                    <Input type="number" value={valOf(r, "min_bet")} onChange={(e) => setField(r.id, "min_bet", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
-                  </div>
-                  <div>
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Max Bet</label>
-                    <Input type="number" value={valOf(r, "max_bet")} onChange={(e) => setField(r.id, "max_bet", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
-                  </div>
-                  <div>
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Edge %</label>
-                    <Input type="number" step="0.1" value={Number(valOf(r, "house_edge")) * 100} onChange={(e) => setField(r.id, "house_edge", Number(e.target.value) / 100)} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
-                  </div>
-                </div>
-                <Button size="sm" onClick={() => save(r)} disabled={!dirty} className={`mt-3 w-full font-black ${dirty ? "bg-emerald-500 hover:bg-emerald-600 text-black" : "bg-slate-50 text-slate-300"}`}>
-                  {dirty ? "Save Changes" : "No Changes"}
-                </Button>
-              </div>
-            );
-          })}
+    <div className="space-y-4">
+      <Panel
+        title={`Game Controls & Win Rates (${filtered.length}/${rows.length})`}
+        action={
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+              <Input placeholder="Search game…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-8 w-44 border-slate-200 bg-slate-50 pl-8 text-xs" />
+            </div>
+            <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
+              {(["all", "enabled", "disabled"] as const).map((s) => (
+                <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-md px-2 py-1 text-[10px] font-bold uppercase ${statusFilter === s ? "bg-emerald-600 text-white" : "text-slate-500"}`}>{s}</button>
+              ))}
+            </div>
+            <Button size="sm" onClick={syncAll} disabled={syncing} className="h-8 bg-indigo-600 hover:bg-indigo-700 text-white text-xs gap-1">
+              <RefreshCw className={`h-3 w-3 ${syncing ? "animate-spin" : ""}`} /> Sync All 42 Games
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setShowAdd((v) => !v)} className="h-8 border-slate-200 text-xs gap-1">
+              <Plus className="h-3 w-3" /> Add Game
+            </Button>
+          </div>
+        }
+      >
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/50 p-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-emerald-900">
+            <Sliders className="h-4 w-4 text-emerald-600" />
+            <span>Bulk Win Rate / Edge (দেখানো সব {filtered.length}টি গেমে একসাথে):</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1 rounded-lg bg-white px-2 py-1 border border-slate-200">
+              <span className="text-[10px] font-bold text-slate-500">Win %</span>
+              <input type="number" min={1} max={99} value={bulkWinRate} onChange={(e) => setBulkWinRate(e.target.value)} className="w-12 text-xs font-black text-slate-900 focus:outline-none" />
+              <Button size="sm" disabled={bulkBusy} onClick={() => applyBulk({ win_rate_pct: Number(bulkWinRate) })} className="h-6 bg-emerald-600 hover:bg-emerald-700 text-white px-2 text-[10px]">Apply</Button>
+            </div>
+            <div className="flex items-center gap-1 rounded-lg bg-white px-2 py-1 border border-slate-200">
+              <span className="text-[10px] font-bold text-slate-500">Edge %</span>
+              <input type="number" min={0} max={95} step={0.5} value={bulkEdge} onChange={(e) => setBulkEdge(e.target.value)} className="w-12 text-xs font-black text-slate-900 focus:outline-none" />
+              <Button size="sm" disabled={bulkBusy} onClick={() => applyBulk({ house_edge: Number(bulkEdge) / 100 })} className="h-6 bg-indigo-600 hover:bg-indigo-700 text-white px-2 text-[10px]">Apply</Button>
+            </div>
+            <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => applyBulk({ is_enabled: true })} className="h-8 border-emerald-300 text-emerald-700 text-[11px] font-bold">Enable All</Button>
+            <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => applyBulk({ is_enabled: false })} className="h-8 border-rose-300 text-rose-700 text-[11px] font-bold">Disable All</Button>
+          </div>
         </div>
-      )}
-    </Panel>
+
+        {showAdd && (
+          <div className="mb-4 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4">
+            <div className="mb-3 text-xs font-bold uppercase tracking-wider text-indigo-700">Add / Register Game Config</div>
+            <div className="grid gap-2 sm:grid-cols-4">
+              <Input placeholder="game_key (e.g. crash)" value={addForm.game_key} onChange={(e) => setAddForm({ ...addForm, game_key: e.target.value })} className="bg-white text-xs" />
+              <Input placeholder="Display Name" value={addForm.name} onChange={(e) => setAddForm({ ...addForm, name: e.target.value })} className="bg-white text-xs" />
+              <Input type="number" placeholder="Win Rate % (1-99)" value={addForm.win_rate_pct} onChange={(e) => setAddForm({ ...addForm, win_rate_pct: Number(e.target.value) })} className="bg-white text-xs" />
+              <div className="flex gap-2">
+                <Button size="sm" onClick={createGame} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white">Save</Button>
+                <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <ThumbnailDuplicateReport />
+        {loading ? <div className="text-slate-500">Loading…</div> : filtered.length === 0 ? <div className="py-8 text-center text-slate-400">No games found — click &ldquo;Sync All 42 Games&rdquo;</div> : (
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((r) => {
+              const dirty = !!edits[r.id];
+              const wr = Number(valOf(r, "win_rate_pct"));
+              const wrTone = wr < 40 ? "text-rose-600 bg-rose-50" : wr > 55 ? "text-emerald-600 bg-emerald-50" : "text-amber-700 bg-amber-50";
+              return (
+                <div key={r.id} className={`rounded-2xl border p-4 transition ${dirty ? "border-indigo-300 bg-indigo-50/30 shadow-sm" : "border-slate-200 bg-slate-50"}`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="truncate text-base font-black text-slate-900">{r.name}</div>
+                      <div className="mt-0.5 flex items-center gap-2 font-mono text-[10px] text-slate-400">
+                        <span>{r.game_key}</span>
+                        <a href={`/games/${r.game_key}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 text-indigo-600 hover:underline">
+                          Open <ExternalLink className="h-2.5 w-2.5" />
+                        </a>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => toggleEnabled(r)}
+                        className={`rounded-full border px-2.5 py-1 text-[10px] font-black uppercase ${r.is_enabled ? "border-emerald-300 bg-emerald-100 text-emerald-700" : "border-rose-300 bg-rose-100 text-rose-700"}`}
+                      >
+                        {r.is_enabled ? "● ON" : "○ OFF"}
+                      </button>
+                      <button onClick={() => removeGame(r)} className="rounded-lg p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600" title="Delete config">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Win rate slider */}
+                  <div className="mt-3 rounded-xl border border-slate-200 bg-white p-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Win Rate Control</span>
+                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-black ${wrTone}`}>{wr}%</span>
+                    </div>
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <input
+                        type="range"
+                        min={5}
+                        max={95}
+                        step={1}
+                        value={wr}
+                        onChange={(e) => setField(r.id, "win_rate_pct", Number(e.target.value))}
+                        className="h-1.5 flex-1 accent-indigo-600 cursor-pointer"
+                      />
+                      <Input
+                        type="number"
+                        min={1}
+                        max={99}
+                        value={wr}
+                        onChange={(e) => setField(r.id, "win_rate_pct", Number(e.target.value))}
+                        className="h-7 w-14 border-slate-200 px-1.5 text-center text-xs font-bold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Min Bet (৳)</label>
+                      <Input type="number" value={valOf(r, "min_bet")} onChange={(e) => setField(r.id, "min_bet", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Max Bet (৳)</label>
+                      <Input type="number" value={valOf(r, "max_bet")} onChange={(e) => setField(r.id, "max_bet", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">House Edge %</label>
+                      <Input type="number" step="0.5" value={+(Number(valOf(r, "house_edge")) * 100).toFixed(2)} onChange={(e) => setField(r.id, "house_edge", Number(e.target.value) / 100)} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Payout Scale (×)</label>
+                      <Input type="number" step="0.05" min="0.1" max="10" value={valOf(r, "payout_multiplier")} onChange={(e) => setField(r.id, "payout_multiplier", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Max Win Cap (× bet, 0 = unlimited)</label>
+                    <Input type="number" min="0" value={valOf(r, "max_payout_mult")} onChange={(e) => setField(r.id, "max_payout_mult", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
+                  </div>
+                  <Button size="sm" onClick={() => save(r)} disabled={!dirty} className={`mt-3 w-full font-black ${dirty ? "bg-emerald-500 hover:bg-emerald-600 text-white" : "bg-slate-100 text-slate-400"}`}>
+                    {dirty ? "Save Changes" : "Saved"}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Panel>
+    </div>
   );
 }
 

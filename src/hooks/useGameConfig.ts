@@ -21,8 +21,22 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
   min_bet: 10,
   max_bet: 10000,
   house_edge: 0.02,
-  config: {},
+  config: { win_rate_pct: 50, payout_multiplier: 1, max_payout_mult: 0 },
 };
+
+const activeGameConfigs = new Map<string, GameConfig>();
+
+export function getCurrentGameKeyFromUrl(): string {
+  if (typeof window === "undefined") return "";
+  const m = window.location.pathname.match(/\/games\/([^/?#]+)/);
+  return m ? m[1] : "";
+}
+
+export function getActiveGameConfig(gameKey?: string): GameConfig | undefined {
+  const key = gameKey || getCurrentGameKeyFromUrl();
+  if (!key) return undefined;
+  return activeGameConfigs.get(key);
+}
 
 export function useGameConfig(gameKey: string) {
   return useQuery({
@@ -47,22 +61,26 @@ export function useGameConfig(gameKey: string) {
           .maybeSingle();
         if (statusError) throw statusError;
 
-        return {
+        const fallback = {
           ...DEFAULT_GAME_CONFIG,
           game_key: gameKey,
           name: gameKey,
           is_enabled: !disabled,
         };
+        activeGameConfigs.set(gameKey, fallback);
+        return fallback;
       }
-      return {
+      const normalized: GameConfig = {
         ...data,
         min_bet: Number(data.min_bet),
         max_bet: Number(data.max_bet),
         house_edge: Number(data.house_edge),
         config: (data.config as any) ?? {},
       };
+      activeGameConfigs.set(gameKey, normalized);
+      return normalized;
     },
-    staleTime: 30_000,
+    staleTime: 5_000,
   });
 }
 

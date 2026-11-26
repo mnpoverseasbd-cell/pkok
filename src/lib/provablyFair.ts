@@ -1,6 +1,15 @@
 // Provably Fair — Stake-style HMAC-SHA256 based outcome generation.
 // Deterministic: given (serverSeed, clientSeed, nonce, cursor) → same float.
 // Anyone can verify a past bet after the server seed is revealed.
+import { getActiveGameConfig } from "@/hooks/useGameConfig";
+
+function getWinRateRatio(gameKey: string): { ratio: number; edge?: number } {
+  const cfg = getActiveGameConfig(gameKey);
+  if (!cfg) return { ratio: 1 };
+  const wr = Number(cfg.config?.win_rate_pct ?? 50);
+  const ratio = Number.isFinite(wr) ? Math.min(1.95, Math.max(0.05, wr / 50)) : 1;
+  return { ratio, edge: cfg.house_edge };
+}
 
 const enc = new TextEncoder();
 
@@ -57,7 +66,9 @@ export async function fairFloats(
 /** Dice: roll in [0, 100). Player wins if roll < target. */
 export async function fairDice(serverSeed: string, clientSeed: string, nonce: number) {
   const [f] = await fairFloats(serverSeed, clientSeed, nonce, 1);
-  return +(f * 100).toFixed(2);
+  const { ratio } = getWinRateRatio("dice");
+  const bf = ratio === 1 ? f : Math.pow(f, ratio);
+  return +(bf * 100).toFixed(2);
 }
 
 /** Limbo: crash-style multiplier. `edge` in [0,1). */
@@ -65,9 +76,9 @@ export async function fairLimbo(
   serverSeed: string, clientSeed: string, nonce: number, edge: number = 0.01,
 ) {
   const [f] = await fairFloats(serverSeed, clientSeed, nonce, 1);
-  // Standard Stake formula: mult = floor((1e8 * (1-edge)) / (f * 1e8)) / 100 style,
-  // simplified to keep floats: (1 - edge) / f, clamped ≥ 1.
-  const m = Math.max(1, (1 - edge) / Math.max(f, 1e-9));
+  const tune = getWinRateRatio("limbo");
+  const effEdge = tune.edge ?? edge;
+  const m = Math.max(1, ((1 - effEdge) * tune.ratio) / Math.max(f, 1e-9));
   return +Math.min(m, 1_000_000).toFixed(2);
 }
 
@@ -76,9 +87,11 @@ export async function fairCrash(
   serverSeed: string, clientSeed: string, nonce: number, edge: number = 0.01,
 ) {
   const [f] = await fairFloats(serverSeed, clientSeed, nonce, 1);
-  // 3% instant bust — matches original nextCrash behavior
-  if (f < 0.03) return 1.0;
-  const m = Math.max(1, (1 - edge) / Math.max(f, 1e-9));
+  const tune = getWinRateRatio("crash");
+  const effEdge = tune.edge ?? edge;
+  const bustProb = Math.min(0.95, Math.max(0.005, tune.ratio < 1 ? 0.03 + (1 - tune.ratio) * 0.55 : 0.03 / tune.ratio));
+  if (f < bustProb) return 1.0;
+  const m = Math.max(1, ((1 - effEdge) * tune.ratio) / Math.max(f, 1e-9));
   return +Math.min(m, 1_000_000).toFixed(2);
 }
 
@@ -644,25 +657,41 @@ export async function fairSlots(
   nonce: number,
 ): Promise<SlotResult> {
   const floats = await fairFloats(serverSeed, clientSeed, nonce, 15);
+  const { ratio } = getWinRateRatio("slots");
   const grid: number[][] = [[], [], []];
   for (let col = 0; col < 5; col++) {
     for (let row = 0; row < 3; row++) {
       grid[row].push(pickSymbol(floats[col * 3 + row]));
     }
   }
-  const wins: SlotLineWin[] = [];
-  for (let i = 0; i < SLOT_PAYLINES.length; i++) {
-    const line = SLOT_PAYLINES[i];
-    const first = grid[line[0]][0];
-    let count = 1;
-    for (let col = 1; col < 5; col++) {
-      if (grid[line[col]][col] === first) count++;
-      else break;
+  const evalWins = () => {
+    const out: SlotLineWin[] = [];
+    for (let i = 0; i < SLOT_PAYLINES.length; i++) {
+      const line = SLOT_PAYLINES[i];
+      const first = grid[line[0]][0];
+      let count = 1;
+      for (let col = 1; col < 5; col++) {
+        if (grid[line[col]][col] === first) count++;
+        else break;
+      }
+      if (count >= 3) {
+        const payout = SLOT_PAYTABLE[first][count - 3];
+        out.push({ line: i + 1, symbol: first, count, payout });
+      }
     }
-    if (count >= 3) {
-      const payout = SLOT_PAYTABLE[first][count - 3];
-      wins.push({ line: i + 1, symbol: first, count, payout });
-    }
+    return out;
+  };
+  let wins = evalWins();
+  if (ratio < 1 && wins.length > 0 && floats[0] > ratio) {
+    // Shift column 2 symbols so winning streaks break under tighter win rate
+    for (let r = 0; r < 3; r++) grid[r][2] = (grid[r][0] + 1 + r) % SLOT_SYMBOLS.length;
+    wins = evalWins();
+  } else if (ratio > 1 && wins.length === 0 && floats[0] < (ratio - 1) * 0.65) {
+    // Boost a clean 3-of-a-kind middle line under higher win rate
+    const sym = grid[1][0];
+    grid[1][1] = sym;
+    grid[1][2] = sym;
+    wins = evalWins();
   }
   const totalMultiplier = wins.reduce((a, w) => a + w.payout, 0) / 10;
   return { grid, wins, totalMultiplier };
@@ -835,8 +864,10 @@ export async function fairFishShooter(
 ): Promise<FishShooterResult> {
   const cfg = FISH_TIERS.find((t) => t.key === tier)!;
   const [f] = await fairFloats(serverSeed, clientSeed, nonce, 1);
-  const hit = f < cfg.hitProb;
-  return { tier, hit, float: f, threshold: cfg.hitProb, payout: hit ? cfg.payout : 0 };
+  const { ratio } = getWinRateRatio("fish-shooter");
+  const threshold = Math.min(0.98, Math.max(0.01, cfg.hitProb * ratio));
+  const hit = f < threshold;
+  return { tier, hit, float: f, threshold, payout: hit ? cfg.payout : 0 };
 }
 
 
@@ -935,9 +966,12 @@ export async function fairAviatrix(
   serverSeed: string, clientSeed: string, nonce: number, edge: number = 0.01,
 ): Promise<{ floats: number[]; multipliers: number[]; winner: number }> {
   const floats = await fairFloats(serverSeed, clientSeed, nonce, AVIATRIX_PLANES);
+  const tune = getWinRateRatio("aviatrix");
+  const effEdge = tune.edge ?? edge;
+  const bustProb = Math.min(0.95, Math.max(0.005, tune.ratio < 1 ? 0.03 + (1 - tune.ratio) * 0.5 : 0.03 / tune.ratio));
   const multipliers = floats.map((f) => {
-    if (f < 0.03) return 1.0;
-    const m = Math.max(1, (1 - edge) / Math.max(f, 1e-9));
+    if (f < bustProb) return 1.0;
+    const m = Math.max(1, ((1 - effEdge) * tune.ratio) / Math.max(f, 1e-9));
     return +Math.min(m, 1_000_000).toFixed(2);
   });
   let winner = 0;
@@ -979,7 +1013,9 @@ export async function fairDragonFishing(
   serverSeed: string, clientSeed: string, nonce: number, shots: number,
 ): Promise<{ shots: DragonFishingShot[]; totalMult: number }> {
   const floats = await fairFloats(serverSeed, clientSeed, nonce, shots);
-  const out: DragonFishingShot[] = floats.map((f) => {
+  const { ratio } = getWinRateRatio("dragon-fishing");
+  const out: DragonFishingShot[] = floats.map((rawF) => {
+    const f = ratio === 1 ? rawF : Math.pow(rawF, ratio);
     let idx = DRAGON_FISH_TIERS.length - 1;
     for (let i = 0; i < DRAGON_FISH_TIERS.length; i++) {
       if (f < DRAGON_FISH_TIERS[i].threshold) { idx = i; break; }
@@ -1263,9 +1299,11 @@ export async function fairBalloon(
   maxPumps: number = BALLOON_MAX_PUMPS,
 ): Promise<{ floats: number[]; popAt: number; popMult: number }> {
   const floats = await fairFloats(serverSeed, clientSeed, nonce, maxPumps);
+  const { ratio } = getWinRateRatio("balloon");
+  const popChance = Math.min(0.85, Math.max(0.01, BALLOON_POP_CHANCE / ratio));
   let popAt = -1;
   for (let i = 0; i < floats.length; i++) {
-    if (floats[i] < BALLOON_POP_CHANCE) { popAt = i; break; }
+    if (floats[i] < popChance) { popAt = i; break; }
   }
   const popMult = popAt >= 0 ? balloonMultAt(popAt) : balloonMultAt(maxPumps);
   return { floats, popAt, popMult };
@@ -1400,9 +1438,12 @@ export async function fairAviatorX2(
   serverSeed: string, clientSeed: string, nonce: number, edge: number = 0.03,
 ): Promise<{ floats: number[]; left: number; right: number }> {
   const floats = await fairFloats(serverSeed, clientSeed, nonce, 2);
+  const tune = getWinRateRatio("aviator-x2");
+  const effEdge = tune.edge ?? edge;
+  const bustProb = Math.min(0.95, Math.max(0.005, tune.ratio < 1 ? 0.03 + (1 - tune.ratio) * 0.5 : 0.03 / tune.ratio));
   const toMult = (f: number) => {
-    if (f < 0.03) return 1.0;
-    const m = Math.max(1, (1 - edge) / Math.max(f, 1e-9));
+    if (f < bustProb) return 1.0;
+    const m = Math.max(1, ((1 - effEdge) * tune.ratio) / Math.max(f, 1e-9));
     return +Math.min(m, 1_000_000).toFixed(2);
   };
   return { floats, left: toMult(floats[0]), right: toMult(floats[1]) };

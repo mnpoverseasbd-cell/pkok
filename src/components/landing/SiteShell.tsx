@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, LogOut, Mail, MessageCircle, Radio, RefreshCw, Smartphone, Spade, Ticket, Trophy, User as UserIcon } from "lucide-react";
+import { Bell, ChevronDown, CircleDollarSign, Crown, Dice5, Eye, EyeOff, Fish, Flame, Gamepad2, Gift, Globe, Headphones, Home, LogOut, Mail, MessageCircle, Radio, RefreshCw, ShieldCheck, Smartphone, Spade, Ticket, Trophy, User as UserIcon } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { toast } from "sonner";
-import { useAuth, useProfile, signOut } from "@/hooks/useAuth";
+import { useAuth, useProfile, useIsAdmin, signOut } from "@/hooks/useAuth";
 import type { ComponentType, FormEvent, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { ModalsProvider, useModals } from "@/components/landing/PortalModals";
@@ -124,10 +124,11 @@ function LangSwitcher() {
   );
 }
 
-function ProfileMenu({ displayName, onSignOut }: { displayName: string; onSignOut: () => void }) {
+function ProfileMenu({ displayName, isAdmin, onSignOut }: { displayName: string; isAdmin?: boolean; onSignOut: () => void }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const items: { to: string; search?: Record<string, string>; icon: typeof UserIcon; label: string }[] = [
+    ...(isAdmin ? [{ to: "/admin", icon: ShieldCheck, label: "অ্যাডমিন প্যানেল" }] : []),
     { to: "/profile", icon: UserIcon, label: "সদস্য" },
     { to: "/wallet", search: { tab: "deposit" }, icon: CircleDollarSign, label: "ডিপোজিট" },
     { to: "/wallet", search: { tab: "withdraw" }, icon: RefreshCw, label: "উত্তোলন" },
@@ -200,6 +201,7 @@ function TopBar() {
   const { t } = useLang();
   const { user, loading: authLoading } = useAuth();
   const { profile, refetch: refetchProfile } = useProfile(user?.id);
+  const { isAdmin } = useIsAdmin(user?.id);
   const navigate = useNavigate();
 
   async function handleRefresh() {
@@ -282,8 +284,13 @@ function TopBar() {
 
               <Link to="/wallet" search={{ tab: "deposit" }} className="rounded-md bg-green-button px-3 py-1.5 font-bold text-[var(--background)]">{t("deposit")}</Link>
               <Link to="/wallet" search={{ tab: "withdraw" }} className="rounded-md bg-gold-button px-3 py-1.5 font-bold text-[var(--background)]">{t("withdraw")}</Link>
+              {isAdmin && (
+                <Link to="/admin" className="hidden sm:inline-flex items-center gap-1 rounded-md border border-[var(--neon-gold)]/60 bg-black/45 px-2.5 py-1.5 font-bold text-[var(--neon-gold)] hover:bg-black/70">
+                  <ShieldCheck className="h-3.5 w-3.5" /> Admin
+                </Link>
+              )}
               {user?.id && <NotificationBell userId={user.id} />}
-              <ProfileMenu displayName={displayName} onSignOut={handleSignOut} />
+              <ProfileMenu displayName={displayName} isAdmin={isAdmin} onSignOut={handleSignOut} />
               <button
                 onClick={handleSignOut}
                 title="লগআউট"
