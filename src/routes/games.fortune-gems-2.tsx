@@ -113,13 +113,11 @@ function FortuneGems2Page() {
   const [winDisplay, setWinDisplay] = useState(0);
   const [lastResult, setLastResult] = useState<Fg2SpinResult | null>(null);
 
-  // Lucky Wheel modal + rotation state
   const [wheelModalOpen, setWheelModalOpen] = useState(false);
   const [wheelSpinning, setWheelSpinning] = useState(false);
   const [wheelRot, setWheelRot] = useState(18);
   const [wheelBanner, setWheelBanner] = useState<string | null>(null);
 
-  // Controls
   const [turboMode, setTurboMode] = useState<0 | 1 | 2>(0);
   const [autoSpinsLeft, setAutoSpinsLeft] = useState(0);
   const [soundOn, setSoundOn] = useState(true);
@@ -173,7 +171,6 @@ function FortuneGems2Page() {
       edge,
     });
 
-    // Sequential column stops: 3 main reels + 4th Special Wheel reel
     await sleep(Math.round(220 * speedScale));
     if (!mountedRef.current) return;
 
@@ -193,7 +190,6 @@ function FortuneGems2Page() {
       });
     }
 
-    // Highlight winning 3×3 paylines
     const winSet = new Set<string>();
     for (const wl of res.winLines) {
       const rows = FG2_PAYLINES[wl.lineIndex];
@@ -204,14 +200,12 @@ function FortuneGems2Page() {
     setWinningCells(winSet);
     setLastResult(res);
 
-    // If Special Wheel triggered, pop Lucky Wheel forward and spin to exact prize wedge!
     if (res.wheelTriggered && res.wheelPrizeMult > 0) {
       setWheelModalOpen(true);
       setWheelSpinning(true);
       const wedgeIdx = LUCKY_WHEEL_WEDGES.indexOf(res.wheelPrizeMult as (typeof LUCKY_WHEEL_WEDGES)[number]);
       const idx = wedgeIdx >= 0 ? wedgeIdx : 1;
       const sliceDeg = 360 / LUCKY_WHEEL_WEDGES.length;
-      // Rotate so wedge idx stops under top pointer (-idx * sliceDeg) + 5 full rotations
       const targetDeg = wheelRot - (wheelRot % 360) + 360 * 5 - idx * sliceDeg;
       setWheelRot(targetDeg);
       if (soundOn) {
@@ -303,7 +297,6 @@ function FortuneGems2Page() {
     record,
   ]);
 
-  // Auto spin queue
   useEffect(() => {
     if (spinning || wheelModalOpen || !pf.ready || gameDisabled) return;
     if (autoSpinsLeft > 0) {
@@ -317,7 +310,6 @@ function FortuneGems2Page() {
     }
   }, [spinning, wheelModalOpen, pf.ready, gameDisabled, autoSpinsLeft, spinNow]);
 
-  // Space hotkey
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code === "Space" && !(e.target instanceof HTMLInputElement)) {
@@ -333,47 +325,62 @@ function FortuneGems2Page() {
 
   return (
     <div
-      className="relative flex min-h-screen w-full flex-col justify-between overflow-x-hidden select-none"
+      className="relative flex h-screen w-full flex-col overflow-hidden select-none"
       style={{
         background:
-          "radial-gradient(circle at 78% 18%, rgba(252,227,138,0.85) 0%, rgba(247,150,107,0.72) 32%, transparent 62%), radial-gradient(circle at 18% 85%, rgba(74,122,44,0.8), transparent 45%), linear-gradient(180deg, #E8875E 0%, #FCE38A 46%, #4A7A2C 78%, #1E3B12 100%)",
+          "radial-gradient(circle at 82% 20%, rgba(255,232,145,0.9) 0%, rgba(247,150,107,0.72) 34%, transparent 62%), radial-gradient(circle at 18% 85%, rgba(74,122,44,0.85), transparent 48%), linear-gradient(180deg, #E8875E 0%, #FCE38A 46%, #4A7A2C 78%, #1E3B12 100%)",
       }}
     >
-      {/* Subtle PKOK top bar */}
-      <header className="z-30 flex w-full items-center justify-between bg-black/45 px-3 py-1.5 backdrop-blur-md border-b border-white/10">
+      {/* Decorative Tropical Jungle Foliage & Hibiscus on Right (matches live JILI sunset backdrop) */}
+      <svg
+        viewBox="0 0 260 360"
+        className="pointer-events-none fixed right-0 bottom-0 z-0 hidden h-[65vh] w-auto opacity-85 lg:block"
+        aria-hidden
+      >
+        <path d="M260,360 L260,120 C210,130 165,175 135,245 C175,230 215,245 260,360 Z" fill="#2F5917" />
+        <path d="M260,360 L260,170 C195,185 135,235 80,310 C150,290 210,315 260,360 Z" fill="#3E7420" />
+        <path d="M260,360 L260,230 C205,245 140,285 95,360 Z" fill="#4A8A27" />
+        <circle cx="195" cy="272" r="14" fill="#D94E28" />
+        <circle cx="195" cy="272" r="5" fill="#FFE066" />
+        <circle cx="228" cy="222" r="11" fill="#E6533C" />
+        <circle cx="228" cy="222" r="4" fill="#FFE066" />
+      </svg>
+
+      {/* Compact Top PKOK Strip */}
+      <header className="z-30 flex h-9 shrink-0 items-center justify-between border-b border-white/15 bg-black/50 px-3 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <Link
             to="/esports"
-            className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-xs font-bold text-white hover:bg-white/20"
+            className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-bold text-white hover:bg-white/20"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Lobby
           </Link>
-          <span className="hidden text-xs font-black tracking-wide text-[#FFE066] sm:inline">
+          <span className="hidden text-[11px] font-black tracking-wide text-[#FFE066] sm:inline">
             JILI · FORTUNE GEMS 2 · 5 PAYLINES
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-[#111827]/85 px-3 py-1 font-mono text-xs font-bold text-[#4be125] ring-1 ring-[#4be125]/40">
+          <span className="rounded-full bg-[#111827]/85 px-2.5 py-0.5 font-mono text-xs font-bold text-[#4be125] ring-1 ring-[#4be125]/40">
             ৳{balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
           <Link
             to="/wallet"
-            className="rounded-full bg-[linear-gradient(180deg,#28a909,#187203)] px-3 py-1 text-xs font-black text-white shadow ring-1 ring-[#4be125]/60 hover:brightness-110"
+            className="rounded-full bg-[linear-gradient(180deg,#28a909,#187203)] px-2.5 py-0.5 text-xs font-black text-white shadow ring-1 ring-[#4be125]/60 hover:brightness-110"
           >
             + Deposit
           </Link>
         </div>
       </header>
 
-      {/* Main Centered Landscape Temple Stage (matching live 1049×610 JILI Fortune Gems 2) */}
-      <main className="relative flex flex-1 items-center justify-center px-2 py-4 sm:px-6">
-        <div className="relative flex w-full max-w-[1040px] items-center justify-center">
-          {/* Left Side Peeking Lucky Wheel (desktop visible cleanly just like screenshot) */}
-          <div className="pointer-events-none relative -mr-20 hidden w-[320px] shrink-0 lg:block xl:w-[360px]">
+      {/* 100vh Zero-Scroll Centered JILI Cabinet Stage */}
+      <main className="relative z-10 flex flex-1 min-h-0 items-center justify-center p-1.5 sm:px-6 sm:py-2">
+        <div className="relative flex h-full max-h-[590px] w-full max-w-[1040px] items-center justify-center">
+          {/* Left Peeking Lucky Wheel (overlaps smoothly under left pillar) */}
+          <div className="pointer-events-none relative z-0 -mr-24 hidden w-[360px] shrink-0 lg:block xl:w-[400px]">
             <LuckyWheelGraphic bet={baseBet} rotationDeg={wheelRot} spinning={wheelSpinning} />
           </div>
 
-          {/* Left Collapsible Gear Drawer Tab */}
+          {/* Left Collapsible Gear Drawer */}
           <div className="fixed left-0 top-1/2 z-40 -translate-y-1/2 flex items-center">
             {openDrawer && (
               <div className="flex flex-col gap-1.5 rounded-r-xl border border-l-0 border-[#D4A024] bg-[#2D1A0E]/95 p-2 shadow-2xl backdrop-blur">
@@ -412,16 +419,14 @@ function FortuneGems2Page() {
               type="button"
               onClick={() => setOpenDrawer((o) => !o)}
               aria-label="Toggle game drawer"
-              className="flex h-12 w-9 items-center justify-center rounded-r-xl border border-l-0 border-[#D4A024] bg-[#4E311D]/90 text-[#FFD65A] shadow-lg hover:bg-[#6E4932]"
+              className="flex h-11 w-8 items-center justify-center rounded-r-xl border border-l-0 border-[#D4A024] bg-[#4E311D]/95 text-[#FFD65A] shadow-lg hover:bg-[#6E4932]"
             >
-              <Settings className="h-5 w-5" />
+              <Settings className="h-4 w-4" />
             </button>
           </div>
 
-          {/* Carved Sandstone Temple Cabinet */}
-          <div
-            className="relative z-10 w-full max-w-[740px] rounded-2xl border-4 border-[#8C6245] bg-[linear-gradient(180deg,#6E4932_0%,#543421_100%)] p-2 shadow-[0_24px_65px_rgba(0,0,0,0.65)] sm:p-3"
-          >
+          {/* Sandstone Temple Cabinet — flex-col locked inside viewport height! */}
+          <div className="relative z-10 flex h-full w-full max-w-[740px] flex-col rounded-2xl border-4 border-[#8C6245] bg-[linear-gradient(180deg,#7B5238_0%,#543421_100%)] p-1.5 shadow-[0_24px_65px_rgba(0,0,0,0.7)] sm:p-2.5">
             {gameDisabled && (
               <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-xl bg-black/80 p-6 text-center backdrop-blur">
                 <p className="text-lg font-black text-[#FFE066]">গেমটি সাময়িকভাবে বন্ধ আছে</p>
@@ -429,14 +434,13 @@ function FortuneGems2Page() {
               </div>
             )}
 
-            {/* Cabinet Top Header Bar: FORTUNE GEMS 2 + SPECIAL WHEEL */}
-            <div className="mb-2 grid grid-cols-4 items-center gap-2 px-1">
-              <div className="col-span-3 flex items-center justify-center rounded-lg bg-[#2C180B]/85 px-3 py-1.5 border border-[#D4A024]/60 shadow-inner">
-                <h1 className="truncate font-serif text-sm font-black uppercase tracking-wider sm:text-lg">
+            {/* 1) Top Header Row (~36px) */}
+            <div className="mb-1.5 grid shrink-0 grid-cols-4 items-center gap-1.5 px-0.5 sm:gap-2">
+              <div className="col-span-3 flex h-9 items-center justify-center rounded-lg border border-[#D4A024]/70 bg-[#2C180B]/90 px-3 shadow-inner">
+                <h1 className="truncate font-serif text-xs font-black uppercase tracking-wider sm:text-base">
                   {extraBet ? (
                     <span className="text-[#FFF3B0]">
-                      Score multiplier will be{" "}
-                      <span className="text-[#FF6B6B]">2X</span> or more
+                      Score multiplier will be <span className="text-[#FF6B6B]">2X</span> or more
                     </span>
                   ) : (
                     <>
@@ -449,20 +453,17 @@ function FortuneGems2Page() {
                 </h1>
               </div>
 
-              <div className="col-span-1 flex flex-col items-center justify-center rounded-lg border border-[#F5C52C] bg-[linear-gradient(180deg,#9E1818,#5A0B0B)] py-1 text-center shadow">
-                <span className="text-[9px] font-black uppercase leading-tight text-[#FFD65A] sm:text-[11px]">
-                  SPECIAL
-                </span>
-                <span className="text-[9px] font-black uppercase leading-tight text-[#FFD65A] sm:text-[11px]">
-                  WHEEL
+              <div className="col-span-1 flex h-9 flex-col items-center justify-center rounded-lg border border-[#F5C52C] bg-[linear-gradient(180deg,#9E1818,#5A0B0B)] text-center shadow">
+                <span className="text-[8px] font-black uppercase leading-tight text-[#FFD65A] sm:text-[10px]">
+                  SPECIAL WHEEL
                 </span>
               </div>
             </div>
 
-            {/* Reels Area: 3×3 Main Reels + 1×3 4th Special Multiplier Reel */}
-            <div className="relative grid grid-cols-4 gap-1.5 rounded-xl bg-[#3D2415] p-1.5 sm:gap-2.5 sm:p-2.5 shadow-inner">
+            {/* 2) 3×3 + Special Wheel Grid (flex-1 min-h-0 guarantees full screen fit!) */}
+            <div className="relative grid flex-1 min-h-0 grid-cols-4 gap-1.5 rounded-xl bg-[#3D2415] p-1.5 shadow-inner sm:gap-2 sm:p-2">
               {toastMsg && (
-                <div className="pointer-events-none absolute inset-x-6 top-1/2 z-40 -translate-y-1/2 rounded-xl border-2 border-[#FFE066] bg-black/85 px-4 py-2.5 text-center text-sm font-black text-[#FFE066] shadow-2xl">
+                <div className="pointer-events-none absolute inset-x-6 top-1/2 z-40 -translate-y-1/2 rounded-xl border-2 border-[#FFE066] bg-black/85 px-4 py-2 text-center text-sm font-black text-[#FFE066] shadow-2xl">
                   {toastMsg}
                 </div>
               )}
@@ -473,7 +474,7 @@ function FortuneGems2Page() {
                 return (
                   <div
                     key={colIdx}
-                    className={`flex flex-col gap-1.5 rounded-xl bg-[linear-gradient(180deg,#B08C62_0%,#8F6D48_100%)] p-1.5 shadow-inner sm:gap-2 ${
+                    className={`grid h-full min-h-0 grid-rows-3 gap-1.5 rounded-xl bg-[linear-gradient(180deg,#B08C62_0%,#8F6D48_100%)] p-1 shadow-inner sm:gap-1.5 sm:p-1.5 ${
                       spinCol ? "animate-pulse opacity-85 blur-[1.5px]" : ""
                     }`}
                   >
@@ -493,16 +494,16 @@ function FortuneGems2Page() {
                 );
               })}
 
-              {/* 4th Special Multiplier Reel */}
+              {/* 4th Special Wheel Multiplier Reel */}
               <div
-                className={`relative flex flex-col justify-between gap-1.5 rounded-xl p-1.5 sm:gap-2 transition-all ${
+                className={`relative grid h-full min-h-0 grid-rows-3 gap-1 rounded-xl p-1 sm:gap-1.5 sm:p-1.5 transition-all ${
                   extraBet
-                    ? "bg-[linear-gradient(180deg,#9E1818,#6B1218)] ring-2 ring-[#FFE066] shadow-[0_0_26px_rgba(255,214,90,0.75)]"
+                    ? "bg-[linear-gradient(180deg,#9E1818,#6B1218)] ring-2 ring-[#FFE066] shadow-[0_0_24px_rgba(255,214,90,0.75)]"
                     : "bg-[linear-gradient(180deg,#7B161C,#520C11)] ring-1 ring-[#C89B3C]/60"
                 } ${reelSpinning[3] ? "animate-pulse blur-[1.5px]" : ""}`}
               >
                 {extraBet && (
-                  <span className="pointer-events-none absolute -left-3 top-1/2 z-30 -translate-y-1/2 rounded-full border border-[#FFE066] bg-[linear-gradient(180deg,#FFD54F,#D97706)] px-1.5 py-0.5 text-[10px] font-black text-black shadow-lg">
+                  <span className="pointer-events-none absolute -left-3 top-1/2 z-30 -translate-y-1/2 rounded-full border border-[#FFE066] bg-[linear-gradient(180deg,#FFD54F,#D97706)] px-1.5 py-0.5 text-[9px] font-black text-black shadow-lg">
                     EX↑
                   </span>
                 )}
@@ -512,7 +513,7 @@ function FortuneGems2Page() {
                   return (
                     <div
                       key={rowIdx}
-                      className={`relative rounded-xl ${
+                      className={`relative h-full min-h-0 rounded-xl ${
                         isCenter
                           ? "ring-2 ring-[#F5C52C] bg-black/25 shadow-[0_0_16px_rgba(245,197,44,0.6)]"
                           : ""
@@ -524,18 +525,18 @@ function FortuneGems2Page() {
                 })}
               </div>
 
-              {/* Extra Bet Toggle Pill overlaid at bottom-left matching screenshot */}
-              <div className="relative col-span-4 mt-1 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5 rounded-full border-2 border-[#D4A024] bg-[linear-gradient(180deg,#5A2382,#371252)] px-2.5 py-1 shadow-lg">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#FFE066] text-[10px] font-black text-[#4A1C00]">
+              {/* Extra Bet Toggle Pill anchored bottom-left over reels matching screenshot */}
+              <div className="pointer-events-none absolute bottom-2 left-2 z-30 flex items-center gap-2">
+                <div className="pointer-events-auto flex items-center gap-1.5 rounded-full border-2 border-[#D4A024] bg-[linear-gradient(180deg,#5A2382,#371252)] px-2 py-0.5 shadow-xl">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FFE066] text-[9px] font-black text-[#4A1C00]">
                     EX↑
                   </span>
-                  <span className="text-xs font-bold text-white">Extra Bet</span>
+                  <span className="text-[11px] font-bold text-white">Extra Bet</span>
                   <button
                     type="button"
                     disabled={spinning}
                     onClick={() => setExtraBet((e) => !e)}
-                    className={`rounded-full px-3 py-0.5 text-xs font-black transition ${
+                    className={`rounded-full px-2.5 py-0.5 text-[11px] font-black transition ${
                       extraBet
                         ? "bg-[#22C55E] text-black shadow-[0_0_10px_rgba(34,197,94,0.85)]"
                         : "bg-black/45 text-white/80 hover:bg-black/65"
@@ -549,13 +550,13 @@ function FortuneGems2Page() {
                     className="text-white/75 hover:text-[#FFE066]"
                     title="What is Extra Bet?"
                   >
-                    <HelpCircle className="h-4 w-4" />
+                    <HelpCircle className="h-3.5 w-3.5" />
                   </button>
                 </div>
 
                 {lastResult && lastResult.totalBaseBetMult > 0 && (
-                  <div className="rounded-full border border-[#FFE066]/70 bg-black/55 px-3 py-1 text-xs font-black text-[#FFE066]">
-                    {lastResult.winLines.length} Line Win · {String(lastResult.centerSpecial)}
+                  <div className="rounded-full border border-[#FFE066]/70 bg-black/75 px-2.5 py-0.5 text-[11px] font-black text-[#FFE066] shadow">
+                    {lastResult.winLines.length} Line · {String(lastResult.centerSpecial)}
                     {lastResult.centerSpecial !== "WHEEL" ? "x" : ""}
                     {lastResult.wheelTriggered && ` + Wheel ${lastResult.wheelPrizeMult}×`}
                   </div>
@@ -563,19 +564,18 @@ function FortuneGems2Page() {
               </div>
 
               {showExHelp && (
-                <div className="col-span-4 rounded-xl border border-[#D4A024] bg-[#2D1442]/95 p-2.5 text-[11px] text-white/90">
-                  <strong className="text-[#FFE066]">Extra Bet (+50% stake):</strong> Removes <strong>1x</strong> from the 4th Special Wheel reel (guaranteed <strong>2x–15x</strong> or Wheel!) and adds an extra <strong>1x–15x</strong> multiplier onto Lucky Wheel prizes up to <strong>15,000×</strong>!
+                <div className="absolute bottom-11 left-2 z-40 max-w-xs rounded-xl border border-[#D4A024] bg-[#2D1442]/95 p-2.5 text-[11px] text-white/95 shadow-2xl">
+                  <strong className="text-[#FFE066]">Extra Bet (+50% stake):</strong> Removes <strong>1x</strong> from the 4th reel (guaranteed <strong>2x–15x</strong> or Wheel!) and adds an extra <strong>1x–15x</strong> multiplier onto Lucky Wheel prizes up to <strong>15,000×</strong>!
                 </div>
               )}
 
               <ParticleLayer ref={fxRef} />
             </div>
 
-            {/* Bottom Temple Step Dock (exact JILI controls left-to-right) */}
-            <div className="relative mt-2.5 flex flex-wrap items-center justify-between gap-2 rounded-xl border-t-2 border-[#C89B3C]/70 bg-[linear-gradient(180deg,#5C3B26_0%,#3C2415_100%)] px-3 py-2 shadow-inner">
-              {/* Bet Grid Popup */}
+            {/* 3) Bottom Temple Step Dock (~64px — ALWAYS visible without scrolling!) */}
+            <div className="relative mt-1.5 flex shrink-0 items-center justify-between gap-2 rounded-xl border-t-2 border-[#C89B3C]/70 bg-[linear-gradient(180deg,#5C3B26_0%,#3C2415_100%)] px-2.5 py-1.5 shadow-inner sm:px-3">
               {openBetGrid && (
-                <div className="absolute bottom-20 left-2 right-2 z-40 rounded-xl border-2 border-[#D4A024] bg-[#221D18]/95 p-3 shadow-2xl backdrop-blur">
+                <div className="absolute bottom-16 left-1 right-1 z-40 rounded-xl border-2 border-[#D4A024] bg-[#221D18]/95 p-3 shadow-2xl backdrop-blur">
                   <div className="mb-2 flex items-center justify-between">
                     <span className="text-xs font-black uppercase text-[#FFE066]">
                       Select Base Bet {extraBet ? "(×1.5 Extra Bet Active)" : ""}
@@ -595,7 +595,7 @@ function FortuneGems2Page() {
                           type="button"
                           disabled={!ok}
                           onClick={() => { setBaseBet(val); setOpenBetGrid(false); }}
-                          className={`rounded-lg py-2 text-xs font-black transition ${
+                          className={`rounded-lg py-1.5 text-xs font-black transition ${
                             active
                               ? "bg-[linear-gradient(180deg,#FFD54F,#D99B00)] text-black ring-2 ring-white"
                               : ok
@@ -611,11 +611,10 @@ function FortuneGems2Page() {
                 </div>
               )}
 
-              {/* Left Readouts: Balance + Bet + WIN */}
-              <div className="flex items-center gap-4 sm:gap-6">
+              <div className="flex items-center gap-3 sm:gap-5">
                 <div className="flex flex-col">
-                  <span className="text-[11px] font-bold text-[#F2C94C]">Balance</span>
-                  <span className="font-mono text-sm font-black text-white">
+                  <span className="text-[10px] font-bold text-[#F2C94C] sm:text-[11px]">Balance</span>
+                  <span className="font-mono text-xs font-black text-white sm:text-sm">
                     {balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -626,27 +625,26 @@ function FortuneGems2Page() {
                   onClick={() => setOpenBetGrid((o) => !o)}
                   className="flex flex-col items-center rounded-lg px-2 py-0.5 hover:bg-white/10 disabled:opacity-60"
                 >
-                  <Coins className="h-5 w-5 text-[#F2C94C]" />
-                  <span className="text-xs font-black text-white">
+                  <Coins className="h-4 w-4 text-[#F2C94C] sm:h-5 sm:w-5" />
+                  <span className="text-[11px] font-black text-white sm:text-xs">
                     Bet {actualStake}
                   </span>
                 </button>
 
                 <div className="flex flex-col">
-                  <span className="text-[11px] font-bold text-[#F2C94C]">WIN</span>
-                  <span className="font-mono text-sm font-black text-[#FFF3B0]">
+                  <span className="text-[10px] font-bold text-[#F2C94C] sm:text-[11px]">WIN</span>
+                  <span className="font-mono text-xs font-black text-[#FFF3B0] sm:text-sm">
                     {winDisplay.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
               </div>
 
-              {/* Right Action Buttons: Turbo + Auto + Gold JILI Spin */}
-              <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setTurboMode((m) => ((m + 1) % 3) as 0 | 1 | 2)}
                   title="Turbo / Super Turbo"
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-full border-2 transition sm:h-10 sm:w-10 ${
                     turboMode === 2
                       ? "border-[#FFE066] bg-[#B81212] text-[#FFE066]"
                       : turboMode === 1
@@ -664,7 +662,7 @@ function FortuneGems2Page() {
                     else setOpenAutoModal(true);
                   }}
                   title="Auto Spin"
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border-2 font-mono text-xs font-black transition ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-full border-2 font-mono text-[10px] font-black transition sm:h-10 sm:w-10 sm:text-xs ${
                     autoSpinsLeft > 0
                       ? "border-[#4be125] bg-[#165A16] text-white"
                       : "border-[#C89B3C] bg-[#3B2514] text-[#FFE066]"
@@ -678,30 +676,29 @@ function FortuneGems2Page() {
                   disabled={spinning || wheelModalOpen || !pf.ready || gameDisabled}
                   onClick={spinNow}
                   aria-label="Spin"
-                  className={`relative flex h-14 w-14 items-center justify-center rounded-full border-[3px] border-[#FFF3B0] bg-[radial-gradient(circle_at_35%_30%,#FFE57F_0%,#F2B705_58%,#B87800_100%)] shadow-[0_0_22px_rgba(242,183,5,0.6),inset_0_2px_4px_rgba(255,255,255,0.7)] transition hover:scale-105 active:scale-95 disabled:opacity-70 ${
+                  className={`relative flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-[#FFF3B0] bg-[radial-gradient(circle_at_35%_30%,#FFE57F_0%,#F2B705_58%,#B87800_100%)] shadow-[0_0_20px_rgba(242,183,5,0.65),inset_0_2px_4px_rgba(255,255,255,0.7)] transition hover:scale-105 active:scale-95 disabled:opacity-70 sm:h-14 sm:w-14 ${
                     spinning ? "animate-pulse" : ""
                   }`}
                 >
-                  <RotateCw className={`h-8 w-8 text-white drop-shadow ${spinning ? "animate-spin" : ""}`} />
-                  <span className="pointer-events-none absolute text-[9px] font-black text-[#5E3800]">
+                  <RotateCw className={`h-7 w-7 text-white drop-shadow sm:h-8 sm:w-8 ${spinning ? "animate-spin" : ""}`} />
+                  <span className="pointer-events-none absolute text-[8px] font-black text-[#5E3800] sm:text-[9px]">
                     JILI
                   </span>
                 </button>
               </div>
             </div>
 
-            {/* Footer line */}
-            <div className="mt-1.5 flex items-center justify-between px-1 text-[10px] text-white/60">
+            <div className="mt-1 flex shrink-0 items-center justify-between px-1 text-[10px] text-white/60">
               <span>v_6_8 · {stats.rounds} spins</span>
               <span className="flex items-center gap-1.5">
-                <Wifi className="h-3.5 w-3.5 text-[#4be125]" /> Provably Fair
+                <Wifi className="h-3 w-3 text-[#4be125]" /> Provably Fair
               </span>
             </div>
           </div>
         </div>
       </main>
 
-      {/* Lucky Wheel Popover Modal when WHEEL triggers */}
+      {/* Lucky Wheel Modal when WHEEL triggers */}
       {wheelModalOpen && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
           <div className="mb-3 rounded-full border-2 border-[#FFE066] bg-[linear-gradient(180deg,#9E1818,#5A0B0B)] px-6 py-1.5 text-base font-black uppercase tracking-wider text-[#FFE066] shadow-2xl">
