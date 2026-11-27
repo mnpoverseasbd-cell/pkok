@@ -113,6 +113,7 @@ export function Die3D({
   theme = "emerald-gold",
   phaseOffset = 0,
   outcome = "idle",
+  dropHeight = 96,
 }: {
   value: number;
   rolling: boolean;
@@ -122,6 +123,7 @@ export function Die3D({
   theme?: DieTheme;
   phaseOffset?: number;
   outcome?: "idle" | "win" | "lose";
+  dropHeight?: number;
 }) {
   const half = size / 2;
   const clamped = Math.min(6, Math.max(1, Math.round(value || 1)));
@@ -133,6 +135,7 @@ export function Die3D({
     rx: target.rx - 14,
     ry: target.ry + 18,
     rz: 0,
+    x: 0,
     y: 0,
     scale: 1,
     shadowScale: 1,
@@ -144,11 +147,10 @@ export function Die3D({
 
   useEffect(() => {
     if (!rolling) {
-      // Smooth spring settle onto exact target face with multi-spin wrap preserved
       const start = poseRef.current;
       const finalFace = targetRef.current;
-      const goalRx = Math.round(start.rx / 360) * 360 + finalFace.rx - 10;
-      const goalRy = Math.round(start.ry / 360) * 360 + finalFace.ry + 14;
+      const goalRx = Math.round(start.rx / 360) * 360 + finalFace.rx - 12;
+      const goalRy = Math.round(start.ry / 360) * 360 + finalFace.ry + 16;
       const goalRz = Math.round(start.rz / 360) * 360;
       const dur = turbo ? 180 : 380;
       const t0 = performance.now();
@@ -156,20 +158,20 @@ export function Die3D({
 
       const step = (now: number) => {
         const t = Math.min(1, (now - t0) / dur);
-        // Back-out ease for tactile physical settle bounce
         const c1 = 1.7;
         const c3 = c1 + 1;
         const eased = 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-        const bounceY = Math.sin(t * Math.PI) * -8 * (1 - t);
+        const bounceY = Math.sin(t * Math.PI) * -9 * (1 - t);
 
         setPose({
           rx: start.rx + (goalRx - start.rx) * eased,
           ry: start.ry + (goalRy - start.ry) * eased,
           rz: start.rz + (goalRz - start.rz) * eased,
+          x: start.x * (1 - eased),
           y: bounceY,
           scale: 1 + (1 - t) * 0.04,
           shadowScale: 1 - Math.abs(bounceY) * 0.015,
-          shadowOpacity: 0.5,
+          shadowOpacity: 0.55,
         });
         if (t < 1) raf = requestAnimationFrame(step);
       };
@@ -177,7 +179,7 @@ export function Die3D({
       return () => cancelAnimationFrame(raf);
     }
 
-    // Active airborne tumble physics loop
+    // Crystal chute drop + double felt bounce physics
     const start = poseRef.current;
     const t0 = performance.now();
     const duration = turbo ? 260 : 820;
@@ -187,65 +189,81 @@ export function Die3D({
     const tick = (now: number) => {
       const elapsed = now - t0;
       const p = Math.min(1, elapsed / duration);
-      // Two parabolic hops (big toss + secondary bounce)
-      const hop =
-        p < 0.65
-          ? Math.sin((p / 0.65) * Math.PI) * (turbo ? 24 : 46)
-          : Math.sin(((p - 0.65) / 0.35) * Math.PI) * (turbo ? 9 : 16);
 
-      const spinProgress = 1 - Math.pow(1 - p, 2.2);
-      const rx = start.rx + (540 + phaseOffset * 90) * spinProgress * spinDir;
-      const ry = start.ry + (720 + phaseOffset * 120) * spinProgress;
-      const rz = start.rz + (360 * spinProgress * spinDir);
+      // Phase 1 (0..0.38): drop straight down from inside the crystal chute
+      // Phase 2 (0.38..0.72): primary bounce off velvet pad
+      // Phase 3 (0.72..1.0): secondary low hop onto landing spot
+      let y = 0;
+      let x = 0;
+      if (p < 0.38) {
+        const fall = p / 0.38;
+        y = -dropHeight * (1 - fall * fall);
+        x = Math.sin(fall * Math.PI) * spinDir * 10;
+      } else if (p < 0.72) {
+        const b1 = (p - 0.38) / 0.34;
+        y = -Math.sin(b1 * Math.PI) * (turbo ? 18 : 34);
+        x = Math.sin(b1 * Math.PI) * spinDir * 8;
+      } else {
+        const b2 = (p - 0.72) / 0.28;
+        y = -Math.sin(b2 * Math.PI) * (turbo ? 6 : 12);
+        x = 0;
+      }
 
+      const spinProgress = 1 - Math.pow(1 - p, 2.1);
+      const rx = start.rx + (620 + phaseOffset * 110) * spinProgress * spinDir;
+      const ry = start.ry + (780 + phaseOffset * 130) * spinProgress;
+      const rz = start.rz + 360 * spinProgress * spinDir;
+
+      const heightAbovePad = Math.max(0, -y);
       setPose({
         rx,
         ry,
         rz,
-        y: -hop,
-        scale: 1 + hop * 0.004,
-        shadowScale: Math.max(0.55, 1 - hop * 0.008),
-        shadowOpacity: Math.max(0.18, 0.52 - hop * 0.006),
+        x,
+        y,
+        scale: 1 + Math.min(0.14, heightAbovePad * 0.0014),
+        shadowScale: Math.max(0.45, 1 - heightAbovePad * 0.005),
+        shadowOpacity: Math.max(0.15, 0.56 - heightAbovePad * 0.004),
       });
       if (p < 1) raf = requestAnimationFrame(tick);
     };
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [rolling, rollId, turbo, phaseOffset, clamped]);
+  }, [rolling, rollId, turbo, phaseOffset, clamped, dropHeight]);
 
   const haloClass =
     !rolling && outcome === "win"
-      ? "drop-shadow-[0_0_22px_rgba(16,185,129,0.75)]"
+      ? "drop-shadow-[0_0_24px_rgba(16,185,129,0.8)]"
       : !rolling && outcome === "lose"
-        ? "drop-shadow-[0_0_18px_rgba(244,63,94,0.65)]"
-        : "drop-shadow-[0_10px_18px_rgba(0,0,0,0.65)]";
+        ? "drop-shadow-[0_0_18px_rgba(244,63,94,0.7)]"
+        : "drop-shadow-[0_12px_20px_rgba(0,0,0,0.75)]";
 
   return (
     <div
       className="relative flex flex-col items-center select-none"
-      style={{ width: size + 24, height: size + 28, perspective: 720 }}
+      style={{ width: size + 24, height: size + 26, perspective: 760 }}
     >
       {/* Dynamic table felt shadow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute bottom-1 rounded-full bg-black/80 blur-md transition-opacity"
+        className="pointer-events-none absolute bottom-1 rounded-full bg-black/85 blur-md transition-opacity"
         style={{
-          width: size * 0.95,
+          width: size * 0.96,
           height: size * 0.28,
           opacity: pose.shadowOpacity,
-          transform: `scale(${pose.shadowScale})`,
+          transform: `translateX(${pose.x}px) scale(${pose.shadowScale})`,
         }}
       />
 
       {/* Airborne 3D cube */}
       <div
-        className={`relative mt-2 ${haloClass}`}
+        className={`relative mt-1 ${haloClass}`}
         style={{
           width: size,
           height: size,
           transformStyle: "preserve-3d",
-          transform: `translateY(${pose.y}px) scale(${pose.scale}) rotateX(${pose.rx}deg) rotateY(${pose.ry}deg) rotateZ(${pose.rz}deg)`,
+          transform: `translate3d(${pose.x}px, ${pose.y}px, 0) scale(${pose.scale}) rotateX(${pose.rx}deg) rotateY(${pose.ry}deg) rotateZ(${pose.rz}deg)`,
           willChange: "transform",
         }}
       >
