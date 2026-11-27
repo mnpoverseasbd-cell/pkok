@@ -113,3 +113,16 @@ export function sfxCashout() {
   tone({ freq: 880, dur: 0.12, type: "sine", vol: 0.28, release: 0.08 });
   setTimeout(() => tone({ freq: 1320, dur: 0.18, type: "sine", vol: 0.28, release: 0.12 }), 80);
 }
+
+/** Realistic dice cup shake / mid-air rattle. */
+export function sfxDiceShake() {
+  noiseBurst(0.055, 0.22, 1900);
+  tone({ freq: 620 + Math.random() * 260, dur: 0.032, type: "triangle", vol: 0.18, attack: 0.001, release: 0.02 });
+}
+
+/** Crisp dice table bounce / felt settle thud. */
+export function sfxDiceLand(strength = 1) {
+  const vol = Math.min(0.4, 0.15 + strength * 0.2);
+  tone({ freq: 165 + strength * 55, dur: 0.065, type: "sine", vol, slideTo: 75, attack: 0.001, release: 0.04 });
+  noiseBurst(0.04, vol * 0.55, 1300);
+}
