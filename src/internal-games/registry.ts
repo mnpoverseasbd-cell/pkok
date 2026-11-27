@@ -91,6 +91,7 @@ const SEEDS: Seed[] = [
   { slug: "video-poker", name: "Video Poker · Jacks or Better", category: "poker", image: imgVideoPoker, tags: ["new", "hot", "cards", "classic"], featured: true, popularity: 90 },
   { slug: "slots", name: "Cosmic Fortune Slots", category: "slots", image: imgSlots, tags: ["new", "hot", "slots", "classic"], featured: true, popularity: 99 },
   { slug: "super-ace", name: "Super Ace", category: "slots", image: imgSlots, tags: ["new", "hot", "slots", "jili", "cards"], featured: true, popularity: 100 },
+  { slug: "fortune-gems-2", name: "Fortune Gems 2", category: "slots", image: imgSlots, tags: ["new", "hot", "slots", "jili", "wheel"], featured: true, popularity: 99 },
   { slug: "bingo", name: "Bingo 75", category: "lottery", image: imgBingo, tags: ["new", "hot", "lottery", "classic"], featured: true, popularity: 88 },
   { slug: "matka", name: "Matka King", category: "lottery", image: imgMatka, tags: ["new", "hot", "lottery", "bd", "classic"], featured: true, popularity: 97 },
   { slug: "fish-shooter", name: "Fish Shooter · Cast Net", category: "fishing", image: imgFishShooter, tags: ["new", "hot", "fishing", "arcade"], featured: true, popularity: 92 },

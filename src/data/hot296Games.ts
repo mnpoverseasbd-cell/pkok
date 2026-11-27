@@ -3,7 +3,7 @@ export type HotCatalogGame = {
   title: string;
   provider: string;
   img: string;
-  to?: "/games/super-ace" | "/games/crash";
+  to?: "/games/super-ace" | "/games/crash" | "/games/fortune-gems-2";
 };
 
 export const VENDOR_LOGO_WHITE = (provider: string) =>
@@ -37,7 +37,8 @@ export const HOT_296_GAMES: HotCatalogGame[] = [
         "i":  3,
         "title":  "ফরচুন জেমস ২",
         "provider":  "JL",
-        "img":  "https://images.23924894.com/prod-images/TCG_GAME_ICONS/HOT_GAME/pkokbdtf6/pc/JL/BN/JL0125.webp?_1781944103405"
+        "img":  "https://images.23924894.com/prod-images/TCG_GAME_ICONS/HOT_GAME/pkokbdtf6/pc/JL/BN/JL0125.webp?_1781944103405",
+        "to":  "/games/fortune-gems-2"
     },
     {
         "i":  4,

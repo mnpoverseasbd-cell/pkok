@@ -443,6 +443,7 @@ const ALL_GAMES_CATALOG: { game_key: string; name: string }[] = [
   { game_key: "aviator-x2", name: "Aviator X2 · Duo-Plane" },
   { game_key: "jhandi-munda", name: "Jhandi Munda · Crown & Anchor" },
   { game_key: "super-ace", name: "Super Ace · JILI 1024 Ways" },
+  { game_key: "fortune-gems-2", name: "Fortune Gems 2 · JILI Lucky Wheel" },
 ];
 
 export const adminSyncAllGames = createServerFn({ method: "POST" })

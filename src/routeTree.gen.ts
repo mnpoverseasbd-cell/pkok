@@ -55,6 +55,7 @@ import { Route as GamesDragonPhoenixRouteImport } from './routes/games.dragon-ph
 import { Route as GamesDragonTigerRouteImport } from './routes/games.dragon-tiger'
 import { Route as GamesFanTanRouteImport } from './routes/games.fan-tan'
 import { Route as GamesFishShooterRouteImport } from './routes/games.fish-shooter'
+import { Route as GamesFortuneGems2RouteImport } from './routes/games.fortune-gems-2'
 import { Route as GamesHiLoRouteImport } from './routes/games.hi-lo'
 import { Route as GamesJhandiMundaRouteImport } from './routes/games.jhandi-munda'
 import { Route as GamesKenoRouteImport } from './routes/games.keno'
@@ -310,6 +311,11 @@ const GamesFishShooterRoute = GamesFishShooterRouteImport.update({
   path: '/games/fish-shooter',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesFortuneGems2Route = GamesFortuneGems2RouteImport.update({
+  id: '/games/fortune-gems-2',
+  path: '/games/fortune-gems-2',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesHiLoRoute = GamesHiLoRouteImport.update({
   id: '/games/hi-lo',
   path: '/games/hi-lo',
@@ -477,6 +483,7 @@ export interface FileRoutesByFullPath {
   '/games/dragon-tiger': typeof GamesDragonTigerRoute
   '/games/fan-tan': typeof GamesFanTanRoute
   '/games/fish-shooter': typeof GamesFishShooterRoute
+  '/games/fortune-gems-2': typeof GamesFortuneGems2Route
   '/games/hi-lo': typeof GamesHiLoRoute
   '/games/jhandi-munda': typeof GamesJhandiMundaRoute
   '/games/keno': typeof GamesKenoRoute
@@ -549,6 +556,7 @@ export interface FileRoutesByTo {
   '/games/dragon-tiger': typeof GamesDragonTigerRoute
   '/games/fan-tan': typeof GamesFanTanRoute
   '/games/fish-shooter': typeof GamesFishShooterRoute
+  '/games/fortune-gems-2': typeof GamesFortuneGems2Route
   '/games/hi-lo': typeof GamesHiLoRoute
   '/games/jhandi-munda': typeof GamesJhandiMundaRoute
   '/games/keno': typeof GamesKenoRoute
@@ -622,6 +630,7 @@ export interface FileRoutesById {
   '/games/dragon-tiger': typeof GamesDragonTigerRoute
   '/games/fan-tan': typeof GamesFanTanRoute
   '/games/fish-shooter': typeof GamesFishShooterRoute
+  '/games/fortune-gems-2': typeof GamesFortuneGems2Route
   '/games/hi-lo': typeof GamesHiLoRoute
   '/games/jhandi-munda': typeof GamesJhandiMundaRoute
   '/games/keno': typeof GamesKenoRoute
@@ -696,6 +705,7 @@ export interface FileRouteTypes {
     | '/games/dragon-tiger'
     | '/games/fan-tan'
     | '/games/fish-shooter'
+    | '/games/fortune-gems-2'
     | '/games/hi-lo'
     | '/games/jhandi-munda'
     | '/games/keno'
@@ -768,6 +778,7 @@ export interface FileRouteTypes {
     | '/games/dragon-tiger'
     | '/games/fan-tan'
     | '/games/fish-shooter'
+    | '/games/fortune-gems-2'
     | '/games/hi-lo'
     | '/games/jhandi-munda'
     | '/games/keno'
@@ -840,6 +851,7 @@ export interface FileRouteTypes {
     | '/games/dragon-tiger'
     | '/games/fan-tan'
     | '/games/fish-shooter'
+    | '/games/fortune-gems-2'
     | '/games/hi-lo'
     | '/games/jhandi-munda'
     | '/games/keno'
@@ -913,6 +925,7 @@ export interface RootRouteChildren {
   GamesDragonTigerRoute: typeof GamesDragonTigerRoute
   GamesFanTanRoute: typeof GamesFanTanRoute
   GamesFishShooterRoute: typeof GamesFishShooterRoute
+  GamesFortuneGems2Route: typeof GamesFortuneGems2Route
   GamesHiLoRoute: typeof GamesHiLoRoute
   GamesJhandiMundaRoute: typeof GamesJhandiMundaRoute
   GamesKenoRoute: typeof GamesKenoRoute
@@ -1263,6 +1276,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesFishShooterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/fortune-gems-2': {
+      id: '/games/fortune-gems-2'
+      path: '/games/fortune-gems-2'
+      fullPath: '/games/fortune-gems-2'
+      preLoaderRoute: typeof GamesFortuneGems2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/hi-lo': {
       id: '/games/hi-lo'
       path: '/games/hi-lo'
@@ -1480,6 +1500,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesDragonTigerRoute: GamesDragonTigerRoute,
   GamesFanTanRoute: GamesFanTanRoute,
   GamesFishShooterRoute: GamesFishShooterRoute,
+  GamesFortuneGems2Route: GamesFortuneGems2Route,
   GamesHiLoRoute: GamesHiLoRoute,
   GamesJhandiMundaRoute: GamesJhandiMundaRoute,
   GamesKenoRoute: GamesKenoRoute,

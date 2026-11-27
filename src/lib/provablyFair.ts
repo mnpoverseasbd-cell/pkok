@@ -1781,6 +1781,218 @@ export async function fairSuperAceSpin(
   };
 }
 
+// ---- JILI Fortune Gems 2 · 3×3 + 4th Special Wheel Reel · 5 Paylines ---------
+export type Fg2Symbol = "WILD" | "RED" | "BLUE" | "GREEN" | "A" | "K" | "Q" | "J";
+export type Fg2SpecialItem = 1 | 2 | 3 | 5 | 10 | 15 | "WHEEL";
+
+// Multiplier of BASE bet for 3 matching on a payline (verified live at Bet 400)
+export const FG2_PAYTABLE: Record<Fg2Symbol, number> = {
+  WILD: 5.0,
+  RED: 4.0,
+  BLUE: 3.0,
+  GREEN: 2.4,
+  A: 2.0,
+  K: 1.6,
+  Q: 1.0,
+  J: 0.4,
+};
+
+// 5 fixed paylines: [rowCol0, rowCol1, rowCol2]
+export const FG2_PAYLINES: readonly [number, number, number][] = [
+  [1, 1, 1], // Middle
+  [0, 0, 0], // Top
+  [2, 2, 2], // Bottom
+  [0, 1, 2], // Diagonal ↘
+  [2, 1, 0], // Diagonal ↗
+];
+
+export type Fg2WinLine = {
+  lineIndex: number;
+  symbol: Fg2Symbol;
+  lineMult: number;
+};
+
+export type Fg2SpinResult = {
+  grid: Fg2Symbol[][]; // [col 0..2][row 0..2]
+  specialReel: [Fg2SpecialItem, Fg2SpecialItem, Fg2SpecialItem]; // top, center, bottom
+  centerSpecial: Fg2SpecialItem;
+  winLines: Fg2WinLine[];
+  baseLineMult: number;
+  reel4Mult: number;
+  wheelTriggered: boolean;
+  wheelPrizeMult: number;
+  wheelExtraMult: number;
+  totalBaseBetMult: number; // total win as multiple of normal base bet
+};
+
+const FG2_SYM_WEIGHTS: { sym: Fg2Symbol; w: number }[] = [
+  { sym: "WILD", w: 6 },
+  { sym: "RED", w: 8 },
+  { sym: "BLUE", w: 10 },
+  { sym: "GREEN", w: 12 },
+  { sym: "A", w: 14 },
+  { sym: "K", w: 16 },
+  { sym: "Q", w: 18 },
+  { sym: "J", w: 20 },
+];
+const FG2_SYM_TOTAL = FG2_SYM_WEIGHTS.reduce((s, x) => s + x.w, 0);
+
+function pickFg2Symbol(f: number): Fg2Symbol {
+  let acc = f * FG2_SYM_TOTAL;
+  for (const item of FG2_SYM_WEIGHTS) {
+    acc -= item.w;
+    if (acc <= 0) return item.sym;
+  }
+  return "J";
+}
+
+function pickFg2Special(f: number, extraBet: boolean): Fg2SpecialItem {
+  const pool: { item: Fg2SpecialItem; w: number }[] = extraBet
+    ? [
+        { item: 2, w: 32 },
+        { item: 3, w: 26 },
+        { item: 5, w: 18 },
+        { item: 10, w: 9 },
+        { item: 15, w: 5 },
+        { item: "WHEEL", w: 10 },
+      ]
+    : [
+        { item: 1, w: 34 },
+        { item: 2, w: 25 },
+        { item: 3, w: 18 },
+        { item: 5, w: 11 },
+        { item: 10, w: 4 },
+        { item: 15, w: 2 },
+        { item: "WHEEL", w: 6 },
+      ];
+  const total = pool.reduce((s, x) => s + x.w, 0);
+  let acc = f * total;
+  for (const p of pool) {
+    acc -= p.w;
+    if (acc <= 0) return p.item;
+  }
+  return extraBet ? 2 : 1;
+}
+
+const WHEEL_WEIGHTS: { mult: number; w: number }[] = [
+  { mult: 1, w: 18 },
+  { mult: 3, w: 22 },
+  { mult: 5, w: 18 },
+  { mult: 8, w: 14 },
+  { mult: 10, w: 10 },
+  { mult: 15, w: 7 },
+  { mult: 20, w: 5 },
+  { mult: 30, w: 3 },
+  { mult: 50, w: 1.5 },
+  { mult: 100, w: 0.9 },
+  { mult: 200, w: 0.45 },
+  { mult: 1000, w: 0.15 },
+];
+const WHEEL_TOTAL_W = WHEEL_WEIGHTS.reduce((s, x) => s + x.w, 0);
+
+function pickWheelPrize(f: number): number {
+  let acc = f * WHEEL_TOTAL_W;
+  for (const x of WHEEL_WEIGHTS) {
+    acc -= x.w;
+    if (acc <= 0) return x.mult;
+  }
+  return 3;
+}
+
+export async function fairFortuneGems2Spin(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+  options?: { extraBet?: boolean; edge?: number },
+): Promise<Fg2SpinResult> {
+  const extraBet = !!options?.extraBet;
+  const tune = getWinRateRatio("fortune-gems-2");
+  const effEdge = tune.edge ?? options?.edge ?? 0.03;
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 18);
+  let fi = 0;
+  const nextF = () => floats[fi++ % floats.length];
+
+  // Build 3×3 grid with natural stacked affinity like live JILI Fortune Gems 2
+  const grid: Fg2Symbol[][] = [];
+  for (let c = 0; c < 3; c++) {
+    const col: Fg2Symbol[] = [];
+    let anchor: Fg2Symbol | null = null;
+    for (let r = 0; r < 3; r++) {
+      const f = nextF();
+      const stackF = nextF();
+      if (anchor && stackF < 0.36) {
+        col.push(anchor);
+      } else {
+        const s = pickFg2Symbol(f);
+        if (!anchor) anchor = s;
+        col.push(s);
+      }
+    }
+    grid.push(col);
+  }
+
+  const specialReel: [Fg2SpecialItem, Fg2SpecialItem, Fg2SpecialItem] = [
+    pickFg2Special(nextF(), extraBet),
+    pickFg2Special(nextF(), extraBet),
+    pickFg2Special(nextF(), extraBet),
+  ];
+  const centerSpecial = specialReel[1];
+
+  // Evaluate all 5 fixed paylines
+  const winLines: Fg2WinLine[] = [];
+  let baseLineMult = 0;
+
+  FG2_PAYLINES.forEach((rows, lineIndex) => {
+    const syms: Fg2Symbol[] = [grid[0][rows[0]], grid[1][rows[1]], grid[2][rows[2]]];
+    let target: Fg2Symbol = "WILD";
+    for (const s of syms) {
+      if (s !== "WILD") {
+        target = s;
+        break;
+      }
+    }
+    const allMatch = syms.every((s) => s === target || s === "WILD");
+    if (allMatch) {
+      const lineMult = FG2_PAYTABLE[target];
+      baseLineMult = +(baseLineMult + lineMult).toFixed(4);
+      winLines.push({ lineIndex, symbol: target, lineMult });
+    }
+  });
+
+  const wheelTriggered = centerSpecial === "WHEEL" && winLines.length > 0;
+  const reel4Mult = typeof centerSpecial === "number" ? centerSpecial : 1;
+
+  let wheelPrizeMult = 0;
+  let wheelExtraMult = 1;
+  if (wheelTriggered) {
+    wheelPrizeMult = pickWheelPrize(nextF());
+    if (extraBet) {
+      const exPool = [1, 2, 3, 5, 10, 15];
+      wheelExtraMult = exPool[Math.floor(nextF() * exPool.length) % exPool.length];
+    }
+  }
+
+  const rawMult = baseLineMult * reel4Mult + wheelPrizeMult * wheelExtraMult;
+  const maxCap = extraBet ? 15_000 : 10_000;
+  const totalBaseBetMult =
+    rawMult > 0
+      ? +Math.min(maxCap, rawMult * (1 - effEdge) * tune.ratio).toFixed(4)
+      : 0;
+
+  return {
+    grid,
+    specialReel,
+    centerSpecial,
+    winLines,
+    baseLineMult,
+    reel4Mult,
+    wheelTriggered,
+    wheelPrizeMult,
+    wheelExtraMult,
+    totalBaseBetMult,
+  };
+}
+
 
 
 
