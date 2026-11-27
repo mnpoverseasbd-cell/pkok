@@ -1484,6 +1484,303 @@ export function jhandiNetMult(count: number): number {
   return count > 0 ? +(1 + count).toFixed(4) : 0;
 }
 
+// ---- JILI Super Ace · 5×4 · 1024 Ways Cascading Cards ------------------------
+export type SuperAceSymbol =
+  | "A"
+  | "K"
+  | "Q"
+  | "J"
+  | "S"
+  | "H"
+  | "D"
+  | "C"
+  | "SCATTER"
+  | "LITTLE_JOKER"
+  | "BIG_JOKER";
+
+export type SuperAceCell = {
+  id: string;
+  sym: SuperAceSymbol;
+  golden: boolean;
+};
+
+export type SuperAceWinLine = {
+  symbol: SuperAceSymbol;
+  matchReels: number;
+  ways: number;
+  payoutMult: number;
+};
+
+export type SuperAceCascadeStep = {
+  comboIndex: number;
+  gridBefore: SuperAceCell[][];
+  winningPositions: [number, number][];
+  winLines: SuperAceWinLine[];
+  baseMult: number;
+  comboMult: number;
+  stepMult: number;
+  convertedGolden: { col: number; row: number; to: "LITTLE_JOKER" | "BIG_JOKER" }[];
+  clonedBigJokers: [number, number][];
+  gridAfter: SuperAceCell[][];
+};
+
+export type SuperAceSpinResult = {
+  initialGrid: SuperAceCell[][];
+  cascades: SuperAceCascadeStep[];
+  finalGrid: SuperAceCell[][];
+  totalMultiplier: number;
+  scatterCount: number;
+  freeSpinsAwarded: number;
+};
+
+export const SUPER_ACE_REGULAR_SYMS = ["A", "K", "Q", "J", "S", "H", "D", "C"] as const;
+
+export const SUPER_ACE_PAYTABLE: Record<
+  (typeof SUPER_ACE_REGULAR_SYMS)[number],
+  { 3: number; 4: number; 5: number }
+> = {
+  A: { 3: 0.5, 4: 1.5, 5: 2.5 },
+  K: { 3: 0.4, 4: 1.2, 5: 2.0 },
+  Q: { 3: 0.3, 4: 0.9, 5: 1.5 },
+  J: { 3: 0.2, 4: 0.6, 5: 1.0 },
+  S: { 3: 0.1, 4: 0.3, 5: 0.5 },
+  H: { 3: 0.1, 4: 0.3, 5: 0.5 },
+  D: { 3: 0.05, 4: 0.15, 5: 0.25 },
+  C: { 3: 0.05, 4: 0.15, 5: 0.25 },
+};
+
+export const SUPER_ACE_BASE_COMBOS = [1, 2, 3, 5] as const;
+export const SUPER_ACE_FREE_COMBOS = [2, 4, 6, 10] as const;
+
+const SA_WEIGHTS: { sym: (typeof SUPER_ACE_REGULAR_SYMS)[number]; w: number }[] = [
+  { sym: "A", w: 6 },
+  { sym: "K", w: 8 },
+  { sym: "Q", w: 10 },
+  { sym: "J", w: 12 },
+  { sym: "S", w: 15 },
+  { sym: "H", w: 15 },
+  { sym: "D", w: 18 },
+  { sym: "C", w: 18 },
+];
+const SA_TOTAL_W = SA_WEIGHTS.reduce((s, x) => s + x.w, 0);
+
+function pickSaRegular(f: number): (typeof SUPER_ACE_REGULAR_SYMS)[number] {
+  let acc = f * SA_TOTAL_W;
+  for (const item of SA_WEIGHTS) {
+    acc -= item.w;
+    if (acc <= 0) return item.sym;
+  }
+  return "C";
+}
+
+function isSaWild(sym: SuperAceSymbol) {
+  return sym === "LITTLE_JOKER" || sym === "BIG_JOKER";
+}
+
+function cloneSaGrid(g: SuperAceCell[][]): SuperAceCell[][] {
+  return g.map((col) => col.map((cell) => ({ ...cell })));
+}
+
+function evaluateSaGrid(grid: SuperAceCell[][]): {
+  winningPositions: [number, number][];
+  winLines: SuperAceWinLine[];
+  baseMult: number;
+} {
+  const winMap = new Map<string, [number, number]>();
+  const winLines: SuperAceWinLine[] = [];
+  let baseMult = 0;
+
+  for (const target of SUPER_ACE_REGULAR_SYMS) {
+    const counts: number[] = [];
+    const matchedPerCol: number[][] = [];
+    for (let c = 0; c < 5; c++) {
+      const rows: number[] = [];
+      for (let r = 0; r < 4; r++) {
+        const sym = grid[c][r].sym;
+        if (sym === target || isSaWild(sym)) rows.push(r);
+      }
+      if (rows.length === 0) break;
+      counts.push(rows.length);
+      matchedPerCol.push(rows);
+    }
+    const matchReels = counts.length;
+    if (matchReels >= 3) {
+      // Ensure at least one actual symbol or wild pays only when reel 0 participates
+      const ways = counts.reduce((p, n) => p * n, 1);
+      const unit = SUPER_ACE_PAYTABLE[target][matchReels as 3 | 4 | 5];
+      const payoutMult = +(ways * unit).toFixed(4);
+      baseMult += payoutMult;
+      winLines.push({ symbol: target, matchReels, ways, payoutMult });
+      for (let c = 0; c < matchReels; c++) {
+        for (const r of matchedPerCol[c]) {
+          winMap.set(`${c}-${r}`, [c, r]);
+        }
+      }
+    }
+  }
+
+  return {
+    winningPositions: Array.from(winMap.values()),
+    winLines,
+    baseMult: +baseMult.toFixed(4),
+  };
+}
+
+export async function fairSuperAceSpin(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+  options?: { isFreeSpin?: boolean; edge?: number },
+): Promise<SuperAceSpinResult> {
+  const isFreeSpin = !!options?.isFreeSpin;
+  const tune = getWinRateRatio("super-ace");
+  const effEdge = tune.edge ?? options?.edge ?? 0.03;
+  // Pre-draw generous deterministic floats for initial grid + up to 12 cascades
+  const floats = await fairFloats(serverSeed, clientSeed, nonce, 220);
+  let fi = 0;
+  const nextF = () => floats[fi++ % floats.length];
+  let uid = 0;
+
+  const goldRate = isFreeSpin ? 0.25 : 0.18;
+  const scatterRate = isFreeSpin ? 0.025 : 0.032;
+
+  const makeCell = (col: number, colHasScatter: boolean): SuperAceCell => {
+    const fSym = nextF();
+    const fMeta = nextF();
+    if (!colHasScatter && fSym < scatterRate) {
+      return { id: `sa-${nonce}-${uid++}`, sym: "SCATTER", golden: false };
+    }
+    const sym = pickSaRegular(fSym);
+    const canGold = col >= 1 && col <= 3;
+    const golden = canGold && fMeta < goldRate;
+    return { id: `sa-${nonce}-${uid++}`, sym, golden };
+  };
+
+  // Build 5 columns × 4 rows (row 0 top, row 3 bottom)
+  const initialGrid: SuperAceCell[][] = [];
+  for (let c = 0; c < 5; c++) {
+    const col: SuperAceCell[] = [];
+    let hasScatter = false;
+    for (let r = 0; r < 4; r++) {
+      const cell = makeCell(c, hasScatter);
+      if (cell.sym === "SCATTER") hasScatter = true;
+      col.push(cell);
+    }
+    initialGrid.push(col);
+  }
+
+  let curGrid = cloneSaGrid(initialGrid);
+  const cascades: SuperAceCascadeStep[] = [];
+  const ladders = isFreeSpin ? SUPER_ACE_FREE_COMBOS : SUPER_ACE_BASE_COMBOS;
+  let totalMultiplier = 0;
+
+  for (let stepIdx = 0; stepIdx < 12; stepIdx++) {
+    const evalRes = evaluateSaGrid(curGrid);
+    if (evalRes.winningPositions.length === 0) break;
+
+    const comboMult = ladders[Math.min(stepIdx, ladders.length - 1)];
+    const rawStepMult = evalRes.baseMult * comboMult * (1 - effEdge) * tune.ratio;
+    const stepMult = +Math.min(rawStepMult, 10_000).toFixed(4);
+    totalMultiplier = +Math.min(totalMultiplier + stepMult, 10_000).toFixed(4);
+
+    const winKeySet = new Set(evalRes.winningPositions.map(([c, r]) => `${c}-${r}`));
+    const convertedGolden: SuperAceCascadeStep["convertedGolden"] = [];
+    const clonedBigJokers: [number, number][] = [];
+
+    const working = cloneSaGrid(curGrid);
+    // 1) Process winning cells: Golden cards flip into Little/Big Joker; regular/used wilds are cleared
+    const convertedSet = new Set<string>();
+    const bigJokerOrigins: [number, number][] = [];
+
+    for (const [c, r] of evalRes.winningPositions) {
+      const cell = working[c][r];
+      if (cell.golden && !isSaWild(cell.sym)) {
+        const fJ = nextF();
+        const jokerType: "LITTLE_JOKER" | "BIG_JOKER" = fJ < 0.22 ? "BIG_JOKER" : "LITTLE_JOKER";
+        working[c][r] = { id: `${cell.id}-j`, sym: jokerType, golden: false };
+        convertedGolden.push({ col: c, row: r, to: jokerType });
+        convertedSet.add(`${c}-${r}`);
+        if (jokerType === "BIG_JOKER") bigJokerOrigins.push([c, r]);
+      }
+    }
+
+    // 2) Big Joker clones itself onto 1-2 non-winning, non-scatter cells on reels 1-3
+    if (bigJokerOrigins.length > 0) {
+      const candidates: [number, number][] = [];
+      for (let c = 1; c <= 3; c++) {
+        for (let r = 0; r < 4; r++) {
+          const k = `${c}-${r}`;
+          if (!winKeySet.has(k) && !convertedSet.has(k) && working[c][r].sym !== "SCATTER" && !isSaWild(working[c][r].sym)) {
+            candidates.push([c, r]);
+          }
+        }
+      }
+      const copyCount = Math.min(candidates.length, 1 + Math.floor(nextF() * 2));
+      for (let i = 0; i < copyCount && candidates.length > 0; i++) {
+        const pickIdx = Math.floor(nextF() * candidates.length) % candidates.length;
+        const [tc, tr] = candidates.splice(pickIdx, 1)[0];
+        working[tc][tr] = { id: `sa-bj-${nonce}-${uid++}`, sym: "BIG_JOKER", golden: false };
+        clonedBigJokers.push([tc, tr]);
+      }
+    }
+
+    // 3) Remove eliminated cells (winning positions that weren't turned into a Joker) & drop remaining down
+    const afterGrid: SuperAceCell[][] = [];
+    for (let c = 0; c < 5; c++) {
+      const survivors: SuperAceCell[] = [];
+      let colHasScatter = false;
+      for (let r = 0; r < 4; r++) {
+        const k = `${c}-${r}`;
+        const eliminated = winKeySet.has(k) && !convertedSet.has(k);
+        if (!eliminated) {
+          if (working[c][r].sym === "SCATTER") colHasScatter = true;
+          survivors.push(working[c][r]);
+        }
+      }
+      const needed = 4 - survivors.length;
+      const refills: SuperAceCell[] = [];
+      for (let k = 0; k < needed; k++) {
+        const nc = makeCell(c, colHasScatter);
+        if (nc.sym === "SCATTER") colHasScatter = true;
+        refills.push(nc);
+      }
+      afterGrid.push([...refills, ...survivors]);
+    }
+
+    cascades.push({
+      comboIndex: stepIdx + 1,
+      gridBefore: cloneSaGrid(curGrid),
+      winningPositions: evalRes.winningPositions,
+      winLines: evalRes.winLines,
+      baseMult: evalRes.baseMult,
+      comboMult,
+      stepMult,
+      convertedGolden,
+      clonedBigJokers,
+      gridAfter: cloneSaGrid(afterGrid),
+    });
+
+    curGrid = afterGrid;
+  }
+
+  let scatterCount = 0;
+  for (let c = 0; c < 5; c++) {
+    for (let r = 0; r < 4; r++) {
+      if (curGrid[c][r].sym === "SCATTER") scatterCount++;
+    }
+  }
+  const freeSpinsAwarded = scatterCount >= 3 ? (isFreeSpin ? 5 : 10) : 0;
+
+  return {
+    initialGrid,
+    cascades,
+    finalGrid: curGrid,
+    totalMultiplier,
+    scatterCount,
+    freeSpinsAwarded,
+  };
+}
+
 
 
 

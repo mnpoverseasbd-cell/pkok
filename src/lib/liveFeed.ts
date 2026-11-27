@@ -83,6 +83,7 @@ const GAME_LABELS: Record<string, string> = {
   mines: "Mines 💣",
   plinko: "Plinko 🎯",
   wheel: "Wheel 🎡",
+  "super-ace": "Super Ace 🂡",
 };
 
 /** Convenience: record a real bet from a game. Also persists to bet history and shows a result toast. */

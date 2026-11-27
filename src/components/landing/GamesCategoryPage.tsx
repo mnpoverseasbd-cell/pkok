@@ -35,7 +35,8 @@ const providers = ["সব", "PG", "JILI", "Pragmatic", "Evolution", "JDB", "CQ9
 
 export const lib: Record<CategoryId, { title: string; image: string; provider: string; tag?: string }[]> = {
   hot: [
-    { title: "Aviator", image: g8, provider: "Spribe", tag: "HOT" },
+    { title: "Super Ace", image: g7, provider: "JILI", tag: "HOT", to: "/games/super-ace" },
+    { title: "Aviator", image: g8, provider: "Spribe", tag: "HOT", to: "/games/crash" },
     { title: "Super Win", image: g1, provider: "PG" },
     { title: "Olympus", image: g12, provider: "Pragmatic", tag: "NEW" },
     { title: "Mega Rich", image: g11, provider: "JILI" },
@@ -43,6 +44,7 @@ export const lib: Record<CategoryId, { title: string; image: string; provider: s
     { title: "Lucky Fortune", image: g7, provider: "PG" },
   ],
   slots: [
+    { title: "Super Ace", image: g7, provider: "JILI", tag: "HOT", to: "/games/super-ace" },
     { title: "Sweet Candy", image: g11, provider: "Pragmatic" },
     { title: "Fortune Tiger", image: g7, provider: "PG" },
     { title: "Pharaoh Riches", image: g12, provider: "JILI", tag: "HOT" },

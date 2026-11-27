@@ -72,6 +72,7 @@ import { Route as GamesSevenUpDownRouteImport } from './routes/games.seven-up-do
 import { Route as GamesShellGameRouteImport } from './routes/games.shell-game'
 import { Route as GamesSicBoRouteImport } from './routes/games.sic-bo'
 import { Route as GamesSlotsRouteImport } from './routes/games.slots'
+import { Route as GamesSuperAceRouteImport } from './routes/games.super-ace'
 import { Route as GamesTeenPattiRouteImport } from './routes/games.teen-patti'
 import { Route as GamesTowerRouteImport } from './routes/games.tower'
 import { Route as GamesVideoPokerRouteImport } from './routes/games.video-poker'
@@ -394,6 +395,11 @@ const GamesSlotsRoute = GamesSlotsRouteImport.update({
   path: '/games/slots',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesSuperAceRoute = GamesSuperAceRouteImport.update({
+  id: '/games/super-ace',
+  path: '/games/super-ace',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesTeenPattiRoute = GamesTeenPattiRouteImport.update({
   id: '/games/teen-patti',
   path: '/games/teen-patti',
@@ -488,6 +494,7 @@ export interface FileRoutesByFullPath {
   '/games/shell-game': typeof GamesShellGameRoute
   '/games/sic-bo': typeof GamesSicBoRoute
   '/games/slots': typeof GamesSlotsRoute
+  '/games/super-ace': typeof GamesSuperAceRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/video-poker': typeof GamesVideoPokerRoute
@@ -559,6 +566,7 @@ export interface FileRoutesByTo {
   '/games/shell-game': typeof GamesShellGameRoute
   '/games/sic-bo': typeof GamesSicBoRoute
   '/games/slots': typeof GamesSlotsRoute
+  '/games/super-ace': typeof GamesSuperAceRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/video-poker': typeof GamesVideoPokerRoute
@@ -631,6 +639,7 @@ export interface FileRoutesById {
   '/games/shell-game': typeof GamesShellGameRoute
   '/games/sic-bo': typeof GamesSicBoRoute
   '/games/slots': typeof GamesSlotsRoute
+  '/games/super-ace': typeof GamesSuperAceRoute
   '/games/teen-patti': typeof GamesTeenPattiRoute
   '/games/tower': typeof GamesTowerRoute
   '/games/video-poker': typeof GamesVideoPokerRoute
@@ -704,6 +713,7 @@ export interface FileRouteTypes {
     | '/games/shell-game'
     | '/games/sic-bo'
     | '/games/slots'
+    | '/games/super-ace'
     | '/games/teen-patti'
     | '/games/tower'
     | '/games/video-poker'
@@ -775,6 +785,7 @@ export interface FileRouteTypes {
     | '/games/shell-game'
     | '/games/sic-bo'
     | '/games/slots'
+    | '/games/super-ace'
     | '/games/teen-patti'
     | '/games/tower'
     | '/games/video-poker'
@@ -846,6 +857,7 @@ export interface FileRouteTypes {
     | '/games/shell-game'
     | '/games/sic-bo'
     | '/games/slots'
+    | '/games/super-ace'
     | '/games/teen-patti'
     | '/games/tower'
     | '/games/video-poker'
@@ -1370,6 +1382,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesSlotsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/super-ace': {
+      id: '/games/super-ace'
+      path: '/games/super-ace'
+      fullPath: '/games/super-ace'
+      preLoaderRoute: typeof GamesSuperAceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/teen-patti': {
       id: '/games/teen-patti'
       path: '/games/teen-patti'
@@ -1478,6 +1497,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesShellGameRoute: GamesShellGameRoute,
   GamesSicBoRoute: GamesSicBoRoute,
   GamesSlotsRoute: GamesSlotsRoute,
+  GamesSuperAceRoute: GamesSuperAceRoute,
   GamesTeenPattiRoute: GamesTeenPattiRoute,
   GamesTowerRoute: GamesTowerRoute,
   GamesVideoPokerRoute: GamesVideoPokerRoute,

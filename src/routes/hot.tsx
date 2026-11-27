@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart, Flame, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { SiteShell } from "@/components/landing/SiteShell";
@@ -18,12 +18,13 @@ export const Route = createFileRoute("/hot")({
 const CDN = "https://images.23924894.com/prod-images/TCG_GAME_ICONS/HOT_GAME/pkokbdtf6/pc";
 const FALLBACK = "https://images.23924894.com/TCG_GAME_ICONS";
 
-type Game = { name: string; provider: string; img: string };
+type Game = { name: string; provider: string; img: string; to?: "/games/super-ace" | "/games/crash" | "/games/dice" | "/games/mines" };
 
 const hotGames: Game[] = [
+  { name: "সুপার এইস (Super Ace)", provider: "JILI", img: `${FALLBACK}/JL/EN/JL0033.avif`, to: "/games/super-ace" },
   { name: "বন্য ব্যান্ডিটো", provider: "PG", img: `${FALLBACK}/PG/EN/PG0066.avif` },
   { name: "৭৭৭-ক্লাসিক স্টাইল", provider: "JILI", img: `${CDN}/JL/BN/JL0033.png?_1781943712730` },
-  { name: "সুপার এস জোকার", provider: "JILI", img: `${CDN}/JL/BN/JL0125.webp?_1781944103405` },
+  { name: "সুপার এস জোকার", provider: "JILI", img: `${CDN}/JL/BN/JL0125.webp?_1781944103405`, to: "/games/super-ace" },
   { name: "পাগল টাকা ২", provider: "JILI", img: `${CDN}/JL/BN/JL0038.webp?_1781944315751` },
   { name: "৩ কয়েন আগ্নেয়গিরি", provider: "JILI", img: `${CDN}/JL/BN/JL0045.png?_1781944679386` },
   { name: "গোল্ডেন এম্পায়ার", provider: "JILI", img: `${FALLBACK}/JL/EN/JL0036.avif` },
@@ -159,11 +160,8 @@ function GameCard({
   fav: boolean;
   onFav: () => void;
 }) {
-  return (
-    <div
-      className="group flex flex-col animate-fade-in"
-      style={{ animationDelay: `${Math.min(index * 30, 600)}ms`, animationFillMode: "backwards" }}
-    >
+  const cardInner = (
+    <>
       <div className="relative aspect-square overflow-hidden rounded-lg bg-black ring-1 ring-black/40 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.04] hover:ring-2 hover:ring-[var(--neon-gold)] hover:shadow-[0_10px_28px_rgba(255,215,80,0.35)]">
         {/* Provider pill */}
         <div className="absolute inset-x-2 top-2 z-10 flex items-center justify-between rounded-md bg-[linear-gradient(180deg,#1a8a4a,#0a4a23)] px-2 py-1 ring-1 ring-[var(--neon-green)]/60">
@@ -174,6 +172,7 @@ function GameCard({
             aria-label="favorite"
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
               onFav();
             }}
             className={`grid h-4 w-4 place-items-center rounded-full transition ${
@@ -204,6 +203,27 @@ function GameCard({
       <p className="mt-2 truncate px-0.5 text-center text-[13px] font-semibold text-[#2b2b2b]">
         {game.name}
       </p>
+    </>
+  );
+
+  if (game.to) {
+    return (
+      <Link
+        to={game.to}
+        className="group flex flex-col animate-fade-in"
+        style={{ animationDelay: `${Math.min(index * 30, 600)}ms`, animationFillMode: "backwards" }}
+      >
+        {cardInner}
+      </Link>
+    );
+  }
+
+  return (
+    <div
+      className="group flex flex-col animate-fade-in"
+      style={{ animationDelay: `${Math.min(index * 30, 600)}ms`, animationFillMode: "backwards" }}
+    >
+      {cardInner}
     </div>
   );
 }

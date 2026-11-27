@@ -70,6 +70,7 @@ type OriginalGame = {
 const myGames: OriginalGame[] = [
   { slug: "dice",             name: "Lucky Dice",        nameBn: "লাকি ডাইস",         provider: "ASIK", poster: dicePoster,     status: "live", to: "/games/dice" },
   { slug: "crash",            name: "Crash",             nameBn: "ক্র্যাশ",            provider: "ASIK", poster: crashPoster,    status: "live", to: "/games/crash" },
+  { slug: "super-ace",        name: "Super Ace",         nameBn: "সুপার এইস",         provider: "JILI", poster: slotsPoster,    status: "live", to: "/games/super-ace" },
   { slug: "mines",            name: "Mines",             nameBn: "মাইনস",             provider: "ASIK", poster: minesPoster,    status: "live", to: "/games/mines" },
   { slug: "coinflip",         name: "Coin Flip",         nameBn: "কয়েন ফ্লিপ",         provider: "ASIK", poster: coinflipPoster, status: "live", to: "/games/coinflip" },
   { slug: "plinko",           name: "Plinko",            nameBn: "প্লিঙ্কো",           provider: "ASIK", poster: plinkoPoster,   status: "live", to: "/games/plinko" },
