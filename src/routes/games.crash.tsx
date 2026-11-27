@@ -54,8 +54,8 @@ interface Slot {
   payout?: number;
 }
 
-const BETTING_WINDOW_MS = 6500;
-const POST_CRASH_MS = 2800;
+const BETTING_WINDOW_MS = 5000;
+const POST_CRASH_MS = 2600;
 const QUICK_AMOUNTS = [100, 200, 500, 10000];
 
 const INITIAL_CHAT = [
@@ -190,11 +190,13 @@ function AviatorCrashPage() {
   );
 
   const beginBettingWindowRef = useRef<() => void>(() => {});
+  const startFlyingRef = useRef<() => Promise<void>>(async () => {});
 
   const startFlying = useCallback(async () => {
     const activePf = pfRef.current;
     if (!activePf.ready) {
-      beginBettingWindowRef.current();
+      if (cycleTimerRef.current) clearTimeout(cycleTimerRef.current);
+      cycleTimerRef.current = setTimeout(() => void startFlyingRef.current(), 150);
       return;
     }
 
@@ -295,24 +297,28 @@ function AviatorCrashPage() {
           clearInterval(countdownRef.current);
           countdownRef.current = null;
         }
-        void startFlying();
+        void startFlyingRef.current();
       }
     }, 100);
-  }, [startFlying]);
+  }, []);
 
   beginBettingWindowRef.current = beginBettingWindow;
+  startFlyingRef.current = startFlying;
 
-  const bootedRef = useRef(false);
   useEffect(() => {
-    if (bootedRef.current) return;
-    bootedRef.current = true;
-    beginBettingWindow();
+    beginBettingWindowRef.current();
     return () => {
       stopAnim();
-      if (cycleTimerRef.current) clearTimeout(cycleTimerRef.current);
-      if (countdownRef.current) clearInterval(countdownRef.current);
+      if (cycleTimerRef.current) {
+        clearTimeout(cycleTimerRef.current);
+        cycleTimerRef.current = null;
+      }
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+        countdownRef.current = null;
+      }
     };
-  }, [beginBettingWindow]);
+  }, []);
 
   const queueBet = useCallback(
     (i: 0 | 1) => {
@@ -484,7 +490,7 @@ function AviatorCrashPage() {
           /* 3-COLUMN AUTHENTIC SPRIBE AVIATOR SHELL */
           <div className="mx-auto grid max-w-[1600px] gap-2 p-2 lg:grid-cols-12">
             {/* LEFT PANEL: All Bets / My Bets / Top (3 cols on lg, hidden below on mobile) */}
-            <aside className="order-2 flex flex-col justify-between rounded-2xl bg-[#1b1c20] p-2.5 lg:order-1 lg:col-span-3 lg:h-[620px]">
+            <aside className="order-2 flex flex-col justify-between rounded-2xl bg-[#1b1c20] p-2.5 lg:order-1 lg:col-span-3 lg:h-[555px]">
               <div className="flex flex-col min-h-0 flex-1">
                 {/* Segmented Tabs */}
                 <div className="grid grid-cols-3 gap-1 rounded-full bg-[#111215] p-1">
@@ -641,16 +647,16 @@ function AviatorCrashPage() {
               </div>
 
               {/* MAIN FLIGHT CANVAS STAGE */}
-              <div className="relative h-[280px] sm:h-[330px] overflow-hidden rounded-2xl border border-white/10 bg-[#0c0d10]">
+              <div className="relative h-[240px] sm:h-[275px] overflow-hidden rounded-2xl border border-white/10 bg-[#0c0d10]">
                 <AviatorCanvas multiplier={mult} phase={phase} badges={skyBadges} />
 
                 {/* Center Multiplier / Countdown */}
                 <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
                   {phase === "waiting" ? (
                     <div className="flex flex-col items-center gap-2">
-                      <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#e11d48]/25 border-t-[#e11d48]" />
-                      <div className="text-xs font-black uppercase tracking-[0.25em] text-slate-200">
-                        WAITING FOR NEXT ROUND
+                      <div className="h-11 w-11 animate-spin rounded-full border-4 border-[#e11d48]/25 border-t-[#e11d48]" />
+                      <div className="text-xs font-black uppercase tracking-[0.22em] text-slate-200">
+                        WAITING FOR NEXT ROUND · <span className="tabular-nums text-[#fbbf24]">{countdown.toFixed(1)}s</span>
                       </div>
                       <div className="h-1.5 w-44 overflow-hidden rounded-full bg-white/10">
                         <div
@@ -711,7 +717,7 @@ function AviatorCrashPage() {
 
             {/* RIGHT PANEL: LIVE AVIATOR CHAT (hidden on <xl or toggleable) */}
             {chatOpen && (
-              <aside className="order-3 hidden xl:flex xl:col-span-3 flex-col justify-between rounded-2xl bg-[#1b1c20] p-2.5 h-[620px]">
+              <aside className="order-3 hidden xl:flex xl:col-span-3 flex-col justify-between rounded-2xl bg-[#1b1c20] p-2.5 h-[555px]">
                 <div className="flex items-center justify-between border-b border-white/10 pb-2 px-1">
                   <span className="text-[11px] font-bold text-slate-400">Live Chat</span>
                   <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#4ade80]">
