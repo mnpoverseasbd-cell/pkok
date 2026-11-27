@@ -238,8 +238,8 @@ function AviatorCrashPage() {
     }
 
     const tick = (now: number) => {
-      const t = (now - startRef.current) / 1000;
-      const m = +Math.pow(1.06, t * 8).toFixed(2);
+      const t = Math.max(0, (now - startRef.current) / 1000);
+      const m = +Math.exp(0.16 * t).toFixed(2);
 
       for (const i of [0, 1] as const) {
         const s = slotsRef.current[i];

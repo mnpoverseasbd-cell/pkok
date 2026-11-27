@@ -193,7 +193,7 @@ export function AviatorCanvas({
 
       // 3. Axis edge pulse dots while flying
       if (s === "flying") {
-        const elapsed = (now - startRef.current) / 1000;
+        const elapsed = Math.max(0, (now - startRef.current) / 1000);
         const driftX = (elapsed * 42) % 44;
         const driftY = (elapsed * 30) % 38;
         ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
@@ -212,10 +212,13 @@ export function AviatorCanvas({
 
       // 4. Flight curve & plane
       if (s === "waiting") {
-        drawSpribePlane(44, h - 22, -0.05, now);
+        drawSpribePlane(48, h - 24, -0.05, now);
       } else if (s === "flying" || s === "crashed") {
-        const elapsed = s === "flying" ? (now - startRef.current) / 1000 : lastFlyElapsedRef.current;
-        const climb = Math.min(1, elapsed / 3.8);
+        const elapsed =
+          s === "flying"
+            ? Math.max(0.01, (now - startRef.current) / 1000)
+            : Math.max(0.05, lastFlyElapsedRef.current);
+        const climb = Math.min(1, elapsed / 3.0);
         const bobX = s === "flying" && climb > 0.85 ? Math.sin(now * 0.0022) * 10 : 0;
         const bobY = s === "flying" && climb > 0.85 ? Math.cos(now * 0.0028) * 12 : 0;
 
@@ -254,9 +257,9 @@ export function AviatorCanvas({
           const angle = Math.atan2(endY - ctrlY, Math.max(1, endX - ctrlX)) * 0.58;
           drawSpribePlane(endX + 4, endY - 8, angle, now);
         } else {
-          const flyOut = Math.min(1.4, (now - crashTimeRef.current) / 650);
-          if (flyOut < 1.15) {
-            drawSpribePlane(endX + flyOut * 280, endY - flyOut * 160, -0.45, now);
+          const flyOut = Math.max(0, (now - crashTimeRef.current) / 1100);
+          if (flyOut < 1.2) {
+            drawSpribePlane(endX + flyOut * 320, endY - flyOut * 180, -0.45, now);
           }
         }
       }
