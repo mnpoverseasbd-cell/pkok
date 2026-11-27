@@ -1,259 +1,217 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Search, Gamepad2, Sparkles, Heart } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Flame, Heart, Play } from "lucide-react";
+import { toast } from "sonner";
 import { SiteShell } from "@/components/landing/SiteShell";
-import dicePoster from "@/assets/thumbs/dice.jpg";
-import crashPoster from "@/assets/thumbs/crash.jpg";
-import minesPoster from "@/assets/thumbs/mines.jpg";
-import coinflipPoster from "@/assets/thumbs/coinflip.jpg";
-import plinkoPoster from "@/assets/thumbs/plinko.jpg";
-import wheelPoster from "@/assets/thumbs/wheel.jpg";
-import limboPoster from "@/assets/thumbs/limbo.jpg";
-import chickenRoadPoster from "@/assets/thumbs/chicken-road.jpg";
-import towerPoster from "@/assets/thumbs/tower.jpg";
-import luckyCardPoster from "@/assets/thumbs/lucky-card.jpg";
-import shellGamePoster from "@/assets/thumbs/shell-game.jpg";
-import scratchCardPoster from "@/assets/thumbs/scratch-card.jpg";
-import kenoPoster from "@/assets/thumbs/keno.jpg";
-import hiLoPoster from "@/assets/thumbs/hi-lo.jpg";
-import colorPredictionPoster from "@/assets/thumbs/color-prediction.jpg";
-import andarBaharPoster from "@/assets/thumbs/andar-bahar.jpg";
-import dragonTigerPoster from "@/assets/thumbs/dragon-tiger.jpg";
-import teenPattiPoster from "@/assets/thumbs/teen-patti.jpg";
-import sevenUpDownPoster from "@/assets/thumbs/seven-up-down.jpg";
-import baccaratPoster from "@/assets/thumbs/baccarat.jpg";
-import sicBoPoster from "@/assets/thumbs/sic-bo.jpg";
-import roulettePoster from "@/assets/thumbs/roulette.jpg";
-import blackjackPoster from "@/assets/thumbs/blackjack.jpg";
-import cards32Poster from "@/assets/thumbs/32-cards.jpg";
-import videoPokerPoster from "@/assets/thumbs/video-poker.jpg";
-import slotsPoster from "@/assets/thumbs/slots.jpg";
-import bingoPoster from "@/assets/thumbs/bingo.jpg";
-import matkaPoster from "@/assets/thumbs/matka.jpg";
-import fishShooterPoster from "@/assets/thumbs/fish-shooter.jpg";
-import megawaysPoster from "@/assets/thumbs/megaways.jpg";
-import aviatrixPoster from "@/assets/thumbs/aviatrix.jpg";
-import dragonFishingPoster from "@/assets/thumbs/dragon-fishing.jpg";
-import penaltyPoster from "@/assets/thumbs/penalty.jpg";
-import cricketPoster from "@/assets/thumbs/cricket.jpg";
-import ludoPoster from "@/assets/thumbs/ludo.jpg";
-import carromPoster from "@/assets/thumbs/carrom.jpg";
-import fanTanPoster from "@/assets/thumbs/fan-tan.jpg";
-import balloonPoster from "@/assets/thumbs/balloon.jpg";
-import dragonPhoenixPoster from "@/assets/thumbs/dragon-phoenix.jpg";
-import wingoPoster from "@/assets/thumbs/wingo.jpg";
-import aviatorX2Poster from "@/assets/thumbs/aviator-x2.jpg";
-import jhandiMundaPoster from "@/assets/thumbs/jhandi-munda.jpg";
+import {
+  HOT_296_GAMES,
+  LIVE_ONLY_PROVIDERS,
+  VENDOR_LOGO_WHITE,
+  type HotCatalogGame,
+} from "@/data/hot296Games";
 
 export const Route = createFileRoute("/esports")({
   head: () => ({
     meta: [
-      { title: "আমার গেমস — Asik Game" },
-      { name: "description", content: "Asik Game–এ তৈরি নিজস্ব অরিজিনাল গেমস।" },
-      { property: "og:title", content: "আমার গেমস — Asik Game" },
-      { property: "og:description", content: "শুধুমাত্র আমাদের নিজস্ব তৈরি করা গেমস এখানে খেলা যাবে।" },
+      { title: "গরম খেলা — PKOK" },
+      { name: "description", content: "সর্বাধিক জনপ্রিয় গরম গেমস — JILI, PG, SPRIBE, JDB, FC, Evolution সহ শীর্ষ প্রোভাইডারের গেম।" },
+      { property: "og:title", content: "গরম খেলা — PKOK" },
+      { property: "og:description", content: "আজকের সবচেয়ে জনপ্রিয় হট গেমগুলো এক জায়গায়।" },
     ],
   }),
-  component: MyGamesPage,
+  component: HotGamesShowcasePage,
 });
 
-type OriginalGame = {
-  slug: string;
-  name: string;      // English name
-  nameBn: string;    // Bengali label under card
-  provider: string;  // JILI-style provider badge
-  poster: string;
-  status: "live" | "soon";
-  to?: string;
-};
+const FAV_KEY = "pkok_hot_favs_v1";
 
-const myGames: OriginalGame[] = [
-  { slug: "dice",             name: "Lucky Dice",        nameBn: "লাকি ডাইস",         provider: "ASIK", poster: dicePoster,     status: "live", to: "/games/dice" },
-  { slug: "crash",            name: "Crash",             nameBn: "ক্র্যাশ",            provider: "ASIK", poster: crashPoster,    status: "live", to: "/games/crash" },
-  { slug: "super-ace",        name: "Super Ace",         nameBn: "সুপার এইস",         provider: "JILI", poster: slotsPoster,    status: "live", to: "/games/super-ace" },
-  { slug: "mines",            name: "Mines",             nameBn: "মাইনস",             provider: "ASIK", poster: minesPoster,    status: "live", to: "/games/mines" },
-  { slug: "coinflip",         name: "Coin Flip",         nameBn: "কয়েন ফ্লিপ",         provider: "ASIK", poster: coinflipPoster, status: "live", to: "/games/coinflip" },
-  { slug: "plinko",           name: "Plinko",            nameBn: "প্লিঙ্কো",           provider: "ASIK", poster: plinkoPoster,   status: "live", to: "/games/plinko" },
-  { slug: "wheel",            name: "Wheel of Fortune",  nameBn: "হুইল অফ ফরচুন",     provider: "ASIK", poster: wheelPoster,    status: "live", to: "/games/wheel" },
-  { slug: "limbo",            name: "Limbo",             nameBn: "লিম্বো",             provider: "ASIK", poster: limboPoster,    status: "live", to: "/games/limbo" },
-  { slug: "chicken-road",     name: "Chicken Road",      nameBn: "চিকেন রোড",         provider: "ASIK", poster: chickenRoadPoster, status: "live", to: "/games/chicken-road" },
-  { slug: "tower",            name: "Tower — Royal Step",nameBn: "টাওয়ার",            provider: "ASIK", poster: towerPoster,    status: "live", to: "/games/tower" },
-  { slug: "lucky-card",       name: "Lucky Card",        nameBn: "লাকি কার্ড",         provider: "ASIK", poster: luckyCardPoster, status: "live", to: "/games/lucky-card" },
-  { slug: "shell-game",       name: "Shell Game",        nameBn: "শেল গেম",           provider: "ASIK", poster: shellGamePoster, status: "live", to: "/games/shell-game" },
-  { slug: "scratch-card",     name: "Scratch Card",      nameBn: "স্ক্র্যাচ কার্ড",     provider: "ASIK", poster: scratchCardPoster, status: "live", to: "/games/scratch-card" },
-  { slug: "keno",             name: "Keno",              nameBn: "কেনো",              provider: "ASIK", poster: kenoPoster,     status: "live", to: "/games/keno" },
-  { slug: "hi-lo",            name: "Hi-Lo",             nameBn: "হাই-লো",            provider: "ASIK", poster: hiLoPoster,     status: "live", to: "/games/hi-lo" },
-  { slug: "color-prediction", name: "Color Prediction",  nameBn: "কালার প্রেডিকশন",   provider: "ASIK", poster: colorPredictionPoster, status: "live", to: "/games/color-prediction" },
-  { slug: "andar-bahar",      name: "Andar Bahar",       nameBn: "আন্দর বাহার",       provider: "ASIK", poster: andarBaharPoster, status: "live", to: "/games/andar-bahar" },
-  { slug: "dragon-tiger",     name: "Dragon Tiger",      nameBn: "ড্রাগন টাইগার",     provider: "ASIK", poster: dragonTigerPoster, status: "live", to: "/games/dragon-tiger" },
-  { slug: "teen-patti",       name: "Teen Patti",        nameBn: "তিন পাত্তি",         provider: "ASIK", poster: teenPattiPoster, status: "live", to: "/games/teen-patti" },
-  { slug: "seven-up-down",    name: "7 Up 7 Down",       nameBn: "৭ আপ ৭ ডাউন",       provider: "ASIK", poster: sevenUpDownPoster, status: "live", to: "/games/seven-up-down" },
-  { slug: "baccarat",         name: "Baccarat",          nameBn: "ব্যাকারা",           provider: "ASIK", poster: baccaratPoster, status: "live", to: "/games/baccarat" },
-  { slug: "sic-bo",           name: "Sic Bo",            nameBn: "সিক বো",            provider: "ASIK", poster: sicBoPoster,    status: "live", to: "/games/sic-bo" },
-  { slug: "roulette",         name: "Roulette",          nameBn: "রুলেট",             provider: "ASIK", poster: roulettePoster, status: "live", to: "/games/roulette" },
-  { slug: "blackjack",        name: "Blackjack",         nameBn: "ব্ল্যাকজ্যাক",         provider: "ASIK", poster: blackjackPoster, status: "live", to: "/games/blackjack" },
-  { slug: "32-cards",         name: "32 Cards",          nameBn: "৩২ কার্ড",           provider: "ASIK", poster: cards32Poster,  status: "live", to: "/games/32-cards" },
-  { slug: "video-poker",      name: "Video Poker",       nameBn: "ভিডিও পোকার",       provider: "ASIK", poster: videoPokerPoster, status: "live", to: "/games/video-poker" },
-  { slug: "slots",            name: "Cosmic Fortune Slots", nameBn: "কসমিক ফরচুন স্লটস", provider: "ASIK", poster: slotsPoster,  status: "live", to: "/games/slots" },
-  { slug: "bingo",            name: "Bingo 75",          nameBn: "বিঙ্গো ৭৫",           provider: "ASIK", poster: bingoPoster,    status: "live", to: "/games/bingo" },
-  { slug: "matka",            name: "Matka King",        nameBn: "মটকা কিং",          provider: "ASIK", poster: matkaPoster,    status: "live", to: "/games/matka" },
-  { slug: "fish-shooter",     name: "Fish Shooter",      nameBn: "ফিশ শুটার",         provider: "ASIK", poster: fishShooterPoster, status: "live", to: "/games/fish-shooter" },
-  { slug: "megaways",         name: "Fruit Slots Megaways", nameBn: "ফ্রুট স্লট মেগাওয়েজ", provider: "ASIK", poster: megawaysPoster, status: "live", to: "/games/megaways" },
-  { slug: "aviatrix",         name: "Aviatrix Multi-Race", nameBn: "অ্যাভিয়াট্রিক্স রেস", provider: "ASIK", poster: aviatrixPoster, status: "live", to: "/games/aviatrix" },
-  { slug: "dragon-fishing",   name: "Dragon Fortune Fishing", nameBn: "ড্রাগন ফরচুন ফিশিং", provider: "ASIK", poster: dragonFishingPoster, status: "live", to: "/games/dragon-fishing" },
-  { slug: "penalty",          name: "Penalty Shootout",  nameBn: "পেনাল্টি শুটআউট",   provider: "ASIK", poster: penaltyPoster,  status: "live", to: "/games/penalty" },
-  { slug: "cricket",          name: "Cricket Star",      nameBn: "ক্রিকেট স্টার",     provider: "ASIK", poster: cricketPoster,  status: "live", to: "/games/cricket" },
-  { slug: "ludo",             name: "Ludo Dash",         nameBn: "লুডু ড্যাশ",         provider: "ASIK", poster: ludoPoster,     status: "live", to: "/games/ludo" },
-  { slug: "carrom",           name: "Carrom Strike",     nameBn: "ক্যারাম স্ট্রাইক",   provider: "ASIK", poster: carromPoster,   status: "live", to: "/games/carrom" },
-  { slug: "fan-tan",          name: "Fan-Tan",           nameBn: "ফ্যান-টান",         provider: "ASIK", poster: fanTanPoster,   status: "live", to: "/games/fan-tan" },
-  { slug: "balloon",          name: "Balloon Cash or Crash", nameBn: "বেলুন ক্র্যাশ",  provider: "ASIK", poster: balloonPoster,  status: "live", to: "/games/balloon" },
-  { slug: "dragon-phoenix",   name: "Dragon vs Phoenix", nameBn: "ড্রাগন বনাম ফিনিক্স", provider: "ASIK", poster: dragonPhoenixPoster, status: "live", to: "/games/dragon-phoenix" },
-  { slug: "wingo",            name: "Wingo 3-Min Lottery", nameBn: "উইনগো ৩-মিনিট লটারি", provider: "ASIK", poster: wingoPoster, status: "live", to: "/games/wingo" },
-  { slug: "aviator-x2",       name: "Aviator X2 Duo-Plane", nameBn: "অ্যাভিয়েটর X2 ডুও-প্লেন", provider: "ASIK", poster: aviatorX2Poster, status: "live", to: "/games/aviator-x2" },
-  { slug: "jhandi-munda",     name: "Jhandi Munda",      nameBn: "ঝান্ডি মুন্ডা",       provider: "ASIK", poster: jhandiMundaPoster, status: "live", to: "/games/jhandi-munda" },
+function loadFavs(): Set<number> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = window.localStorage.getItem(FAV_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? new Set(arr.filter((x) => typeof x === "number")) : new Set();
+  } catch {
+    return new Set();
+  }
+}
 
+function HotGamesShowcasePage() {
+  const navigate = useNavigate();
+  const [favs, setFavs] = useState<Set<number>>(new Set());
 
+  useEffect(() => {
+    setFavs(loadFavs());
+  }, []);
 
-];
+  const toggleFav = (idx: number) => {
+    setFavs((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) {
+        next.delete(idx);
+      } else {
+        next.add(idx);
+      }
+      try {
+        window.localStorage.setItem(FAV_KEY, JSON.stringify(Array.from(next)));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
 
-function MyGamesPage() {
-  const [query, setQuery] = useState("");
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return myGames;
-    return myGames.filter(
-      (g) => g.name.toLowerCase().includes(q) || g.nameBn.includes(q) || g.slug.includes(q),
-    );
-  }, [query]);
+  const handleLaunch = (g: HotCatalogGame) => {
+    if (g.to) {
+      void navigate({ to: g.to });
+      return;
+    }
+    toast.info(`🎮 ${g.title} — এই গেমটি শীঘ্রই তৈরি করা হবে`);
+  };
 
   return (
     <SiteShell>
-      <h1 className="sr-only">আমার গেমস</h1>
-      <section
-        className="game-lobby MYGAMES"
-        aria-label="Our original games"
+      <main
+        className="flex min-h-[calc(100vh-122px)] w-full items-start justify-center px-2 py-5 sm:px-4 sm:py-[40px]"
         style={{
-          background:
-            "radial-gradient(ellipse at 20% 10%, rgba(180,120,255,0.20), transparent 55%), radial-gradient(ellipse at 80% 90%, rgba(255,220,120,0.14), transparent 55%), linear-gradient(180deg, #0f5a34 0%, #0a4527 55%, #062e19 100%)",
+          backgroundColor: "#133a25",
+          backgroundImage:
+            "radial-gradient(ellipse at 50% 0%, rgba(34,225,110,0.08), transparent 60%)",
         }}
       >
-        <div className="mx-auto mb-6 flex w-[1320px] max-w-[calc(100vw-64px)] flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex items-center gap-2 rounded-lg bg-[linear-gradient(180deg,#0f5a34,#083f22)] px-4 py-2 ring-1 ring-[var(--neon-green)]/50">
-            <Gamepad2 className="h-5 w-5 text-[var(--neon-gold)]" />
-            <h2 className="text-base font-bold tracking-wide text-[var(--neon-gold)]">
-              আমার নিজের তৈরি গেমস
-            </h2>
-            <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-black/40 px-2 py-0.5 text-xs font-bold text-white">
-              <Sparkles className="h-3 w-3 text-[var(--neon-gold)]" />
-              ORIGINALS · {myGames.length}
-            </span>
+        <section
+          aria-label="গরম খেলা"
+          className="w-full max-w-[1200px] overflow-hidden rounded-[12px] bg-white shadow-[0_14px_40px_rgba(0,0,0,0.38)]"
+        >
+          {/* Exact #128547 Top Title Header */}
+          <div className="flex items-center gap-[8.3px] bg-[#128547] px-4 py-3 sm:px-[20px] sm:py-[16px]">
+            <Flame className="h-[30px] w-[30px] shrink-0 fill-orange-500 text-amber-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.35)] sm:h-[35px] sm:w-[35px]" />
+            <h1 className="text-[18px] font-bold leading-none text-white sm:text-[20px]">
+              গরম খেলা
+            </h1>
           </div>
-          <div className="flex items-center gap-2 rounded-lg bg-white/95 px-3 py-1.5 ring-1 ring-black/10">
-            <Search className="h-4 w-4 text-black/50" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="গেম খুঁজুন..."
-              className="w-40 border-none bg-transparent text-sm text-black placeholder:text-black/40 focus:outline-none sm:w-56"
-            />
-          </div>
-        </div>
 
-        {filtered.length === 0 ? (
-          <EmptyState hasQuery={query.trim().length > 0} />
-        ) : (
-          <div className="mygames-grid">
-            {filtered.map((g, i) => (
-              <GameCard key={g.slug} g={g} index={i} />
-            ))}
+          {/* Centered 960px 6-column grid matching 54897843543.com/hot */}
+          <div className="mx-auto w-full max-w-[960px] px-3 py-5 sm:px-4 sm:py-[30px] lg:px-0">
+            <div className="grid grid-cols-3 gap-x-[10px] gap-y-[20px] sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 lg:gap-x-[12px] lg:gap-y-[30px]">
+              {HOT_296_GAMES.map((g) => (
+                <HotGameCard
+                  key={`${g.i}-${g.provider}-${g.title}`}
+                  game={g}
+                  isFav={favs.has(g.i)}
+                  onToggleFav={() => toggleFav(g.i)}
+                  onPlay={() => handleLaunch(g)}
+                />
+              ))}
+            </div>
           </div>
-        )}
-      </section>
+        </section>
+      </main>
     </SiteShell>
   );
 }
 
-function GameCard({ g, index }: { g: OriginalGame; index: number }) {
-  const inner = (
-    <>
-      <div className="mygames-tile group">
+function HotGameCard({
+  game,
+  isFav,
+  onToggleFav,
+  onPlay,
+}: {
+  game: HotCatalogGame;
+  isFav: boolean;
+  onToggleFav: () => void;
+  onPlay: () => void;
+}) {
+  const [vendorErr, setVendorErr] = useState(false);
+  const [imgErr, setImgErr] = useState(false);
+  const hasFreeTrial = !LIVE_ONLY_PROVIDERS.has(game.provider);
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onPlay}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onPlay();
+        }
+      }}
+      className="group relative flex cursor-pointer flex-col overflow-hidden text-left focus:outline-none"
+    >
+      {/* Square bordered #16251d tile with 2px #22e16e neon border */}
+      <div className="relative aspect-square w-full overflow-hidden rounded-[12px] border-2 border-[#22e16e] bg-[#16251d] p-[6px] sm:p-[10px]">
         <img
-          src={g.poster}
-          alt={g.name}
+          src={
+            imgErr
+              ? "https://images.23924894.com/TCG_GAME_ICONS/JL/EN/JL0036.avif?t=1795721437000"
+              : game.img
+          }
+          alt={game.title}
           loading="lazy"
-          width={640}
-          height={640}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
+          onError={() => setImgErr(true)}
+          className="h-full w-full rounded-[10px] object-cover sm:rounded-[12px]"
         />
 
-        {/* Provider badge (top-left) */}
-        <span className="absolute left-1.5 top-1.5 z-[3] rounded-sm bg-gradient-to-b from-emerald-500 to-emerald-800 px-1.5 py-0.5 text-[10px] font-black tracking-wider text-white shadow ring-1 ring-black/40">
-          {g.provider}
-        </span>
-
-        {/* Heart (top-right) */}
-        <span className="absolute right-1.5 top-1.5 z-[3] grid h-6 w-6 place-items-center rounded-full bg-black/55 text-white/85 ring-1 ring-white/25 backdrop-blur">
-          <Heart className="h-3.5 w-3.5" />
-        </span>
-
-        {/* LIVE / SOON */}
-        <span
-          className={`absolute bottom-1.5 left-1.5 z-[3] inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black ring-1 backdrop-blur ${
-            g.status === "live"
-              ? "bg-red-600/95 text-white ring-white/50 shadow-[0_0_10px_rgba(255,60,60,0.7)]"
-              : "bg-yellow-400/95 text-black ring-white/50"
-          }`}
+        {/* Top-left vendor pill */}
+        <div
+          className="absolute top-[6px] left-[6px] z-[3] flex items-center justify-center rounded-tl-[10px] rounded-br-[12px] px-1.5 py-0.5 shadow sm:top-[10px] sm:left-[10px]"
+          style={{ background: "linear-gradient(180deg, #22e16e, #097739)" }}
         >
-          {g.status === "live" ? (
-            <>
-              <span className="gc-live-dot" />
-              LIVE
-            </>
+          {vendorErr ? (
+            <span className="px-1 text-[10px] font-black tracking-wide text-white">
+              {game.provider === "JL" ? "JILI" : game.provider}
+            </span>
           ) : (
-            "SOON"
+            <img
+              src={VENDOR_LOGO_WHITE(game.provider)}
+              alt={game.provider}
+              loading="lazy"
+              onError={() => setVendorErr(true)}
+              className="h-[18px] w-[36px] object-contain sm:h-[22px] sm:w-[46px]"
+            />
           )}
-        </span>
+        </div>
+
+        {/* Top-right favorite heart icon */}
+        <button
+          type="button"
+          aria-label="Favorite"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleFav();
+          }}
+          className="absolute top-[9px] right-[9px] z-[20] grid h-6 w-6 place-items-center transition-transform hover:scale-110 sm:top-[13px] sm:right-[13px]"
+        >
+          <Heart
+            className={`h-4 w-4 sm:h-5 sm:w-5 ${
+              isFav
+                ? "fill-[#f85e06] text-[#f85e06]"
+                : "fill-black/25 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]"
+            }`}
+          />
+        </button>
+
+        {/* Hover overlay (.btn-dice) with green circular Play button & Free Trial */}
+        <div className="pointer-events-none absolute inset-0 z-[10] flex scale-75 flex-col items-center justify-center gap-2 rounded-[12px] bg-[rgba(19,58,37,0.58)] opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100">
+          <span
+            className="flex h-[42px] w-[42px] items-center justify-center rounded-full border-2 border-white/90 shadow-[0_4px_14px_rgba(0,0,0,0.45)] sm:h-[50px] sm:w-[50px]"
+            style={{ background: "linear-gradient(180deg, #22e16e, #0b8d42)" }}
+          >
+            <Play className="h-5 w-5 translate-x-[1px] fill-white text-white sm:h-6 sm:w-6" />
+          </span>
+          {hasFreeTrial && (
+            <span className="text-[11px] font-medium text-white underline underline-offset-2 drop-shadow sm:text-[13px]">
+              ফ্রি ট্রায়াল
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Bengali label BELOW the tile */}
-      <div className="mt-2 text-center text-[14px] font-semibold text-white/95 drop-shadow">
-        {g.nameBn}
-      </div>
-    </>
-  );
-
-  const className = "mygames-item animate-fade-in";
-  const style = { animationDelay: `${Math.min(index * 40, 600)}ms`, animationFillMode: "backwards" as const };
-
-  if (g.status === "live" && g.to) {
-    return (
-      <Link to={g.to as string} className={className} style={style} aria-label={g.name}>
-        {inner}
-      </Link>
-    );
-  }
-  return (
-    <button className={className} style={style} aria-label={g.name} disabled={g.status === "soon"}>
-      {inner}
-    </button>
-  );
-}
-
-
-function EmptyState({ hasQuery }: { hasQuery: boolean }) {
-  if (hasQuery) {
-    return <div className="py-16 text-center text-sm text-white/70">কোন গেম পাওয়া যায়নি</div>;
-  }
-  return (
-    <div className="mx-auto w-[1200px] max-w-[calc(100vw-96px)] rounded-xl border border-dashed border-[var(--neon-gold)]/40 bg-black/30 p-10 text-center">
-      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--neon-gold)]/20 text-3xl">
-        🎮
-      </div>
-      <h3 className="text-lg font-bold text-white">এখনো কোন নিজস্ব গেম নেই</h3>
-      <p className="mt-2 text-sm text-white/70">
-        এই জায়গাটি শুধুমাত্র আমাদের নিজের তৈরি অরিজিনাল গেমসের জন্য রাখা।
-        <br />
-        নতুন গেম তৈরি হলে এখানে যুক্ত হবে।
+      {/* Centered #000 game title below card */}
+      <p className="w-full truncate pt-[8px] text-center text-[12px] font-normal text-black sm:pt-[10px] sm:text-[14px]">
+        {game.title}
       </p>
     </div>
   );
