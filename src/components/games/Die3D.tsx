@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export type DieTheme = "emerald-gold" | "obsidian-gold";
+export type DieTheme = "ivory-gold" | "emerald-gold" | "obsidian-gold";
 
 /**
  * 3D orientation (deg) bringing each face (1..6) forward (+Z) toward the viewer.
@@ -39,23 +39,44 @@ function DieFace({
   shade?: number;
 }) {
   const pips = PIP_GRID[value] ?? [4];
+  const isIvory = theme === "ivory-gold";
   const isEmerald = theme === "emerald-gold";
 
-  const faceBg = isEmerald
+  const faceBg = isIvory
     ? shade > 1
-      ? "linear-gradient(145deg, #1b7a42 0%, #0f4d2d 60%, #072917 100%)"
+      ? "linear-gradient(145deg, #ffffff 0%, #f5f0e4 65%, #e5dcc8 100%)"
       : shade < 1
-        ? "linear-gradient(145deg, #0d4525 0%, #062816 65%, #03150b 100%)"
-        : "linear-gradient(145deg, #156636 0%, #0a3b22 60%, #051e12 100%)"
-    : shade > 1
-      ? "linear-gradient(145deg, #333741 0%, #181d27 60%, #0c1017 100%)"
-      : shade < 1
-        ? "linear-gradient(145deg, #161920 0%, #0b0e14 65%, #040609 100%)"
-        : "linear-gradient(145deg, #242934 0%, #12161f 60%, #070a0f 100%)";
+        ? "linear-gradient(145deg, #dcd4c0 0%, #bfb59e 68%, #9d927b 100%)"
+        : "linear-gradient(145deg, #fcfaf3 0%, #eae3d2 65%, #d2c7b0 100%)"
+    : isEmerald
+      ? shade > 1
+        ? "linear-gradient(145deg, #1b7a42 0%, #0f4d2d 60%, #072917 100%)"
+        : shade < 1
+          ? "linear-gradient(145deg, #0d4525 0%, #062816 65%, #03150b 100%)"
+          : "linear-gradient(145deg, #156636 0%, #0a3b22 60%, #051e12 100%)"
+      : shade > 1
+        ? "linear-gradient(145deg, #333741 0%, #181d27 60%, #0c1017 100%)"
+        : shade < 1
+          ? "linear-gradient(145deg, #161920 0%, #0b0e14 65%, #040609 100%)"
+          : "linear-gradient(145deg, #242934 0%, #12161f 60%, #070a0f 100%)";
 
-  const rim = isEmerald ? "rgba(250, 204, 21, 0.72)" : "rgba(52, 211, 153, 0.62)";
-  const pipStyle =
-    value === 1
+  const rim = isIvory
+    ? "rgba(217, 169, 44, 0.65)"
+    : isEmerald
+      ? "rgba(250, 204, 21, 0.72)"
+      : "rgba(52, 211, 153, 0.62)";
+
+  const pipStyle = isIvory
+    ? value === 1
+      ? {
+          background: "radial-gradient(circle at 35% 35%, #f87171, #dc2626 65%, #7f1d1d 100%)",
+          boxShadow: "inset 0 2px 3px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.6)",
+        }
+      : {
+          background: "radial-gradient(circle at 35% 35%, #374151, #111827 70%, #030712 100%)",
+          boxShadow: "inset 0 2px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.6)",
+        }
+    : value === 1
       ? {
           background: "radial-gradient(circle at 35% 35%, #fef08a, #f59e0b 65%, #b45309 100%)",
           boxShadow: "0 0 10px rgba(251,191,36,0.95), inset 0 1px 1px rgba(255,255,255,0.75)",
@@ -236,7 +257,8 @@ export function Die3D({
     return () => cancelAnimationFrame(raf);
   }, [rolling, rollId, turbo, phaseOffset, clamped, dropHeight, isoRx, isoRy, isoRz]);
 
-  const coreBg = theme === "emerald-gold" ? "#041c10" : "#06080d";
+  const coreBg =
+    theme === "ivory-gold" ? "#c9bea6" : theme === "emerald-gold" ? "#041c10" : "#06080d";
 
   return (
     <div
