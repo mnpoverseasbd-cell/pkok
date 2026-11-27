@@ -126,3 +126,9 @@ export function sfxDiceLand(strength = 1) {
   tone({ freq: 165 + strength * 55, dur: 0.065, type: "sine", vol, slideTo: 75, attack: 0.001, release: 0.04 });
   noiseBurst(0.04, vol * 0.55, 1300);
 }
+
+/** Jet takeoff boost whoosh. */
+export function sfxTakeoff() {
+  tone({ freq: 180, dur: 0.24, type: "sawtooth", vol: 0.16, slideTo: 520, attack: 0.02, release: 0.08 });
+  noiseBurst(0.22, 0.16, 950);
+}
