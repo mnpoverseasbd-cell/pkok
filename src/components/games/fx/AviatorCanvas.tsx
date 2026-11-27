@@ -10,11 +10,11 @@ export type SkyCashoutBadge = {
 };
 
 /**
- * High-FPS HTML5 Canvas renderer for Aviator / Crash:
- * - Scrolling radar grid + parallax starfield proportional to speed
- * - Smooth glowing trajectory curve & radial gradient under-fill
- * - Detailed vector jet aircraft locked onto the curve tip & tangent angle
- * - Dynamic afterburner flame & crash explosion shockwave
+ * Authentic Spribe Aviator Canvas:
+ * - Rotating dark sunburst beams radiating from bottom-left corner
+ * - Smooth crimson flight curve + gradient red area fill beneath
+ * - Classic Spribe red propeller plane hovering & pitching cleanly at curve head
+ * - Smooth "flew away" exit animation on crash
  */
 export function AviatorCanvas({
   multiplier,
@@ -26,11 +26,9 @@ export function AviatorCanvas({
   badges?: SkyCashoutBadge[];
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const trailRef = useRef<{ t: number; m: number }[]>([]);
   const startRef = useRef<number>(0);
-  const starsRef = useRef<Array<{ x: number; y: number; r: number; spd: number }>>([]);
-  const sparksRef = useRef<Array<{ x: number; y: number; vx: number; vy: number; life: number; color: string }>>([]);
-
+  const crashTimeRef = useRef<number>(0);
+  const lastFlyElapsedRef = useRef<number>(0);
   const phaseRef = useRef(phase);
   const multRef = useRef(multiplier);
   const badgesRef = useRef(badges);
@@ -41,53 +39,14 @@ export function AviatorCanvas({
   badgesRef.current = badges;
 
   useEffect(() => {
-    if (starsRef.current.length === 0) {
-      starsRef.current = Array.from({ length: 42 }, () => ({
-        x: Math.random(),
-        y: Math.random(),
-        r: 0.8 + Math.random() * 1.6,
-        spd: 0.15 + Math.random() * 0.45,
-      }));
-    }
-  }, []);
-
-  useEffect(() => {
     const prev = prevPhaseRef.current;
     prevPhaseRef.current = phase;
-
-    if (phase === "waiting") {
-      trailRef.current = [];
-      sparksRef.current = [];
-    } else if (phase === "flying" && prev !== "flying") {
+    if (phase === "flying" && prev !== "flying") {
       startRef.current = performance.now();
-      trailRef.current = [{ t: 0, m: 1 }];
+      lastFlyElapsedRef.current = 0;
     } else if (phase === "crashed" && prev === "flying") {
-      // Trigger burst sparks at the last known curve head
-      const arr = trailRef.current;
-      const canvas = canvasRef.current;
-      if (arr.length > 0 && canvas) {
-        const w = canvas.clientWidth;
-        const h = canvas.clientHeight;
-        const padX = 36;
-        const padY = 26;
-        const maxT = Math.max(4, arr[arr.length - 1].t);
-        const maxM = Math.max(2, arr[arr.length - 1].m * 1.15);
-        const last = arr[arr.length - 1];
-        const hx = padX + (last.t / maxT) * (w - padX * 2.2);
-        const hy = h - padY - ((last.m - 1) / (maxM - 1 || 1)) * (h - padY * 2.2);
-        for (let i = 0; i < 36; i++) {
-          const ang = Math.random() * Math.PI * 2;
-          const spd = 2 + Math.random() * 6;
-          sparksRef.current.push({
-            x: hx,
-            y: hy,
-            vx: Math.cos(ang) * spd,
-            vy: Math.sin(ang) * spd,
-            life: 1,
-            color: i % 2 === 0 ? "#fb7185" : "#fbbf24",
-          });
-        }
-      }
+      crashTimeRef.current = performance.now();
+      lastFlyElapsedRef.current = (performance.now() - startRef.current) / 1000;
     }
   }, [phase]);
 
@@ -97,7 +56,6 @@ export function AviatorCanvas({
     const parent = canvas.parentElement!;
     const ctx = canvas.getContext("2d")!;
     let raf = 0;
-    let lastTime = performance.now();
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -113,231 +71,203 @@ export function AviatorCanvas({
     const ro = new ResizeObserver(resize);
     ro.observe(parent);
 
-    const drawJet = (
-      x: number,
-      y: number,
-      angleRad: number,
-      color: string,
-      nowMs: number,
-    ) => {
+    const drawSpribePlane = (x: number, y: number, angleRad: number, nowMs: number) => {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(angleRad);
 
-      // Flickering afterburner exhaust flame
-      const flameLen = 18 + Math.sin(nowMs * 0.05) * 6 + Math.random() * 4;
-      const grad = ctx.createLinearGradient(-16 - flameLen, 0, -14, 0);
-      grad.addColorStop(0, "rgba(251, 191, 36, 0)");
-      grad.addColorStop(0.55, "rgba(251, 191, 36, 0.85)");
-      grad.addColorStop(1, "#ffffff");
-      ctx.fillStyle = grad;
+      // Soft warm glow beneath fuselage
+      ctx.shadowColor = "rgba(229, 29, 72, 0.7)";
+      ctx.shadowBlur = 18;
+
+      // Top rounded wing & tail
+      ctx.fillStyle = "#e11d48";
       ctx.beginPath();
-      ctx.moveTo(-14, -4.5);
-      ctx.lineTo(-14 - flameLen, 0);
-      ctx.lineTo(-14, 4.5);
+      ctx.moveTo(-26, 2);
+      ctx.quadraticCurveTo(-30, -10, -22, -14);
+      ctx.lineTo(-14, -4);
+      ctx.lineTo(14, -6);
+      ctx.quadraticCurveTo(26, -5, 29, 1);
+      ctx.quadraticCurveTo(26, 8, 12, 8);
+      ctx.lineTo(-18, 6);
       ctx.closePath();
       ctx.fill();
 
-      // Main swept wings & fuselage
-      ctx.shadowColor = color;
-      ctx.shadowBlur = 16;
-      ctx.fillStyle = "#fde047";
-      ctx.beginPath();
-      ctx.moveTo(22, 0); // nose cone
-      ctx.lineTo(4, -5);
-      ctx.lineTo(-10, -17); // upper wingtip
-      ctx.lineTo(-15, -17);
-      ctx.lineTo(-8, -4);
-      ctx.lineTo(-18, -8); // tail fin
-      ctx.lineTo(-15, 0);
-      ctx.lineTo(-18, 7);
-      ctx.lineTo(-8, 4);
-      ctx.lineTo(-14, 15); // lower wingtip
-      ctx.lineTo(-9, 15);
-      ctx.lineTo(4, 5);
-      ctx.closePath();
-      ctx.fill();
+      // Belly / lower fuselage accent
       ctx.shadowBlur = 0;
-
-      // Cockpit glass highlight
-      ctx.fillStyle = "#064e3b";
+      ctx.fillStyle = "#be123c";
       ctx.beginPath();
-      ctx.ellipse(7, -1, 6, 2.6, 0, 0, Math.PI * 2);
+      ctx.moveTo(-14, 4);
+      ctx.lineTo(18, 4);
+      ctx.lineTo(12, 9);
+      ctx.lineTo(-10, 8);
+      ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = "#67e8f9";
+
+      // White fuselage stripe & cockpit
+      ctx.fillStyle = "#ffffff";
       ctx.beginPath();
-      ctx.ellipse(8, -1.6, 3.2, 1.2, 0, 0, Math.PI * 2);
+      ctx.roundRect(-8, -3, 18, 4, 2);
+      ctx.fill();
+
+      // Tail 'X' accent
+      ctx.strokeStyle = "#fda4af";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(-22, -9);
+      ctx.lineTo(-17, -4);
+      ctx.moveTo(-17, -9);
+      ctx.lineTo(-22, -4);
+      ctx.stroke();
+
+      // Upper wing silhouette
+      ctx.fillStyle = "#f43f5e";
+      ctx.beginPath();
+      ctx.ellipse(2, -9, 12, 3.2, -0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Spinning front propeller
+      const propH = 5 + Math.abs(Math.sin(nowMs * 0.045)) * 13;
+      ctx.strokeStyle = "rgba(255,255,255,0.85)";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(30, -propH);
+      ctx.lineTo(30, propH);
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(29, 0, 2.5, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.restore();
     };
 
     const render = (now: number) => {
-      const dt = Math.min(0.05, (now - lastTime) / 1000);
-      lastTime = now;
-
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       ctx.clearRect(0, 0, w, h);
 
       const s = phaseRef.current;
-      const mNow = multRef.current;
-      const speedFactor = s === "flying" ? 1 + Math.min(5, Math.log(Math.max(1, mNow))) : 0.25;
 
-      // 1. Parallax moving stars
-      for (const star of starsRef.current) {
-        star.x -= star.spd * speedFactor * dt * 0.28;
-        if (star.x < 0) {
-          star.x = 1;
-          star.y = Math.random();
-        }
-        ctx.fillStyle = `rgba(167, 243, 208, ${0.18 + star.spd * 0.35})`;
+      // 1. Dark Spribe rotating sunburst rays centered at bottom-left
+      const rayCount = 22;
+      const rotBase = (now * 0.00008) % (Math.PI * 2);
+      const maxR = Math.hypot(w, h) * 1.15;
+      for (let i = 0; i < rayCount; i++) {
+        if (i % 2 === 1) continue;
+        const a0 = rotBase + (i / rayCount) * Math.PI * 2;
+        const a1 = a0 + (1 / rayCount) * Math.PI * 2;
+        ctx.fillStyle = "rgba(255, 255, 255, 0.025)";
         ctx.beginPath();
-        ctx.arc(star.x * w, star.y * h, star.r, 0, Math.PI * 2);
+        ctx.moveTo(0, h);
+        ctx.lineTo(Math.cos(a0) * maxR, h + Math.sin(a0) * maxR);
+        ctx.lineTo(Math.cos(a1) * maxR, h + Math.sin(a1) * maxR);
+        ctx.closePath();
         ctx.fill();
       }
 
-      // 2. Subtle emerald radar grid
-      const padX = 36;
-      const padY = 26;
-      ctx.strokeStyle = "rgba(52, 211, 153, 0.08)";
+      // Subtle axis guide lines + pulsing dots along left & bottom like Spribe Aviator
+      const padL = 22;
+      const padB = 18;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.09)";
       ctx.lineWidth = 1;
-      for (let i = 1; i <= 4; i++) {
-        const y = h - padY - ((h - padY * 2) / 4) * i;
-        ctx.beginPath();
-        ctx.moveTo(padX, y);
-        ctx.lineTo(w - 14, y);
-        ctx.stroke();
-      }
-      const gridShift = s === "flying" ? ((now - startRef.current) * 0.03) % 60 : 0;
-      for (let gx = padX + 60 - gridShift; gx < w - 14; gx += 60) {
-        ctx.beginPath();
-        ctx.moveTo(gx, 16);
-        ctx.lineTo(gx, h - padY);
-        ctx.stroke();
-      }
-
-      // Axes base lines
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.14)";
       ctx.beginPath();
-      ctx.moveTo(padX, 16);
-      ctx.lineTo(padX, h - padY);
-      ctx.lineTo(w - 14, h - padY);
+      ctx.moveTo(padL, 10);
+      ctx.lineTo(padL, h - padB);
+      ctx.lineTo(w - 10, h - padB);
       ctx.stroke();
 
-      // Push sample while flying
       if (s === "flying") {
-        const t = Math.max(0.01, (now - startRef.current) / 1000);
-        const last = trailRef.current[trailRef.current.length - 1];
-        if (!last || t - last.t >= 1 / 60) {
-          trailRef.current.push({ t, m: mNow });
+        const elapsed = (now - startRef.current) / 1000;
+        const driftX = (elapsed * 44) % 48;
+        const driftY = (elapsed * 32) % 42;
+        ctx.fillStyle = "rgba(255,255,255,0.28)";
+        for (let bx = padL + 48 - driftX; bx < w - 18; bx += 48) {
+          ctx.beginPath();
+          ctx.arc(bx, h - padB + 7, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = "rgba(56, 189, 248, 0.45)";
+        for (let by = h - padB - 42 + driftY; by > 16; by -= 42) {
+          ctx.beginPath();
+          ctx.arc(padL - 8, by, 1.8, 0, Math.PI * 2);
+          ctx.fill();
         }
       }
 
-      const arr = trailRef.current;
-      if (arr.length > 1) {
-        const lastPt = arr[arr.length - 1];
-        const maxT = Math.max(4, lastPt.t);
-        const maxM = Math.max(2, lastPt.m * 1.15);
+      // 2. Smooth Spribe parabolic climb curve
+      if (s === "flying" || s === "crashed") {
+        const elapsed = s === "flying" ? (now - startRef.current) / 1000 : lastFlyElapsedRef.current;
+        const climbProgress = Math.min(1, elapsed / 4.2);
+        const bobX = s === "flying" && climbProgress > 0.85 ? Math.sin(now * 0.0022) * 8 : 0;
+        const bobY = s === "flying" && climbProgress > 0.85 ? Math.cos(now * 0.003) * 10 : 0;
 
-        // Y-axis multiplier ticks
-        ctx.fillStyle = "rgba(167, 243, 208, 0.5)";
-        ctx.font = "700 10px Outfit, sans-serif";
-        for (let i = 0; i <= 4; i++) {
-          const val = 1 + ((maxM - 1) / 4) * i;
-          const yy = h - padY - ((h - padY * 2.2) / 4) * i;
-          ctx.fillText(`${val.toFixed(1)}×`, 4, yy + 3);
-        }
+        const startX = padL;
+        const startY = h - padB;
+        const endX = padL + climbProgress * (w * 0.78 - padL) + bobX;
+        const endY = startY - Math.pow(climbProgress, 1.18) * (h * 0.68) + bobY;
 
-        const xFor = (t: number) => padX + (t / maxT) * (w - padX * 2.2);
-        const yFor = (m: number) => h - padY - ((m - 1) / (maxM - 1 || 1)) * (h - padY * 2.2);
+        // Control point pulls curve gently upward near right (quadratic curve)
+        const ctrlX = startX + (endX - startX) * 0.58;
+        const ctrlY = startY - (startY - endY) * 0.14;
 
-        const color =
-          s === "crashed"
-            ? "#fb7185"
-            : mNow >= 10
-              ? "#c084fc"
-              : mNow >= 2
-                ? "#fde047"
-                : "#34d399";
-
-        // Smooth area gradient under curve
-        const areaGrad = ctx.createLinearGradient(0, 16, 0, h - padY);
-        areaGrad.addColorStop(
-          0,
-          s === "crashed" ? "rgba(244,63,94,0.34)" : mNow >= 2 ? "rgba(251,191,36,0.28)" : "rgba(16,185,129,0.32)",
-        );
-        areaGrad.addColorStop(1, "rgba(4,24,15,0)");
-
-        ctx.beginPath();
-        ctx.moveTo(xFor(arr[0].t), h - padY);
-        for (const p of arr) ctx.lineTo(xFor(p.t), yFor(p.m));
-        ctx.lineTo(xFor(lastPt.t), h - padY);
-        ctx.closePath();
-        ctx.fillStyle = areaGrad;
-        ctx.fill();
-
-        // Neon trajectory stroke
-        ctx.beginPath();
-        ctx.moveTo(xFor(arr[0].t), yFor(arr[0].m));
-        for (const p of arr) ctx.lineTo(xFor(p.t), yFor(p.m));
-        ctx.lineWidth = 4;
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        ctx.strokeStyle = color;
-        ctx.shadowColor = color;
-        ctx.shadowBlur = 16;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        // Aircraft locked to tip & tangent angle
         if (s === "flying") {
-          const prevPt = arr[Math.max(0, arr.length - 4)];
-          const hx = xFor(lastPt.t);
-          const hy = yFor(lastPt.m);
-          const px = xFor(prevPt.t);
-          const py = yFor(prevPt.m);
-          const angle = Math.atan2(hy - py, Math.max(1, hx - px));
-          drawJet(hx, hy, angle, color, now);
+          // Red under-curve gradient fill
+          const fillGrad = ctx.createLinearGradient(0, endY, 0, startY);
+          fillGrad.addColorStop(0, "rgba(225, 29, 72, 0.44)");
+          fillGrad.addColorStop(1, "rgba(225, 29, 72, 0.05)");
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+          ctx.lineTo(endX, startY);
+          ctx.closePath();
+          ctx.fillStyle = fillGrad;
+          ctx.fill();
+
+          // Glowing red flight stroke
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+          ctx.lineWidth = 4;
+          ctx.lineCap = "round";
+          ctx.strokeStyle = "#f43f5e";
+          ctx.shadowColor = "#e11d48";
+          ctx.shadowBlur = 14;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // Tangent slope at t=1 is (end - ctrl)
+          const angle = Math.atan2(endY - ctrlY, Math.max(1, endX - ctrlX)) * 0.65;
+          drawSpribePlane(endX, endY - 6, angle, now);
+        } else {
+          // Crashed: plane zooms off top-right
+          const flyOut = Math.min(1.4, (now - crashTimeRef.current) / 700);
+          if (flyOut < 1.1) {
+            const fx = endX + flyOut * 280;
+            const fy = endY - flyOut * 160;
+            drawSpribePlane(fx, fy, -0.45, now);
+          }
         }
       }
 
-      // 3. Crash sparks update & draw
-      for (let i = sparksRef.current.length - 1; i >= 0; i--) {
-        const sp = sparksRef.current[i];
-        sp.x += sp.vx;
-        sp.y += sp.vy;
-        sp.vy += 0.14;
-        sp.life -= dt * 1.4;
-        if (sp.life <= 0) {
-          sparksRef.current.splice(i, 1);
-          continue;
-        }
-        ctx.globalAlpha = Math.max(0, sp.life);
-        ctx.fillStyle = sp.color;
-        ctx.beginPath();
-        ctx.arc(sp.x, sp.y, 2.5 * sp.life + 1, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
-
-      // 4. Floating cashout badges on sky stage
+      // 3. Floating cashout badges
       for (const b of badgesRef.current) {
         const age = (now - b.createdAt) / 1000;
         if (age > 2.2) continue;
         const alpha = Math.max(0, 1 - age / 2.2);
         ctx.save();
         ctx.globalAlpha = alpha;
-        const bx = w * 0.72;
-        const by = h * 0.34 - age * 28;
-        ctx.fillStyle = "rgba(16, 185, 129, 0.92)";
+        const bx = w * 0.5;
+        const by = 46 - age * 18;
+        ctx.fillStyle = "#22c55e";
         ctx.beginPath();
-        ctx.roundRect(bx - 75, by - 14, 150, 26, 999);
+        ctx.roundRect(bx - 78, by - 12, 156, 24, 999);
         ctx.fill();
-        ctx.fillStyle = "#022010";
+        ctx.fillStyle = "#041b0b";
         ctx.font = "900 11px Outfit, sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(b.label, bx, by + 3);
+        ctx.fillText(b.label, bx, by + 4);
         ctx.restore();
       }
 

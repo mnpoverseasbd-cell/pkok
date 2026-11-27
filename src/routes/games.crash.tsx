@@ -1,19 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   Activity,
   ArrowLeft,
-  Bot,
   Coins,
-  History,
   LogIn,
+  MessageSquare,
   Minus,
-  Plane,
   Plus,
   RefreshCw,
+  Send,
   ShieldCheck,
-  ShoppingCart,
-  Users,
   Volume2,
   VolumeX,
   Wrench,
@@ -21,7 +18,6 @@ import {
 } from "lucide-react";
 import { SiteShell } from "@/components/landing/SiteShell";
 import { AviatorCanvas, type SkyCashoutBadge } from "@/components/games/fx/AviatorCanvas";
-import { ParticleLayer, type ParticleBurstHandle } from "@/components/games/fx/Particles";
 import { pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
 import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import { useGameConfig } from "@/hooks/useGameConfig";
@@ -37,8 +33,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/games/crash")({
   head: () => ({
     meta: [
-      { title: "Aviator Crash — Asik Game" },
-      { name: "description", content: "উপরে 60fps লাইভ জেট ক্র্যাশ এবং নিচে ডুয়াল অটো-ক্যাশআউট বেট কন্ট্রোল।" },
+      { title: "Aviator — Asik Game" },
+      { name: "description", content: "Spribe Aviator স্টাইল লাইভ ক্র্যাশ গেম — বাজি ধরুন এবং প্লেন ওড়ার সাথে ক্যাশআউট করুন।" },
     ],
   }),
   component: AviatorCrashPage,
@@ -46,9 +42,10 @@ export const Route = createFileRoute("/games/crash")({
 
 type Phase = "waiting" | "flying" | "crashed";
 type SlotStatus = "idle" | "queued" | "active" | "cashed" | "lost";
-type FeedTab = "live" | "history";
+type LeftTab = "all" | "my" | "top";
 
 interface Slot {
+  mode: "bet" | "auto";
   amount: number;
   auto: number;
   autoEnabled: boolean;
@@ -59,13 +56,25 @@ interface Slot {
 
 const BETTING_WINDOW_MS = 6500;
 const POST_CRASH_MS = 2800;
-const QUICK_CHIPS = [10, 50, 100, 500, 1000];
-const AUTO_PRESETS = [1.5, 2.0, 3.0, 5.0];
+const QUICK_AMOUNTS = [100, 200, 500, 10000];
+
+const INITIAL_CHAT = [
+  { id: 1, user: "0***0", time: "11:28:45", msg: "2x e auto diya rakhsi 🔥" },
+  { id: 2, user: "w***1", time: "11:28:47", msg: "15.31x dhorse vai ajke!" },
+  { id: 3, user: "f***d", time: "11:28:49", msg: "Good luck all ✈️" },
+  { id: 4, user: "b***4", time: "11:28:51", msg: "1000 BDT cashout @ 4.23x 💰" },
+];
+
+function multPillStyle(m: number) {
+  if (m >= 10) return "text-[#f472b6] border-[#db2777]/40 bg-[#3b122b]";
+  if (m >= 2) return "text-[#c084fc] border-[#9333ea]/40 bg-[#2b1542]";
+  return "text-[#38bdf8] border-[#0284c7]/40 bg-[#0d2238]";
+}
 
 function AviatorCrashPage() {
   const { balance, bet: placeBet, credit, refresh, userId, loading: walletLoading } = useDemoWallet();
   const { data: cfg, isLoading: cfgLoading } = useGameConfig("crash");
-  const { stats, record, reset: resetStats } = useGameStats("crash");
+  const { record } = useGameStats("crash");
   const pf = useProvablyFair("crash");
 
   const maintenance = !cfgLoading && cfg && !cfg.is_enabled;
@@ -82,17 +91,22 @@ function AviatorCrashPage() {
   const [mult, setMult] = useState(1.0);
   const [crashAt, setCrashAt] = useState<number | null>(null);
   const [countdown, setCountdown] = useState(BETTING_WINDOW_MS / 1000);
-  const [recentCrashes, setRecentCrashes] = useState<number[]>([]);
+  const [recentCrashes, setRecentCrashes] = useState<number[]>([
+    1.24, 1.25, 5.61, 1.28, 2.4, 15.31, 1.45, 2.85, 43.86, 1.18, 6.14,
+  ]);
   const [skyBadges, setSkyBadges] = useState<SkyCashoutBadge[]>([]);
   const [muted, setMutedState] = useState(() => isMuted());
   const [fairOpen, setFairOpen] = useState(false);
-  const [feedTab, setFeedTab] = useState<FeedTab>("live");
+  const [chatOpen, setChatOpen] = useState(true);
+  const [chatDraft, setChatDraft] = useState("");
+  const [chatList, setChatList] = useState(INITIAL_CHAT);
+  const [leftTab, setLeftTab] = useState<LeftTab>("all");
   const [liveBets, setLiveBets] = useState<LiveBet[]>([]);
   const [myHistory, setMyHistory] = useState<BetHistoryEntry[]>([]);
 
   const [slots, setSlots] = useState<[Slot, Slot]>([
-    { amount: 50, auto: 2.0, autoEnabled: false, status: "idle" },
-    { amount: 100, auto: 2.0, autoEnabled: false, status: "idle" },
+    { mode: "bet", amount: Math.max(minBet, 50), auto: 2.0, autoEnabled: false, status: "idle" },
+    { mode: "bet", amount: Math.max(minBet, 100), auto: 2.0, autoEnabled: false, status: "idle" },
   ]);
 
   const slotsRef = useRef(slots);
@@ -101,10 +115,8 @@ function AviatorCrashPage() {
   balanceRef.current = balance;
   const pfRef = useRef(pf);
   pfRef.current = pf;
-  const targetRef = useRef(0);
   const startRef = useRef(0);
   const rafRef = useRef<number | null>(null);
-  const fxRef = useRef<ParticleBurstHandle>(null);
   const cycleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -116,7 +128,11 @@ function AviatorCrashPage() {
     [myHistory],
   );
 
-  // Sync slot amounts cleanly when admin min/max changes
+  const topBets = useMemo(
+    () => [...liveBets].sort((a, b) => b.payout - a.payout).slice(0, 15),
+    [liveBets],
+  );
+
   useEffect(() => {
     setSlots((prev) =>
       prev.map((s) => ({
@@ -162,9 +178,8 @@ function AviatorCrashPage() {
       recordMyBet({ game: "crash", bet: s.amount, multiplier: atMult, payout: won });
       setSkyBadges((prev) => [
         ...prev.slice(-3),
-        { id: Date.now() + i, label: `YOU +৳${won.toLocaleString()} @ ${atMult.toFixed(2)}×`, mult: atMult, createdAt: performance.now() },
+        { id: Date.now() + i, label: `CASHED +৳${won.toLocaleString()} (${atMult.toFixed(2)}×)`, mult: atMult, createdAt: performance.now() },
       ]);
-      fxRef.current?.burst({ count: 55, kind: "confetti", speed: 9 });
       try {
         sfxCashout();
       } catch {
@@ -183,7 +198,6 @@ function AviatorCrashPage() {
       return;
     }
 
-    // Debit queued bets ONLY right at takeoff so pre-takeoff cancels never create bogus win records
     const currentSlots = slotsRef.current;
     const activated: [Slot, Slot] = [{ ...currentSlots[0] }, { ...currentSlots[1] }];
     for (const i of [0, 1] as const) {
@@ -199,7 +213,6 @@ function AviatorCrashPage() {
     slotsRef.current = activated;
 
     const target = await fairCrash(activePf.serverSeed, activePf.clientSeed, activePf.nonce, edge);
-    targetRef.current = target;
     setCrashAt(null);
     setMult(1.0);
     setSkyBadges([]);
@@ -227,7 +240,7 @@ function AviatorCrashPage() {
         setMult(target);
         setCrashAt(target);
         setPhase("crashed");
-        setRecentCrashes((prev) => [target, ...prev].slice(0, 16));
+        setRecentCrashes((prev) => [target, ...prev].slice(0, 18));
         activePf.consume(`crash=${target}×`);
         pushMultiplierHistory("crash", target);
 
@@ -243,7 +256,6 @@ function AviatorCrashPage() {
           return next;
         });
 
-        fxRef.current?.burst({ count: 65, kind: "smoke", color: "#fb7185", speed: 6 });
         try {
           sfxBust();
         } catch {
@@ -307,13 +319,13 @@ function AviatorCrashPage() {
       const s = slotsRef.current[i];
       if (s.status === "queued" || s.status === "active") return;
       if (s.amount < minBet || s.amount > maxBet) {
-        toast.error(`বাজি ৳${minBet}–৳${maxBet} এর মধ্যে রাখুন`);
+        toast.error(`Bet must be ৳${minBet}–৳${maxBet}`);
         return;
       }
       const otherIdx = i === 0 ? 1 : 0;
       const otherQueued = slotsRef.current[otherIdx].status === "queued" ? slotsRef.current[otherIdx].amount : 0;
       if (s.amount + otherQueued > balanceRef.current) {
-        toast.error("পর্যাপ্ত ব্যালেন্স নেই");
+        toast.error("Insufficient balance");
         return;
       }
       setSlot(i, { status: "queued" });
@@ -337,7 +349,6 @@ function AviatorCrashPage() {
     [cashoutSlot, mult, phase],
   );
 
-  // Spacebar triggers Slot 1 Bet / Cashout cleanly
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.code !== "Space" || fairOpen || notLoggedIn || noCoins || maintenance) return;
@@ -345,241 +356,348 @@ function AviatorCrashPage() {
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       e.preventDefault();
       const s0 = slotsRef.current[0];
-      if (phase === "flying" && s0.status === "active") {
-        cashoutSlot(0, mult);
-      } else if (s0.status === "idle") {
-        queueBet(0);
-      } else if (s0.status === "queued") {
-        cancelQueued(0);
-      }
+      if (phase === "flying" && s0.status === "active") cashoutSlot(0, mult);
+      else if (s0.status === "queued") cancelQueued(0);
+      else if (s0.status !== "active") queueBet(0);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [cancelQueued, cashoutSlot, fairOpen, maintenance, mult, noCoins, notLoggedIn, phase, queueBet]);
 
-  const waitPct = Math.min(100, Math.max(0, (countdown / (BETTING_WINDOW_MS / 1000)) * 100));
+  function sendChat(e: FormEvent) {
+    e.preventDefault();
+    const txt = chatDraft.trim();
+    if (!txt) return;
+    const now = new Date();
+    const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+    setChatList((prev) => [...prev.slice(-24), { id: Date.now(), user: "You", time, msg: txt }]);
+    setChatDraft("");
+  }
+
+  const totalPool = useMemo(
+    () => liveBets.slice(0, 12).reduce((acc, b) => acc + (b.payout > 0 ? b.payout : b.bet), 0),
+    [liveBets],
+  );
+
+  const activePlayersCount = 1094 + (recentCrashes.length % 47);
 
   return (
     <SiteShell>
-      <div
-        className="min-h-[calc(100vh-110px)] px-3 py-4 text-white sm:px-5 lg:pr-16"
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.28), transparent 55%), linear-gradient(180deg, #0b3b23 0%, #072919 55%, #04190f 100%)",
-        }}
-      >
-        <div className="mx-auto flex max-w-5xl flex-col gap-3">
-          {/* SLIM TOP BAR */}
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-emerald-400/25 bg-[#052113]/85 px-3.5 py-2.5 shadow-lg">
-            <div className="flex items-center gap-2.5">
-              <Link
-                to="/esports"
-                className="inline-flex items-center gap-1 rounded-xl border border-white/15 bg-white/10 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-white/20"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" /> লবি
-              </Link>
-              <div className="flex items-center gap-2">
-                <span className="text-xl">✈️</span>
-                <h1 className="text-base sm:text-lg font-black uppercase tracking-wide text-amber-300">
-                  Aviator Crash
-                </h1>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <button
-                type="button"
-                onClick={() => setFairOpen(true)}
-                className="inline-flex items-center gap-1 rounded-xl border border-emerald-400/35 bg-emerald-500/20 px-2.5 py-1.5 text-xs font-bold text-emerald-200 hover:bg-emerald-500/30"
-              >
-                <ShieldCheck className="h-3.5 w-3.5" /> Fair
-              </button>
-              <button
-                type="button"
-                onClick={() => setMutedState(toggleMuted())}
-                className="rounded-xl border border-white/15 bg-white/10 p-1.5 text-white hover:bg-white/20"
-                title={muted ? "Unmute" : "Mute"}
-              >
-                {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-              </button>
-              <div className="flex items-center gap-1.5 rounded-xl border border-amber-300/40 bg-[#03140b] px-3 py-1.5">
-                <Coins className="h-4 w-4 text-amber-300" />
-                <span className="text-sm font-black tabular-nums">৳{balance.toLocaleString()}</span>
-                {userId && (
-                  <button type="button" onClick={refresh} className="text-emerald-300 hover:text-amber-300" title="Refresh">
-                    <RefreshCw className="h-3 w-3" />
-                  </button>
-                )}
-              </div>
-              <Link
-                to="/wallet"
-                search={{ tab: "deposit" }}
-                className="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-yellow-300 via-amber-400 to-amber-500 px-3 py-1.5 text-xs font-black text-black shadow hover:brightness-110"
-              >
-                <ShoppingCart className="h-3.5 w-3.5" /> কয়েন
-              </Link>
-            </div>
+      {/* Authentic Spribe Aviator Dark Arena */}
+      <div className="min-h-[calc(100vh-105px)] bg-[#0e0f12] text-[#e5e7eb] lg:pr-14">
+        {/* TOP AVIATOR BAR */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-[#141519] px-3 py-2 sm:px-4">
+          <div className="flex items-center gap-3">
+            <Link
+              to="/esports"
+              className="inline-flex items-center gap-1 rounded-lg bg-white/5 px-2.5 py-1 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" /> Lobby
+            </Link>
+            <span className="font-display text-xl font-black italic tracking-tight text-[#e11d48]">
+              Aviator
+            </span>
           </div>
 
-          {maintenance ? (
-            <GuardCard
-              icon={<Wrench className="h-10 w-10 text-amber-300" />}
-              title="গেমটি মেইনটেন্যান্সে আছে"
-              desc="অ্যাডমিন সাময়িকভাবে Crash বন্ধ রেখেছেন। কিছুক্ষণ পর আবার চেষ্টা করুন।"
-            />
-          ) : notLoggedIn ? (
-            <GuardCard
-              icon={<LogIn className="h-10 w-10 text-emerald-300" />}
-              title="লগইন প্রয়োজন"
-              desc="Aviator Crash খেলতে আপনার অ্যাকাউন্টে লগইন করুন।"
-              cta={
-                <div className="flex gap-3">
-                  <Link to="/login" className="rounded-xl bg-amber-400 px-6 py-2.5 text-sm font-black text-black hover:brightness-110">
-                    লগইন করুন
-                  </Link>
-                  <Link to="/register" className="rounded-xl border border-white/25 bg-white/10 px-6 py-2.5 text-sm font-black text-white hover:bg-white/20">
-                    রেজিস্টার
-                  </Link>
-                </div>
-              }
-            />
-          ) : noCoins ? (
-            <GuardCard
-              icon={<Coins className="h-10 w-10 text-amber-300" />}
-              title="কয়েন নেই"
-              desc="খেলতে হলে আগে অ্যাকাউন্টে কয়েন যোগ করুন।"
-              cta={
-                <Link to="/wallet" search={{ tab: "deposit" }} className="rounded-xl bg-amber-400 px-6 py-2.5 text-sm font-black text-black hover:brightness-110">
-                  কয়েন কিনুন
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setFairOpen(true)}
+              className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-white/10"
+              title="Provably Fair"
+            >
+              <ShieldCheck className="h-3.5 w-3.5" /> Fair
+            </button>
+            <button
+              type="button"
+              onClick={() => setMutedState(toggleMuted())}
+              className="rounded-full bg-white/5 p-1.5 text-slate-300 hover:bg-white/10 hover:text-white"
+              title={muted ? "Unmute" : "Mute"}
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
+            <div className="flex items-center gap-1.5 rounded-full bg-black/40 px-3 py-1">
+              <span className="text-sm font-black tabular-nums text-[#22c55e]">
+                {balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+              <span className="text-[11px] font-bold text-slate-400">BDT</span>
+              {userId && (
+                <button type="button" onClick={refresh} className="ml-0.5 text-slate-400 hover:text-white" title="Refresh">
+                  <RefreshCw className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+            <Link
+              to="/wallet"
+              search={{ tab: "deposit" }}
+              className="rounded-full bg-[#28a745] px-3 py-1 text-xs font-black text-white hover:brightness-110"
+            >
+              + Deposit
+            </Link>
+            <button
+              type="button"
+              onClick={() => setChatOpen((o) => !o)}
+              className={`hidden xl:inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${
+                chatOpen ? "bg-[#e11d48] text-white" : "bg-white/10 text-slate-300"
+              }`}
+              title="Toggle Chat"
+            >
+              <MessageSquare className="h-3.5 w-3.5" /> Chat
+            </button>
+          </div>
+        </div>
+
+        {maintenance ? (
+          <AviatorGuard
+            icon={<Wrench className="h-10 w-10 text-amber-400" />}
+            title="Game Under Maintenance"
+            desc="Admin has temporarily paused Aviator. Please check back shortly."
+          />
+        ) : notLoggedIn ? (
+          <AviatorGuard
+            icon={<LogIn className="h-10 w-10 text-[#22c55e]" />}
+            title="Login Required"
+            desc="Please sign in to place bets in Aviator."
+            cta={
+              <div className="flex gap-3">
+                <Link to="/login" className="rounded-xl bg-[#28a745] px-6 py-2.5 text-sm font-black text-white hover:brightness-110">
+                  লগইন করুন
                 </Link>
-              }
-            />
-          ) : (
-            <>
-              {/* ════════════════════════════════════════════════════════════════
-                  TOP SECTION ("উপরে 60fps Aviator Sky Canvas")
-                 ════════════════════════════════════════════════════════════════ */}
-              <section
-                className={`relative flex h-[285px] sm:h-[310px] flex-col justify-between overflow-hidden rounded-3xl border-2 p-3 sm:p-4 shadow-2xl transition-colors duration-300 ${
-                  phase === "crashed"
-                    ? "border-rose-400/70 animate-crash-shake"
-                    : phase === "flying"
-                      ? "border-emerald-300/60"
-                      : "border-emerald-400/35"
-                }`}
-                style={{
-                  background:
-                    phase === "crashed"
-                      ? "radial-gradient(circle at 50% 45%, rgba(225,29,72,0.34), rgba(18,16,24,0.95) 65%, #07110d 100%)"
-                      : "radial-gradient(circle at 50% 35%, rgba(16,185,129,0.28), rgba(5,45,26,0.94) 65%, #03150c 100%)",
-                }}
-              >
-                {/* Live Crash Multiplier History Pills */}
-                <div className="relative z-20 flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-[#03190e]/80 px-3 py-1.5 backdrop-blur-sm">
-                  <span className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-200">
-                    <span className={`h-2 w-2 rounded-full ${phase === "flying" ? "bg-emerald-400 animate-ping" : "bg-amber-300"}`} />
-                    {phase === "waiting" ? `টেকঅফ ${countdown.toFixed(1)}s` : phase === "flying" ? "উড়ছে" : "ক্র্যাশ"}
-                  </span>
-                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                    {recentCrashes.length === 0 ? (
-                      <span className="text-[11px] text-white/45">রাউন্ড রেজাল্ট এখানে দেখাবে…</span>
-                    ) : (
-                      recentCrashes.map((m, idx) => (
-                        <span
-                          key={`${m}-${idx}`}
-                          className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-black tabular-nums ${
-                            m >= 10
-                              ? "bg-purple-500 text-white"
-                              : m >= 2
-                                ? "bg-emerald-400 text-[#022010]"
-                                : "bg-rose-500/80 text-white"
-                          } ${idx === 0 ? "ring-2 ring-amber-300" : "opacity-85"}`}
-                        >
-                          {m.toFixed(2)}×
-                        </span>
-                      ))
-                    )}
+                <Link to="/register" className="rounded-xl border border-white/20 bg-white/5 px-6 py-2.5 text-sm font-black text-white">
+                  রেজিস্টার
+                </Link>
+              </div>
+            }
+          />
+        ) : noCoins ? (
+          <AviatorGuard
+            icon={<Coins className="h-10 w-10 text-amber-400" />}
+            title="Insufficient Coins"
+            desc="Deposit coins to start flying & cashing out."
+            cta={
+              <Link to="/wallet" search={{ tab: "deposit" }} className="rounded-xl bg-[#28a745] px-6 py-2.5 text-sm font-black text-white">
+                কয়েন কিনুন
+              </Link>
+            }
+          />
+        ) : (
+          /* 3-COLUMN AUTHENTIC SPRIBE AVIATOR SHELL */
+          <div className="mx-auto grid max-w-[1600px] gap-2 p-2 lg:grid-cols-12">
+            {/* LEFT PANEL: All Bets / My Bets / Top (3 cols on lg, hidden below on mobile) */}
+            <aside className="order-2 flex flex-col justify-between rounded-2xl bg-[#1b1c20] p-2.5 lg:order-1 lg:col-span-3 lg:h-[620px]">
+              <div className="flex flex-col min-h-0 flex-1">
+                {/* Segmented Tabs */}
+                <div className="grid grid-cols-3 gap-1 rounded-full bg-[#111215] p-1">
+                  <button
+                    type="button"
+                    onClick={() => setLeftTab("all")}
+                    className={`rounded-full py-1 text-[11px] font-bold transition ${
+                      leftTab === "all" ? "bg-[#2c2d33] text-white" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    All Bets
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLeftTab("my")}
+                    className={`rounded-full py-1 text-[11px] font-bold transition ${
+                      leftTab === "my" ? "bg-[#2c2d33] text-white" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLeftTab("top")}
+                    className={`rounded-full py-1 text-[11px] font-bold transition ${
+                      leftTab === "top" ? "bg-[#2c2d33] text-white" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Top
+                  </button>
+                </div>
+
+                {/* Live Pool Summary */}
+                <div className="mt-2.5 flex items-center justify-between border-b border-white/5 pb-2 px-1">
+                  <div>
+                    <div className="flex -space-x-1.5">
+                      <span className="h-5 w-5 rounded-full bg-emerald-500 ring-2 ring-[#1b1c20]" />
+                      <span className="h-5 w-5 rounded-full bg-rose-500 ring-2 ring-[#1b1c20]" />
+                      <span className="h-5 w-5 rounded-full bg-amber-400 ring-2 ring-[#1b1c20]" />
+                    </div>
+                    <div className="mt-1 text-[11px] font-bold text-slate-300">
+                      {liveBets.length}/{activePlayersCount} <span className="text-slate-500 font-normal">Bets</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-black tabular-nums text-white">
+                      {totalPool.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </div>
+                    <div className="text-[10px] text-slate-400">Total win BDT</div>
                   </div>
                 </div>
 
-                {/* 60fps Custom Flight & Jet Canvas */}
+                {/* Column Headers */}
+                <div className="mt-2 grid grid-cols-12 px-2 text-[10px] font-bold text-slate-500">
+                  <span className="col-span-4">Player</span>
+                  <span className="col-span-3 text-right">Bet BDT</span>
+                  <span className="col-span-2 text-center">X</span>
+                  <span className="col-span-3 text-right">Win BDT</span>
+                </div>
+
+                {/* Rows */}
+                <div className="mt-1 flex-1 space-y-1 overflow-y-auto pr-0.5">
+                  {leftTab === "my" ? (
+                    crashHistory.length === 0 ? (
+                      <div className="py-10 text-center text-xs text-slate-500">No bets yet</div>
+                    ) : (
+                      crashHistory.map((h) => {
+                        const won = h.payout > 0;
+                        return (
+                          <div
+                            key={h.id}
+                            className={`grid grid-cols-12 items-center rounded-lg px-2 py-1.5 text-[11px] ${
+                              won ? "border border-[#22c55e]/35 bg-[#122e19]" : "bg-[#141518]"
+                            }`}
+                          >
+                            <span className="col-span-4 font-bold text-amber-300 truncate">You</span>
+                            <span className="col-span-3 text-right tabular-nums text-slate-200">{h.bet.toFixed(2)}</span>
+                            <span className="col-span-2 text-center">
+                              {h.multiplier > 0 ? (
+                                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-black ${multPillStyle(h.multiplier)}`}>
+                                  {h.multiplier.toFixed(2)}x
+                                </span>
+                              ) : (
+                                <span className="text-slate-500">—</span>
+                              )}
+                            </span>
+                            <span className={`col-span-3 text-right font-black tabular-nums ${won ? "text-[#4ade80]" : "text-slate-500"}`}>
+                              {won ? h.payout.toFixed(2) : "0.00"}
+                            </span>
+                          </div>
+                        );
+                      })
+                    )
+                  ) : (
+                    (leftTab === "top" ? topBets : liveBets.slice(0, 18)).map((b) => {
+                      const won = b.payout > 0;
+                      return (
+                        <div
+                          key={b.id}
+                          className={`grid grid-cols-12 items-center rounded-lg px-2 py-1.5 text-[11px] ${
+                            won
+                              ? "border border-[#22c55e]/30 bg-[#142a18]"
+                              : "bg-[#141518]"
+                          }`}
+                        >
+                          <span className="col-span-4 truncate font-semibold text-slate-200">
+                            {b.isMe ? <span className="text-amber-300 font-black">YOU</span> : b.user}
+                          </span>
+                          <span className="col-span-3 text-right tabular-nums text-slate-300">
+                            {b.bet.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          </span>
+                          <span className="col-span-2 text-center">
+                            {b.multiplier > 0 ? (
+                              <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-black ${multPillStyle(b.multiplier)}`}>
+                                {b.multiplier.toFixed(2)}x
+                              </span>
+                            ) : (
+                              <span className="text-slate-600">—</span>
+                            )}
+                          </span>
+                          <span className={`col-span-3 text-right font-bold tabular-nums ${won ? "text-[#4ade80]" : "text-slate-500"}`}>
+                            {won ? b.payout.toLocaleString(undefined, { minimumFractionDigits: 2 }) : "—"}
+                          </span>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+
+              {/* Spribe-style Panel Footer */}
+              <div className="mt-2 flex items-center justify-between border-t border-white/5 pt-2 text-[10px] text-slate-400">
+                <button type="button" onClick={() => setFairOpen(true)} className="inline-flex items-center gap-1 hover:text-emerald-400">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" /> Provably Fair Game
+                </button>
+                <span className="font-bold text-slate-500">PKOK STUDIO</span>
+              </div>
+            </aside>
+
+            {/* CENTER ARENA: History Ribbon + Sky Canvas + Dual Bet Boxes */}
+            <div className={`order-1 flex flex-col gap-2 lg:order-2 ${chatOpen ? "lg:col-span-9 xl:col-span-6" : "lg:col-span-9"}`}>
+              {/* Top Multiplier Strip */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar rounded-xl bg-[#141519] px-3 py-1.5">
+                {recentCrashes.map((m, idx) => (
+                  <span
+                    key={`${m}-${idx}`}
+                    className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-black tabular-nums ${multPillStyle(m)} ${
+                      idx === 0 ? "ring-1 ring-white/40" : ""
+                    }`}
+                  >
+                    {m.toFixed(2)}x
+                  </span>
+                ))}
+              </div>
+
+              {/* MAIN FLIGHT CANVAS STAGE */}
+              <div className="relative h-[280px] sm:h-[330px] overflow-hidden rounded-2xl border border-white/10 bg-[#0c0d10]">
                 <AviatorCanvas multiplier={mult} phase={phase} badges={skyBadges} />
 
-                {/* Center Multiplier / Countdown HUD */}
-                <div className="relative z-10 flex flex-1 flex-col items-center justify-center">
+                {/* Center Multiplier / Countdown */}
+                <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
                   {phase === "waiting" ? (
                     <div className="flex flex-col items-center gap-2">
-                      <div className="relative grid h-24 w-24 place-items-center rounded-full border-4 border-white/15 bg-[#041f12]/80 shadow-xl">
-                        <svg className="absolute inset-0 -rotate-90 h-full w-full" viewBox="0 0 100 100">
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="44"
-                            fill="none"
-                            stroke="#fbbf24"
-                            strokeWidth="6"
-                            strokeDasharray="276.46"
-                            strokeDashoffset={276.46 * (1 - waitPct / 100)}
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                        <div className="text-center">
-                          <div className="text-2xl font-black tabular-nums text-amber-300">
-                            {countdown.toFixed(1)}s
-                          </div>
-                        </div>
+                      <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#e11d48]/25 border-t-[#e11d48]" />
+                      <div className="text-xs font-black uppercase tracking-[0.25em] text-slate-200">
+                        WAITING FOR NEXT ROUND
                       </div>
-                      <div className="rounded-full bg-black/45 px-4 py-1 text-xs font-black uppercase tracking-widest text-emerald-200">
-                        পরবর্তী ফ্লাইটের জন্য বাজি রাখুন
+                      <div className="h-1.5 w-44 overflow-hidden rounded-full bg-white/10">
+                        <div
+                          className="h-full bg-[#e11d48] transition-all duration-100"
+                          style={{ width: `${Math.min(100, (countdown / (BETTING_WINDOW_MS / 1000)) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ) : phase === "crashed" ? (
+                    <div className="flex flex-col items-center">
+                      <div className="text-lg sm:text-xl font-black uppercase tracking-widest text-white">
+                        FLEW AWAY!
+                      </div>
+                      <div className="text-5xl sm:text-6xl font-black tracking-tight tabular-nums text-[#e11d48]">
+                        {crashAt?.toFixed(2)}x
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center text-center">
-                      <div
-                        className={`text-6xl sm:text-7xl font-black tracking-tight tabular-nums drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)] ${
-                          phase === "crashed"
-                            ? "text-rose-400"
-                            : mult >= 10
-                              ? "text-purple-300"
-                              : mult >= 2
-                                ? "text-amber-300"
-                                : "text-emerald-300"
-                        }`}
-                      >
-                        {mult.toFixed(2)}
-                        <span className="text-3xl sm:text-4xl">×</span>
-                      </div>
-                      {phase === "crashed" ? (
-                        <span className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-rose-500 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-white shadow-lg">
-                          💥 FLEW AWAY @ {crashAt?.toFixed(2)}×
-                        </span>
-                      ) : (
-                        <span className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-black/45 px-3 py-0.5 text-[11px] font-black uppercase tracking-widest text-emerald-200">
-                          <Plane className="h-3.5 w-3.5 text-amber-300" /> ক্যাশআউট করতে বাটনে চাপুন
-                        </span>
-                      )}
+                    <div className="text-6xl sm:text-7xl font-black tracking-tight tabular-nums text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
+                      {mult.toFixed(2)}x
                     </div>
                   )}
                 </div>
 
-                <ParticleLayer ref={fxRef} />
-              </section>
+                {/* Bottom-Right Live Spectators Pill (like screenshot 1,110) */}
+                <div className="pointer-events-none absolute right-3 bottom-3 z-10 flex items-center gap-1.5 rounded-full bg-black/65 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur">
+                  <span className="flex -space-x-1">
+                    <span className="h-4 w-4 rounded-full bg-sky-400 ring-1 ring-black" />
+                    <span className="h-4 w-4 rounded-full bg-rose-500 ring-1 ring-black" />
+                    <span className="h-4 w-4 rounded-full bg-emerald-400 ring-1 ring-black" />
+                  </span>
+                  <span>{activePlayersCount.toLocaleString()}</span>
+                </div>
+              </div>
 
-              {/* ════════════════════════════════════════════════════════════════
-                  BOTTOM SECTION ("নিচে ডুয়াল স্প্রাইব এভিয়েটর বেট কন্ট্রোলস")
-                 ════════════════════════════════════════════════════════════════ */}
-              <section className="grid gap-3 md:grid-cols-2">
+              {/* DUAL SPRIBE AVIATOR BET BOXES */}
+              <div className="grid gap-2 sm:grid-cols-2">
                 {([0, 1] as const).map((idx) => (
-                  <BetSlotCard
+                  <SpribeBetBox
                     key={idx}
-                    label={`বাজি ${idx + 1}`}
                     slot={slots[idx]}
                     phase={phase}
-                    currentMult={mult}
                     minBet={minBet}
                     maxBet={maxBet}
                     potential={calcPayout(slots[idx].amount, mult)}
                     disabled={!pf.ready}
+                    onMode={(mode) => setSlot(idx, { mode })}
                     onAmount={(a) => setSlot(idx, { amount: Math.max(minBet, Math.min(maxBet, Math.round(a) || minBet)) })}
                     onAuto={(a) => setSlot(idx, { auto: Math.max(1.01, Math.min(1000, +a.toFixed(2))) })}
                     onToggleAuto={() => setSlot(idx, { autoEnabled: !slots[idx].autoEnabled })}
@@ -588,115 +706,47 @@ function AviatorCrashPage() {
                     onCashout={() => manualCashout(idx)}
                   />
                 ))}
-              </section>
+              </div>
+            </div>
 
-              {/* COMPACT LIVE BETS & MY BETS BELOW */}
-              <section className="rounded-3xl border border-white/15 bg-[#041b0f]/85 p-4">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
-                  <div className="flex gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setFeedTab("live")}
-                      className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-black ${
-                        feedTab === "live" ? "bg-emerald-400 text-black" : "bg-white/10 text-white/80"
-                      }`}
-                    >
-                      <Users className="h-3.5 w-3.5" /> লাইভ বেট
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFeedTab("history")}
-                      className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-black ${
-                        feedTab === "history" ? "bg-amber-400 text-black" : "bg-white/10 text-white/80"
-                      }`}
-                    >
-                      <History className="h-3.5 w-3.5" /> আমার বেট
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-xs">
-                    <span className="text-emerald-100/70">Bets: <strong className="text-white">{stats.bets}</strong></span>
-                    <span className={`font-black ${stats.net >= 0 ? "text-emerald-300" : "text-rose-400"}`}>
-                      {stats.net >= 0 ? `+৳${stats.net.toLocaleString()}` : `-৳${Math.abs(stats.net).toLocaleString()}`}
-                    </span>
-                    {stats.bets > 0 && (
-                      <button type="button" onClick={resetStats} className="text-[11px] text-white/50 hover:text-white">
-                        Reset
-                      </button>
-                    )}
-                  </div>
+            {/* RIGHT PANEL: LIVE AVIATOR CHAT (hidden on <xl or toggleable) */}
+            {chatOpen && (
+              <aside className="order-3 hidden xl:flex xl:col-span-3 flex-col justify-between rounded-2xl bg-[#1b1c20] p-2.5 h-[620px]">
+                <div className="flex items-center justify-between border-b border-white/10 pb-2 px-1">
+                  <span className="text-[11px] font-bold text-slate-400">Live Chat</span>
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#4ade80]">
+                    <span className="h-2 w-2 rounded-full bg-[#4ade80]" />
+                    Online: {3900 + (recentCrashes.length % 90)}
+                  </span>
                 </div>
 
-                {feedTab === "history" ? (
-                  <div className="max-h-48 overflow-y-auto">
-                    {crashHistory.length === 0 ? (
-                      <div className="py-6 text-center text-xs text-white/50">এখনও কোনো Aviator বেট নেই</div>
-                    ) : (
-                      <table className="w-full text-xs">
-                        <thead className="text-white/50">
-                          <tr>
-                            <th className="py-1.5 text-left">Bet</th>
-                            <th className="py-1.5 text-right">Cashout</th>
-                            <th className="py-1.5 text-right">Result</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {crashHistory.map((h) => {
-                            const won = h.payout > 0;
-                            return (
-                              <tr key={h.id} className="border-t border-white/10">
-                                <td className="py-1.5 font-mono">৳{h.bet}</td>
-                                <td className={`py-1.5 text-right font-mono font-black ${won ? "text-emerald-300" : "text-white/40"}`}>
-                                  {h.multiplier > 0 ? `${h.multiplier.toFixed(2)}×` : "Bust"}
-                                </td>
-                                <td className={`py-1.5 text-right font-mono font-black ${won ? "text-emerald-300" : "text-rose-400"}`}>
-                                  {won ? `+৳${h.payout}` : `-৳${h.bet}`}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    )}
-                  </div>
-                ) : (
-                  <div className="max-h-48 overflow-y-auto">
-                    <table className="w-full text-xs">
-                      <thead className="text-white/50">
-                        <tr>
-                          <th className="py-1.5 text-left">Player</th>
-                          <th className="py-1.5 text-right">Bet</th>
-                          <th className="py-1.5 text-right">Mult</th>
-                          <th className="py-1.5 text-right">Payout</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {liveBets.slice(0, 12).map((b) => {
-                          const won = b.payout > 0;
-                          return (
-                            <tr key={b.id} className={`border-t border-white/10 ${b.isMe ? "bg-amber-400/15" : ""}`}>
-                              <td className="py-1.5 font-mono">
-                                {b.isMe && <span className="mr-1 rounded bg-amber-400 px-1 text-[9px] font-black text-black">YOU</span>}
-                                {b.user}
-                              </td>
-                              <td className="py-1.5 text-right font-mono">৳{b.bet}</td>
-                              <td className={`py-1.5 text-right font-mono font-black ${won ? "text-emerald-300" : "text-white/40"}`}>
-                                {b.multiplier > 0 ? `${b.multiplier}×` : "—"}
-                              </td>
-                              <td className={`py-1.5 text-right font-mono font-black ${won ? "text-emerald-300" : "text-rose-400"}`}>
-                                {won ? `+৳${b.payout}` : `-৳${b.bet}`}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </section>
-            </>
-          )}
-        </div>
+                <div className="my-2 flex-1 space-y-2 overflow-y-auto pr-1">
+                  {chatList.map((c) => (
+                    <div key={c.id} className="rounded-xl bg-[#141518] px-2.5 py-2 text-xs">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-bold text-[#4ade80]">{c.user}</span>
+                        <span className="text-slate-500">{c.time}</span>
+                      </div>
+                      <div className="mt-0.5 text-slate-200">{c.msg}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <form onSubmit={sendChat} className="flex items-center gap-1.5 rounded-xl bg-[#111215] px-2.5 py-1.5">
+                  <input
+                    value={chatDraft}
+                    onChange={(e) => setChatDraft(e.target.value)}
+                    placeholder="Your message…"
+                    className="min-w-0 flex-1 bg-transparent text-xs text-white placeholder:text-slate-500 outline-none"
+                  />
+                  <button type="submit" className="rounded-lg bg-white/10 p-1.5 text-slate-300 hover:text-white">
+                    <Send className="h-3.5 w-3.5" />
+                  </button>
+                </form>
+              </aside>
+            )}
+          </div>
+        )}
 
         {/* PROVABLY FAIR MODAL */}
         {fairOpen && (
@@ -705,12 +755,12 @@ function AviatorCrashPage() {
             onClick={() => setFairOpen(false)}
           >
             <div
-              className="w-full max-w-lg rounded-3xl border border-emerald-400/40 bg-[#062415] p-5 shadow-2xl"
+              className="w-full max-w-lg rounded-3xl border border-white/15 bg-[#16171b] p-5 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-3 flex items-center justify-between border-b border-white/10 pb-3">
-                <div className="flex items-center gap-2 text-sm font-black uppercase text-emerald-300">
-                  <Activity className="h-4 w-4" /> Provably Fair — Aviator Crash
+                <div className="flex items-center gap-2 text-sm font-black uppercase text-emerald-400">
+                  <Activity className="h-4 w-4" /> Provably Fair Settings
                 </div>
                 <button type="button" onClick={() => setFairOpen(false)} className="rounded-lg bg-white/10 p-1 text-white">
                   <X className="h-4 w-4" />
@@ -725,14 +775,14 @@ function AviatorCrashPage() {
   );
 }
 
-function BetSlotCard({
-  label,
+function SpribeBetBox({
   slot,
   phase,
   minBet,
   maxBet,
   potential,
   disabled,
+  onMode,
   onAmount,
   onAuto,
   onToggleAuto,
@@ -740,14 +790,13 @@ function BetSlotCard({
   onCancel,
   onCashout,
 }: {
-  label: string;
   slot: Slot;
   phase: Phase;
-  currentMult: number;
   minBet: number;
   maxBet: number;
   potential: number;
   disabled: boolean;
+  onMode: (m: "bet" | "auto") => void;
   onAmount: (n: number) => void;
   onAuto: (n: number) => void;
   onToggleAuto: () => void;
@@ -760,49 +809,49 @@ function BetSlotCard({
   const locked = isQueued || canCashout;
 
   return (
-    <div
-      className={`flex flex-col gap-2.5 rounded-3xl border p-4 shadow-xl transition-all ${
-        canCashout
-          ? "border-amber-300 bg-[#083820]"
-          : isQueued
-            ? "border-amber-400/50 bg-[#062b19]"
-            : slot.status === "cashed"
-              ? "border-emerald-400/60 bg-[#052a18]"
-              : "border-emerald-400/25 bg-[#052314]/90"
-      }`}
-    >
-      {/* Header + Status Pill */}
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-black uppercase tracking-widest text-amber-300">{label}</span>
+    <div className="flex flex-col gap-2.5 rounded-2xl border border-white/5 bg-[#1b1c20] p-3">
+      {/* Top Centered Bet | Auto Switcher + Status */}
+      <div className="relative flex items-center justify-center">
+        <div className="grid w-44 grid-cols-2 rounded-full bg-[#111215] p-0.5 text-[11px] font-bold">
+          <button
+            type="button"
+            onClick={() => onMode("bet")}
+            className={`rounded-full py-1 transition ${
+              slot.mode === "bet" ? "bg-[#2c2d33] text-white" : "text-slate-400"
+            }`}
+          >
+            Bet
+          </button>
+          <button
+            type="button"
+            onClick={() => onMode("auto")}
+            className={`rounded-full py-1 transition ${
+              slot.mode === "auto" ? "bg-[#2c2d33] text-white" : "text-slate-400"
+            }`}
+          >
+            Auto
+          </button>
+        </div>
+
         {slot.status === "cashed" && (
-          <span className="rounded-full bg-emerald-400 px-2.5 py-0.5 text-[11px] font-black text-[#022010]">
-            +৳{slot.payout?.toLocaleString()} @ {slot.cashMult?.toFixed(2)}×
-          </span>
-        )}
-        {slot.status === "lost" && (
-          <span className="rounded-full bg-rose-500/85 px-2.5 py-0.5 text-[11px] font-black text-white">
-            বাস্ট -৳{slot.amount}
-          </span>
-        )}
-        {isQueued && (
-          <span className="rounded-full bg-amber-400/20 border border-amber-300/40 px-2.5 py-0.5 text-[10px] font-black text-amber-200 animate-pulse">
-            টেকঅফের জন্য প্রস্তুত
+          <span className="absolute right-0 rounded-full bg-[#22c55e]/20 px-2 py-0.5 text-[10px] font-black text-[#4ade80]">
+            +৳{slot.payout?.toLocaleString()}
           </span>
         )}
       </div>
 
-      {/* Main Controls Row: Left Inputs + Right Big Button */}
-      <div className="grid gap-2.5 sm:grid-cols-12 sm:items-stretch">
-        <div className="flex flex-col gap-2 sm:col-span-7">
-          {/* Bet Stepper */}
-          <div className="flex items-center gap-1 rounded-xl border border-white/20 bg-[#03160c] p-1">
+      {/* Main Controls Row: Left Stepper/Presets + Right Green Bet Button */}
+      <div className="grid grid-cols-12 items-stretch gap-2.5">
+        <div className="col-span-6 flex flex-col gap-1.5">
+          {/* - [ 100.00 ] + */}
+          <div className="flex items-center justify-between rounded-full border border-white/10 bg-[#111215] px-2 py-1">
             <button
               type="button"
               disabled={locked}
-              onClick={() => onAmount(Math.floor(slot.amount / 2))}
-              className="grid h-8 w-8 place-items-center rounded-lg bg-white/10 text-white hover:bg-white/20 disabled:opacity-40"
+              onClick={() => onAmount(slot.amount - Math.max(10, minBet))}
+              className="grid h-6 w-6 place-items-center rounded-full border border-white/20 text-slate-300 hover:text-white disabled:opacity-40"
             >
-              <Minus className="h-3.5 w-3.5" />
+              <Minus className="h-3 w-3" />
             </button>
             <input
               type="number"
@@ -811,21 +860,21 @@ function BetSlotCard({
               value={slot.amount}
               disabled={locked}
               onChange={(e) => onAmount(Number(e.target.value))}
-              className="min-w-0 flex-1 bg-transparent text-center text-base font-black tabular-nums text-white outline-none disabled:opacity-60"
+              className="min-w-0 flex-1 bg-transparent text-center text-sm font-black tabular-nums text-white outline-none"
             />
             <button
               type="button"
               disabled={locked}
-              onClick={() => onAmount(slot.amount * 2)}
-              className="grid h-8 w-8 place-items-center rounded-lg bg-white/10 text-white hover:bg-white/20 disabled:opacity-40"
+              onClick={() => onAmount(slot.amount + Math.max(10, minBet))}
+              className="grid h-6 w-6 place-items-center rounded-full border border-white/20 text-slate-300 hover:text-white disabled:opacity-40"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-3 w-3" />
             </button>
           </div>
 
-          {/* Quick Chips */}
-          <div className="flex flex-wrap gap-1">
-            {QUICK_CHIPS.map((c) => {
+          {/* 2x2 Quick Amount Grid matching screenshot */}
+          <div className="grid grid-cols-2 gap-1">
+            {QUICK_AMOUNTS.map((c) => {
               const val = Math.max(minBet, Math.min(maxBet, c));
               return (
                 <button
@@ -833,103 +882,81 @@ function BetSlotCard({
                   type="button"
                   disabled={locked}
                   onClick={() => onAmount(val)}
-                  className={`flex-1 rounded-lg border px-1.5 py-1 text-[11px] font-black transition disabled:opacity-40 ${
-                    slot.amount === val
-                      ? "border-amber-300 bg-amber-400 text-black"
-                      : "border-white/15 bg-white/10 text-white hover:bg-white/20"
-                  }`}
+                  className="rounded-full bg-[#111215] py-1 text-[11px] font-bold text-slate-300 hover:bg-[#2c2d33] hover:text-white disabled:opacity-40"
                 >
-                  ৳{c}
+                  {val.toLocaleString()}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Big Action Button */}
-        <div className="flex sm:col-span-5">
+        {/* Iconic Big Green Bet / Red Cancel / Amber Cash Out */}
+        <div className="col-span-6 flex">
           {canCashout ? (
             <button
               type="button"
               onClick={onCashout}
-              className="flex w-full flex-col items-center justify-center rounded-2xl bg-gradient-to-r from-yellow-300 via-amber-400 to-amber-500 p-3 text-black shadow-[0_5px_0_0_#92400e] transition hover:brightness-110 active:translate-y-1 active:shadow-none"
+              className="flex w-full flex-col items-center justify-center rounded-2xl border border-[#fde047] bg-gradient-to-b from-[#f59e0b] to-[#d97706] p-2 text-white shadow-[0_0_20px_rgba(245,158,11,0.45)] transition hover:brightness-110 active:scale-[0.98]"
             >
-              <span className="text-[10px] font-black uppercase tracking-widest opacity-80">CASHOUT</span>
-              <span className="text-lg font-black tabular-nums">৳{potential.toLocaleString()}</span>
+              <span className="text-xs font-black uppercase tracking-wider">Cash Out</span>
+              <span className="text-base font-black tabular-nums">{potential.toFixed(2)} BDT</span>
             </button>
           ) : isQueued ? (
             <button
               type="button"
               onClick={onCancel}
-              className="flex w-full flex-col items-center justify-center rounded-2xl border border-rose-400/50 bg-rose-500/20 p-3 text-rose-200 transition hover:bg-rose-500/30"
+              className="flex w-full flex-col items-center justify-center rounded-2xl border border-[#f87171] bg-[#dc2626] p-2 text-white transition hover:brightness-110"
             >
-              <span className="text-xs font-black uppercase">বাতিল করুন</span>
-              <span className="text-[11px] font-bold">৳{slot.amount}</span>
+              <span className="text-sm font-black uppercase">Cancel</span>
+              {phase === "flying" && <span className="text-[10px] opacity-85">Waiting for next round</span>}
             </button>
           ) : (
             <button
               type="button"
               disabled={disabled || (slot.status !== "idle" && slot.status !== "cashed" && slot.status !== "lost")}
               onClick={onQueue}
-              className="flex w-full flex-col items-center justify-center rounded-2xl bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 p-3 text-[#021a0e] shadow-[0_5px_0_0_#065f46] transition hover:brightness-110 active:translate-y-1 active:shadow-none disabled:opacity-45"
+              className="flex w-full flex-col items-center justify-center rounded-2xl border border-[#4ade80] bg-gradient-to-b from-[#28b636] to-[#1f982b] p-2 text-white shadow-[0_0_18px_rgba(34,197,94,0.35)] transition hover:brightness-110 active:scale-[0.98] disabled:opacity-45"
             >
-              <span className="text-[10px] font-black uppercase tracking-wider opacity-85">
-                {phase === "flying" ? "পরবর্তী রাউন্ড" : "বাজি ধরুন"}
-              </span>
-              <span className="text-lg font-black tabular-nums">৳{slot.amount.toLocaleString()}</span>
+              <span className="text-sm font-black">Bet</span>
+              <span className="text-sm font-bold tabular-nums">{slot.amount.toFixed(2)} BDT</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Auto Cashout Strip */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-2">
-        <label className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-100 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={slot.autoEnabled}
-            disabled={canCashout}
-            onChange={onToggleAuto}
-            className="h-3.5 w-3.5 accent-amber-400"
-          />
-          <Bot className="h-3.5 w-3.5 text-amber-300" /> Auto Cashout
-        </label>
-
-        <div className="flex items-center gap-1">
-          {AUTO_PRESETS.map((p) => (
-            <button
-              key={p}
-              type="button"
+      {/* Auto Cashout Row (always handy in Auto tab, or quick glance) */}
+      {slot.mode === "auto" && (
+        <div className="flex items-center justify-between border-t border-white/10 pt-2 text-[11px]">
+          <label className="inline-flex items-center gap-2 font-bold text-slate-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={slot.autoEnabled}
               disabled={canCashout}
-              onClick={() => {
-                onAuto(p);
-                if (!slot.autoEnabled) onToggleAuto();
-              }}
-              className={`rounded-md border px-2 py-0.5 text-[10px] font-black ${
-                slot.autoEnabled && slot.auto === p
-                  ? "border-amber-300 bg-amber-400 text-black"
-                  : "border-white/15 bg-white/10 text-white/75 hover:text-white"
-              }`}
-            >
-              {p}×
-            </button>
-          ))}
-          <input
-            type="number"
-            step="0.1"
-            min={1.01}
-            value={slot.auto}
-            disabled={!slot.autoEnabled || canCashout}
-            onChange={(e) => onAuto(Number(e.target.value) || 1.01)}
-            className="ml-1 w-16 rounded-lg border border-white/15 bg-[#03160c] px-2 py-1 text-center text-xs font-black tabular-nums text-amber-300 outline-none disabled:opacity-40"
-          />
+              onChange={onToggleAuto}
+              className="h-3.5 w-3.5 accent-[#28b636]"
+            />
+            Auto Cash Out
+          </label>
+          <div className="flex items-center gap-1 rounded-full bg-[#111215] px-2.5 py-1">
+            <input
+              type="number"
+              step="0.1"
+              min={1.01}
+              value={slot.auto}
+              disabled={!slot.autoEnabled || canCashout}
+              onChange={(e) => onAuto(Number(e.target.value) || 1.01)}
+              className="w-14 bg-transparent text-center font-black tabular-nums text-white outline-none disabled:opacity-40"
+            />
+            <span className="text-slate-400">×</span>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-function GuardCard({
+function AviatorGuard({
   icon,
   title,
   desc,
@@ -941,12 +968,10 @@ function GuardCard({
   cta?: ReactNode;
 }) {
   return (
-    <div className="mx-auto mt-8 flex max-w-lg flex-col items-center gap-4 rounded-3xl border border-emerald-400/35 bg-[#052113]/90 p-10 text-center shadow-2xl">
-      <div className="grid h-18 w-18 place-items-center rounded-2xl border border-amber-300/35 bg-amber-400/15">
-        {icon}
-      </div>
+    <div className="mx-auto my-10 flex max-w-lg flex-col items-center gap-4 rounded-3xl border border-white/10 bg-[#1b1c20] p-10 text-center shadow-2xl">
+      <div className="grid h-16 w-16 place-items-center rounded-2xl bg-white/5">{icon}</div>
       <h2 className="text-2xl font-black text-white">{title}</h2>
-      <p className="text-sm text-emerald-100/80">{desc}</p>
+      <p className="text-sm text-slate-400">{desc}</p>
       {cta}
     </div>
   );
