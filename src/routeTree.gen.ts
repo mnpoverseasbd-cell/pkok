@@ -943,6 +943,7 @@ export interface RootRouteChildren {
   GamesShellGameRoute: typeof GamesShellGameRoute
   GamesSicBoRoute: typeof GamesSicBoRoute
   GamesSlotsRoute: typeof GamesSlotsRoute
+  GamesSuperAceRoute: typeof GamesSuperAceRoute
   GamesTeenPattiRoute: typeof GamesTeenPattiRoute
   GamesTowerRoute: typeof GamesTowerRoute
   GamesVideoPokerRoute: typeof GamesVideoPokerRoute
