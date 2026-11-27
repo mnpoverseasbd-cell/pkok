@@ -15,6 +15,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import templeBg from "@/assets/fg2/temple-bg.jpg";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameConfig } from "@/hooks/useGameConfig";
 import { useGameStats } from "@/hooks/useGameStats";
@@ -57,7 +58,7 @@ const SHOWCASE_GRID: Fg2Symbol[][] = [
   ["BLUE", "BLUE", "BLUE"],
 ];
 
-const SHOWCASE_SPECIAL: [Fg2SpecialItem, Fg2SpecialItem, Fg2SpecialItem] = [10, 15, "WHEEL"];
+const SHOWCASE_SPECIAL: [Fg2SpecialItem, Fg2SpecialItem, Fg2SpecialItem] = [5, 10, 15];
 
 type Fg2HistoryRow = {
   id: string;
@@ -75,14 +76,16 @@ function StonePillar({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={`hidden sm:flex w-3.5 shrink-0 flex-col justify-between rounded-sm border-x border-[#402313] bg-[linear-gradient(90deg,#5C3B24_0%,#9E7453_48%,#4E2E1A_100%)] py-2 ${className}`}
+      className={`hidden sm:flex w-4 shrink-0 flex-col justify-between rounded-[3px] border-x border-[#2B1408] bg-[linear-gradient(90deg,#4A2C19_0%,#9E724F_42%,#B58660_55%,#442614_100%)] py-1.5 shadow-[inset_0_0_8px_rgba(0,0,0,0.5)] ${className}`}
     >
-      {Array.from({ length: 7 }).map((_, i) => (
+      <div className="mx-0.5 h-3.5 rounded-[2px] border border-[#2B1408] bg-[linear-gradient(180deg,#A57A57,#634029)]" />
+      {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="mx-0.5 h-3 rounded-[2px] border border-[#3B1F10]/60 bg-[#6E4932]/70 shadow-inner"
+          className="mx-0.5 h-2.5 rounded-[1px] border-y border-[#2B1408]/70 bg-[#5C3A23]/75"
         />
       ))}
+      <div className="mx-0.5 h-4 rounded-[2px] border border-[#2B1408] bg-[linear-gradient(180deg,#A57A57,#5C3A23)]" />
     </div>
   );
 }
@@ -340,30 +343,21 @@ function FortuneGems2Page() {
   const hasWins = winningCells.size > 0;
 
   return (
-    <div
-      className="relative flex h-screen w-full flex-col overflow-hidden select-none"
-      style={{
-        background:
-          "radial-gradient(circle at 80% 22%, rgba(255,235,155,0.92) 0%, rgba(247,150,107,0.74) 34%, transparent 64%), radial-gradient(circle at 20% 85%, rgba(74,122,44,0.88), transparent 48%), linear-gradient(180deg, #E8875E 0%, #FCE38A 46%, #4A7A2C 78%, #1E3B12 100%)",
-      }}
-    >
-      {/* Right Tropical Foliage & Red Hibiscus matching live JILI sunset */}
-      <svg
-        viewBox="0 0 300 360"
-        className="pointer-events-none fixed right-0 bottom-0 z-0 hidden h-[68vh] w-auto opacity-90 lg:block"
+    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[#1D2D12] select-none">
+      {/* Real Studio Painted Aztec Sunset Jungle Backdrop */}
+      <img
+        src={templeBg}
+        alt=""
         aria-hidden
-      >
-        <path d="M300,360 L300,90 C235,110 185,165 145,240 C195,220 245,245 300,360 Z" fill="#2A5414" />
-        <path d="M300,360 L300,160 C225,180 155,235 95,315 C168,295 235,318 300,360 Z" fill="#3B701E" />
-        <path d="M300,360 L300,225 C235,242 165,285 110,360 Z" fill="#4A8A27" />
-        <circle cx="215" cy="268" r="15" fill="#D94E28" />
-        <circle cx="215" cy="268" r="5" fill="#FFE066" />
-        <circle cx="255" cy="215" r="12" fill="#E6533C" />
-        <circle cx="255" cy="215" r="4.5" fill="#FFE066" />
-      </svg>
+        className="pointer-events-none fixed inset-0 z-0 h-full w-full object-cover"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_55%_45%,rgba(255,215,120,0.06),rgba(0,0,0,0.28))]"
+      />
 
-      {/* Compact Top PKOK Bar */}
-      <header className="z-30 flex h-9 shrink-0 items-center justify-between border-b border-white/15 bg-black/50 px-3 backdrop-blur-md">
+      {/* Compact Top PKOK Strip */}
+      <header className="z-30 flex h-9 shrink-0 items-center justify-between border-b border-white/15 bg-black/55 px-3 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <Link
             to="/esports"
@@ -390,14 +384,14 @@ function FortuneGems2Page() {
 
       {/* 100vh Zero-Scroll JILI Stage */}
       <main className="relative z-10 flex flex-1 min-h-0 items-center justify-center p-1 sm:px-4 sm:py-2">
-        <div className="relative flex h-full max-h-[590px] w-full max-w-[1060px] items-center justify-center">
-          {/* Left Peeking Lucky Wheel (65% peeking from behind left carved pillar) */}
-          <div className="pointer-events-none relative z-0 -mr-36 hidden w-[390px] shrink-0 lg:block xl:w-[420px]">
+        <div className="relative flex h-full max-h-[600px] w-full max-w-[1080px] items-center justify-center">
+          {/* Left Peeking Lucky Wheel (overlapping neatly under left stone pillar) */}
+          <div className="pointer-events-none relative z-0 -mr-36 hidden w-[410px] shrink-0 lg:block xl:w-[435px]">
             <LuckyWheelGraphic bet={baseBet} rotationDeg={wheelRot} spinning={wheelSpinning} />
           </div>
 
-          {/* Left Floating Gear Tab */}
-          <div className="fixed left-0 top-1/2 z-40 -translate-y-1/2 flex items-center">
+          {/* Left Collapsible Gear Drawer (hidden overlap on narrow <640px mobile; tucked cleanly!) */}
+          <div className="fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 items-center sm:flex">
             {openDrawer && (
               <div className="flex flex-col gap-1.5 rounded-r-xl border border-l-0 border-[#D4A024] bg-[#2D1A0E]/95 p-2 shadow-2xl backdrop-blur">
                 <button
@@ -441,8 +435,8 @@ function FortuneGems2Page() {
             </button>
           </div>
 
-          {/* Carved Temple Cabinet with Pillars & Stepped Base */}
-          <div className="relative z-10 flex h-full w-full max-w-[770px] flex-col rounded-t-2xl rounded-b-xl border-[3px] border-[#966848] bg-[linear-gradient(180deg,#7B5238_0%,#583723_88%,#3B2214_100%)] p-1.5 shadow-[0_26px_70px_rgba(0,0,0,0.75)] sm:p-2">
+          {/* Sculpted Aztec Sandstone Temple Cabinet */}
+          <div className="relative z-10 flex h-full w-full max-w-[780px] flex-col rounded-t-2xl rounded-b-xl border-[3px] border-[#A3734E] bg-[linear-gradient(180deg,#8C5E3E_0%,#5C3923_88%,#331C0E_100%)] p-1.5 shadow-[0_26px_75px_rgba(0,0,0,0.8)] sm:p-2">
             {gameDisabled && (
               <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-xl bg-black/80 p-6 text-center backdrop-blur">
                 <p className="text-lg font-black text-[#FFE066]">গেমটি সাময়িকভাবে বন্ধ আছে</p>
@@ -450,34 +444,42 @@ function FortuneGems2Page() {
               </div>
             )}
 
-            {/* 1) Temple Top Cornice Header (~38px) */}
+            {/* 1) Sculpted Cornice Header */}
             <div className="mb-1 grid shrink-0 grid-cols-4 items-center gap-1.5 px-1 sm:gap-2">
-              <div className="col-span-3 flex h-9 items-center justify-center rounded-md border border-[#C89B3C]/80 bg-[linear-gradient(180deg,#3D2212_0%,#241309_100%)] px-3 shadow-inner">
-                <h1 className="truncate font-serif text-xs font-black uppercase tracking-wider sm:text-base">
+              <div className="col-span-3 flex h-9 items-center justify-center rounded-md border border-[#D4A024]/85 bg-[linear-gradient(180deg,#4A2914_0%,#241207_100%)] px-3 shadow-[inset_0_2px_6px_rgba(0,0,0,0.7)]">
+                <h1 className="truncate font-serif text-xs font-black uppercase tracking-wider sm:text-lg">
                   {extraBet ? (
                     <span className="text-[#FFF3B0]">
                       Score multiplier will be <span className="text-[#FF6B6B]">2X</span> or more
                     </span>
                   ) : (
                     <>
-                      <span className="bg-[linear-gradient(180deg,#FFF5B8,#D49A12)] bg-clip-text text-transparent">
+                      <span
+                        className="bg-[linear-gradient(180deg,#FFF8CC_0%,#F4C04A_50%,#B8760A_100%)] bg-clip-text text-transparent"
+                        style={{ filter: "drop-shadow(0 2px 2px #000)" }}
+                      >
                         FORTUNE GEMS{" "}
                       </span>
-                      <span className="text-[#E02424] drop-shadow">2</span>
+                      <span className="text-[#E02424]" style={{ textShadow: "0 2px 3px #000" }}>
+                        2
+                      </span>
                     </>
                   )}
                 </h1>
               </div>
 
               <div className="col-span-1 flex h-9 flex-col items-center justify-center rounded-md border border-[#F5C52C] bg-[linear-gradient(180deg,#A61B1B,#590808)] text-center shadow">
-                <span className="text-[8px] font-black uppercase leading-tight text-[#FFD65A] sm:text-[10px]">
-                  SPECIAL WHEEL
+                <span className="text-[8px] font-black uppercase leading-none text-[#FFD65A] sm:text-[10px]">
+                  SPECIAL
+                </span>
+                <span className="text-[8px] font-black uppercase leading-none text-[#FFD65A] sm:text-[10px]">
+                  WHEEL
                 </span>
               </div>
             </div>
 
             {/* 2) Carved Stone Pillars + 3×3 Reels + Stone Divider + 4th Special Wheel */}
-            <div className="relative flex flex-1 min-h-0 items-stretch gap-1 rounded-xl bg-[#3B2113] p-1 shadow-inner sm:gap-1.5 sm:p-1.5">
+            <div className="relative flex flex-1 min-h-0 items-stretch gap-1 rounded-xl bg-[#2B150A] p-1 shadow-inner sm:gap-1.5 sm:p-1.5">
               {toastMsg && (
                 <div className="pointer-events-none absolute inset-x-8 top-1/2 z-40 -translate-y-1/2 rounded-xl border-2 border-[#FFE066] bg-black/85 px-4 py-2 text-center text-sm font-black text-[#FFE066] shadow-2xl">
                   {toastMsg}
@@ -493,7 +495,7 @@ function FortuneGems2Page() {
                   return (
                     <div
                       key={colIdx}
-                      className={`grid h-full min-h-0 grid-rows-3 gap-1 rounded-lg bg-[linear-gradient(180deg,#B08B62_0%,#8A6743_100%)] p-1 shadow-inner sm:gap-1.5 ${
+                      className={`grid h-full min-h-0 grid-rows-3 gap-1 rounded-md bg-[linear-gradient(180deg,#7B5836_0%,#5B3E22_100%)] p-1 shadow-inner sm:gap-1.5 ${
                         spinCol ? "animate-pulse opacity-85 blur-[1.5px]" : ""
                       }`}
                     >
@@ -514,15 +516,15 @@ function FortuneGems2Page() {
                 })}
               </div>
 
-              {/* Stone Divider Pillar separating Main Reels from Special Wheel Reel */}
+              {/* Divider Stone Pillar */}
               <StonePillar />
 
               {/* 4th Special Multiplier Reel */}
               <div
-                className={`relative grid flex-1 min-h-0 grid-rows-3 gap-1 rounded-lg p-1 sm:gap-1.5 transition-all ${
+                className={`relative grid flex-1 min-h-0 grid-rows-3 gap-1 rounded-md p-1 sm:gap-1.5 transition-all ${
                   extraBet
-                    ? "bg-[radial-gradient(circle_at_50%_50%,#B81D24_0%,#5E0A0E_100%)] ring-2 ring-[#FFE680] shadow-[0_0_26px_rgba(255,214,90,0.85)]"
-                    : "bg-[radial-gradient(circle_at_50%_50%,#8F151C_0%,#47090D_100%)] ring-1 ring-[#C89B3C]/70"
+                    ? "bg-[radial-gradient(circle_at_50%_50%,#C21F27_0%,#61090E_100%)] ring-2 ring-[#FFE680] shadow-[0_0_28px_rgba(255,214,90,0.9)]"
+                    : "bg-[radial-gradient(circle_at_50%_50%,#8F151C_0%,#47090D_100%)] ring-1 ring-[#C89B3C]/75"
                 } ${reelSpinning[3] ? "animate-pulse blur-[1.5px]" : ""}`}
               >
                 {extraBet && (
@@ -536,9 +538,9 @@ function FortuneGems2Page() {
                   return (
                     <div
                       key={rowIdx}
-                      className={`relative h-full min-h-0 rounded-xl ${
+                      className={`relative h-full min-h-0 rounded-lg ${
                         isCenter
-                          ? "border-2 border-[#FFF099] bg-black/25 shadow-[0_0_22px_rgba(255,214,70,0.85),inset_0_0_16px_rgba(255,190,40,0.45)]"
+                          ? "border-[3px] border-[#FFF099] bg-black/25 shadow-[0_0_22px_rgba(255,214,70,0.9),inset_0_0_14px_rgba(255,190,40,0.45)]"
                           : ""
                       }`}
                     >
@@ -550,8 +552,8 @@ function FortuneGems2Page() {
 
               <StonePillar />
 
-              {/* Extra Bet Toggle Pill anchored bottom-left over lower edge of reels */}
-              <div className="pointer-events-none absolute bottom-2 left-2 sm:left-5 z-30 flex items-center gap-2">
+              {/* Extra Bet Toggle Pill anchored bottom-left */}
+              <div className="pointer-events-none absolute bottom-1.5 left-2 sm:left-5 z-30 flex items-center gap-2">
                 <div className="pointer-events-auto flex items-center gap-1.5 rounded-full border-2 border-[#D4A024] bg-[linear-gradient(180deg,#642691,#3B1259)] px-2 py-0.5 shadow-xl">
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FFE066] text-[9px] font-black text-[#4A1C00]">
                     EX↑
@@ -597,8 +599,8 @@ function FortuneGems2Page() {
               <ParticleLayer ref={fxRef} />
             </div>
 
-            {/* 3) Stepped Stone Dock Base with Overlapping Giant Gold JILI Spin Coin */}
-            <div className="relative mt-1 flex shrink-0 items-center justify-between gap-2 rounded-b-lg border-t-2 border-[#D4A024]/75 bg-[linear-gradient(180deg,#644029_0%,#472B1A_65%,#2B180D_100%)] px-3 py-1.5 shadow-inner sm:px-6">
+            {/* 3) Stepped Stone Dock Base */}
+            <div className="relative mt-1 flex shrink-0 items-center justify-between gap-2 rounded-b-lg border-t-2 border-[#D4A024]/75 bg-[linear-gradient(180deg,#644029_0%,#472B1A_65%,#2B180D_100%)] px-2.5 py-1.5 shadow-inner sm:px-6">
               {openBetGrid && (
                 <div className="absolute bottom-16 left-2 right-2 z-40 rounded-xl border-2 border-[#D4A024] bg-[#221D18]/95 p-3 shadow-2xl backdrop-blur">
                   <div className="mb-2 flex items-center justify-between">
@@ -636,8 +638,17 @@ function FortuneGems2Page() {
                 </div>
               )}
 
-              {/* Left Stats: Balance + Bet + WIN */}
-              <div className="flex items-center gap-4 sm:gap-7">
+              {/* Left Stats + Mobile Settings button */}
+              <div className="flex items-center gap-3 sm:gap-6">
+                <button
+                  type="button"
+                  onClick={() => setOpenInfo(true)}
+                  aria-label="Paytable and Info"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-[#D4A024] bg-[#3B2514] text-[#FFD65A] sm:hidden"
+                >
+                  <Info className="h-4 w-4" />
+                </button>
+
                 <div className="flex flex-col leading-tight">
                   <span className="text-[10px] font-bold text-[#F2C94C] sm:text-[11px]">Balance</span>
                   <span className="font-mono text-xs font-black text-white sm:text-sm">
@@ -665,7 +676,7 @@ function FortuneGems2Page() {
                 </div>
               </div>
 
-              {/* Right Controls: Turbo + Auto + Oversized Gold JILI Spin + Wi-Fi */}
+              {/* Right Action Controls */}
               <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   type="button"
@@ -703,7 +714,7 @@ function FortuneGems2Page() {
                   disabled={spinning || wheelModalOpen || !pf.ready || gameDisabled}
                   onClick={spinNow}
                   aria-label="Spin"
-                  className={`relative -my-2 flex h-14 w-14 items-center justify-center rounded-full border-[3px] border-[#FFF3B0] bg-[radial-gradient(circle_at_35%_30%,#FFE57F_0%,#F2B705_58%,#B87800_100%)] shadow-[0_0_24px_rgba(242,183,5,0.75),inset_0_2px_4px_rgba(255,255,255,0.75)] transition hover:scale-105 active:scale-95 disabled:opacity-70 sm:h-16 sm:w-16 ${
+                  className={`relative -my-2 flex h-13 w-13 items-center justify-center rounded-full border-[3px] border-[#FFF3B0] bg-[radial-gradient(circle_at_35%_30%,#FFE57F_0%,#F2B705_58%,#B87800_100%)] shadow-[0_0_24px_rgba(242,183,5,0.75),inset_0_2px_4px_rgba(255,255,255,0.75)] transition hover:scale-105 active:scale-95 disabled:opacity-70 sm:h-16 sm:w-16 ${
                     spinning ? "animate-pulse" : ""
                   }`}
                 >
