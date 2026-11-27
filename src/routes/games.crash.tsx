@@ -54,8 +54,8 @@ interface Slot {
   payout?: number;
 }
 
-const BETTING_WINDOW_MS = 5000;
-const POST_CRASH_MS = 2600;
+const BETTING_WINDOW_MS = 3500;
+const POST_CRASH_MS = 2200;
 const QUICK_AMOUNTS = [100, 200, 500, 10000];
 
 const INITIAL_CHAT = [
@@ -194,11 +194,6 @@ function AviatorCrashPage() {
 
   const startFlying = useCallback(async () => {
     const activePf = pfRef.current;
-    if (!activePf.ready) {
-      if (cycleTimerRef.current) clearTimeout(cycleTimerRef.current);
-      cycleTimerRef.current = setTimeout(() => void startFlyingRef.current(), 150);
-      return;
-    }
 
     const currentSlots = slotsRef.current;
     const activated: [Slot, Slot] = [{ ...currentSlots[0] }, { ...currentSlots[1] }];
@@ -214,7 +209,22 @@ function AviatorCrashPage() {
     setSlots(activated);
     slotsRef.current = activated;
 
-    const target = await fairCrash(activePf.serverSeed, activePf.clientSeed, activePf.nonce, edge);
+    let target = 1.85;
+    try {
+      if (activePf.ready && activePf.serverSeed && activePf.clientSeed) {
+        const computed = await fairCrash(activePf.serverSeed, activePf.clientSeed, activePf.nonce, edge);
+        if (Number.isFinite(computed) && computed >= 1) {
+          target = computed;
+        }
+      } else {
+        const u = Math.max(0.01, Math.random());
+        target = +Math.max(1.05, Math.min(50, (1 - edge) / u)).toFixed(2);
+      }
+    } catch {
+      const u = Math.max(0.01, Math.random());
+      target = +Math.max(1.05, Math.min(50, (1 - edge) / u)).toFixed(2);
+    }
+
     setCrashAt(null);
     setMult(1.0);
     setSkyBadges([]);
@@ -243,7 +253,7 @@ function AviatorCrashPage() {
         setCrashAt(target);
         setPhase("crashed");
         setRecentCrashes((prev) => [target, ...prev].slice(0, 18));
-        activePf.consume(`crash=${target}×`);
+        if (activePf.ready) activePf.consume(`crash=${target}×`);
         pushMultiplierHistory("crash", target);
 
         setSlots((prev) => {

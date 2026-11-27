@@ -49,8 +49,17 @@ export function useProvablyFair(gameKey: string) {
       if (raw) {
         try {
           const parsed = JSON.parse(raw) as PfState;
-          if (!cancelled) setState(parsed);
-          return;
+          if (
+            parsed &&
+            typeof parsed.serverSeed === "string" &&
+            parsed.serverSeed.length > 0 &&
+            typeof parsed.clientSeed === "string" &&
+            parsed.clientSeed.length > 0 &&
+            typeof parsed.nonce === "number"
+          ) {
+            if (!cancelled) setState(parsed);
+            return;
+          }
         } catch { /* fall through */ }
       }
       const fresh = await createFreshState();

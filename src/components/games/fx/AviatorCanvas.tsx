@@ -34,21 +34,21 @@ export function AviatorCanvas({
   const badgesRef = useRef(badges);
   const prevPhaseRef = useRef<Phase>(phase);
 
+  if (phase !== prevPhaseRef.current) {
+    if (phase === "flying") {
+      startRef.current = typeof performance !== "undefined" ? performance.now() : 0;
+      lastFlyElapsedRef.current = 0;
+    } else if (phase === "crashed" && prevPhaseRef.current === "flying") {
+      const now = typeof performance !== "undefined" ? performance.now() : 0;
+      crashTimeRef.current = now;
+      lastFlyElapsedRef.current = Math.max(0.05, (now - startRef.current) / 1000);
+    }
+    prevPhaseRef.current = phase;
+  }
+
   phaseRef.current = phase;
   multRef.current = multiplier;
   badgesRef.current = badges;
-
-  useEffect(() => {
-    const prev = prevPhaseRef.current;
-    prevPhaseRef.current = phase;
-    if (phase === "flying" && prev !== "flying") {
-      startRef.current = performance.now();
-      lastFlyElapsedRef.current = 0;
-    } else if (phase === "crashed" && prev === "flying") {
-      crashTimeRef.current = performance.now();
-      lastFlyElapsedRef.current = (performance.now() - startRef.current) / 1000;
-    }
-  }, [phase]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -106,9 +106,13 @@ export function AviatorCanvas({
 
       // White fuselage stripe & cockpit
       ctx.fillStyle = "#ffffff";
-      ctx.beginPath();
-      ctx.roundRect(-8, -3, 18, 4, 2);
-      ctx.fill();
+      if (typeof ctx.roundRect === "function") {
+        ctx.beginPath();
+        ctx.roundRect(-8, -3, 18, 4, 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-8, -3, 18, 4);
+      }
 
       // Tail 'X' accent
       ctx.strokeStyle = "#fda4af";
@@ -196,8 +200,10 @@ export function AviatorCanvas({
         }
       }
 
-      // 2. Smooth Spribe parabolic climb curve
-      if (s === "flying" || s === "crashed") {
+      // 2. Smooth Spribe parabolic climb curve (or parked spinning-prop plane while waiting)
+      if (s === "waiting") {
+        drawSpribePlane(padL + 22, h - padB - 14, -0.06, now);
+      } else if (s === "flying" || s === "crashed") {
         const elapsed = s === "flying" ? (now - startRef.current) / 1000 : lastFlyElapsedRef.current;
         const climbProgress = Math.min(1, elapsed / 4.2);
         const bobX = s === "flying" && climbProgress > 0.85 ? Math.sin(now * 0.0022) * 8 : 0;
@@ -261,9 +267,13 @@ export function AviatorCanvas({
         const bx = w * 0.5;
         const by = 46 - age * 18;
         ctx.fillStyle = "#22c55e";
-        ctx.beginPath();
-        ctx.roundRect(bx - 78, by - 12, 156, 24, 999);
-        ctx.fill();
+        if (typeof ctx.roundRect === "function") {
+          ctx.beginPath();
+          ctx.roundRect(bx - 78, by - 12, 156, 24, 999);
+          ctx.fill();
+        } else {
+          ctx.fillRect(bx - 78, by - 12, 156, 24);
+        }
         ctx.fillStyle = "#041b0b";
         ctx.font = "900 11px Outfit, sans-serif";
         ctx.textAlign = "center";
