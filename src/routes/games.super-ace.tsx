@@ -90,7 +90,7 @@ function SuperAcePage() {
   const minBet = cfg?.min_bet ?? 1;
   const maxBet = cfg?.max_bet ?? 10000;
   const edge = cfg?.house_edge ?? 0.03;
-  const maxPayoutMult = cfg?.max_payout_mult ?? 10000;
+  const maxPayoutMult = cfg?.config?.max_payout_mult ?? 10000;
   const gameDisabled = cfg ? !cfg.is_enabled : false;
 
   const allowedBets = useMemo(() => {

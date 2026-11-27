@@ -59,6 +59,64 @@ WITH checks(name, passed) AS (
         AND position('run_daily_cashback' in command) > 0
         AND position('vip-daily' in command) = 0
     )
+  UNION ALL
+  SELECT 'browser sessions cannot mutate game wallets',
+    NOT has_function_privilege(
+      'authenticated',
+      'public.wallet_mutate(public.txn_type,numeric,text,text,text)',
+      'EXECUTE'
+    )
+  UNION ALL
+  SELECT 'game odds are protected by a database trigger',
+    EXISTS (
+      SELECT 1 FROM pg_trigger
+      WHERE tgrelid = 'public.game_configs'::regclass
+        AND tgname = 'trg_prevent_game_odds_changes'
+        AND NOT tgisinternal
+    )
+  UNION ALL
+  SELECT 'VIP reward ceilings are enforced',
+    EXISTS (
+      SELECT 1 FROM pg_constraint
+      WHERE conrelid = 'public.vip_tier_configs'::regclass
+        AND conname = 'vip_tier_reward_caps'
+    )
+  UNION ALL
+  SELECT 'existing VIP rewards stay within their current levels',
+    NOT EXISTS (
+      SELECT 1
+      FROM (VALUES
+        ('bronze'::text, 10::numeric, 50::numeric, 1::numeric),
+        ('silver'::text, 25::numeric, 150::numeric, 2::numeric),
+        ('gold'::text, 60::numeric, 400::numeric, 4::numeric),
+        ('platinum'::text, 150::numeric, 1000::numeric, 6::numeric),
+        ('diamond'::text, 400::numeric, 3000::numeric, 10::numeric)
+      ) AS expected(tier, daily_bonus, weekly_bonus, cashback_pct)
+      LEFT JOIN public.vip_tier_configs AS actual USING (tier)
+      WHERE actual.tier IS NULL
+        OR actual.daily_bonus IS DISTINCT FROM expected.daily_bonus
+        OR actual.weekly_bonus IS DISTINCT FROM expected.weekly_bonus
+        OR actual.cashback_pct IS DISTINCT FROM expected.cashback_pct
+    )
+  UNION ALL
+  SELECT 'deposit approval checks self-created accounts',
+    EXISTS (
+      SELECT 1 FROM pg_trigger
+      WHERE tgrelid = 'public.transactions'::regclass
+        AND tgname = 'trg_prevent_admin_self_deposit_approval'
+        AND NOT tgisinternal
+    )
+  UNION ALL
+  SELECT 'promotions block creator self-claims',
+    position('created_by_admin' in pg_get_functiondef('public.claim_promo_code(text)'::regprocedure)) > 0
+  UNION ALL
+  SELECT 'admin-created accounts are marked',
+    EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name = 'profiles'
+        AND column_name = 'created_by_admin'
+    )
 )
 SELECT 1 / (bool_and(passed)::integer) AS all_selected_database_checks_passed
 FROM checks;

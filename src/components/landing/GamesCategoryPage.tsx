@@ -33,7 +33,7 @@ export const categoryNav: { id: CategoryId; label: string; to: string }[] = [
 
 const providers = ["সব", "PG", "JILI", "Pragmatic", "Evolution", "JDB", "CQ9", "Spribe"];
 
-export const lib: Record<CategoryId, { title: string; image: string; provider: string; tag?: string }[]> = {
+export const lib: Record<CategoryId, { title: string; image: string; provider: string; tag?: string; to?: string }[]> = {
   hot: [
     { title: "Super Ace", image: g7, provider: "JILI", tag: "HOT", to: "/games/super-ace" },
     { title: "Aviator", image: g8, provider: "Spribe", tag: "HOT", to: "/games/crash" },

@@ -769,11 +769,11 @@ function LuckyDicePage() {
                   </div>
 
                   <div className="flex items-center gap-3 text-xs">
-                    <span className="text-emerald-100/70">Bets: <strong className="text-white">{stats.bets}</strong></span>
-                    <span className={`font-black ${stats.net >= 0 ? "text-emerald-300" : "text-rose-400"}`}>
-                      {stats.net >= 0 ? `+৳${stats.net.toLocaleString()}` : `-৳${Math.abs(stats.net).toLocaleString()}`}
+                    <span className="text-emerald-100/70">Bets: <strong className="text-white">{stats.rounds}</strong></span>
+                    <span className={`font-black ${stats.pnl >= 0 ? "text-emerald-300" : "text-rose-400"}`}>
+                      {stats.pnl >= 0 ? `+৳${stats.pnl.toLocaleString()}` : `-৳${Math.abs(stats.pnl).toLocaleString()}`}
                     </span>
-                    {stats.bets > 0 && (
+                    {stats.rounds > 0 && (
                       <button type="button" onClick={resetStats} className="text-[11px] text-white/50 hover:text-white">
                         Reset
                       </button>

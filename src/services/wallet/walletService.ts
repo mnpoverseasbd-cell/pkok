@@ -6,44 +6,21 @@ import type { WalletBalances, WalletMutationResult, WalletTransaction } from "@/
 type RoundRef = { gameId: string; roundId: string; note?: string };
 
 async function mutate(
-  type: "bet" | "win" | "refund",
+  _type: "bet" | "win" | "refund",
   amount: number,
-  ref: RoundRef,
+  _ref: RoundRef,
 ): Promise<WalletMutationResult> {
   if (!Number.isFinite(amount) || amount <= 0) {
     throw new WalletError("Amount must be > 0", "INVALID_AMOUNT");
   }
-  const { data, error } = await supabase.rpc("wallet_mutate", {
-    _type: type,
-    _amount: amount,
-    _game_id: ref.gameId,
-    _round_id: ref.roundId,
-    _note: ref.note ?? undefined,
-  });
-  if (error) {
-    if (/insufficient/i.test(error.message)) {
-      throw new WalletError("Insufficient balance", "INSUFFICIENT_FUNDS");
-    }
-    throw new WalletError(error.message, "MUTATE_FAILED");
-  }
-  const row = Array.isArray(data) ? data[0] : (data as any);
-  return {
-    txnId: row?.txn_id ?? "",
-    balances: {
-      main: Number(row?.new_balance ?? 0),
-      bonus: 0,
-      total: Number(row?.new_balance ?? 0),
-      currency: "BDT",
-    },
-  };
+  throw new WalletError("Game wagering and payouts are paused until outcomes are verified", "MUTATE_FAILED");
 }
 
 /**
  * Unified wallet service. Every game (internal or external) must go through
  * this service — never touch supabase.transactions directly from a game.
  *
- * bet/win/refund are backed by the `wallet_mutate` Postgres function which
- * updates profiles.wallet_balance and writes a ledger row atomically.
+ * bet/win/refund remain unavailable until their outcomes can be verified server-side.
  */
 export const walletService = {
   async getBalances(userId: string): Promise<WalletBalances> {

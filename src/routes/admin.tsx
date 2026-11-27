@@ -715,7 +715,7 @@ function AdminUsers() {
   const [filterMode, setFilterMode] = useState<"all" | "admins" | "banned">("all");
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  const [createForm, setCreateForm] = useState({ phone: "", displayName: "", password: "", initialBalance: "", makeAdmin: false });
+  const [createForm, setCreateForm] = useState({ phone: "", displayName: "", password: "", makeAdmin: false });
   const [creating, setCreating] = useState(false);
 
   // Modals
@@ -896,13 +896,12 @@ function AdminUsers() {
           phone: cleanPhone,
           displayName: createForm.displayName.trim() || undefined,
           password: createForm.password,
-          initialBalance: createForm.initialBalance ? Number(createForm.initialBalance) : undefined,
           makeAdmin: createForm.makeAdmin,
         },
       });
       if (!res.success) return toast.error("এই ফোন আগে থেকেই রেজিস্টার্ড");
       toast.success("নতুন ইউজার তৈরি হয়েছে");
-      setCreateForm({ phone: "", displayName: "", password: "", initialBalance: "", makeAdmin: false });
+      setCreateForm({ phone: "", displayName: "", password: "", makeAdmin: false });
       setShowCreate(false);
       load();
     } catch (e: any) {
@@ -959,7 +958,6 @@ function AdminUsers() {
             <Input placeholder="Phone (01XXXXXXXXX)" value={createForm.phone} onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })} className="border-slate-200 bg-white text-xs" />
             <Input placeholder="Display Name (optional)" value={createForm.displayName} onChange={(e) => setCreateForm({ ...createForm, displayName: e.target.value })} className="border-slate-200 bg-white text-xs" />
             <Input type="text" placeholder="Password (min 6)" value={createForm.password} onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })} className="border-slate-200 bg-white text-xs" />
-            <Input type="number" placeholder="Initial Coins ৳ (optional)" value={createForm.initialBalance} onChange={(e) => setCreateForm({ ...createForm, initialBalance: e.target.value })} className="border-slate-200 bg-white text-xs" />
             <div className="flex items-center gap-2">
               <Button size="sm" disabled={creating} onClick={createUser} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white">{creating ? "…" : "Create"}</Button>
               <Button size="sm" variant="outline" onClick={() => setShowCreate(false)} className="border-slate-200">Cancel</Button>
@@ -1383,11 +1381,9 @@ function AdminGames() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "enabled" | "disabled">("all");
   const [edits, setEdits] = useState<Record<string, any>>({});
-  const [bulkWinRate, setBulkWinRate] = useState("50");
-  const [bulkEdge, setBulkEdge] = useState("4");
   const [bulkBusy, setBulkBusy] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
-  const [addForm, setAddForm] = useState({ game_key: "", name: "", min_bet: 10, max_bet: 10000, house_edge_pct: 4, win_rate_pct: 50, payout_multiplier: 1, max_payout_mult: 0 });
+  const [addForm, setAddForm] = useState({ game_key: "", name: "", min_bet: 10, max_bet: 10000 });
 
   const doSync = useServerFn(adminSyncAllGames);
   const doUpsert = useServerFn(adminUpsertGameConfig);
@@ -1442,15 +1438,9 @@ function AdminGames() {
     if (!patch) return toast.info("কোনো পরিবর্তন নেই");
     const min = Number(patch.min_bet ?? r.min_bet);
     const max = Number(patch.max_bet ?? r.max_bet);
-    const edge = Number(patch.house_edge ?? r.house_edge);
-    const winRate = Number(patch.win_rate_pct ?? r.config?.win_rate_pct ?? 50);
-    const multScale = Number(patch.payout_multiplier ?? r.config?.payout_multiplier ?? 1);
-    const maxCap = Number(patch.max_payout_mult ?? r.config?.max_payout_mult ?? 0);
     if (!Number.isFinite(min) || min < 0) return toast.error("Min Bet ০ বা তার বেশি হতে হবে");
     if (!Number.isFinite(max) || max <= 0) return toast.error("Max Bet ০ এর বেশি হতে হবে");
     if (min > max) return toast.error("Min Bet, Max Bet এর চেয়ে বড় হতে পারবে না");
-    if (!Number.isFinite(edge) || edge < 0 || edge > 0.95) return toast.error("House Edge ০% থেকে ৯৫% এর মধ্যে হতে হবে");
-    if (!Number.isFinite(winRate) || winRate < 1 || winRate > 99) return toast.error("Win Rate ১% থেকে ৯৯% এর মধ্যে হতে হবে");
     try {
       await doUpsert({
         data: {
@@ -1460,10 +1450,6 @@ function AdminGames() {
           is_enabled: r.is_enabled,
           min_bet: min,
           max_bet: max,
-          house_edge: edge,
-          win_rate_pct: winRate,
-          payout_multiplier: multScale,
-          max_payout_mult: maxCap,
         },
       });
       toast.success(`${r.name} আপডেট হয়েছে`);
@@ -1483,10 +1469,6 @@ function AdminGames() {
           is_enabled: !r.is_enabled,
           min_bet: Number(r.min_bet),
           max_bet: Number(r.max_bet),
-          house_edge: Number(r.house_edge),
-          win_rate_pct: Number(r.config?.win_rate_pct ?? 50),
-          payout_multiplier: Number(r.config?.payout_multiplier ?? 1),
-          max_payout_mult: Number(r.config?.max_payout_mult ?? 0),
         },
       });
       toast.success(`${r.name} ${!r.is_enabled ? "ON" : "OFF"}`);
@@ -1496,7 +1478,7 @@ function AdminGames() {
     }
   }
 
-  async function applyBulk(opts: { win_rate_pct?: number; house_edge?: number; is_enabled?: boolean }) {
+  async function applyBulk(opts: { is_enabled?: boolean }) {
     if (!filtered.length) return;
     setBulkBusy(true);
     try {
@@ -1525,15 +1507,11 @@ function AdminGames() {
           is_enabled: true,
           min_bet: Number(addForm.min_bet),
           max_bet: Number(addForm.max_bet),
-          house_edge: Number(addForm.house_edge_pct) / 100,
-          win_rate_pct: Number(addForm.win_rate_pct),
-          payout_multiplier: Number(addForm.payout_multiplier),
-          max_payout_mult: Number(addForm.max_payout_mult),
         },
       });
       toast.success("নতুন গেম যোগ হয়েছে");
       setShowAdd(false);
-      setAddForm({ game_key: "", name: "", min_bet: 10, max_bet: 10000, house_edge_pct: 4, win_rate_pct: 50, payout_multiplier: 1, max_payout_mult: 0 });
+      setAddForm({ game_key: "", name: "", min_bet: 10, max_bet: 10000 });
       load();
     } catch (e: any) {
       toast.error(e?.message ?? "Failed");
@@ -1554,7 +1532,7 @@ function AdminGames() {
   return (
     <div className="space-y-4">
       <Panel
-        title={`Game Controls & Win Rates (${filtered.length}/${rows.length})`}
+        title={`Game Controls (${filtered.length}/${rows.length})`}
         action={
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
@@ -1578,19 +1556,9 @@ function AdminGames() {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/50 p-3">
           <div className="flex items-center gap-2 text-xs font-bold text-emerald-900">
             <Sliders className="h-4 w-4 text-emerald-600" />
-            <span>Bulk Win Rate / Edge (দেখানো সব {filtered.length}টি গেমে একসাথে):</span>
+            <span>Win odds and payout settings are locked pending verified settlement.</span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1 rounded-lg bg-white px-2 py-1 border border-slate-200">
-              <span className="text-[10px] font-bold text-slate-500">Win %</span>
-              <input type="number" min={1} max={99} value={bulkWinRate} onChange={(e) => setBulkWinRate(e.target.value)} className="w-12 text-xs font-black text-slate-900 focus:outline-none" />
-              <Button size="sm" disabled={bulkBusy} onClick={() => applyBulk({ win_rate_pct: Number(bulkWinRate) })} className="h-6 bg-emerald-600 hover:bg-emerald-700 text-white px-2 text-[10px]">Apply</Button>
-            </div>
-            <div className="flex items-center gap-1 rounded-lg bg-white px-2 py-1 border border-slate-200">
-              <span className="text-[10px] font-bold text-slate-500">Edge %</span>
-              <input type="number" min={0} max={95} step={0.5} value={bulkEdge} onChange={(e) => setBulkEdge(e.target.value)} className="w-12 text-xs font-black text-slate-900 focus:outline-none" />
-              <Button size="sm" disabled={bulkBusy} onClick={() => applyBulk({ house_edge: Number(bulkEdge) / 100 })} className="h-6 bg-indigo-600 hover:bg-indigo-700 text-white px-2 text-[10px]">Apply</Button>
-            </div>
             <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => applyBulk({ is_enabled: true })} className="h-8 border-emerald-300 text-emerald-700 text-[11px] font-bold">Enable All</Button>
             <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => applyBulk({ is_enabled: false })} className="h-8 border-rose-300 text-rose-700 text-[11px] font-bold">Disable All</Button>
           </div>
@@ -1599,10 +1567,11 @@ function AdminGames() {
         {showAdd && (
           <div className="mb-4 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4">
             <div className="mb-3 text-xs font-bold uppercase tracking-wider text-indigo-700">Add / Register Game Config</div>
-            <div className="grid gap-2 sm:grid-cols-4">
+            <div className="grid gap-2 sm:grid-cols-5">
               <Input placeholder="game_key (e.g. crash)" value={addForm.game_key} onChange={(e) => setAddForm({ ...addForm, game_key: e.target.value })} className="bg-white text-xs" />
               <Input placeholder="Display Name" value={addForm.name} onChange={(e) => setAddForm({ ...addForm, name: e.target.value })} className="bg-white text-xs" />
-              <Input type="number" placeholder="Win Rate % (1-99)" value={addForm.win_rate_pct} onChange={(e) => setAddForm({ ...addForm, win_rate_pct: Number(e.target.value) })} className="bg-white text-xs" />
+              <Input type="number" placeholder="Min Bet" value={addForm.min_bet} onChange={(e) => setAddForm({ ...addForm, min_bet: Number(e.target.value) })} className="bg-white text-xs" />
+              <Input type="number" placeholder="Max Bet" value={addForm.max_bet} onChange={(e) => setAddForm({ ...addForm, max_bet: Number(e.target.value) })} className="bg-white text-xs" />
               <div className="flex gap-2">
                 <Button size="sm" onClick={createGame} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white">Save</Button>
                 <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
@@ -1643,31 +1612,12 @@ function AdminGames() {
                     </div>
                   </div>
 
-                  {/* Win rate slider */}
                   <div className="mt-3 rounded-xl border border-slate-200 bg-white p-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Win Rate Control</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Win Rate · locked</span>
                       <span className={`rounded-full px-2 py-0.5 text-[11px] font-black ${wrTone}`}>{wr}%</span>
                     </div>
-                    <div className="mt-1.5 flex items-center gap-2">
-                      <input
-                        type="range"
-                        min={5}
-                        max={95}
-                        step={1}
-                        value={wr}
-                        onChange={(e) => setField(r.id, "win_rate_pct", Number(e.target.value))}
-                        className="h-1.5 flex-1 accent-indigo-600 cursor-pointer"
-                      />
-                      <Input
-                        type="number"
-                        min={1}
-                        max={99}
-                        value={wr}
-                        onChange={(e) => setField(r.id, "win_rate_pct", Number(e.target.value))}
-                        className="h-7 w-14 border-slate-200 px-1.5 text-center text-xs font-bold"
-                      />
-                    </div>
+                    <p className="mt-1.5 text-[10px] text-slate-500">Game wagering is paused until wins can be verified securely.</p>
                   </div>
 
                   <div className="mt-3 grid grid-cols-2 gap-2">
@@ -1679,18 +1629,6 @@ function AdminGames() {
                       <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Max Bet (৳)</label>
                       <Input type="number" value={valOf(r, "max_bet")} onChange={(e) => setField(r.id, "max_bet", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
                     </div>
-                    <div>
-                      <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">House Edge %</label>
-                      <Input type="number" step="0.5" value={+(Number(valOf(r, "house_edge")) * 100).toFixed(2)} onChange={(e) => setField(r.id, "house_edge", Number(e.target.value) / 100)} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
-                    </div>
-                    <div>
-                      <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Payout Scale (×)</label>
-                      <Input type="number" step="0.05" min="0.1" max="10" value={valOf(r, "payout_multiplier")} onChange={(e) => setField(r.id, "payout_multiplier", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
-                    </div>
-                  </div>
-                  <div className="mt-2">
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Max Win Cap (× bet, 0 = unlimited)</label>
-                    <Input type="number" min="0" value={valOf(r, "max_payout_mult")} onChange={(e) => setField(r.id, "max_payout_mult", Number(e.target.value))} className="mt-1 h-8 border-slate-200 bg-white text-xs" />
                   </div>
                   <Button size="sm" onClick={() => save(r)} disabled={!dirty} className={`mt-3 w-full font-black ${dirty ? "bg-emerald-500 hover:bg-emerald-600 text-white" : "bg-slate-100 text-slate-400"}`}>
                     {dirty ? "Save Changes" : "Saved"}

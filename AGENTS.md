@@ -15,3 +15,6 @@
 - Public leaderboards use board-scoped pseudonyms and a caller-only self marker because usernames can contain private phone numbers.
 - Public payout hooks verify the server-held service key before privileged actions because public API routes bypass site sign-in.
 - Protected TanStack server functions attach the current browser session token globally, then validate it server-side to preserve the user's RLS identity.
+- Browser-calculated game outcomes never settle wallet value; game wallet mutations remain unavailable until outcomes are verified server-side.
+- VIP reward ceilings are enforced in the database, and admin changes must be audited before they are applied.
+- Admin-created accounts retain a creator marker so the creating admin cannot fund or approve deposits for them.

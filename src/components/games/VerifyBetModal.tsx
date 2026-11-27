@@ -91,7 +91,7 @@ export type VerifyGameKey =
   | "chicken-road" | "tower" | "lucky-card" | "shell-game"
   | "scratch-card" | "keno" | "hi-lo" | "color-prediction"
   | "andar-bahar" | "dragon-tiger" | "teen-patti" | "seven-up-down" | "baccarat"
-  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon" | "dragon-phoenix" | "wingo" | "aviator-x2" | "jhandi-munda";
+  | "sic-bo" | "roulette" | "blackjack" | "32-cards" | "video-poker" | "slots" | "bingo" | "matka" | "fish-shooter" | "megaways" | "aviatrix" | "dragon-fishing" | "penalty" | "cricket" | "ludo" | "carrom" | "fan-tan" | "balloon" | "dragon-phoenix" | "wingo" | "aviator-x2" | "jhandi-munda" | "fortune-gems-2" | "super-ace";
 
 
 export type VerifyPrefill = {
@@ -602,6 +602,9 @@ export function VerifyBetModal({ open, onClose, gameKey, prefill }: Props) {
             </div>
           );
           break;
+        }
+        default: {
+          outcome = "This game's spin format is not supported by the verifier yet.";
         }
       }
 

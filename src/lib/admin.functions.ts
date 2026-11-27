@@ -94,7 +94,6 @@ export const adminCreateUser = createServerFn({ method: "POST" })
           .refine((v) => phoneRegex.test(v), "Invalid BD phone number"),
         password: z.string().min(6).max(72),
         displayName: z.string().trim().max(80).optional(),
-        initialBalance: z.number().min(0).max(10_000_000).optional(),
         makeAdmin: z.boolean().optional(),
       })
       .parse(input),
@@ -124,7 +123,7 @@ export const adminCreateUser = createServerFn({ method: "POST" })
         display_name: display,
         email,
         phone: data.phone,
-        wallet_balance: data.initialBalance ?? 0,
+        created_by_admin: context.userId,
       },
       { onConflict: "id" },
     );
@@ -137,20 +136,8 @@ export const adminCreateUser = createServerFn({ method: "POST" })
         .upsert({ user_id: created.user.id, role: "admin" }, { onConflict: "user_id,role" });
     }
 
-    if (data.initialBalance && data.initialBalance > 0) {
-      await admin.from("transactions").insert({
-        user_id: created.user.id,
-        type: "bonus",
-        status: "approved",
-        amount: data.initialBalance,
-        admin_note: "Admin created account with initial balance",
-        approved_by: context.userId,
-        approved_at: new Date().toISOString(),
-      });
-    }
     await writeAudit(admin, context.userId, "user.create", "user", created.user.id, {
       phone: data.phone,
-      initialBalance: data.initialBalance ?? 0,
       makeAdmin: !!data.makeAdmin,
     });
     return { success: true as const, userId: created.user.id };
@@ -170,10 +157,11 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
+    if (data.userId === context.userId) throw new Error("নিজের ব্যালেন্স পরিবর্তন করা যাবে না");
     const admin = await getAdminClient();
     const { data: prof, error: pErr } = await admin
       .from("profiles")
-      .select("wallet_balance")
+      .select("wallet_balance, created_by_admin")
       .eq("id", data.userId)
       .maybeSingle();
     if (pErr) throw new Error(pErr.message);
@@ -182,6 +170,9 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
     const mode = data.mode ?? "delta";
     const next = mode === "set" ? data.amount : current + data.amount;
     const delta = next - current;
+    if (delta > 0 && prof.created_by_admin === context.userId) {
+      throw new Error("নিজে তৈরি করা অ্যাকাউন্টে ব্যালেন্স যোগ করা যাবে না");
+    }
     if (delta === 0) return { success: true as const, balance: current };
     if (next < 0) throw new Error("ব্যালেন্স নেগেটিভ হতে পারবে না");
 
@@ -378,6 +369,20 @@ export const adminProcessTransaction = createServerFn({ method: "POST" })
     if (fetchErr) throw new Error(fetchErr.message);
     if (!existing) throw new Error("Transaction not found");
     if (existing.status !== "pending") throw new Error("Only pending transactions can be processed");
+    if (existing.type === "deposit" && data.status === "approved") {
+      if (existing.user_id === context.userId) {
+        throw new Error("নিজের ডিপোজিট অনুমোদন করা যাবে না");
+      }
+      const { data: targetProfile, error: targetError } = await admin
+        .from("profiles")
+        .select("created_by_admin")
+        .eq("id", existing.user_id)
+        .maybeSingle();
+      if (targetError) throw new Error(targetError.message);
+      if (targetProfile?.created_by_admin === context.userId) {
+        throw new Error("নিজে তৈরি করা অ্যাকাউন্টের ডিপোজিট অনুমোদন করা যাবে না");
+      }
+    }
 
     const { error } = await admin
       .from("transactions")
@@ -484,10 +489,6 @@ export const adminUpsertGameConfig = createServerFn({ method: "POST" })
         is_enabled: z.boolean(),
         min_bet: z.number().min(0),
         max_bet: z.number().positive(),
-        house_edge: z.number().min(0).max(0.95),
-        win_rate_pct: z.number().min(1).max(99).default(50),
-        payout_multiplier: z.number().min(0.1).max(10).default(1),
-        max_payout_mult: z.number().min(0).max(100000).default(0),
       })
       .parse(input),
   )
@@ -495,14 +496,16 @@ export const adminUpsertGameConfig = createServerFn({ method: "POST" })
     await assertAdmin(context);
     if (data.min_bet > data.max_bet) throw new Error("Min Bet cannot exceed Max Bet");
     const admin = await getAdminClient();
-    const existingCfg = data.id
-      ? ((await admin.from("game_configs").select("config").eq("id", data.id).maybeSingle()).data?.config as Record<string, unknown>) ?? {}
-      : {};
-    const mergedConfig = {
-      ...existingCfg,
-      win_rate_pct: data.win_rate_pct,
-      payout_multiplier: data.payout_multiplier,
-      max_payout_mult: data.max_payout_mult,
+    const { data: currentConfig, error: currentConfigError } = await admin
+      .from("game_configs")
+      .select("config, house_edge")
+      .eq("game_key", data.game_key)
+      .maybeSingle();
+    if (currentConfigError) throw new Error(currentConfigError.message);
+    const lockedConfig = (currentConfig?.config as Record<string, unknown> | null) ?? {
+      win_rate_pct: 50,
+      payout_multiplier: 1,
+      max_payout_mult: 0,
     };
     const payload = {
       game_key: data.game_key,
@@ -510,8 +513,8 @@ export const adminUpsertGameConfig = createServerFn({ method: "POST" })
       is_enabled: data.is_enabled,
       min_bet: data.min_bet,
       max_bet: data.max_bet,
-      house_edge: data.house_edge,
-      config: mergedConfig,
+      house_edge: Number(currentConfig?.house_edge ?? 0.04),
+      config: lockedConfig,
     };
     const { data: row, error } = data.id
       ? await admin.from("game_configs").update(payload).eq("id", data.id).select().maybeSingle()
@@ -527,36 +530,29 @@ export const adminBulkUpdateGames = createServerFn({ method: "POST" })
     z
       .object({
         gameKeys: z.array(z.string()).min(1),
-        win_rate_pct: z.number().min(1).max(99).optional(),
-        house_edge: z.number().min(0).max(0.95).optional(),
         is_enabled: z.boolean().optional(),
       })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
+    if (data.is_enabled === undefined) throw new Error("Only game availability can be changed here");
     const admin = await getAdminClient();
     const { data: rows, error } = await admin
       .from("game_configs")
-      .select("id, game_key, config, house_edge, is_enabled")
+      .select("id, game_key")
       .in("game_key", data.gameKeys);
     if (error) throw new Error(error.message);
 
     for (const r of rows ?? []) {
-      const nextCfg = {
-        ...((r.config as Record<string, unknown>) ?? {}),
-        ...(data.win_rate_pct !== undefined ? { win_rate_pct: data.win_rate_pct } : {}),
-      };
-      const patch: Record<string, unknown> = { config: nextCfg };
-      if (data.house_edge !== undefined) patch.house_edge = data.house_edge;
-      if (data.is_enabled !== undefined) patch.is_enabled = data.is_enabled;
-      const { error: uErr } = await admin.from("game_configs").update(patch).eq("id", r.id);
+      const { error: uErr } = await admin
+        .from("game_configs")
+        .update({ is_enabled: data.is_enabled })
+        .eq("id", r.id);
       if (uErr) throw new Error(uErr.message);
     }
     await writeAudit(admin, context.userId, "games.bulk_update", "game_config", null, {
       count: (rows ?? []).length,
-      win_rate_pct: data.win_rate_pct,
-      house_edge: data.house_edge,
       is_enabled: data.is_enabled,
     });
     return { updated: (rows ?? []).length };
@@ -810,6 +806,22 @@ export const adminUpdateVipTierConfig = createServerFn({ method: "POST" })
     if (Object.keys(data.patch).length === 0) throw new Error("No tier changes provided");
 
     const admin = await getAdminClient();
+    const { data: before, error: beforeError } = await admin
+      .from("vip_tier_configs")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (beforeError) throw new Error(beforeError.message);
+    if (!before) throw new Error("VIP tier not found");
+    const { error: auditError } = await admin.rpc("record_audit", {
+      _actor_id: context.userId,
+      _actor_label: context.userId.slice(0, 8),
+      _action: "vip.tier.update",
+      _target_type: "vip_tier_config",
+      _target_id: data.id,
+      _details: { before, requested_changes: data.patch },
+    });
+    if (auditError) throw new Error("VIP পরিবর্তনের audit log লেখা যায়নি");
     const { data: row, error } = await admin
       .from("vip_tier_configs")
       .update(data.patch)
@@ -818,8 +830,6 @@ export const adminUpdateVipTierConfig = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!row) throw new Error("VIP tier not found");
-
-    await writeAudit(admin, context.userId, "vip.tier.update", "vip_tier_config", data.id, data.patch);
     return { tier: row.tier };
   });
 
