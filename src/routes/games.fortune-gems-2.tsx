@@ -71,6 +71,22 @@ type Fg2HistoryRow = {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+function StonePillar({ className = "" }: { className?: string }) {
+  return (
+    <div
+      aria-hidden
+      className={`hidden sm:flex w-3.5 shrink-0 flex-col justify-between rounded-sm border-x border-[#402313] bg-[linear-gradient(90deg,#5C3B24_0%,#9E7453_48%,#4E2E1A_100%)] py-2 ${className}`}
+    >
+      {Array.from({ length: 7 }).map((_, i) => (
+        <div
+          key={i}
+          className="mx-0.5 h-3 rounded-[2px] border border-[#3B1F10]/60 bg-[#6E4932]/70 shadow-inner"
+        />
+      ))}
+    </div>
+  );
+}
+
 function FortuneGems2Page() {
   const { balance, bet: placeBet, credit } = useDemoWallet();
   const { data: cfg } = useGameConfig("fortune-gems-2");
@@ -328,25 +344,25 @@ function FortuneGems2Page() {
       className="relative flex h-screen w-full flex-col overflow-hidden select-none"
       style={{
         background:
-          "radial-gradient(circle at 82% 20%, rgba(255,232,145,0.9) 0%, rgba(247,150,107,0.72) 34%, transparent 62%), radial-gradient(circle at 18% 85%, rgba(74,122,44,0.85), transparent 48%), linear-gradient(180deg, #E8875E 0%, #FCE38A 46%, #4A7A2C 78%, #1E3B12 100%)",
+          "radial-gradient(circle at 80% 22%, rgba(255,235,155,0.92) 0%, rgba(247,150,107,0.74) 34%, transparent 64%), radial-gradient(circle at 20% 85%, rgba(74,122,44,0.88), transparent 48%), linear-gradient(180deg, #E8875E 0%, #FCE38A 46%, #4A7A2C 78%, #1E3B12 100%)",
       }}
     >
-      {/* Decorative Tropical Jungle Foliage & Hibiscus on Right (matches live JILI sunset backdrop) */}
+      {/* Right Tropical Foliage & Red Hibiscus matching live JILI sunset */}
       <svg
-        viewBox="0 0 260 360"
-        className="pointer-events-none fixed right-0 bottom-0 z-0 hidden h-[65vh] w-auto opacity-85 lg:block"
+        viewBox="0 0 300 360"
+        className="pointer-events-none fixed right-0 bottom-0 z-0 hidden h-[68vh] w-auto opacity-90 lg:block"
         aria-hidden
       >
-        <path d="M260,360 L260,120 C210,130 165,175 135,245 C175,230 215,245 260,360 Z" fill="#2F5917" />
-        <path d="M260,360 L260,170 C195,185 135,235 80,310 C150,290 210,315 260,360 Z" fill="#3E7420" />
-        <path d="M260,360 L260,230 C205,245 140,285 95,360 Z" fill="#4A8A27" />
-        <circle cx="195" cy="272" r="14" fill="#D94E28" />
-        <circle cx="195" cy="272" r="5" fill="#FFE066" />
-        <circle cx="228" cy="222" r="11" fill="#E6533C" />
-        <circle cx="228" cy="222" r="4" fill="#FFE066" />
+        <path d="M300,360 L300,90 C235,110 185,165 145,240 C195,220 245,245 300,360 Z" fill="#2A5414" />
+        <path d="M300,360 L300,160 C225,180 155,235 95,315 C168,295 235,318 300,360 Z" fill="#3B701E" />
+        <path d="M300,360 L300,225 C235,242 165,285 110,360 Z" fill="#4A8A27" />
+        <circle cx="215" cy="268" r="15" fill="#D94E28" />
+        <circle cx="215" cy="268" r="5" fill="#FFE066" />
+        <circle cx="255" cy="215" r="12" fill="#E6533C" />
+        <circle cx="255" cy="215" r="4.5" fill="#FFE066" />
       </svg>
 
-      {/* Compact Top PKOK Strip */}
+      {/* Compact Top PKOK Bar */}
       <header className="z-30 flex h-9 shrink-0 items-center justify-between border-b border-white/15 bg-black/50 px-3 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <Link
@@ -372,15 +388,15 @@ function FortuneGems2Page() {
         </div>
       </header>
 
-      {/* 100vh Zero-Scroll Centered JILI Cabinet Stage */}
-      <main className="relative z-10 flex flex-1 min-h-0 items-center justify-center p-1.5 sm:px-6 sm:py-2">
-        <div className="relative flex h-full max-h-[590px] w-full max-w-[1040px] items-center justify-center">
-          {/* Left Peeking Lucky Wheel (overlaps smoothly under left pillar) */}
-          <div className="pointer-events-none relative z-0 -mr-24 hidden w-[360px] shrink-0 lg:block xl:w-[400px]">
+      {/* 100vh Zero-Scroll JILI Stage */}
+      <main className="relative z-10 flex flex-1 min-h-0 items-center justify-center p-1 sm:px-4 sm:py-2">
+        <div className="relative flex h-full max-h-[590px] w-full max-w-[1060px] items-center justify-center">
+          {/* Left Peeking Lucky Wheel (65% peeking from behind left carved pillar) */}
+          <div className="pointer-events-none relative z-0 -mr-36 hidden w-[390px] shrink-0 lg:block xl:w-[420px]">
             <LuckyWheelGraphic bet={baseBet} rotationDeg={wheelRot} spinning={wheelSpinning} />
           </div>
 
-          {/* Left Collapsible Gear Drawer */}
+          {/* Left Floating Gear Tab */}
           <div className="fixed left-0 top-1/2 z-40 -translate-y-1/2 flex items-center">
             {openDrawer && (
               <div className="flex flex-col gap-1.5 rounded-r-xl border border-l-0 border-[#D4A024] bg-[#2D1A0E]/95 p-2 shadow-2xl backdrop-blur">
@@ -425,8 +441,8 @@ function FortuneGems2Page() {
             </button>
           </div>
 
-          {/* Sandstone Temple Cabinet — flex-col locked inside viewport height! */}
-          <div className="relative z-10 flex h-full w-full max-w-[740px] flex-col rounded-2xl border-4 border-[#8C6245] bg-[linear-gradient(180deg,#7B5238_0%,#543421_100%)] p-1.5 shadow-[0_24px_65px_rgba(0,0,0,0.7)] sm:p-2.5">
+          {/* Carved Temple Cabinet with Pillars & Stepped Base */}
+          <div className="relative z-10 flex h-full w-full max-w-[770px] flex-col rounded-t-2xl rounded-b-xl border-[3px] border-[#966848] bg-[linear-gradient(180deg,#7B5238_0%,#583723_88%,#3B2214_100%)] p-1.5 shadow-[0_26px_70px_rgba(0,0,0,0.75)] sm:p-2">
             {gameDisabled && (
               <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-xl bg-black/80 p-6 text-center backdrop-blur">
                 <p className="text-lg font-black text-[#FFE066]">গেমটি সাময়িকভাবে বন্ধ আছে</p>
@@ -434,9 +450,9 @@ function FortuneGems2Page() {
               </div>
             )}
 
-            {/* 1) Top Header Row (~36px) */}
-            <div className="mb-1.5 grid shrink-0 grid-cols-4 items-center gap-1.5 px-0.5 sm:gap-2">
-              <div className="col-span-3 flex h-9 items-center justify-center rounded-lg border border-[#D4A024]/70 bg-[#2C180B]/90 px-3 shadow-inner">
+            {/* 1) Temple Top Cornice Header (~38px) */}
+            <div className="mb-1 grid shrink-0 grid-cols-4 items-center gap-1.5 px-1 sm:gap-2">
+              <div className="col-span-3 flex h-9 items-center justify-center rounded-md border border-[#C89B3C]/80 bg-[linear-gradient(180deg,#3D2212_0%,#241309_100%)] px-3 shadow-inner">
                 <h1 className="truncate font-serif text-xs font-black uppercase tracking-wider sm:text-base">
                   {extraBet ? (
                     <span className="text-[#FFF3B0]">
@@ -447,63 +463,70 @@ function FortuneGems2Page() {
                       <span className="bg-[linear-gradient(180deg,#FFF5B8,#D49A12)] bg-clip-text text-transparent">
                         FORTUNE GEMS{" "}
                       </span>
-                      <span className="text-[#D62828] drop-shadow">2</span>
+                      <span className="text-[#E02424] drop-shadow">2</span>
                     </>
                   )}
                 </h1>
               </div>
 
-              <div className="col-span-1 flex h-9 flex-col items-center justify-center rounded-lg border border-[#F5C52C] bg-[linear-gradient(180deg,#9E1818,#5A0B0B)] text-center shadow">
+              <div className="col-span-1 flex h-9 flex-col items-center justify-center rounded-md border border-[#F5C52C] bg-[linear-gradient(180deg,#A61B1B,#590808)] text-center shadow">
                 <span className="text-[8px] font-black uppercase leading-tight text-[#FFD65A] sm:text-[10px]">
                   SPECIAL WHEEL
                 </span>
               </div>
             </div>
 
-            {/* 2) 3×3 + Special Wheel Grid (flex-1 min-h-0 guarantees full screen fit!) */}
-            <div className="relative grid flex-1 min-h-0 grid-cols-4 gap-1.5 rounded-xl bg-[#3D2415] p-1.5 shadow-inner sm:gap-2 sm:p-2">
+            {/* 2) Carved Stone Pillars + 3×3 Reels + Stone Divider + 4th Special Wheel */}
+            <div className="relative flex flex-1 min-h-0 items-stretch gap-1 rounded-xl bg-[#3B2113] p-1 shadow-inner sm:gap-1.5 sm:p-1.5">
               {toastMsg && (
-                <div className="pointer-events-none absolute inset-x-6 top-1/2 z-40 -translate-y-1/2 rounded-xl border-2 border-[#FFE066] bg-black/85 px-4 py-2 text-center text-sm font-black text-[#FFE066] shadow-2xl">
+                <div className="pointer-events-none absolute inset-x-8 top-1/2 z-40 -translate-y-1/2 rounded-xl border-2 border-[#FFE066] bg-black/85 px-4 py-2 text-center text-sm font-black text-[#FFE066] shadow-2xl">
                   {toastMsg}
                 </div>
               )}
 
-              {/* Reels 1, 2, 3 */}
-              {[0, 1, 2].map((colIdx) => {
-                const spinCol = reelSpinning[colIdx];
-                return (
-                  <div
-                    key={colIdx}
-                    className={`grid h-full min-h-0 grid-rows-3 gap-1.5 rounded-xl bg-[linear-gradient(180deg,#B08C62_0%,#8F6D48_100%)] p-1 shadow-inner sm:gap-1.5 sm:p-1.5 ${
-                      spinCol ? "animate-pulse opacity-85 blur-[1.5px]" : ""
-                    }`}
-                  >
-                    {[0, 1, 2].map((rowIdx) => {
-                      const sym = grid[colIdx][rowIdx];
-                      const isWin = winningCells.has(`${colIdx}-${rowIdx}`);
-                      return (
-                        <Fg2SymbolTile
-                          key={`${colIdx}-${rowIdx}`}
-                          sym={sym}
-                          winning={isWin}
-                          dim={hasWins && !isWin}
-                        />
-                      );
-                    })}
-                  </div>
-                );
-              })}
+              <StonePillar />
 
-              {/* 4th Special Wheel Multiplier Reel */}
+              {/* Reels 1, 2, 3 */}
+              <div className="grid flex-[3] min-h-0 grid-cols-3 gap-1 sm:gap-1.5">
+                {[0, 1, 2].map((colIdx) => {
+                  const spinCol = reelSpinning[colIdx];
+                  return (
+                    <div
+                      key={colIdx}
+                      className={`grid h-full min-h-0 grid-rows-3 gap-1 rounded-lg bg-[linear-gradient(180deg,#B08B62_0%,#8A6743_100%)] p-1 shadow-inner sm:gap-1.5 ${
+                        spinCol ? "animate-pulse opacity-85 blur-[1.5px]" : ""
+                      }`}
+                    >
+                      {[0, 1, 2].map((rowIdx) => {
+                        const sym = grid[colIdx][rowIdx];
+                        const isWin = winningCells.has(`${colIdx}-${rowIdx}`);
+                        return (
+                          <Fg2SymbolTile
+                            key={`${colIdx}-${rowIdx}`}
+                            sym={sym}
+                            winning={isWin}
+                            dim={hasWins && !isWin}
+                          />
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Stone Divider Pillar separating Main Reels from Special Wheel Reel */}
+              <StonePillar />
+
+              {/* 4th Special Multiplier Reel */}
               <div
-                className={`relative grid h-full min-h-0 grid-rows-3 gap-1 rounded-xl p-1 sm:gap-1.5 sm:p-1.5 transition-all ${
+                className={`relative grid flex-1 min-h-0 grid-rows-3 gap-1 rounded-lg p-1 sm:gap-1.5 transition-all ${
                   extraBet
-                    ? "bg-[linear-gradient(180deg,#9E1818,#6B1218)] ring-2 ring-[#FFE066] shadow-[0_0_24px_rgba(255,214,90,0.75)]"
-                    : "bg-[linear-gradient(180deg,#7B161C,#520C11)] ring-1 ring-[#C89B3C]/60"
+                    ? "bg-[radial-gradient(circle_at_50%_50%,#B81D24_0%,#5E0A0E_100%)] ring-2 ring-[#FFE680] shadow-[0_0_26px_rgba(255,214,90,0.85)]"
+                    : "bg-[radial-gradient(circle_at_50%_50%,#8F151C_0%,#47090D_100%)] ring-1 ring-[#C89B3C]/70"
                 } ${reelSpinning[3] ? "animate-pulse blur-[1.5px]" : ""}`}
               >
                 {extraBet && (
-                  <span className="pointer-events-none absolute -left-3 top-1/2 z-30 -translate-y-1/2 rounded-full border border-[#FFE066] bg-[linear-gradient(180deg,#FFD54F,#D97706)] px-1.5 py-0.5 text-[9px] font-black text-black shadow-lg">
+                  <span className="pointer-events-none absolute -left-4 top-1/2 z-30 -translate-y-1/2 rounded-full border border-[#FFE066] bg-[linear-gradient(180deg,#FFD54F,#D97706)] px-1.5 py-0.5 text-[9px] font-black text-black shadow-lg">
                     EX↑
                   </span>
                 )}
@@ -515,7 +538,7 @@ function FortuneGems2Page() {
                       key={rowIdx}
                       className={`relative h-full min-h-0 rounded-xl ${
                         isCenter
-                          ? "ring-2 ring-[#F5C52C] bg-black/25 shadow-[0_0_16px_rgba(245,197,44,0.6)]"
+                          ? "border-2 border-[#FFF099] bg-black/25 shadow-[0_0_22px_rgba(255,214,70,0.85),inset_0_0_16px_rgba(255,190,40,0.45)]"
                           : ""
                       }`}
                     >
@@ -525,9 +548,11 @@ function FortuneGems2Page() {
                 })}
               </div>
 
-              {/* Extra Bet Toggle Pill anchored bottom-left over reels matching screenshot */}
-              <div className="pointer-events-none absolute bottom-2 left-2 z-30 flex items-center gap-2">
-                <div className="pointer-events-auto flex items-center gap-1.5 rounded-full border-2 border-[#D4A024] bg-[linear-gradient(180deg,#5A2382,#371252)] px-2 py-0.5 shadow-xl">
+              <StonePillar />
+
+              {/* Extra Bet Toggle Pill anchored bottom-left over lower edge of reels */}
+              <div className="pointer-events-none absolute bottom-2 left-2 sm:left-5 z-30 flex items-center gap-2">
+                <div className="pointer-events-auto flex items-center gap-1.5 rounded-full border-2 border-[#D4A024] bg-[linear-gradient(180deg,#642691,#3B1259)] px-2 py-0.5 shadow-xl">
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FFE066] text-[9px] font-black text-[#4A1C00]">
                     EX↑
                   </span>
@@ -555,7 +580,7 @@ function FortuneGems2Page() {
                 </div>
 
                 {lastResult && lastResult.totalBaseBetMult > 0 && (
-                  <div className="rounded-full border border-[#FFE066]/70 bg-black/75 px-2.5 py-0.5 text-[11px] font-black text-[#FFE066] shadow">
+                  <div className="rounded-full border border-[#FFE066]/75 bg-black/80 px-2.5 py-0.5 text-[11px] font-black text-[#FFE066] shadow">
                     {lastResult.winLines.length} Line · {String(lastResult.centerSpecial)}
                     {lastResult.centerSpecial !== "WHEEL" ? "x" : ""}
                     {lastResult.wheelTriggered && ` + Wheel ${lastResult.wheelPrizeMult}×`}
@@ -564,18 +589,18 @@ function FortuneGems2Page() {
               </div>
 
               {showExHelp && (
-                <div className="absolute bottom-11 left-2 z-40 max-w-xs rounded-xl border border-[#D4A024] bg-[#2D1442]/95 p-2.5 text-[11px] text-white/95 shadow-2xl">
-                  <strong className="text-[#FFE066]">Extra Bet (+50% stake):</strong> Removes <strong>1x</strong> from the 4th reel (guaranteed <strong>2x–15x</strong> or Wheel!) and adds an extra <strong>1x–15x</strong> multiplier onto Lucky Wheel prizes up to <strong>15,000×</strong>!
+                <div className="absolute bottom-11 left-3 z-40 max-w-xs rounded-xl border border-[#D4A024] bg-[#2D1442]/95 p-2.5 text-[11px] text-white/95 shadow-2xl">
+                  <strong className="text-[#FFE066]">Extra Bet (+50% stake):</strong> Removes <strong>1x</strong> from the 4th reel (guaranteed <strong>2x–15x</strong> or Wheel!) and multiplies Lucky Wheel prizes by <strong>1x–15x</strong> up to <strong>15,000×</strong>!
                 </div>
               )}
 
               <ParticleLayer ref={fxRef} />
             </div>
 
-            {/* 3) Bottom Temple Step Dock (~64px — ALWAYS visible without scrolling!) */}
-            <div className="relative mt-1.5 flex shrink-0 items-center justify-between gap-2 rounded-xl border-t-2 border-[#C89B3C]/70 bg-[linear-gradient(180deg,#5C3B26_0%,#3C2415_100%)] px-2.5 py-1.5 shadow-inner sm:px-3">
+            {/* 3) Stepped Stone Dock Base with Overlapping Giant Gold JILI Spin Coin */}
+            <div className="relative mt-1 flex shrink-0 items-center justify-between gap-2 rounded-b-lg border-t-2 border-[#D4A024]/75 bg-[linear-gradient(180deg,#644029_0%,#472B1A_65%,#2B180D_100%)] px-3 py-1.5 shadow-inner sm:px-6">
               {openBetGrid && (
-                <div className="absolute bottom-16 left-1 right-1 z-40 rounded-xl border-2 border-[#D4A024] bg-[#221D18]/95 p-3 shadow-2xl backdrop-blur">
+                <div className="absolute bottom-16 left-2 right-2 z-40 rounded-xl border-2 border-[#D4A024] bg-[#221D18]/95 p-3 shadow-2xl backdrop-blur">
                   <div className="mb-2 flex items-center justify-between">
                     <span className="text-xs font-black uppercase text-[#FFE066]">
                       Select Base Bet {extraBet ? "(×1.5 Extra Bet Active)" : ""}
@@ -611,8 +636,9 @@ function FortuneGems2Page() {
                 </div>
               )}
 
-              <div className="flex items-center gap-3 sm:gap-5">
-                <div className="flex flex-col">
+              {/* Left Stats: Balance + Bet + WIN */}
+              <div className="flex items-center gap-4 sm:gap-7">
+                <div className="flex flex-col leading-tight">
                   <span className="text-[10px] font-bold text-[#F2C94C] sm:text-[11px]">Balance</span>
                   <span className="font-mono text-xs font-black text-white sm:text-sm">
                     {balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -631,7 +657,7 @@ function FortuneGems2Page() {
                   </span>
                 </button>
 
-                <div className="flex flex-col">
+                <div className="flex flex-col leading-tight">
                   <span className="text-[10px] font-bold text-[#F2C94C] sm:text-[11px]">WIN</span>
                   <span className="font-mono text-xs font-black text-[#FFF3B0] sm:text-sm">
                     {winDisplay.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -639,6 +665,7 @@ function FortuneGems2Page() {
                 </div>
               </div>
 
+              {/* Right Controls: Turbo + Auto + Oversized Gold JILI Spin + Wi-Fi */}
               <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   type="button"
@@ -676,23 +703,23 @@ function FortuneGems2Page() {
                   disabled={spinning || wheelModalOpen || !pf.ready || gameDisabled}
                   onClick={spinNow}
                   aria-label="Spin"
-                  className={`relative flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-[#FFF3B0] bg-[radial-gradient(circle_at_35%_30%,#FFE57F_0%,#F2B705_58%,#B87800_100%)] shadow-[0_0_20px_rgba(242,183,5,0.65),inset_0_2px_4px_rgba(255,255,255,0.7)] transition hover:scale-105 active:scale-95 disabled:opacity-70 sm:h-14 sm:w-14 ${
+                  className={`relative -my-2 flex h-14 w-14 items-center justify-center rounded-full border-[3px] border-[#FFF3B0] bg-[radial-gradient(circle_at_35%_30%,#FFE57F_0%,#F2B705_58%,#B87800_100%)] shadow-[0_0_24px_rgba(242,183,5,0.75),inset_0_2px_4px_rgba(255,255,255,0.75)] transition hover:scale-105 active:scale-95 disabled:opacity-70 sm:h-16 sm:w-16 ${
                     spinning ? "animate-pulse" : ""
                   }`}
                 >
-                  <RotateCw className={`h-7 w-7 text-white drop-shadow sm:h-8 sm:w-8 ${spinning ? "animate-spin" : ""}`} />
+                  <RotateCw className={`h-8 w-8 text-white drop-shadow sm:h-9 sm:w-9 ${spinning ? "animate-spin" : ""}`} />
                   <span className="pointer-events-none absolute text-[8px] font-black text-[#5E3800] sm:text-[9px]">
                     JILI
                   </span>
                 </button>
+
+                <Wifi className="hidden h-4 w-4 text-[#4be125] sm:block" />
               </div>
             </div>
 
             <div className="mt-1 flex shrink-0 items-center justify-between px-1 text-[10px] text-white/60">
               <span>v_6_8 · {stats.rounds} spins</span>
-              <span className="flex items-center gap-1.5">
-                <Wifi className="h-3 w-3 text-[#4be125]" /> Provably Fair
-              </span>
+              <span>Transaction PF-{pf.nonce}</span>
             </div>
           </div>
         </div>

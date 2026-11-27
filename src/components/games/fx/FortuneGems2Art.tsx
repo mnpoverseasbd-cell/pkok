@@ -3,35 +3,62 @@ import type { Fg2SpecialItem, Fg2Symbol } from "@/lib/provablyFair";
 
 function GarudaWildSvg() {
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-[#FFD65A] bg-[radial-gradient(circle_at_50%_40%,#8A5A12_0%,#3D1E04_75%,#1F0C01_100%)] p-1 shadow-[inset_0_0_12px_rgba(255,214,90,0.45)]">
-      <svg viewBox="0 0 80 72" className="h-[82%] w-[88%] drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]" aria-hidden>
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[8px] border-2 border-[#FFE67A] bg-[radial-gradient(circle_at_50%_42%,#C98A1C_0%,#6A3B06_70%,#2A1102_100%)] shadow-[inset_0_0_14px_rgba(255,220,100,0.55)]">
+      {/* Edge-to-edge carved golden Garuda head matching live JILI WILD */}
+      <svg viewBox="0 0 100 92" className="h-full w-full drop-shadow-[0_3px_5px_rgba(0,0,0,0.85)]" aria-hidden>
         <defs>
-          <linearGradient id="fg2-gold" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#FFF7C2" />
-            <stop offset="45%" stopColor="#F5B81D" />
-            <stop offset="100%" stopColor="#9A6008" />
+          <linearGradient id="fg2-garuda-gold" x1="0" y1="0" x2="0.8" y2="1">
+            <stop offset="0%" stopColor="#FFF8C9" />
+            <stop offset="35%" stopColor="#FAD048" />
+            <stop offset="72%" stopColor="#D48E10" />
+            <stop offset="100%" stopColor="#7C4704" />
+          </linearGradient>
+          <linearGradient id="fg2-wild-red" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#FF3B3B" />
+            <stop offset="100%" stopColor="#99080C" />
           </linearGradient>
         </defs>
+        {/* Outer feathered wings/plumes filling tile */}
         <path
-          d="M10 38C6 22 14 10 26 8l14 6 14-6c12 2 20 14 16 30-4 12-16 20-30 22-14-2-26-10-30-22z"
-          fill="url(#fg2-gold)"
-          stroke="#6A3E00"
-          strokeWidth="2"
+          d="M4 52 C2 28 12 10 30 6 L42 14 L50 3 L58 14 L70 6 C88 10 98 28 96 52 C92 70 78 82 50 86 C22 82 8 70 4 52 Z"
+          fill="url(#fg2-garuda-gold)"
+          stroke="#592F02"
+          strokeWidth="2.5"
         />
-        <path d="M32 6l8-4 8 4-3 10H35z" fill="#E02424" stroke="#FFE066" strokeWidth="1.4" />
-        <path d="M22 27l10 3-8 4z" fill="#231202" />
-        <path d="M58 27l-10 3 8 4z" fill="#231202" />
-        <circle cx="28" cy="29" r="2.2" fill="#FFF8A8" />
-        <circle cx="52" cy="29" r="2.2" fill="#FFF8A8" />
-        <path d="M35 33l5 12 5-12-5-4z" fill="#D48806" stroke="#4D2900" strokeWidth="1.5" />
-        <circle cx="40" cy="52" r="4.5" fill="#E01E26" stroke="#FFE066" strokeWidth="1.4" />
+        {/* Feathered wing ridges */}
+        <path d="M12 34 L28 38 M10 46 L26 48 M88 34 L72 38 M90 46 L74 48" stroke="#7A4505" strokeWidth="2.4" strokeLinecap="round" />
+        {/* Crown ruby */}
+        <polygon points="50,6 57,17 50,24 43,17" fill="#E81C34" stroke="#FFF2A6" strokeWidth="1.5" />
+        {/* Side cheek rubies */}
+        <circle cx="24" cy="24" r="3.5" fill="#E81C34" stroke="#FFE066" strokeWidth="1.2" />
+        <circle cx="76" cy="24" r="3.5" fill="#E81C34" stroke="#FFE066" strokeWidth="1.2" />
+        {/* Fierce Garuda brow & glowing eyes */}
+        <path d="M25 32 L45 39 L30 43 Z" fill="#3B1D02" />
+        <path d="M75 32 L55 39 L70 43 Z" fill="#3B1D02" />
+        <circle cx="34" cy="38" r="3.2" fill="#FFFBE0" stroke="#7A4505" strokeWidth="1" />
+        <circle cx="66" cy="38" r="3.2" fill="#FFFBE0" stroke="#7A4505" strokeWidth="1" />
+        <circle cx="34" cy="38" r="1.4" fill="#1C0B00" />
+        <circle cx="66" cy="38" r="1.4" fill="#1C0B00" />
+        {/* Hooked eagle beak */}
+        <path d="M42 42 L50 37 L58 42 L50 61 Z" fill="#F2AE1C" stroke="#592F02" strokeWidth="2" />
+        <path d="M45 45 L50 56 L55 45" fill="none" stroke="#FFF4B0" strokeWidth="1.3" />
+        {/* Ruby-crimson carved WILD banner */}
+        <path d="M14 68 Q50 76 86 68 L83 84 Q50 91 17 84 Z" fill="url(#fg2-wild-red)" stroke="#FFE680" strokeWidth="2" />
+        <text
+          x="50"
+          y="80"
+          textAnchor="middle"
+          fill="#FFE66D"
+          fontSize="14.5"
+          fontWeight="900"
+          fontFamily="Georgia, serif"
+          letterSpacing="2"
+          stroke="#400303"
+          strokeWidth="0.9"
+        >
+          WILD
+        </text>
       </svg>
-      <div
-        className="absolute inset-x-1.5 bottom-0.5 rounded border border-[#FFE066] bg-[linear-gradient(180deg,#E51C23,#8C090D)] py-0.5 text-center font-serif text-[10px] font-black leading-none tracking-widest text-[#FFE66D] shadow-md sm:text-xs"
-        style={{ textShadow: "0 1px 2px #000" }}
-      >
-        WILD
-      </div>
     </div>
   );
 }
@@ -39,51 +66,62 @@ function GarudaWildSvg() {
 function GemTileSvg({ type }: { type: "RED" | "BLUE" | "GREEN" }) {
   const cfg =
     type === "RED"
-      ? { frame: "#E5B43B", bg: "#6E1418", c1: "#FF8DA1", c2: "#F01E3A", c3: "#7A0614", shape: "circle" as const }
+      ? { bg: "#5C0A10", c1: "#FF9EB0", c2: "#F21B35", c3: "#7A0412", shape: "circle" as const }
       : type === "BLUE"
-        ? { frame: "#E5B43B", bg: "#10326E", c1: "#90E0FF", c2: "#1677FF", c3: "#062A7A", shape: "octagon" as const }
-        : { frame: "#E5B43B", bg: "#114D24", c1: "#9DFFAF", c2: "#18C943", c3: "#085C1C", shape: "hex" as const };
+        ? { bg: "#0B2457", c1: "#9EE7FF", c2: "#1677FF", c3: "#05266E", shape: "octagon" as const }
+        : { bg: "#0A3F1B", c1: "#A8FFB8", c2: "#16C942", c3: "#065217", shape: "hex" as const };
 
   return (
     <div
-      className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg border-2 p-1 shadow-[inset_0_0_10px_rgba(0,0,0,0.6)]"
+      className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[8px] border-[3px] border-[#EAB83E] shadow-[inset_0_0_12px_rgba(0,0,0,0.75)]"
       style={{
-        borderColor: cfg.frame,
-        background: `radial-gradient(circle at 50% 45%, ${cfg.bg} 0%, #241409 100%)`,
+        background: `radial-gradient(circle at 50% 48%, ${cfg.bg} 0%, #1F1106 95%)`,
       }}
     >
-      <span aria-hidden className="pointer-events-none absolute top-0.5 left-0.5 h-2.5 w-2.5 border-t-2 border-l-2 border-[#FFD65A]" />
-      <span aria-hidden className="pointer-events-none absolute top-0.5 right-0.5 h-2.5 w-2.5 border-t-2 border-r-2 border-[#FFD65A]" />
-      <span aria-hidden className="pointer-events-none absolute bottom-0.5 left-0.5 h-2.5 w-2.5 border-b-2 border-l-2 border-[#FFD65A]" />
-      <span aria-hidden className="pointer-events-none absolute bottom-0.5 right-0.5 h-2.5 w-2.5 border-b-2 border-r-2 border-[#FFD65A]" />
-
-      <svg viewBox="0 0 64 64" className="h-[84%] w-[84%] drop-shadow-[0_3px_8px_rgba(0,0,0,0.7)]" aria-hidden>
+      {/* Ornate gold Aztec corner scrollwork matching Fortune Gems 2 */}
+      <svg viewBox="0 0 100 100" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
         <defs>
+          <linearGradient id={`fg2-scroll-${type}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#FFF0A6" />
+            <stop offset="50%" stopColor="#E5A91A" />
+            <stop offset="100%" stopColor="#9A6008" />
+          </linearGradient>
           <radialGradient id={`fg2-gem-${type}`} cx="36%" cy="32%" r="70%">
             <stop offset="0%" stopColor={cfg.c1} />
             <stop offset="52%" stopColor={cfg.c2} />
             <stop offset="100%" stopColor={cfg.c3} />
           </radialGradient>
         </defs>
+        {/* 4 Aztec gold corner filigrees */}
+        <path d="M2,2 H30 C22,12 12,22 2,30 Z" fill={`url(#fg2-scroll-${type})`} opacity="0.92" />
+        <path d="M98,2 H70 C78,12 88,22 98,30 Z" fill={`url(#fg2-scroll-${type})`} opacity="0.92" />
+        <path d="M2,98 H30 C22,88 12,78 2,70 Z" fill={`url(#fg2-scroll-${type})`} opacity="0.92" />
+        <path d="M98,98 H70 C78,88 88,78 98,70 Z" fill={`url(#fg2-scroll-${type})`} opacity="0.92" />
+        <rect x="6" y="6" width="88" height="88" rx="6" fill="none" stroke={`url(#fg2-scroll-${type})`} strokeWidth="2.4" />
+
+        {/* Large faceted gemstone */}
         {cfg.shape === "circle" && (
-          <>
-            <circle cx="32" cy="32" r="24" fill={`url(#fg2-gem-${type})`} stroke="#FFD65A" strokeWidth="2.2" />
-            <polygon points="32,12 48,24 44,46 20,46 16,24" fill="rgba(255,255,255,0.24)" />
-            <polygon points="32,18 42,27 38,40 26,40 22,27" fill="rgba(255,255,255,0.28)" />
-          </>
+          <g className="drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+            <circle cx="50" cy="50" r="34" fill={`url(#fg2-gem-${type})`} stroke="#FFE066" strokeWidth="2.8" />
+            <polygon points="50,20 74,38 66,70 34,70 26,38" fill="rgba(255,255,255,0.22)" />
+            <polygon points="50,28 65,41 60,62 40,62 35,41" fill="rgba(255,255,255,0.26)" />
+            <circle cx="38" cy="34" r="4.5" fill="rgba(255,255,255,0.55)" />
+          </g>
         )}
         {cfg.shape === "octagon" && (
-          <>
-            <polygon points="22,8 42,8 56,22 56,42 42,56 22,56 8,42 8,22" fill={`url(#fg2-gem-${type})`} stroke="#FFD65A" strokeWidth="2.2" />
-            <polygon points="24,16 40,16 48,24 48,40 40,48 24,48 16,40 16,24" fill="rgba(255,255,255,0.22)" />
-            <polygon points="27,22 37,22 42,27 42,37 37,42 27,42 22,37 22,27" fill="rgba(255,255,255,0.3)" />
-          </>
+          <g className="drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+            <polygon points="35,16 65,16 84,35 84,65 65,84 35,84 16,65 16,35" fill={`url(#fg2-gem-${type})`} stroke="#FFE066" strokeWidth="2.8" />
+            <polygon points="38,26 62,26 74,38 74,62 62,74 38,74 26,62 26,38" fill="rgba(255,255,255,0.22)" />
+            <polygon points="42,35 58,35 65,42 65,58 58,65 42,65 35,58 35,42" fill="rgba(255,255,255,0.3)" />
+            <circle cx="39" cy="34" r="3.8" fill="rgba(255,255,255,0.5)" />
+          </g>
         )}
         {cfg.shape === "hex" && (
-          <>
-            <polygon points="32,7 54,19 54,45 32,57 10,45 10,19" fill={`url(#fg2-gem-${type})`} stroke="#FFD65A" strokeWidth="2.2" />
-            <polygon points="32,15 47,23 47,41 32,49 17,41 17,23" fill="rgba(255,255,255,0.25)" />
-          </>
+          <g className="drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+            <polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill={`url(#fg2-gem-${type})`} stroke="#FFE066" strokeWidth="2.8" />
+            <polygon points="50,25 72,38 72,62 50,75 28,62 28,38" fill="rgba(255,255,255,0.25)" />
+            <circle cx="38" cy="35" r="4" fill="rgba(255,255,255,0.5)" />
+          </g>
         )}
       </svg>
     </div>
@@ -101,18 +139,34 @@ function RoyalTile({ rank }: { rank: "A" | "K" | "Q" | "J" }) {
           : "#18C943";
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg border-2 border-[#D4A024]/85 bg-[radial-gradient(circle_at_50%_35%,#8C6843_0%,#5B3F24_65%,#3B2613_100%)] shadow-[inset_0_1px_4px_rgba(255,235,170,0.25)]">
-      {/* Subtle carved inner stone border */}
-      <div aria-hidden className="pointer-events-none absolute inset-1 rounded border border-[#FFE066]/20" />
-      <span
-        className="bg-[linear-gradient(180deg,#FFF6C4_0%,#F4C04A_50%,#A86B10_100%)] bg-clip-text font-serif text-3xl font-black tracking-tight text-transparent sm:text-4xl"
-        style={{ filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.9))" }}
-      >
-        {rank}
-      </span>
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[8px] border-2 border-[#D4A024] bg-[radial-gradient(circle_at_50%_38%,#9E784E_0%,#6D4D2E_64%,#422B16_100%)] shadow-[inset_0_1px_6px_rgba(255,235,175,0.3)]">
+      <div aria-hidden className="pointer-events-none absolute inset-1 rounded-[5px] border border-[#FFE066]/30" />
+      <svg viewBox="0 0 80 80" className="h-[80%] w-[80%]" aria-hidden>
+        <defs>
+          <linearGradient id={`fg2-r-${rank}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#FFF7CC" />
+            <stop offset="48%" stopColor="#F4BE46" />
+            <stop offset="100%" stopColor="#94580A" />
+          </linearGradient>
+        </defs>
+        <text
+          x="40"
+          y="55"
+          textAnchor="middle"
+          fill={`url(#fg2-r-${rank})`}
+          stroke="#3B1E04"
+          strokeWidth="2.4"
+          paintOrder="stroke fill"
+          fontSize="46"
+          fontWeight="900"
+          fontFamily="Georgia, serif"
+        >
+          {rank}
+        </text>
+      </svg>
       <span
         aria-hidden
-        className="absolute right-1.5 bottom-1.5 h-3 w-3 rotate-45 rounded-[2px] border border-[#FFE680]"
+        className="absolute right-2 bottom-2 h-3.5 w-3.5 rotate-45 rounded-[2px] border border-[#FFF2A6]"
         style={{ backgroundColor: gemColor, boxShadow: `0 0 8px ${gemColor}` }}
       />
     </div>
@@ -125,7 +179,7 @@ export const Fg2SymbolTile: React.FC<{
   dim?: boolean;
 }> = ({ sym, winning = false, dim = false }) => {
   const stateCls = winning
-    ? "z-20 scale-[1.03] ring-2 ring-[#FFF59D] shadow-[0_0_22px_rgba(255,220,70,0.95)] brightness-110"
+    ? "z-20 scale-[1.04] ring-2 ring-[#FFF59D] shadow-[0_0_26px_rgba(255,220,70,0.98)] brightness-110"
     : dim
       ? "brightness-[0.42] saturate-75"
       : "";
@@ -147,11 +201,11 @@ export const Fg2SpecialBadge: React.FC<{
   if (item === "WHEEL") {
     return (
       <div
-        className={`relative flex h-full w-full flex-col items-center justify-center p-1 transition-all ${
-          active ? "scale-105" : "opacity-80 scale-90"
+        className={`relative flex h-full w-full flex-col items-center justify-center p-0.5 transition-all ${
+          active ? "scale-105" : "opacity-85 scale-90"
         }`}
       >
-        <div className="relative aspect-square h-[76%] max-w-[82%] rounded-full border-2 border-[#FFE680] shadow-lg overflow-hidden">
+        <div className="relative aspect-square h-[78%] max-w-[84%] overflow-hidden rounded-full border-2 border-[#FFE680] shadow-[0_3px_12px_rgba(0,0,0,0.8)]">
           <svg viewBox="0 0 64 64" className="h-full w-full">
             <path d="M32,32 L32,2 A30,30 0 0,1 58,17 Z" fill={extraBet ? "#E02424" : "#1E64C8"} stroke="#FFE066" strokeWidth="1" />
             <path d="M32,32 L58,17 A30,30 0 0,1 58,47 Z" fill="#F5B81D" stroke="#FFE066" strokeWidth="1" />
@@ -159,11 +213,11 @@ export const Fg2SpecialBadge: React.FC<{
             <path d="M32,32 L32,62 A30,30 0 0,1 6,47 Z" fill="#A626A4" stroke="#FFE066" strokeWidth="1" />
             <path d="M32,32 L6,47 A30,30 0 0,1 6,17 Z" fill={extraBet ? "#E02424" : "#1E64C8"} stroke="#FFE066" strokeWidth="1" />
             <path d="M32,32 L6,17 A30,30 0 0,1 32,2 Z" fill="#F5B81D" stroke="#FFE066" strokeWidth="1" />
-            <circle cx="32" cy="32" r="8" fill="#FFD54F" stroke="#7A4E02" strokeWidth="1.5" />
+            <circle cx="32" cy="32" r="9" fill="#FFD54F" stroke="#7A4E02" strokeWidth="1.6" />
           </svg>
         </div>
         <span
-          className={`-mt-2 z-10 rounded px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-[#FFE66D] border border-[#FFE066] shadow sm:text-[9px] ${
+          className={`-mt-2.5 z-10 rounded px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#FFE66D] border border-[#FFE066] shadow-md sm:text-[10px] ${
             extraBet
               ? "bg-[linear-gradient(180deg,#E02424,#7D0A0A)]"
               : "bg-[linear-gradient(180deg,#159947,#095724)]"
@@ -177,47 +231,55 @@ export const Fg2SpecialBadge: React.FC<{
 
   const lotusPalette =
     item === 15
-      ? { petal: "#F43F5E", core: "#9F1239" }
+      ? { petal: "#FB7185", core: "#BE123C" }
       : item === 10
-        ? { petal: "#E879F9", core: "#86198F" }
+        ? { petal: "#F0ABFC", core: "#A21CAF" }
         : item === 5
-          ? { petal: "#60A5FA", core: "#1E40AF" }
+          ? { petal: "#93C5FD", core: "#1D4ED8" }
           : item === 3
-            ? { petal: "#2DD4BF", core: "#115E59" }
+            ? { petal: "#5EEAD4", core: "#0F766E" }
             : item === 2
-              ? { petal: "#4ADE80", core: "#166534" }
-              : { petal: "#94A3B8", core: "#334155" };
+              ? { petal: "#86EFAC", core: "#15803D" }
+              : { petal: "#CBD5E1", core: "#475569" };
 
   return (
     <div
       className={`relative flex h-full w-full items-center justify-center transition-all ${
-        active ? "scale-105" : "opacity-75 scale-90"
+        active ? "scale-105" : "opacity-80 scale-90"
       }`}
     >
-      <svg viewBox="0 0 80 80" className="h-[88%] w-[88%] drop-shadow-[0_3px_8px_rgba(0,0,0,0.7)]" aria-hidden>
-        {/* 8-petal lotus medallion */}
+      <svg viewBox="0 0 90 90" className="h-[90%] w-[90%] drop-shadow-[0_4px_8px_rgba(0,0,0,0.75)]" aria-hidden>
         {Array.from({ length: 8 }).map((_, i) => (
           <ellipse
             key={i}
-            cx="40"
-            cy="15"
-            rx="10"
-            ry="14"
+            cx="45"
+            cy="16"
+            rx="12"
+            ry="16"
             fill={lotusPalette.petal}
             stroke="#FFE680"
-            strokeWidth="1.4"
-            transform={`rotate(${i * 45}, 40, 40)`}
+            strokeWidth="1.5"
+            transform={`rotate(${i * 45}, 45, 45)`}
           />
         ))}
-        <circle cx="40" cy="40" r="24" fill={lotusPalette.core} stroke="#FFE680" strokeWidth="2.4" />
-        <circle cx="40" cy="40" r="20" fill="none" stroke="rgba(255,255,255,0.28)" strokeWidth="1" />
+        <circle cx="45" cy="45" r="27" fill={lotusPalette.core} stroke="#FFE680" strokeWidth="2.6" />
+        <circle cx="45" cy="45" r="22" fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="1.2" />
+        <text
+          x="45"
+          y="53"
+          textAnchor="middle"
+          fill="#FFF6BD"
+          stroke="#6A2B00"
+          strokeWidth="3.5"
+          paintOrder="stroke fill"
+          fontSize="24"
+          fontWeight="900"
+          fontStyle="italic"
+          fontFamily="Georgia, serif"
+        >
+          {item}x
+        </text>
       </svg>
-      <span
-        className="pointer-events-none absolute font-serif text-lg font-black italic text-[#FFF5B8] sm:text-2xl"
-        style={{ textShadow: "0 2px 0 #7C3D00, 0 3px 6px rgba(0,0,0,0.9)" }}
-      >
-        {item}x
-      </span>
     </div>
   );
 };
@@ -257,14 +319,14 @@ export const LuckyWheelGraphic: React.FC<{
 
   return (
     <div className="relative flex aspect-square w-full items-center justify-center select-none">
-      {/* Red jewel top pointer */}
+      {/* Top red jewel pointer */}
       <div className="pointer-events-none absolute -top-2 z-30 flex flex-col items-center">
-        <div className="h-5 w-4 rounded-b-full border-2 border-[#FFE066] bg-[#D92B2B] shadow-[0_2px_8px_rgba(0,0,0,0.85)]" />
+        <div className="h-6 w-5 rounded-b-full border-2 border-[#FFE680] bg-[linear-gradient(180deg,#FF3B3B,#9E0B0F)] shadow-[0_3px_10px_rgba(0,0,0,0.9)]" />
       </div>
 
-      {/* Ornate double gold bezel rotating wheel */}
+      {/* Ornate Aztec fretwork gold rim */}
       <div
-        className="relative h-full w-full rounded-full border-[8px] border-[#D4A024] bg-[#2D1808] shadow-[0_0_32px_rgba(255,214,90,0.5),inset_0_0_12px_rgba(0,0,0,0.8)] ring-2 ring-[#7C4B00]"
+        className="relative h-full w-full rounded-full border-[11px] border-[#D4A024] bg-[#2D1808] shadow-[0_0_36px_rgba(255,214,90,0.55),inset_0_0_16px_rgba(0,0,0,0.85)] ring-2 ring-[#7C4B00]"
         style={{
           transform: `rotate(${rotationDeg}deg)`,
           transition: spinning ? "transform 2.6s cubic-bezier(0.12, 0.82, 0.16, 1)" : "transform 0.4s ease-out",
@@ -285,19 +347,21 @@ export const LuckyWheelGraphic: React.FC<{
                 <path
                   d={`M100,100 L${x0},${y0} A96,96 0 0,1 ${x1},${y1} Z`}
                   fill={WEDGE_COLORS[i]}
-                  stroke="#E5B94B"
-                  strokeWidth="1.4"
+                  stroke="#F5C954"
+                  strokeWidth="1.6"
                 />
                 <text
                   x="152"
-                  y="103"
+                  y="104"
                   textAnchor="middle"
                   fill="#FFF8C8"
-                  fontSize="10.5"
+                  stroke="#1C0C00"
+                  strokeWidth="1.2"
+                  paintOrder="stroke fill"
+                  fontSize="11"
                   fontWeight="900"
                   fontFamily="sans-serif"
                   transform={`rotate(${midAngle}, 100, 100)`}
-                  style={{ textShadow: "0 1px 2px #000" }}
                 >
                   {prizeText}
                 </text>
@@ -306,8 +370,9 @@ export const LuckyWheelGraphic: React.FC<{
           })}
         </svg>
 
-        <div className="absolute inset-[34%] flex items-center justify-center rounded-full border-2 border-[#FFF3B0] bg-[radial-gradient(circle_at_35%_30%,#FFE57F,#D49A12,#7A4E02)] shadow-xl">
-          <span className="text-xl">🦁</span>
+        {/* Center Golden Lion/Garuda Medallion */}
+        <div className="absolute inset-[33%] flex items-center justify-center rounded-full border-[3px] border-[#FFF3B0] bg-[radial-gradient(circle_at_35%_30%,#FFE885,#D49A12,#6E4302)] shadow-[0_4px_16px_rgba(0,0,0,0.8)]">
+          <span className="text-2xl drop-shadow">🦁</span>
         </div>
       </div>
     </div>
