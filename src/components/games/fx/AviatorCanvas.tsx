@@ -10,20 +10,22 @@ export type SkyCashoutBadge = {
 };
 
 /**
- * Spribe Aviator Canvas:
- * - Rotating dark sunburst fan beams from bottom-left origin
- * - Dynamic radial aurora halo behind multiplier (cyan <2x, purple 2-10x, magenta >=10x)
- * - Smooth crimson curve starting cleanly from bottom-left (0, h) with red area fill
- * - Classic Spribe crimson propeller biplane pitched cleanly at curve tip
+ * Exact Spribe Aviator Canvas Renderer:
+ * - Pure black (#000000) stage with rotating dark sunburst rays radiating from (0, h)
+ * - Dynamic tier radial aurora behind multiplier: cyan-blue (<2x), violet (2-9.99x), magenta (>=10x)
+ * - Parked crimson biplane at bottom-left during Waiting; smooth climbing curve + red gradient drop-fill while Flying
+ * - Steep exit fly-away off top-right on Crash
  */
 export function AviatorCanvas({
   multiplier,
   phase,
   badges = [],
+  animationsEnabled = true,
 }: {
   multiplier: number;
   phase: Phase;
   badges?: SkyCashoutBadge[];
+  animationsEnabled?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const startRef = useRef<number>(0);
@@ -32,6 +34,7 @@ export function AviatorCanvas({
   const phaseRef = useRef(phase);
   const multRef = useRef(multiplier);
   const badgesRef = useRef(badges);
+  const animRef = useRef(animationsEnabled);
   const prevPhaseRef = useRef<Phase>(phase);
 
   if (phase !== prevPhaseRef.current) {
@@ -41,7 +44,7 @@ export function AviatorCanvas({
     } else if (phase === "crashed" && prevPhaseRef.current === "flying") {
       const now = typeof performance !== "undefined" ? performance.now() : 0;
       crashTimeRef.current = now;
-      lastFlyElapsedRef.current = Math.max(0.05, (now - startRef.current) / 1000);
+      lastFlyElapsedRef.current = Math.max(0.08, (now - startRef.current) / 1000);
     }
     prevPhaseRef.current = phase;
   }
@@ -49,6 +52,7 @@ export function AviatorCanvas({
   phaseRef.current = phase;
   multRef.current = multiplier;
   badgesRef.current = badges;
+  animRef.current = animationsEnabled;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -71,81 +75,107 @@ export function AviatorCanvas({
     const ro = new ResizeObserver(resize);
     ro.observe(parent);
 
-    const drawSpribePlane = (x: number, y: number, angleRad: number, nowMs: number) => {
+    const drawSpribeBiplane = (
+      x: number,
+      y: number,
+      angleRad: number,
+      nowMs: number,
+      scale = 1.45,
+    ) => {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(angleRad);
-      ctx.scale(1.25, 1.25);
+      ctx.scale(scale, scale);
 
-      // Glow aura
-      ctx.shadowColor = "rgba(229, 29, 72, 0.75)";
-      ctx.shadowBlur = 16;
+      // Crimson glow aura around plane
+      ctx.shadowColor = "rgba(229, 5, 57, 0.7)";
+      ctx.shadowBlur = 18;
 
-      // Tail fin + fuselage
-      ctx.fillStyle = "#e5093a";
+      // Tail fin + main fuselage
+      ctx.fillStyle = "#e50539";
       ctx.beginPath();
-      ctx.moveTo(-28, 3);
-      ctx.quadraticCurveTo(-32, -11, -24, -15);
-      ctx.lineTo(-15, -4);
-      ctx.lineTo(14, -7);
-      ctx.quadraticCurveTo(28, -6, 31, 1);
-      ctx.quadraticCurveTo(27, 9, 12, 9);
-      ctx.lineTo(-19, 6);
+      ctx.moveTo(-30, 3);
+      ctx.quadraticCurveTo(-34, -12, -25, -16);
+      ctx.lineTo(-16, -4);
+      ctx.lineTo(15, -7);
+      ctx.quadraticCurveTo(30, -6, 33, 1);
+      ctx.quadraticCurveTo(29, 10, 12, 9);
+      ctx.lineTo(-20, 6);
       ctx.closePath();
       ctx.fill();
 
-      // Deeper crimson belly & engine cowling
+      // Lower shaded belly & wheel strut
       ctx.shadowBlur = 0;
-      ctx.fillStyle = "#9f072a";
+      ctx.fillStyle = "#9d0326";
       ctx.beginPath();
-      ctx.moveTo(-14, 4);
-      ctx.lineTo(20, 4);
-      ctx.lineTo(13, 10);
-      ctx.lineTo(-10, 8);
+      ctx.moveTo(-15, 4);
+      ctx.lineTo(22, 4);
+      ctx.lineTo(14, 10);
+      ctx.lineTo(-11, 8);
       ctx.closePath();
       ctx.fill();
 
-      // Upper wing + scarf/cockpit accent
-      ctx.fillStyle = "#fb1e4e";
+      // Upper biplane wing
+      ctx.fillStyle = "#ff1f53";
       ctx.beginPath();
-      ctx.ellipse(2, -10, 14, 3.6, -0.08, 0, Math.PI * 2);
+      ctx.ellipse(2, -11, 15, 3.6, -0.06, 0, Math.PI * 2);
       ctx.fill();
+
+      // Wing struts
+      ctx.strokeStyle = "#9d0326";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(-4, -8);
+      ctx.lineTo(-2, -3);
+      ctx.moveTo(8, -8);
+      ctx.lineTo(9, -3);
+      ctx.stroke();
 
       // Cockpit dark visor
-      ctx.fillStyle = "#18181b";
+      ctx.fillStyle = "#141518";
       ctx.beginPath();
-      ctx.ellipse(8, -4.5, 6, 2.5, 0.1, 0, Math.PI * 2);
+      ctx.ellipse(8, -5, 6.2, 2.6, 0.08, 0, Math.PI * 2);
       ctx.fill();
 
-      // Tail 'X' emblem
-      ctx.strokeStyle = "#18181b";
+      // Tail 'X' badge matching Spribe Aviator
+      ctx.strokeStyle = "#141518";
       ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.moveTo(-23, -10);
-      ctx.lineTo(-17, -4);
-      ctx.moveTo(-17, -10);
-      ctx.lineTo(-23, -4);
+      ctx.moveTo(-25, -11);
+      ctx.lineTo(-19, -5);
+      ctx.moveTo(-19, -11);
+      ctx.lineTo(-25, -5);
       ctx.stroke();
 
-      // Spinning propeller blades + red spinner cone
-      const propSpan = 6 + Math.abs(Math.sin(nowMs * 0.055)) * 13;
-      ctx.strokeStyle = "rgba(244, 63, 94, 0.9)";
-      ctx.lineWidth = 2.4;
+      // Landing gear wheel
+      ctx.fillStyle = "#1f2024";
       ctx.beginPath();
-      ctx.moveTo(32, -propSpan);
-      ctx.lineTo(32, propSpan);
+      ctx.arc(8, 12, 3.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#e50539";
+      ctx.beginPath();
+      ctx.arc(8, 12, 1.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Spinning propeller blur
+      const bladeSpan = 7 + Math.abs(Math.sin(nowMs * 0.06)) * 13;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(34, -bladeSpan);
+      ctx.lineTo(34, bladeSpan);
       ctx.stroke();
 
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = "#e50539";
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.moveTo(32, -propSpan * 0.85);
-      ctx.lineTo(32, propSpan * 0.85);
+      ctx.moveTo(34, -bladeSpan * 0.9);
+      ctx.lineTo(34, bladeSpan * 0.9);
       ctx.stroke();
 
-      ctx.fillStyle = "#e5093a";
+      ctx.fillStyle = "#e50539";
       ctx.beginPath();
-      ctx.arc(31, 0.5, 3, 0, Math.PI * 2);
+      ctx.arc(33, 0.5, 3.2, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.restore();
@@ -156,18 +186,27 @@ export function AviatorCanvas({
       const h = canvas.clientHeight;
       ctx.clearRect(0, 0, w, h);
 
+      if (w <= 0 || h <= 0) {
+        raf = requestAnimationFrame(render);
+        return;
+      }
+
       const s = phaseRef.current;
       const mNow = multRef.current;
+      const allowAnim = animRef.current;
 
-      // 1. Spribe rotating sunburst fan beams from bottom-left (0, h)
-      const rayCount = 28;
-      const rotBase = (now * 0.000055) % (Math.PI * 2);
-      const maxR = Math.hypot(w, h) * 1.2;
+      // 1. Pure black base & rotating sunburst fan rays from bottom-left (0, h)
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, w, h);
+
+      const rayCount = 26;
+      const rotBase = allowAnim ? (now * 0.00005) % (Math.PI * 2) : 0;
+      const maxR = Math.hypot(w, h) * 1.25;
       for (let i = 0; i < rayCount; i++) {
         if (i % 2 === 1) continue;
         const a0 = rotBase + (i / rayCount) * Math.PI * 2;
         const a1 = a0 + (1 / rayCount) * Math.PI * 2;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.028)";
+        ctx.fillStyle = "#0e0e10";
         ctx.beginPath();
         ctx.moveTo(0, h);
         ctx.lineTo(Math.cos(a0) * maxR, h + Math.sin(a0) * maxR);
@@ -176,65 +215,48 @@ export function AviatorCanvas({
         ctx.fill();
       }
 
-      // 2. Dynamic center radial aurora behind multiplier during flight
-      if (s === "flying") {
-        const auroraColor =
+      // 2. Dynamic tier aurora glow behind multiplier (teal-blue <2x, purple 2-9.99x, magenta >=10x)
+      if (s === "flying" || (s === "crashed" && now - crashTimeRef.current < 900)) {
+        const fade = s === "crashed" ? Math.max(0, 1 - (now - crashTimeRef.current) / 900) : 1;
+        const glowColor =
           mNow >= 10
-            ? "rgba(219, 39, 119, 0.30)"
+            ? `rgba(192, 23, 180, ${0.42 * fade})`
             : mNow >= 2
-              ? "rgba(147, 51, 234, 0.28)"
-              : "rgba(14, 165, 233, 0.22)";
-        const halo = ctx.createRadialGradient(w * 0.48, h * 0.48, 10, w * 0.48, h * 0.48, w * 0.42);
-        halo.addColorStop(0, auroraColor);
+              ? `rgba(145, 62, 248, ${0.38 * fade})`
+              : `rgba(10, 110, 175, ${0.36 * fade})`;
+        const halo = ctx.createRadialGradient(w * 0.5, h * 0.48, 12, w * 0.5, h * 0.48, w * 0.38);
+        halo.addColorStop(0, glowColor);
+        halo.addColorStop(0.55, glowColor.replace(/[\d.]+\)$/, `${0.14 * fade})`));
         halo.addColorStop(1, "rgba(0, 0, 0, 0)");
         ctx.fillStyle = halo;
         ctx.fillRect(0, 0, w, h);
       }
 
-      // 3. Axis edge pulse dots while flying
-      if (s === "flying") {
-        const elapsed = Math.max(0, (now - startRef.current) / 1000);
-        const driftX = (elapsed * 42) % 44;
-        const driftY = (elapsed * 30) % 38;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
-        for (let bx = 44 - driftX; bx < w - 16; bx += 44) {
-          ctx.beginPath();
-          ctx.arc(bx, h - 6, 1.4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.fillStyle = "rgba(56, 189, 248, 0.45)";
-        for (let by = h - 38 + driftY; by > 16; by -= 38) {
-          ctx.beginPath();
-          ctx.arc(8, by, 1.6, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-
-      // 4. Flight curve & plane
+      // 3. Parked or flying plane & curve
       if (s === "waiting") {
-        drawSpribePlane(48, h - 24, -0.05, now);
+        // Parked Spribe plane at bottom-left angled ~15° upward
+        drawSpribeBiplane(54, h - 26, -0.22, allowAnim ? now : 0, 1.15);
       } else if (s === "flying" || s === "crashed") {
         const elapsed =
           s === "flying"
-            ? Math.max(0.01, (now - startRef.current) / 1000)
+            ? Math.max(0.02, (now - startRef.current) / 1000)
             : Math.max(0.05, lastFlyElapsedRef.current);
-        const climb = Math.min(1, elapsed / 3.0);
-        const bobX = s === "flying" && climb > 0.85 ? Math.sin(now * 0.0022) * 10 : 0;
-        const bobY = s === "flying" && climb > 0.85 ? Math.cos(now * 0.0028) * 12 : 0;
+        const climb = Math.min(1, elapsed / 3.4);
+        const bobX = allowAnim && s === "flying" && climb > 0.85 ? Math.sin(now * 0.0022) * 10 : 0;
+        const bobY = allowAnim && s === "flying" && climb > 0.85 ? Math.cos(now * 0.0028) * 12 : 0;
 
         const startX = 0;
         const startY = h;
-        const endX = climb * (w * 0.77) + bobX;
-        const endY = h - Math.pow(climb, 1.15) * (h * 0.72) + bobY;
-
-        const ctrlX = endX * 0.56;
+        const endX = climb * (w * 0.78) + bobX;
+        const endY = h - Math.pow(climb, 1.18) * (h * 0.72) + bobY;
+        const ctrlX = endX * 0.58;
         const ctrlY = h - (h - endY) * 0.14;
 
         if (s === "flying") {
+          // Red under-curve area fill with crisp vertical right drop edge
           const fillGrad = ctx.createLinearGradient(0, endY, 0, h);
-          fillGrad.addColorStop(0, "rgba(225, 29, 72, 0.48)");
-          fillGrad.addColorStop(1, "rgba(190, 18, 60, 0.12)");
-
+          fillGrad.addColorStop(0, "rgba(229, 5, 57, 0.50)");
+          fillGrad.addColorStop(1, "rgba(140, 0, 25, 0.24)");
           ctx.beginPath();
           ctx.moveTo(startX, startY);
           ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
@@ -243,28 +265,30 @@ export function AviatorCanvas({
           ctx.fillStyle = fillGrad;
           ctx.fill();
 
+          // Bright crimson flight stroke
           ctx.beginPath();
           ctx.moveTo(startX, startY);
           ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
-          ctx.lineWidth = 4.5;
+          ctx.lineWidth = 4;
           ctx.lineCap = "round";
-          ctx.strokeStyle = "#f41b4e";
-          ctx.shadowColor = "#e11d48";
-          ctx.shadowBlur = 16;
+          ctx.strokeStyle = "#e50539";
+          ctx.shadowColor = "#e50539";
+          ctx.shadowBlur = 14;
           ctx.stroke();
           ctx.shadowBlur = 0;
 
-          const angle = Math.atan2(endY - ctrlY, Math.max(1, endX - ctrlX)) * 0.58;
-          drawSpribePlane(endX + 4, endY - 8, angle, now);
+          const angle = Math.atan2(endY - ctrlY, Math.max(1, endX - ctrlX)) * 0.45;
+          drawSpribeBiplane(endX + 6, endY - 12, angle, allowAnim ? now : 0, 1.45);
         } else {
-          const flyOut = Math.max(0, (now - crashTimeRef.current) / 1100);
+          // Steep fly-away exit animation when crashed
+          const flyOut = Math.max(0, (now - crashTimeRef.current) / 850);
           if (flyOut < 1.2) {
-            drawSpribePlane(endX + flyOut * 320, endY - flyOut * 180, -0.45, now);
+            drawSpribeBiplane(endX + flyOut * 380, endY - flyOut * 210, -0.45, now, 1.45);
           }
         }
       }
 
-      // 5. Floating cashout badges
+      // 4. Floating cashout badges
       for (const b of badgesRef.current) {
         const age = (now - b.createdAt) / 1000;
         if (age > 2.2) continue;
@@ -272,16 +296,16 @@ export function AviatorCanvas({
         ctx.save();
         ctx.globalAlpha = alpha;
         const bx = w * 0.5;
-        const by = 46 - age * 18;
-        ctx.fillStyle = "#22c55e";
+        const by = 44 - age * 18;
+        ctx.fillStyle = "#28a909";
         if (typeof ctx.roundRect === "function") {
           ctx.beginPath();
-          ctx.roundRect(bx - 78, by - 12, 156, 24, 999);
+          ctx.roundRect(bx - 82, by - 12, 164, 24, 999);
           ctx.fill();
         } else {
-          ctx.fillRect(bx - 78, by - 12, 156, 24);
+          ctx.fillRect(bx - 82, by - 12, 164, 24);
         }
-        ctx.fillStyle = "#041b0b";
+        ctx.fillStyle = "#ffffff";
         ctx.font = "900 11px Outfit, sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(b.label, bx, by + 4);
