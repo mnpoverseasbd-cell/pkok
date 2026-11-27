@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Activity,
@@ -30,7 +31,7 @@ import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
 import { useProvablyFair } from "@/hooks/useProvablyFair";
 import { useAutoBet } from "@/hooks/useAutoBet";
-import { fairDice } from "@/lib/provablyFair";
+import { serverPlayDice } from "@/lib/game-settlement.functions";
 import { recordMyBet, subscribeLiveBets, type LiveBet } from "@/lib/liveFeed";
 import { subscribeBetHistory, type BetHistoryEntry } from "@/lib/betHistory";
 import { isMuted, sfxBust, sfxDiceLand, sfxDiceShake, sfxWin, toggleMuted } from "@/lib/sound";
@@ -67,7 +68,8 @@ function rollToDiceFaces(val: number): [number, number] {
 }
 
 function LuckyDicePage() {
-  const { balance, bet: placeBet, credit, refresh, userId, loading: walletLoading } = useDemoWallet();
+  const { balance, syncBalance, userId, loading: walletLoading } = useDemoWallet();
+  const doPlayDice = useServerFn(serverPlayDice);
   const { data: cfg, isLoading: cfgLoading } = useGameConfig("dice");
   const { stats, record, reset: resetStats } = useGameStats("dice");
   const pf = useProvablyFair("dice");
@@ -141,8 +143,8 @@ function LuckyDicePage() {
   const runRound = useCallback(
     async (roundBet: number) => {
       if (!pf.ready || rollingRef.current) return { pnl: 0 };
-      if (!placeBet(roundBet)) {
-        setBanner({ title: "পর্যাপ্ত ব্যালেন্স নেই", win: false });
+      if (!userId) {
+        setBanner({ title: "খেলতে অনুগ্রহ করে লগইন করুন", win: false });
         return { pnl: 0 };
       }
 
@@ -152,7 +154,15 @@ function LuckyDicePage() {
       setBanner(null);
       setRollId((r) => r + 1);
 
-      const finalPromise = fairDice(pf.serverSeed, pf.clientSeed, pf.nonce);
+      const serverPromise = doPlayDice({
+        data: {
+          bet: roundBet,
+          target,
+          direction,
+          clientSeed: pf.clientSeed,
+          nonce: pf.nonce,
+        },
+      });
 
       try {
         sfxDiceShake();
@@ -183,7 +193,18 @@ function LuckyDicePage() {
         await new Promise((r) => setTimeout(r, delay));
       }
 
-      const final = await finalPromise;
+      let serverRes: Awaited<ReturnType<typeof doPlayDice>>;
+      try {
+        serverRes = await serverPromise;
+      } catch (err: any) {
+        setBanner({ title: err?.message || "সার্ভার যাচাই ব্যর্থ হয়েছে", win: false });
+        rollingRef.current = false;
+        setRolling(false);
+        return { pnl: 0 };
+      }
+
+      syncBalance(serverRes.newBalance);
+      const final = serverRes.roll;
       const [d1, d2] = rollToDiceFaces(final);
       setDiceFaces([d1, d2]);
       setRoll(final);
@@ -195,19 +216,12 @@ function LuckyDicePage() {
         /* noop */
       }
 
-      const isWin = direction === "under" ? final < target : final > target;
-      let pnl = -roundBet;
-      let won = 0;
-      let mult = 0;
+      const isWin = serverRes.isWin;
+      const won = serverRes.won;
+      const mult = serverRes.mult;
+      const pnl = serverRes.pnl;
 
       if (isWin) {
-        const rawWon = Math.floor(roundBet * basePayout * (1 - edge));
-        credit(rawWon);
-        const capMult = maxCapMult > 0 ? maxCapMult : Infinity;
-        const scale = Number.isFinite(multScale) && multScale > 0 ? multScale : 1;
-        won = Math.min(Math.floor(rawWon * scale), Math.floor(roundBet * capMult));
-        pnl = won - roundBet;
-        mult = +(won / roundBet).toFixed(2);
         setOutcome("win");
         setBanner({
           title: `জয় +৳${pnl.toLocaleString()} (${mult.toFixed(2)}×)`,
@@ -244,7 +258,7 @@ function LuckyDicePage() {
       setRolling(false);
       return { pnl };
     },
-    [pf, placeBet, turbo, direction, target, basePayout, edge, credit, maxCapMult, multScale, record],
+    [pf, userId, doPlayDice, turbo, direction, target, syncBalance, record],
   );
 
   const auto = useAutoBet({ runRound, baseBet: bet });

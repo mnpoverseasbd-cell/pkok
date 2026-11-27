@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -22,13 +23,13 @@ import { useGameStats } from "@/hooks/useGameStats";
 import { useProvablyFair } from "@/hooks/useProvablyFair";
 import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import {
-  fairFortuneGems2Spin,
   FG2_PAYLINES,
   FG2_PAYTABLE,
   type Fg2SpecialItem,
   type Fg2SpinResult,
   type Fg2Symbol,
 } from "@/lib/provablyFair";
+import { serverPlayFortuneGems2 } from "@/lib/game-settlement.functions";
 import {
   Fg2SpecialBadge,
   Fg2SymbolTile,
@@ -91,7 +92,8 @@ function StonePillar({ className = "" }: { className?: string }) {
 }
 
 function FortuneGems2Page() {
-  const { balance, bet: placeBet, credit } = useDemoWallet();
+  const { balance, syncBalance, userId } = useDemoWallet();
+  const doPlayFg2 = useServerFn(serverPlayFortuneGems2);
   const { data: cfg } = useGameConfig("fortune-gems-2");
   const { stats, record } = useGameStats("fortune-gems-2");
   const pf = useProvablyFair("fortune-gems-2");
@@ -167,10 +169,17 @@ function FortuneGems2Page() {
   const spinNow = useCallback(async () => {
     if (spinning || wheelModalOpen || !pf.ready || gameDisabled) return;
 
-    const stake = +(baseBet * (extraBet ? 1.5 : 1)).toFixed(2);
-    if (!placeBet(stake)) {
+    if (!userId) {
       setAutoSpinsLeft(0);
-      setToastMsg(balance < stake ? "পর্যাপ্ত ব্যালেন্স নেই" : "লগইন করুন বা সীমার মধ্যে বাজি দিন");
+      setToastMsg("খেলতে অনুগ্রহ করে লগইন করুন");
+      setTimeout(() => mountedRef.current && setToastMsg(null), 2200);
+      return;
+    }
+
+    const stake = +(baseBet * (extraBet ? 1.5 : 1)).toFixed(2);
+    if (balance < stake) {
+      setAutoSpinsLeft(0);
+      setToastMsg("পর্যাপ্ত ব্যালেন্স নেই");
       setTimeout(() => mountedRef.current && setToastMsg(null), 2200);
       return;
     }
@@ -185,10 +194,28 @@ function FortuneGems2Page() {
     setWheelBanner(null);
     setReelSpinning([true, true, true, true]);
 
-    const res = await fairFortuneGems2Spin(pf.serverSeed, pf.clientSeed, pf.nonce, {
-      extraBet,
-      edge,
-    });
+    let serverData: Awaited<ReturnType<typeof doPlayFg2>>;
+    try {
+      serverData = await doPlayFg2({
+        data: {
+          baseBet,
+          extraBet,
+          clientSeed: pf.clientSeed,
+          nonce: pf.nonce,
+        },
+      });
+    } catch (err: any) {
+      setAutoSpinsLeft(0);
+      setReelSpinning([false, false, false, false]);
+      setSpinning(false);
+      setToastMsg(err?.message || "সার্ভার যাচাই ব্যর্থ হয়েছে");
+      setTimeout(() => mountedRef.current && setToastMsg(null), 2400);
+      return;
+    }
+
+    // Show optimistic stake debit until full reel/wheel reveal completes
+    syncBalance(Math.max(0, +(balance - stake).toFixed(2)));
+    const res = serverData.result;
 
     await sleep(Math.round(220 * speedScale));
     if (!mountedRef.current) return;
@@ -248,19 +275,15 @@ function FortuneGems2Page() {
       setWheelModalOpen(false);
     }
 
-    const cappedMult =
-      maxPayoutMult > 0
-        ? Math.min(res.totalBaseBetMult, maxPayoutMult)
-        : res.totalBaseBetMult;
-    const wonAmount = Math.round(baseBet * cappedMult * 100) / 100;
+    const wonAmount = serverData.wonAmount;
+    syncBalance(serverData.newBalance);
     if (wonAmount > 0) {
-      credit(wonAmount);
       setWinDisplay(wonAmount);
       if (!res.wheelTriggered) {
         if (soundOn) {
-          try { cappedMult >= 5 ? sfxCashout() : sfxWin(cappedMult); } catch { /* noop */ }
+          try { res.totalBaseBetMult >= 5 ? sfxCashout() : sfxWin(res.totalBaseBetMult); } catch { /* noop */ }
         }
-        if (cappedMult >= 3) {
+        if (res.totalBaseBetMult >= 3) {
           fxRef.current?.burst({ count: 55, kind: "confetti", speed: 7 });
         }
       }
@@ -303,16 +326,15 @@ function FortuneGems2Page() {
     wheelModalOpen,
     pf,
     gameDisabled,
+    userId,
     baseBet,
     extraBet,
-    placeBet,
     balance,
-    edge,
+    doPlayFg2,
+    syncBalance,
     speedScale,
     soundOn,
     wheelRot,
-    maxPayoutMult,
-    credit,
     record,
   ]);
 

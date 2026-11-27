@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -20,7 +21,6 @@ import { useGameStats } from "@/hooks/useGameStats";
 import { useProvablyFair } from "@/hooks/useProvablyFair";
 import { ProvablyFairPanel } from "@/components/games/ProvablyFairPanel";
 import {
-  fairSuperAceSpin,
   SUPER_ACE_BASE_COMBOS,
   SUPER_ACE_FREE_COMBOS,
   SUPER_ACE_PAYTABLE,
@@ -28,6 +28,7 @@ import {
   type SuperAceCell,
   type SuperAceSpinResult,
 } from "@/lib/provablyFair";
+import { serverPlaySuperAce } from "@/lib/game-settlement.functions";
 import { SuperAceCard, type CardVisualState } from "@/components/games/fx/SuperAceCards";
 import { ParticleLayer, type ParticleBurstHandle } from "@/components/games/fx/Particles";
 import { pushMultiplierHistory } from "@/components/games/hud/MultiplierHistoryStrip";
@@ -82,7 +83,8 @@ type SpinHistoryItem = {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function SuperAcePage() {
-  const { balance, bet: placeBet, credit } = useDemoWallet();
+  const { balance, syncBalance, userId } = useDemoWallet();
+  const doPlaySuperAce = useServerFn(serverPlaySuperAce);
   const { data: cfg } = useGameConfig("super-ace");
   const { stats, record } = useGameStats("super-ace");
   const pf = useProvablyFair("super-ace");
@@ -157,6 +159,11 @@ function SuperAcePage() {
   const fxRef = useRef<ParticleBurstHandle>(null);
   const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedRef = useRef(true);
+  const pendingFreeQueueRef = useRef<{
+    spins: SuperAceSpinResult[];
+    bet: number;
+    finalBalance: number;
+  } | null>(null);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -277,17 +284,79 @@ function SuperAcePage() {
     async (opts?: { forceFreeTrigger?: boolean; overrideBet?: number }) => {
       if (spinning || !pf.ready || gameDisabled) return;
 
-      const isUsingFreeSpin = freeSpinsLeft > 0 && !opts?.forceFreeTrigger;
+      const queue = pendingFreeQueueRef.current;
+      const isUsingFreeSpin = freeSpinsLeft > 0 && queue && queue.spins.length > 0 && !opts?.forceFreeTrigger;
+
+      if (isUsingFreeSpin && queue) {
+        const nextFs = queue.spins.shift()!;
+        const activeBet = queue.bet;
+        setSpinning(true);
+        setOpenMenu(false);
+        setOpenBetGrid(false);
+        setOpenAutoModal(false);
+        setOpenBuyBonus(false);
+        setFreeSpinsLeft(queue.spins.length);
+
+        await animateResult(activeBet, nextFs, true);
+        if (!mountedRef.current) return;
+
+        const cappedMult =
+          maxPayoutMult > 0 ? Math.min(nextFs.totalMultiplier, maxPayoutMult) : nextFs.totalMultiplier;
+        const wonAmount = Math.round(activeBet * cappedMult * 100) / 100;
+        const maxCombo = nextFs.cascades.length > 0 ? nextFs.cascades[nextFs.cascades.length - 1].comboMult : 1;
+
+        setHistory((prev) =>
+          [
+            {
+              id: `sa-fs-${pf.nonce}-${Date.now()}`,
+              ts: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+              bet: 0,
+              payout: wonAmount,
+              mult: cappedMult,
+              freeSpin: true,
+              maxCombo,
+            },
+            ...prev,
+          ].slice(0, 30),
+        );
+
+        if (nextFs.freeSpinsAwarded > 0) {
+          setBannerMsg(`🔥 +${nextFs.freeSpinsAwarded} FREE SPINS!`);
+          fxRef.current?.burst({ count: 70, kind: "confetti", speed: 8 });
+          if (soundOn) {
+            try { sfxCashout(); } catch { /* noop */ }
+          }
+          setTimeout(() => mountedRef.current && setBannerMsg(null), 2000);
+        }
+
+        if (queue.spins.length === 0) {
+          const finalBal = queue.finalBalance;
+          pendingFreeQueueRef.current = null;
+          setInFreeGame(false);
+          syncBalance(finalBal);
+          setBannerMsg(`🏆 FREE GAME ENDED · TOTAL WIN ৳${(freeTotalWin + wonAmount).toFixed(2)}`);
+          setTimeout(() => mountedRef.current && setBannerMsg(null), 2600);
+        }
+
+        setSpinning(false);
+        return;
+      }
+
+      if (!userId) {
+        setAutoSpinsLeft(0);
+        setBannerMsg("খেলতে অনুগ্রহ করে লগইন করুন");
+        setTimeout(() => mountedRef.current && setBannerMsg(null), 2200);
+        return;
+      }
+
       const activeBet = opts?.overrideBet ?? bet;
       const buyCost = opts?.forceFreeTrigger ? +(activeBet * 40.5).toFixed(2) : activeBet;
 
-      if (!isUsingFreeSpin) {
-        if (!placeBet(buyCost)) {
-          setAutoSpinsLeft(0);
-          setBannerMsg(balance < buyCost ? "পর্যাপ্ত ব্যালেন্স নেই" : "লগইন করুন বা সীমার মধ্যে বাজি দিন");
-          setTimeout(() => setBannerMsg(null), 2200);
-          return;
-        }
+      if (balance < buyCost) {
+        setAutoSpinsLeft(0);
+        setBannerMsg("পর্যাপ্ত ব্যালেন্স নেই");
+        setTimeout(() => mountedRef.current && setBannerMsg(null), 2200);
+        return;
       }
 
       setSpinning(true);
@@ -295,92 +364,79 @@ function SuperAcePage() {
       setOpenBetGrid(false);
       setOpenAutoModal(false);
       setOpenBuyBonus(false);
+      setWinDisplay(0);
+      setFreeTotalWin(0);
 
-      if (isUsingFreeSpin) {
-        setFreeSpinsLeft((prev) => Math.max(0, prev - 1));
-      } else {
-        setWinDisplay(0);
-        if (!opts?.forceFreeTrigger) setFreeTotalWin(0);
+      let serverData: Awaited<ReturnType<typeof doPlaySuperAce>>;
+      try {
+        serverData = await doPlaySuperAce({
+          data: {
+            bet: activeBet,
+            buyBonus: !!opts?.forceFreeTrigger,
+            clientSeed: pf.clientSeed,
+            nonce: pf.nonce,
+          },
+        });
+      } catch (err: any) {
+        setAutoSpinsLeft(0);
+        setSpinning(false);
+        setBannerMsg(err?.message || "সার্ভার যাচাই ব্যর্থ হয়েছে");
+        setTimeout(() => mountedRef.current && setBannerMsg(null), 2400);
+        return;
       }
 
-      const modeIsFree = isUsingFreeSpin || inFreeGame;
-      let res = await fairSuperAceSpin(pf.serverSeed, pf.clientSeed, pf.nonce, {
-        isFreeSpin: modeIsFree,
-        edge,
-      });
+      syncBalance(Math.max(0, +(balance - serverData.stake).toFixed(2)));
+      const res = serverData.baseSpin;
 
-      // For Buy Bonus, ensure 3 Scatters land on reels 1, 2, 3 cleanly if natural roll had < 3
-      if (opts?.forceFreeTrigger && res.freeSpinsAwarded === 0) {
-        const patchedInit = res.initialGrid.map((col) => col.map((cell) => ({ ...cell })));
-        patchedInit[0][1] = { id: `bb-s0-${pf.nonce}`, sym: "SCATTER", golden: false };
-        patchedInit[2][2] = { id: `bb-s2-${pf.nonce}`, sym: "SCATTER", golden: false };
-        patchedInit[4][1] = { id: `bb-s4-${pf.nonce}`, sym: "SCATTER", golden: false };
-        res = {
-          ...res,
-          initialGrid: patchedInit,
-          finalGrid: patchedInit,
-          cascades: [],
-          totalMultiplier: 0,
-          scatterCount: 3,
-          freeSpinsAwarded: 10,
-        };
-      }
-
-      await animateResult(activeBet, res, modeIsFree);
+      await animateResult(activeBet, res, false);
       if (!mountedRef.current) return;
 
       const cappedMult =
         maxPayoutMult > 0 ? Math.min(res.totalMultiplier, maxPayoutMult) : res.totalMultiplier;
-      const wonAmount = Math.round(activeBet * cappedMult * 100) / 100;
-      if (wonAmount > 0) {
-        credit(wonAmount);
-      }
-
-      const spent = isUsingFreeSpin ? 0 : buyCost;
-      const pnl = +(wonAmount - spent).toFixed(2);
-      if (res.totalMultiplier === 0 && soundOn && !isUsingFreeSpin) {
+      const wonAmount = serverData.baseWin;
+      const pnl = +(serverData.totalWin - serverData.stake).toFixed(2);
+      if (res.totalMultiplier === 0 && soundOn && res.freeSpinsAwarded === 0) {
         try { sfxBust(); } catch { /* noop */ }
       }
 
       const maxCombo = res.cascades.length > 0 ? res.cascades[res.cascades.length - 1].comboMult : 1;
 
-      if (!opts?.forceFreeTrigger) {
-        record({ pnl, multiplier: cappedMult });
-        recordMyBet({
-          game: "super-ace",
-          bet: spent,
-          multiplier: cappedMult,
-          payout: wonAmount,
-        });
-        pushMultiplierHistory("super-ace", cappedMult);
-      }
+      const totalMult = serverData.stake > 0 ? +(serverData.totalWin / serverData.stake).toFixed(2) : 0;
+      record({ pnl, multiplier: totalMult });
+      recordMyBet({
+        game: "super-ace",
+        bet: serverData.stake,
+        multiplier: totalMult,
+        payout: serverData.totalWin,
+      });
+      pushMultiplierHistory("super-ace", totalMult);
 
       setHistory((prev) =>
         [
           {
             id: `sa-${pf.nonce}-${Date.now()}`,
             ts: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
-            bet: spent,
+            bet: serverData.stake,
             payout: wonAmount,
             mult: cappedMult,
-            freeSpin: modeIsFree,
+            freeSpin: false,
             maxCombo,
           },
           ...prev,
         ].slice(0, 30),
       );
 
-      pf.consume(`super-ace mult=${cappedMult}× cascades=${res.cascades.length} scatters=${res.scatterCount}`);
+      pf.consume(`super-ace mult=${totalMult}× cascades=${res.cascades.length} scatters=${res.scatterCount}`);
 
-      // Free Spins Trigger / Retrigger
-      if (res.freeSpinsAwarded > 0) {
+      if (serverData.freeSpins.length > 0) {
+        pendingFreeQueueRef.current = {
+          spins: [...serverData.freeSpins],
+          bet: activeBet,
+          finalBalance: serverData.newBalance,
+        };
         setInFreeGame(true);
-        setFreeSpinsLeft((prev) => prev + res.freeSpinsAwarded);
-        setBannerMsg(
-          modeIsFree
-            ? `🔥 +${res.freeSpinsAwarded} FREE SPINS!`
-            : `🎉 3 SCATTERS! ${res.freeSpinsAwarded} FREE SPINS!`,
-        );
+        setFreeSpinsLeft(serverData.freeSpins.length);
+        setBannerMsg(`🎉 3 SCATTERS! ${serverData.freeSpins.length} FREE SPINS!`);
         fxRef.current?.burst({ count: 90, kind: "confetti", speed: 9 });
         if (soundOn) {
           try { sfxCashout(); } catch { /* noop */ }
@@ -389,11 +445,8 @@ function SuperAcePage() {
           setAutoSpinsLeft(0);
         }
         setTimeout(() => mountedRef.current && setBannerMsg(null), 2200);
-      } else if (isUsingFreeSpin && freeSpinsLeft - 1 <= 0) {
-        // Last free spin completed cleanly
-        setInFreeGame(false);
-        setBannerMsg(`🏆 FREE GAME ENDED · TOTAL WIN ৳${(freeTotalWin + wonAmount).toFixed(2)}`);
-        setTimeout(() => mountedRef.current && setBannerMsg(null), 2600);
+      } else {
+        syncBalance(serverData.newBalance);
       }
 
       setSpinning(false);
@@ -403,14 +456,14 @@ function SuperAcePage() {
       pf,
       gameDisabled,
       freeSpinsLeft,
+      userId,
       bet,
-      inFreeGame,
-      edge,
+      balance,
+      doPlaySuperAce,
+      syncBalance,
       animateResult,
       maxPayoutMult,
       soundOn,
-      placeBet,
-      credit,
       record,
       stopOnFreeGame,
       freeTotalWin,

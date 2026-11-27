@@ -64,9 +64,17 @@ export async function fairFloats(
 // ---- Per-game outcome helpers ------------------------------------------------
 
 /** Dice: roll in [0, 100). Player wins if roll < target. */
-export async function fairDice(serverSeed: string, clientSeed: string, nonce: number) {
+export async function fairDice(
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+  options?: { winRatePct?: number },
+) {
   const [f] = await fairFloats(serverSeed, clientSeed, nonce, 1);
-  const { ratio } = getWinRateRatio("dice");
+  const ratio =
+    options?.winRatePct !== undefined
+      ? Math.min(1.95, Math.max(0.05, options.winRatePct / 50))
+      : getWinRateRatio("dice").ratio;
   const bf = ratio === 1 ? f : Math.pow(f, ratio);
   return +(bf * 100).toFixed(2);
 }
@@ -84,14 +92,22 @@ export async function fairLimbo(
 
 /** Crash: same formula as Limbo but with a 1/N instant-bust chance. */
 export async function fairCrash(
-  serverSeed: string, clientSeed: string, nonce: number, edge: number = 0.01,
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number,
+  edge: number = 0.01,
+  options?: { winRatePct?: number },
 ) {
   const [f] = await fairFloats(serverSeed, clientSeed, nonce, 1);
   const tune = getWinRateRatio("crash");
-  const effEdge = tune.edge ?? edge;
-  const bustProb = Math.min(0.95, Math.max(0.005, tune.ratio < 1 ? 0.03 + (1 - tune.ratio) * 0.55 : 0.03 / tune.ratio));
+  const ratio =
+    options?.winRatePct !== undefined
+      ? Math.min(1.95, Math.max(0.05, options.winRatePct / 50))
+      : tune.ratio;
+  const effEdge = options?.winRatePct !== undefined ? edge : (tune.edge ?? edge);
+  const bustProb = Math.min(0.95, Math.max(0.005, ratio < 1 ? 0.03 + (1 - ratio) * 0.55 : 0.03 / ratio));
   if (f < bustProb) return 1.0;
-  const m = Math.max(1, ((1 - effEdge) * tune.ratio) / Math.max(f, 1e-9));
+  const m = Math.max(1, ((1 - effEdge) * ratio) / Math.max(f, 1e-9));
   return +Math.min(m, 1_000_000).toFixed(2);
 }
 
@@ -1630,11 +1646,15 @@ export async function fairSuperAceSpin(
   serverSeed: string,
   clientSeed: string,
   nonce: number,
-  options?: { isFreeSpin?: boolean; edge?: number },
+  options?: { isFreeSpin?: boolean; edge?: number; winRatePct?: number },
 ): Promise<SuperAceSpinResult> {
   const isFreeSpin = !!options?.isFreeSpin;
   const tune = getWinRateRatio("super-ace");
-  const effEdge = tune.edge ?? options?.edge ?? 0.03;
+  const ratio =
+    options?.winRatePct !== undefined
+      ? Math.min(1.95, Math.max(0.05, options.winRatePct / 50))
+      : tune.ratio;
+  const effEdge = options?.edge ?? tune.edge ?? 0.03;
   // Pre-draw generous deterministic floats for initial grid + up to 12 cascades
   const floats = await fairFloats(serverSeed, clientSeed, nonce, 220);
   let fi = 0;
@@ -1679,7 +1699,7 @@ export async function fairSuperAceSpin(
     if (evalRes.winningPositions.length === 0) break;
 
     const comboMult = ladders[Math.min(stepIdx, ladders.length - 1)];
-    const rawStepMult = evalRes.baseMult * comboMult * (1 - effEdge) * tune.ratio;
+    const rawStepMult = evalRes.baseMult * comboMult * (1 - effEdge) * ratio;
     const stepMult = +Math.min(rawStepMult, 10_000).toFixed(4);
     totalMultiplier = +Math.min(totalMultiplier + stepMult, 10_000).toFixed(4);
 
@@ -1903,11 +1923,15 @@ export async function fairFortuneGems2Spin(
   serverSeed: string,
   clientSeed: string,
   nonce: number,
-  options?: { extraBet?: boolean; edge?: number },
+  options?: { extraBet?: boolean; edge?: number; winRatePct?: number },
 ): Promise<Fg2SpinResult> {
   const extraBet = !!options?.extraBet;
   const tune = getWinRateRatio("fortune-gems-2");
-  const effEdge = tune.edge ?? options?.edge ?? 0.03;
+  const ratio =
+    options?.winRatePct !== undefined
+      ? Math.min(1.95, Math.max(0.05, options.winRatePct / 50))
+      : tune.ratio;
+  const effEdge = options?.edge ?? tune.edge ?? 0.03;
   const floats = await fairFloats(serverSeed, clientSeed, nonce, 18);
   let fi = 0;
   const nextF = () => floats[fi++ % floats.length];
@@ -1976,7 +2000,7 @@ export async function fairFortuneGems2Spin(
   const maxCap = extraBet ? 15_000 : 10_000;
   const totalBaseBetMult =
     rawMult > 0
-      ? +Math.min(maxCap, rawMult * (1 - effEdge) * tune.ratio).toFixed(4)
+      ? +Math.min(maxCap, rawMult * (1 - effEdge) * ratio).toFixed(4)
       : 0;
 
   return {

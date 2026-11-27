@@ -85,5 +85,11 @@ export function useDemoWallet() {
     if (userId) load(userId);
   }, [userId, load]);
 
-  return { balance, bet, credit, reset: refresh, refresh, userId, ready: !!userId && balance > 0, loading };
+  const syncBalance = useCallback((next: number) => {
+    if (!Number.isFinite(next) || next < 0) return;
+    setBalance(next);
+    broadcast(next);
+  }, []);
+
+  return { balance, bet, credit, reset: refresh, refresh, syncBalance, userId, ready: !!userId && balance > 0, loading };
 }

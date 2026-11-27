@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   Activity,
@@ -27,6 +28,7 @@ import { useGameConfig } from "@/hooks/useGameConfig";
 import { useDemoWallet } from "@/hooks/useDemoWallet";
 import { useGameStats } from "@/hooks/useGameStats";
 import { useProvablyFair } from "@/hooks/useProvablyFair";
+import { serverCrashCashout, serverCrashCheck, serverCrashStart } from "@/lib/game-settlement.functions";
 import { fairCrash } from "@/lib/provablyFair";
 import { recordMyBet, subscribeLiveBets, type LiveBet } from "@/lib/liveFeed";
 import { subscribeBetHistory, type BetHistoryEntry } from "@/lib/betHistory";
@@ -76,7 +78,10 @@ function multPillStyle(m: number) {
 }
 
 function AviatorCrashPage() {
-  const { balance, bet: placeBet, credit, refresh, userId, loading: walletLoading } = useDemoWallet();
+  const { balance, syncBalance, refresh, userId, loading: walletLoading } = useDemoWallet();
+  const doCrashStart = useServerFn(serverCrashStart);
+  const doCrashCheck = useServerFn(serverCrashCheck);
+  const doCrashCashout = useServerFn(serverCrashCashout);
   const { data: cfg, isLoading: cfgLoading } = useGameConfig("crash");
   const { record } = useGameStats("crash");
   const pf = useProvablyFair("crash");
@@ -128,6 +133,11 @@ function AviatorCrashPage() {
   const rafRef = useRef<number | null>(null);
   const cycleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollInFlightRef = useRef(false);
+  const roundTokenRef = useRef<string | null>(null);
+  const serverTargetRef = useRef<number | null>(null);
+  const cashSentRef = useRef<Set<number>>(new Set());
 
   useEffect(() => subscribeLiveBets(setLiveBets), []);
   useEffect(() => subscribeBetHistory(setMyHistory), []);
@@ -175,30 +185,63 @@ function AviatorCrashPage() {
   const stopAnim = () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
+    if (pollTimerRef.current) {
+      clearInterval(pollTimerRef.current);
+      pollTimerRef.current = null;
+    }
+    pollInFlightRef.current = false;
   };
 
   const cashoutSlot = useCallback(
-    (i: 0 | 1, atMult: number) => {
+    async (i: 0 | 1, atMult: number, isAuto = false) => {
       const s = slotsRef.current[i];
-      if (s.status !== "active") return;
-      const rawWon = Math.floor(s.amount * atMult * (1 - edge));
-      credit(rawWon);
-      const won = calcPayout(s.amount, atMult);
-      const pnl = won - s.amount;
-      setSlot(i, { status: "cashed", cashMult: atMult, payout: won });
-      record({ pnl, multiplier: atMult });
-      recordMyBet({ game: "crash", bet: s.amount, multiplier: atMult, payout: won });
-      setSkyBadges((prev) => [
-        ...prev.slice(-3),
-        { id: Date.now() + i, label: `YOU +৳${won.toLocaleString()} @ ${atMult.toFixed(2)}×`, mult: atMult, createdAt: performance.now() },
-      ]);
+      const token = roundTokenRef.current;
+      if (s.status !== "active" || !token || cashSentRef.current.has(i)) return;
+      cashSentRef.current.add(i);
       try {
-        sfxCashout();
-      } catch {
-        /* noop */
+        const res = await doCrashCashout({
+          data: {
+            roundToken: token,
+            slotIndex: i,
+            autoMult: isAuto ? atMult : undefined,
+          },
+        });
+        if (roundTokenRef.current !== token) return;
+        if (!res.ok) {
+          if (res.crashed && typeof res.crashAt === "number") {
+            serverTargetRef.current = res.crashAt;
+          }
+          return;
+        }
+        syncBalance(res.newBalance);
+        const cashMult = res.cashMult;
+        const won = res.payout;
+        const pnl = won - s.amount;
+        setSlot(i, { status: "cashed", cashMult, payout: won });
+        record({ pnl, multiplier: cashMult });
+        recordMyBet({ game: "crash", bet: s.amount, multiplier: cashMult, payout: won });
+        setSkyBadges((prev) => [
+          ...prev.slice(-3),
+          {
+            id: Date.now() + i,
+            label: `YOU +৳${won.toLocaleString()} @ ${cashMult.toFixed(2)}×`,
+            mult: cashMult,
+            createdAt: performance.now(),
+          },
+        ]);
+        try {
+          sfxCashout();
+        } catch {
+          /* noop */
+        }
+      } catch (err) {
+        if (roundTokenRef.current === token) {
+          cashSentRef.current.delete(i);
+        }
+        toast.error(err instanceof Error ? err.message : "Cashout failed");
       }
     },
-    [calcPayout, credit, edge, record, setSlot],
+    [doCrashCashout, record, setSlot, syncBalance],
   );
 
   const beginBettingWindowRef = useRef<() => void>(() => {});
@@ -206,35 +249,85 @@ function AviatorCrashPage() {
 
   const startFlying = useCallback(async () => {
     const activePf = pfRef.current;
+    roundTokenRef.current = null;
+    serverTargetRef.current = null;
+    cashSentRef.current.clear();
 
     const currentSlots = slotsRef.current;
-    const activated: [Slot, Slot] = [{ ...currentSlots[0] }, { ...currentSlots[1] }];
+    const queuedBets: { slotIndex: 0 | 1; amount: number }[] = [];
     for (const i of [0, 1] as const) {
-      if (activated[i].status === "queued") {
-        if (placeBet(activated[i].amount)) {
-          activated[i] = { ...activated[i], status: "active" };
-        } else {
-          activated[i] = { ...activated[i], status: "idle" };
+      if (currentSlots[i].status === "queued") {
+        queuedBets.push({ slotIndex: i, amount: currentSlots[i].amount });
+      }
+    }
+
+    const activated: [Slot, Slot] = [{ ...currentSlots[0] }, { ...currentSlots[1] }];
+    let activeToken: string | null = null;
+
+    if (queuedBets.length > 0) {
+      try {
+        const started = await doCrashStart({
+          data: {
+            bets: queuedBets,
+            clientSeed: activePf.ready && activePf.clientSeed ? activePf.clientSeed : undefined,
+            nonce: activePf.ready ? activePf.nonce : undefined,
+          },
+        });
+        syncBalance(started.newBalance);
+        activeToken = started.roundToken;
+        roundTokenRef.current = activeToken;
+        for (const qb of queuedBets) {
+          activated[qb.slotIndex] = { ...activated[qb.slotIndex], status: "active" };
+        }
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Unable to place server bet");
+        for (const qb of queuedBets) {
+          activated[qb.slotIndex] = { ...activated[qb.slotIndex], status: "idle" };
         }
       }
     }
+
     setSlots(activated);
     slotsRef.current = activated;
 
-    let target = 2.15;
-    try {
-      if (activePf.ready && activePf.serverSeed && activePf.clientSeed) {
-        const computed = await fairCrash(activePf.serverSeed, activePf.clientSeed, activePf.nonce, edge);
-        if (Number.isFinite(computed) && computed >= 1) {
-          target = computed;
+    if (activeToken) {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+      const tokenForPoll = activeToken;
+      pollTimerRef.current = setInterval(() => {
+        if (pollInFlightRef.current || roundTokenRef.current !== tokenForPoll || serverTargetRef.current !== null) {
+          return;
         }
-      } else {
+        pollInFlightRef.current = true;
+        void doCrashCheck({ data: { roundToken: tokenForPoll } })
+          .then((chk) => {
+            if (roundTokenRef.current === tokenForPoll && chk.crashed && typeof chk.crashAt === "number") {
+              serverTargetRef.current = chk.crashAt;
+            }
+          })
+          .catch(() => {
+            /* ignore transient poll error */
+          })
+          .finally(() => {
+            pollInFlightRef.current = false;
+          });
+      }, 240);
+    } else {
+      let target = 2.15;
+      try {
+        if (activePf.ready && activePf.serverSeed && activePf.clientSeed) {
+          const computed = await fairCrash(activePf.serverSeed, activePf.clientSeed, activePf.nonce, edge);
+          if (Number.isFinite(computed) && computed >= 1) {
+            target = computed;
+          }
+        } else {
+          const u = Math.max(0.01, Math.random());
+          target = +Math.max(1.08, Math.min(50, (1 - edge) / u)).toFixed(2);
+        }
+      } catch {
         const u = Math.max(0.01, Math.random());
         target = +Math.max(1.08, Math.min(50, (1 - edge) / u)).toFixed(2);
       }
-    } catch {
-      const u = Math.max(0.01, Math.random());
-      target = +Math.max(1.08, Math.min(50, (1 - edge) / u)).toFixed(2);
+      serverTargetRef.current = target;
     }
 
     setCrashAt(null);
@@ -252,21 +345,29 @@ function AviatorCrashPage() {
     const tick = (now: number) => {
       const t = Math.max(0, (now - startRef.current) / 1000);
       const m = +Math.exp(0.15 * t).toFixed(2);
+      const knownTarget = serverTargetRef.current;
 
       for (const i of [0, 1] as const) {
         const s = slotsRef.current[i];
-        if (s.status === "active" && s.autoCashout && m >= s.auto && s.auto < target) {
-          cashoutSlot(i, s.auto);
+        if (
+          s.status === "active" &&
+          s.autoCashout &&
+          m >= s.auto &&
+          (knownTarget === null || s.auto < knownTarget)
+        ) {
+          void cashoutSlot(i, s.auto, true);
         }
       }
 
-      if (m >= target) {
-        setMult(target);
-        setCrashAt(target);
+      if (knownTarget !== null && m >= knownTarget) {
+        roundTokenRef.current = null;
+        cashSentRef.current.clear();
+        setMult(knownTarget);
+        setCrashAt(knownTarget);
         setPhase("crashed");
-        setRecentCrashes((prev) => [target, ...prev].slice(0, 32));
-        if (activePf.ready) activePf.consume(`crash=${target}×`);
-        pushMultiplierHistory("crash", target);
+        setRecentCrashes((prev) => [knownTarget, ...prev].slice(0, 32));
+        if (activePf.ready) activePf.consume(`crash=${knownTarget}×`);
+        pushMultiplierHistory("crash", knownTarget);
 
         setSlots((prev) => {
           const next = [...prev] as [Slot, Slot];
@@ -294,7 +395,7 @@ function AviatorCrashPage() {
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-  }, [cashoutSlot, edge, placeBet, record]);
+  }, [cashoutSlot, doCrashCheck, doCrashStart, edge, record, syncBalance]);
 
   const beginBettingWindow = useCallback(() => {
     stopAnim();
@@ -389,7 +490,7 @@ function AviatorCrashPage() {
   const manualCashout = useCallback(
     (i: 0 | 1) => {
       if (phase !== "flying") return;
-      cashoutSlot(i, mult);
+      void cashoutSlot(i, mult, false);
     },
     [cashoutSlot, mult, phase],
   );
@@ -401,7 +502,7 @@ function AviatorCrashPage() {
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       e.preventDefault();
       const s0 = slotsRef.current[0];
-      if (phase === "flying" && s0.status === "active") cashoutSlot(0, mult);
+      if (phase === "flying" && s0.status === "active") void cashoutSlot(0, mult, false);
       else if (s0.status === "queued") cancelQueued(0);
       else if (s0.status !== "active") queueBet(0);
     };
