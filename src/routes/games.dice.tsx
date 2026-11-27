@@ -348,7 +348,7 @@ function LuckyDiceStudioPage() {
 
         {/* STUDIO TOP BROADCAST BAR */}
         <header className="relative z-20 border-b border-amber-400/20 bg-black/65 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-2 px-3 py-2.5 sm:px-5">
+          <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-2 px-3 py-2.5 sm:px-5 lg:pr-20">
             {/* Left: Back + Brand */}
             <div className="flex items-center gap-3">
               <Link
@@ -476,7 +476,7 @@ function LuckyDiceStudioPage() {
         </header>
 
         {/* MAIN CONTENT */}
-        <main className="relative z-10 mx-auto max-w-[1440px] px-3 py-4 sm:px-5">
+        <main className="relative z-10 mx-auto max-w-[1440px] px-3 py-4 sm:px-5 lg:pr-20">
           {maintenance ? (
             <StudioGuard
               icon={<Wrench className="h-11 w-11 text-amber-400" />}

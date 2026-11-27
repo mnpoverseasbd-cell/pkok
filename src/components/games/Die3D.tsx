@@ -30,65 +30,68 @@ function DieFace({
   halfSize,
   transform,
   theme,
+  shade = 1,
 }: {
   value: number;
   halfSize: number;
   transform: string;
   theme: DieTheme;
+  shade?: number;
 }) {
   const pips = PIP_GRID[value] ?? [4];
   const isEmerald = theme === "emerald-gold";
+
   const faceBg = isEmerald
-    ? "linear-gradient(145deg, #166534 0%, #0b3b24 55%, #052013 100%)"
-    : "linear-gradient(145deg, #27272a 0%, #111827 55%, #05070b 100%)";
-  const rim = isEmerald ? "rgba(250, 204, 21, 0.55)" : "rgba(52, 211, 153, 0.45)";
+    ? shade > 1
+      ? "linear-gradient(145deg, #1b7a42 0%, #0f4d2d 60%, #072917 100%)"
+      : shade < 1
+        ? "linear-gradient(145deg, #0d4525 0%, #062816 65%, #03150b 100%)"
+        : "linear-gradient(145deg, #156636 0%, #0a3b22 60%, #051e12 100%)"
+    : shade > 1
+      ? "linear-gradient(145deg, #333741 0%, #181d27 60%, #0c1017 100%)"
+      : shade < 1
+        ? "linear-gradient(145deg, #161920 0%, #0b0e14 65%, #040609 100%)"
+        : "linear-gradient(145deg, #242934 0%, #12161f 60%, #070a0f 100%)";
+
+  const rim = isEmerald ? "rgba(250, 204, 21, 0.72)" : "rgba(52, 211, 153, 0.62)";
   const pipStyle =
     value === 1
       ? {
           background: "radial-gradient(circle at 35% 35%, #fef08a, #f59e0b 65%, #b45309 100%)",
-          boxShadow: "0 0 10px rgba(251,191,36,0.9), inset 0 1px 1px rgba(255,255,255,0.7)",
+          boxShadow: "0 0 10px rgba(251,191,36,0.95), inset 0 1px 1px rgba(255,255,255,0.75)",
         }
       : isEmerald
         ? {
             background: "radial-gradient(circle at 35% 35%, #fffbeb, #facc15 68%, #ca8a04 100%)",
-            boxShadow: "0 0 6px rgba(250,204,21,0.7), inset 0 1px 1px rgba(255,255,255,0.6)",
+            boxShadow: "0 0 7px rgba(250,204,21,0.75), inset 0 1px 1px rgba(255,255,255,0.65)",
           }
         : {
             background: "radial-gradient(circle at 35% 35%, #ecfdf5, #34d399 68%, #059669 100%)",
-            boxShadow: "0 0 6px rgba(52,211,153,0.7), inset 0 1px 1px rgba(255,255,255,0.6)",
+            boxShadow: "0 0 7px rgba(52,211,153,0.75), inset 0 1px 1px rgba(255,255,255,0.65)",
           };
 
   return (
     <div
-      className="absolute inset-0 grid grid-cols-3 grid-rows-3 place-items-center rounded-[18%] p-[16%]"
+      className="absolute inset-0 grid grid-cols-3 grid-rows-3 place-items-center rounded-[14%] p-[16%]"
       style={{
         transform: `${transform} translateZ(${halfSize}px)`,
         background: faceBg,
         border: `1.5px solid ${rim}`,
         boxShadow:
-          "inset 0 2px 6px rgba(255,255,255,0.22), inset 0 -4px 10px rgba(0,0,0,0.65)",
-        backfaceVisibility: "hidden",
+          "inset 0 2px 5px rgba(255,255,255,0.24), inset 0 -4px 10px rgba(0,0,0,0.7)",
+        backfaceVisibility: "visible",
       }}
     >
-      {/* Subtle diagonal glass sheen */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-[18%]"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.04) 40%, transparent 60%)",
-        }}
-      />
       {Array.from({ length: 9 }).map((_, idx) => {
         const active = pips.includes(idx);
         return (
           <span
             key={idx}
-            className={`relative rounded-full transition-transform duration-200 ${
+            className={`relative rounded-full ${
               active
                 ? value === 1
                   ? "h-[68%] w-[68%]"
-                  : "h-[60%] w-[60%]"
+                  : "h-[58%] w-[58%]"
                 : "h-0 w-0 opacity-0"
             }`}
             style={active ? pipStyle : undefined}
@@ -100,20 +103,20 @@ function DieFace({
 }
 
 /**
- * Interactive 3D CSS casino die driven by requestAnimationFrame physics:
- * launches in a parabolic vertical bounce while tumbling smoothly across X/Y/Z,
- * then settles onto the exact target face (1..6) with damped spring overshoot.
+ * Interactive 3D CSS casino die driven by requestAnimationFrame physics.
+ * IMPORTANT: Never apply `filter`, `overflow: hidden`, or `opacity < 1` directly
+ * on the `preserve-3d` cube element, as CSS flattens 3D children when present.
  */
 export function Die3D({
   value,
   rolling,
   rollId,
   turbo = false,
-  size = 84,
+  size = 82,
   theme = "emerald-gold",
   phaseOffset = 0,
   outcome = "idle",
-  dropHeight = 96,
+  dropHeight = 86,
 }: {
   value: number;
   rolling: boolean;
@@ -131,15 +134,20 @@ export function Die3D({
   const targetRef = useRef(target);
   targetRef.current = target;
 
+  // Isometric camera offset (-24 X, +28 Y) guarantees 3 faces are always clearly visible
+  const isoRx = -24;
+  const isoRy = phaseOffset % 2 === 0 ? 28 : -26;
+  const isoRz = phaseOffset % 2 === 0 ? -4 : 5;
+
   const [pose, setPose] = useState({
-    rx: target.rx - 14,
-    ry: target.ry + 18,
-    rz: 0,
+    rx: target.rx + isoRx,
+    ry: target.ry + isoRy,
+    rz: isoRz,
     x: 0,
     y: 0,
     scale: 1,
     shadowScale: 1,
-    shadowOpacity: 0.45,
+    shadowOpacity: 0.5,
   });
 
   const poseRef = useRef(pose);
@@ -149,9 +157,9 @@ export function Die3D({
     if (!rolling) {
       const start = poseRef.current;
       const finalFace = targetRef.current;
-      const goalRx = Math.round(start.rx / 360) * 360 + finalFace.rx - 12;
-      const goalRy = Math.round(start.ry / 360) * 360 + finalFace.ry + 16;
-      const goalRz = Math.round(start.rz / 360) * 360;
+      const goalRx = Math.round(start.rx / 360) * 360 + finalFace.rx + isoRx;
+      const goalRy = Math.round(start.ry / 360) * 360 + finalFace.ry + isoRy;
+      const goalRz = Math.round(start.rz / 360) * 360 + isoRz;
       const dur = turbo ? 180 : 380;
       const t0 = performance.now();
       let raf = 0;
@@ -179,7 +187,6 @@ export function Die3D({
       return () => cancelAnimationFrame(raf);
     }
 
-    // Crystal chute drop + double felt bounce physics
     const start = poseRef.current;
     const t0 = performance.now();
     const duration = turbo ? 260 : 820;
@@ -190,9 +197,6 @@ export function Die3D({
       const elapsed = now - t0;
       const p = Math.min(1, elapsed / duration);
 
-      // Phase 1 (0..0.38): drop straight down from inside the crystal chute
-      // Phase 2 (0.38..0.72): primary bounce off velvet pad
-      // Phase 3 (0.72..1.0): secondary low hop onto landing spot
       let y = 0;
       let x = 0;
       if (p < 0.38) {
@@ -230,24 +234,29 @@ export function Die3D({
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [rolling, rollId, turbo, phaseOffset, clamped, dropHeight]);
+  }, [rolling, rollId, turbo, phaseOffset, clamped, dropHeight, isoRx, isoRy, isoRz]);
 
-  const haloClass =
-    !rolling && outcome === "win"
-      ? "drop-shadow-[0_0_24px_rgba(16,185,129,0.8)]"
-      : !rolling && outcome === "lose"
-        ? "drop-shadow-[0_0_18px_rgba(244,63,94,0.7)]"
-        : "drop-shadow-[0_12px_20px_rgba(0,0,0,0.75)]";
+  const coreBg = theme === "emerald-gold" ? "#041c10" : "#06080d";
 
   return (
     <div
-      className="relative flex flex-col items-center select-none"
-      style={{ width: size + 24, height: size + 26, perspective: 760 }}
+      className="relative flex flex-col items-center justify-center select-none"
+      style={{ width: size + 30, height: size + 36, perspective: "780px" }}
     >
+      {/* Rear ambient outcome glow (sibling element so preserve-3d never flattens) */}
+      {!rolling && outcome !== "idle" && (
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-2 rounded-full blur-xl ${
+            outcome === "win" ? "bg-emerald-400/45" : "bg-rose-500/40"
+          }`}
+        />
+      )}
+
       {/* Dynamic table felt shadow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute bottom-1 rounded-full bg-black/85 blur-md transition-opacity"
+        className="pointer-events-none absolute bottom-1 rounded-full bg-black/85 blur-md"
         style={{
           width: size * 0.96,
           height: size * 0.28,
@@ -256,9 +265,9 @@ export function Die3D({
         }}
       />
 
-      {/* Airborne 3D cube */}
+      {/* True 3D Cube (no filter/overflow on this node!) */}
       <div
-        className={`relative mt-1 ${haloClass}`}
+        className="relative"
         style={{
           width: size,
           height: size,
@@ -267,12 +276,24 @@ export function Die3D({
           willChange: "transform",
         }}
       >
-        <DieFace value={1} halfSize={half} transform="rotateY(0deg)" theme={theme} />
-        <DieFace value={6} halfSize={half} transform="rotateY(180deg)" theme={theme} />
-        <DieFace value={2} halfSize={half} transform="rotateX(90deg)" theme={theme} />
-        <DieFace value={5} halfSize={half} transform="rotateX(-90deg)" theme={theme} />
-        <DieFace value={3} halfSize={half} transform="rotateY(90deg)" theme={theme} />
-        <DieFace value={4} halfSize={half} transform="rotateY(-90deg)" theme={theme} />
+        {/* Solid internal baffles prevent edge-gap see-through at any angle */}
+        <div
+          aria-hidden
+          className="absolute inset-[1px]"
+          style={{ background: coreBg, transform: "rotateX(90deg)" }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-[1px]"
+          style={{ background: coreBg, transform: "rotateY(90deg)" }}
+        />
+
+        <DieFace value={1} halfSize={half} transform="rotateY(0deg)" theme={theme} shade={1} />
+        <DieFace value={6} halfSize={half} transform="rotateY(180deg)" theme={theme} shade={0.85} />
+        <DieFace value={2} halfSize={half} transform="rotateX(90deg)" theme={theme} shade={1.15} />
+        <DieFace value={5} halfSize={half} transform="rotateX(-90deg)" theme={theme} shade={0.8} />
+        <DieFace value={3} halfSize={half} transform="rotateY(90deg)" theme={theme} shade={0.9} />
+        <DieFace value={4} halfSize={half} transform="rotateY(-90deg)" theme={theme} shade={1.08} />
       </div>
     </div>
   );
