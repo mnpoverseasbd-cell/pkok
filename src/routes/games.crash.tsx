@@ -680,7 +680,7 @@ function AviatorCrashPage() {
                       <div className="text-lg sm:text-xl font-black uppercase tracking-widest text-white">
                         FLEW AWAY!
                       </div>
-                      <div className="text-5xl sm:text-6xl font-black tracking-tight tabular-nums text-[#e11d48]">
+                      <div className="text-5xl sm:text-6xl font-black tracking-tight tabular-nums text-[#dc2626]">
                         {crashAt?.toFixed(2)}x
                       </div>
                     </div>
